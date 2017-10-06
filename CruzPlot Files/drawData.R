@@ -1,0 +1,94 @@
+# drawData for CruzPlot by Sam Woodman
+#   Plots selected sightings, legends, and effort lines from DAS file
+#   Plots non-DAS data (lines or points)
+
+
+### Plot non-DAS data
+if(!is.null(data.ndas)) {
+  # Plot lines
+  data.ndas.l <- data.ndas[[1]]
+  if(length(data.ndas.l) > 0) {
+    for(i in seq_along(data.ndas.l)) {
+      data.ndas.l.curr <- data.ndas.l[[i]]
+      lines(x = data.ndas.l.curr$x, y = data.ndas.l.curr$y,
+            lty = data.ndas.l.curr$type, col = data.ndas.l.curr$col,
+            lwd = data.ndas.l.curr$lwd)
+    }
+  }
+  
+  # Plot points
+  data.ndas.p <- data.ndas[[2]]
+  if(length(data.ndas.p) > 0) {
+    for(j in seq_along(data.ndas.p)) {
+      data.ndas.p.curr <- data.ndas.p[[j]]
+      points(x = data.ndas.p.curr$x, y = data.ndas.p.curr$y,
+             pch = data.ndas.p.curr$type, col = data.ndas.p.curr$col,
+             cex = data.ndas.p.curr$cex, lwd = data.ndas.p.curr$lwd)
+    }
+  }
+}
+
+
+### Plot DAS data 
+if(!is.null(cruz.list$das.data)) {
+  ## Plot effort segments
+  if(input$das_effort != "1") {
+    segments(x0 = data.effort$Lon[eff.ndx.R], x1 = data.effort$Lon[eff.ndx.E], 
+             y0 = data.effort$Lat[eff.ndx.R], y1 = data.effort$Lat[eff.ndx.E], 
+             col = eff.col, lwd = eff.lwd)
+  }
+  
+  ## Plot legend for effort by bft
+  if(input$eff_legend & input$das_effort_det_byBft & input$das_effort == "3") {
+    op <- par(family = data.eff.legend$font.fam)
+    # bft.limit <- as.numeric(min(input$das.effort.maxBeau,
+    #                             input$das.sight.maxBeau,
+    #                             max.bft, na.rm=T))
+    # bft.cut <- min(input$das.effort.maxBeau,
+    #                input$das.sight.maxBeau) < max.bft
+    # legend.text <- as.character(0:bft.limit)
+    # if(bft.cut == FALSE) {
+    #   legend.text[bft.limit+1] <- paste(legend.text[bft.limit+1],"+",sep="")
+    # }
+    legend(x = data.eff.legend$eff.leg.x,
+           y = data.eff.legend$eff.leg.y,
+           title = data.eff.legend$eff.leg.title,
+           legend = data.eff.legend$eff.leg.lab,
+           lwd = data.eff.legend$eff.leg.lwd,
+           col = data.eff.legend$eff.leg.col,
+           bty = data.eff.legend$eff.leg.bty,
+           box.col = data.eff.legend$eff.leg.box.col,
+           box.lwd = data.eff.legend$eff.leg.box.lwd,
+           cex = data.eff.legend$eff.leg.box.cex,
+           bg = "white")
+    par(op)
+  }
+  
+  
+  ## Plot sightings and legend
+  if(input$das_sightings) {
+    points(data.sight$sight.lon, data.sight$sight.lat, 
+           pch = data.sight.symbol$pt.pch, col = data.sight.symbol$pt.col,
+           cex = data.sight.symbol$pt.cex, lwd = data.sight.symbol$pt.lwd)
+    
+    if(input$das_legend & sight.type < 3) {
+      op <- par(family = data.sight.legend$font.fam)
+      legend(x = data.sight.legend$leg.x, 
+             y = data.sight.legend$leg.y, 
+             legend = data.sight.legend$leg.lab, 
+             title = data.sight.legend$leg.title, 
+             pch = data.sight.legend$leg.pch, 
+             col = data.sight.legend$leg.col, 
+             pt.cex = data.sight.legend$leg.cex, 
+             pt.lwd = data.sight.legend$leg.lwd, 
+             bty = data.sight.legend$leg.bty, 
+             box.col = data.sight.legend$leg.box.col, 
+             box.lwd = data.sight.legend$leg.box.lwd, 
+             cex = data.sight.legend$leg.box.cex, 
+             bg = "white")
+      par(op)
+    }
+  }
+}
+
+graphics::box() # Added in case legend takes out some of the map border
