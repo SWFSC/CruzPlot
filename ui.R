@@ -86,8 +86,18 @@
 # Added 'Planed Transect' and the majority of 'Non-DAS Data', both of which use reactiveValues and can have multiple objects loaded
 
 
+###############################################################################
+### Install packages that are required for CruzPlot but aren't downloaded
+list.of.packages <- c("maps", "mapdata", "marmap", "stringr", "geosphere", 
+                      "dplyr", "DT", 
+                      "shiny", "shinyjs", "shinydashboard")
+
+list.of.packages.tf <- list.of.packages %in% installed.packages()[, "Package"]
+new.packages <- list.of.packages[!list.of.packages.tf]
+if (length(new.packages)) install.packages(new.packages)
 
 
+###############################################################################
 library(shiny)
 library(shinydashboard)
 library(shinyjs)
@@ -99,6 +109,8 @@ library(stringr)
 library(geosphere)
 library(dplyr)
 
+
+###############################################################################
 options(shiny.maxRequestSize = 50*1024^2) # Max file size is 50MB
 options("digits" = 5)   # for proper display of sighting and effort coordinates
 # map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
