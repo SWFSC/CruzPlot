@@ -48,10 +48,10 @@ observe({
       ndas.data.curr <- lapply(ndas.data.curr, function(list.curr) {
         lon.curr <- list.curr$x
         
-        if(!(all(sapply(lon.curr, function(i) all(i < 0))) | 
-             all(sapply(lon.curr, function(i) all(i > 0)))) &
-           any(sapply(lon.curr, function(i) any(i > 130))) & 
-           any(sapply(lon.curr, function(i) any(i < -100)))
+        if(!(all(sapply(lon.curr, function(i) all(i < 0)), na.rm = TRUE) | 
+             all(sapply(lon.curr, function(i) all(i > 0)), na.rm = TRUE)) &
+           any(sapply(lon.curr, function(i) any(i > 130)), na.rm = TRUE) & 
+           any(sapply(lon.curr, function(i) any(i < -100)), na.rm = TRUE)
         ) {
           list.curr$x <- ifelse(lon.curr > 0, lon.curr - 360, lon.curr)
         }
