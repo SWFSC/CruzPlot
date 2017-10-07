@@ -15,7 +15,7 @@ if(!is.null(cruz.list$das.data)) {
   
   # Sightings
   if(input$das_sightings) {
-    source('CruzPlot Files/errorDasSight.R', local=TRUE, echo=FALSE) 
+    source("errorDasSight.R", local = TRUE, chdir = FALSE) 
     # Other specific checks in cruzDasSight... functions
     data.list <- cruzDasSightRange()
 

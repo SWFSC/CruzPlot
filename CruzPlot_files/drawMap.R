@@ -5,15 +5,14 @@
 input$map.replot
 
 ### Window
-mar1 <- ifelse(nchar(axes.info$lab.lon)>0,7,3)
-mar2 <- ifelse(nchar(axes.info$lab.lat)>0,7,5)
-mar3 <- ifelse(nchar(title.info$lab)>0,7,2)
-# x <<- try(map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2], 
-#               mar = c(mar1,mar2,mar3,4)))
+mar1 <- ifelse(nchar(axes.info$lab.lon) > 0, 7, 3)
+mar2 <- ifelse(nchar(axes.info$lab.lat) > 0, 7, 5)
+mar3 <- ifelse(nchar(title.info$lab)    > 0, 7, 2)
+
 map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2], 
-    mar = c(mar1,mar2,mar3,4))
-x1 <- map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2], 
-          mar = c(mar1,mar2,mar3,4))
+    mar = c(mar1, mar2, mar3, 4))
+x.1 <- map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2], 
+           mar = c(mar1, mar2, mar3, 4))
 param <- cruzMapParam()$param.unit
 
 ### Water
@@ -52,7 +51,7 @@ if(input$color_lakes_rivers) map(map.river, col = map.water.col[[1]],
 graphics::box()
 
 ### Tick marks and labels
-if(input$tick) source('CruzPlot Files/drawMapTick.R', local=TRUE, echo=FALSE)
+if(input$tick) source("drawMapTick.R", local = TRUE, chdir = TRUE)
 
 ### Grid lines
 if(input$grid) {

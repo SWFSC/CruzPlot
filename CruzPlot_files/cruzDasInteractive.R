@@ -78,6 +78,3 @@ observe({
   effort$miss <- FALSE
   effort$hover.miss <- FALSE
 })
-
-source('CruzPlot Files/cruzDasInteractiveSight.R', local=TRUE, echo=FALSE)
-source('CruzPlot Files/cruzDasInteractiveEffort.R', local=TRUE, echo=FALSE)

@@ -5,7 +5,7 @@
 lon.range <- cruz.map.range$lon.range
 lat.range <- cruz.map.range$lat.range
 world2 <- cruz.map.range$world2
-source('CruzPlot Files/errorMapRange.R', local=TRUE, echo=FALSE)
+source("errorMapRange.R", local = TRUE, chdir = TRUE)
 
 map.name <- cruz.map.range$map.name
 map.water.col <- cruzMapColorWater()
@@ -18,11 +18,11 @@ if(input$coast & !is.null(cruz.list$coastline))
 
 if(input$bar) {
   scale.bar <- cruzMapScaleBar()
-  source('CruzPlot Files/errorScaleBar.R', local=TRUE, echo=FALSE)
+  source("errorScaleBar.R", local = TRUE, chdir = TRUE)
 }
 
 if(input$tick || input$grid) {
-  source('CruzPlot Files/errorTick.R', local=TRUE, echo=FALSE)
+  source("errorTick.R", local = TRUE, chdir = TRUE)
   tick.lon <- cruzMapIntervalLon()
   tick.lat <- cruzMapIntervalLat()
 }
@@ -37,7 +37,7 @@ if(input$grid) {
   grid.param <- cruzMapGrid()
 }
 
-source('CruzPlot Files/errorLabel.R', local=TRUE, echo=FALSE)
+source("errorLabel.R", local = TRUE, chdir = TRUE)
 title.info <- cruzMapLabelTitle()
 axes.info <- cruzMapLabelAxes()
 

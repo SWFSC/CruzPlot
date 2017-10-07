@@ -14,15 +14,15 @@ server <- function(input, output, session) {
   })
   
   ### Code for reactive values and handling load/save environment options
-  source('CruzPlot Files/server_reactiveValues.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)
   
   
   ######################## Non-reactive expressions   #########################
   
-  source("CruzPlot Files/cruzDisplaySymbolProp.R", local=TRUE, echo=FALSE) # Display symbols
-  source('CruzPlot Files/funcTickMinor.R', local = TRUE, echo=FALSE) # Determine minor tick locations
-  source('CruzPlot Files/funcCruzDasRead.R', local=TRUE, echo=FALSE) # Read .das data file
-  source('CruzPlot Files/funcCruzSpeciesRead.R', local=TRUE, echo=FALSE) # Read .dat species file
+  source(file.path("CruzPlot_files", "cruzDisplaySymbolProp.R"), local = TRUE, chdir = TRUE) # Display symbols
+  source(file.path("CruzPlot_files", "funcTickMinor.R"), local = TRUE, chdir = TRUE) # Determine minor tick locations
+  source(file.path("CruzPlot_files", "funcCruzDasRead.R"), local = TRUE, chdir = TRUE) # Read .das data file
+  source(file.path("CruzPlot_files", "funcCruzSpeciesRead.R"), local = TRUE, chdir = TRUE) # Read .dat species file
   
   # Countries to be removed for world2 map
   # Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
@@ -104,79 +104,81 @@ server <- function(input, output, session) {
   # })
   
   # Lon dimensions and world2, lat dimensions
-  source('CruzPlot Files/cruzMapRange.R', local = TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapRange.R"), local = TRUE, chdir = TRUE)
   
   # Map name and countries to remove if world2 map
-  source('CruzPlot Files/cruzMapName.R', local = TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapName.R"), local = TRUE, chdir = TRUE)
   
   # Water color and depth, land color
-  source('CruzPlot Files/cruzMapColor.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapColor.R"), local = TRUE, chdir = TRUE)
   
   # Rivers
-  source('CruzPlot Files/cruzMapRiver.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapRiver.R"), local = TRUE, chdir = TRUE)
   
   # Scale bar
-  source('CruzPlot Files/cruzMapScaleBar.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapScaleBar.R"), local = TRUE, chdir = TRUE)
   
   # Coastline
-  source('CruzPlot Files/cruzMapCoastline.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapCoastline.R"), local = TRUE, chdir = TRUE)
   
   # Major intervals
-  source('CruzPlot Files/cruzMapInterval.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapInterval.R"), local = TRUE, chdir = TRUE)
   
   # Tick labels
-  source('CruzPlot Files/funcTickUpdate.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/funcTickMinor.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/funcTickStart.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "funcTickMinor.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
   
-  source('CruzPlot Files/cruzMapTick.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
   
   # Grid lines
-  source('CruzPlot Files/cruzMapGrid.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapGrid.R"), local = TRUE, chdir = TRUE)
   
   # Figure labels
-  source('CruzPlot Files/cruzMapLabel.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapLabel.R"), local = TRUE, chdir = TRUE)
   
   # Planned transect lines
-  source('CruzPlot Files/cruzMapPlannedTransects.R' ,local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzMapPlannedTransects.R"), local = TRUE, chdir = TRUE)
   
   
   ################################## DAS Data #################################
   # Read Species codes and renderUI for mammal and turtle codes
-  source('CruzPlot Files/cruzSpecies.R', local = TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzSpecies.R"), local = TRUE, chdir = TRUE)
   
   # Load DAS file and update symbol properties
   # using fileInput, the output dataframe das.file has name,size,type and datapath
   # the actual data are stored at the temporary file and location given by datapath
-  source('CruzPlot Files/cruzDasGeneral.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzDasGeneral.R"), local = TRUE, chdir = TRUE)
   
   # Sightings
-  source('CruzPlot Files/cruzDasSight.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzDasSightFilter.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzDasSightRange.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzDasSightSymbol.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzDasSightLegend.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzDasSight.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasSightFilter.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasSightRange.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasSightSymbol.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasSightLegend.R"), local = TRUE, chdir = TRUE)
   
   # Effort
-  source('CruzPlot Files/cruzDasEffort.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzDasEffortFilter.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzDasEffortLegend.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzDasEffort.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasEffortFilter.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasEffortLegend.R"), local = TRUE, chdir = TRUE)
   
   # Interactive labels
-  source('CruzPlot Files/cruzDasInteractive.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/funcCruzClosestPt.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzDasInteractive.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasInteractiveSight.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasInteractiveEffort.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "funcCruzClosestPt.R"), local = TRUE, chdir = TRUE)
   
   
   ############################### Non-DAS Data ################################
   # Read csv file and plot lines or points
-  source('CruzPlot Files/cruzNonDas.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzNonDas.R"), local = TRUE, chdir = TRUE)
   
   
   ################################## Other ####################################
-  source('CruzPlot Files/cruzServerRender.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzWorld2DataRange.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzDasRenderUI.R', local=TRUE, echo=FALSE)
-  source('CruzPlot Files/cruzDasOutTabular.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "cruzServerRender.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzWorld2DataRange.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasRenderUI.R"), local = TRUE, chdir = TRUE)
+  source(file.path("CruzPlot_files", "cruzDasOutTabular.R"), local = TRUE, chdir = TRUE)
   
   
   ############################## Plot Land/Water ##############################
@@ -184,26 +186,26 @@ server <- function(input, output, session) {
     # Set values and call reactive functions
     #   Both done first so validate statements are triggered before drawing
     
-    source('CruzPlot Files/drawMap_setVals.R', local=TRUE, echo=FALSE)
-    source('CruzPlot Files/drawData_setVals.R', local=TRUE, echo=FALSE)
+    source(file.path("CruzPlot_files", "drawMap_setVals.R"), local = TRUE, chdir = TRUE)
+    source(file.path("CruzPlot_files", "drawData_setVals.R"), local = TRUE, chdir = TRUE)
     
     # Plot map: window, water, land, and map extras
-    source('CruzPlot Files/drawMap.R', local=TRUE, echo=FALSE)
+    source(file.path("CruzPlot_files", "drawMap.R"), local = TRUE, chdir = TRUE)
     
     # Plot data: sightings, legend, and effort
-    source('CruzPlot Files/drawData.R', local=TRUE, echo=FALSE)
+    source(file.path("CruzPlot_files", "drawData.R"), local = TRUE, chdir = TRUE)
   }})
   
   
   ########################## Plot Interactive Labels ##########################
   plotInteractive <- reactive({ function() {
-    source('CruzPlot Files/drawInteractive.R', local=TRUE, echo=FALSE)
+    source(file.path("CruzPlot_files", "drawInteractive.R"), local = TRUE, chdir = TRUE)
   }})
   
   
   ################################## Outputs ##################################
   # Download Map
-  source('CruzPlot Files/saveMap.R', local=TRUE, echo=FALSE)
+  source(file.path("CruzPlot_files", "saveMap.R"), local = TRUE, chdir = TRUE)
   
   
   # Plot Map
