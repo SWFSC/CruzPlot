@@ -1,7 +1,7 @@
 ### CruzPlot server file
-## designed by Sam Woodman August 2015
-## modifications by Tim Gerrodette September 2015  
-## modifications by Sam Woodman July 2017
+### Created by Sam Woodman August 2015
+### Modifications by Tim Gerrodette September 2015  
+### Modifications by Sam Woodman July 2017
 
 
 `%then%` <- shiny:::`%OR%` # For sequential need() evals within one validate()
