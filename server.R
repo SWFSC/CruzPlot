@@ -75,7 +75,7 @@ server <- function(input, output, session) {
   # effort lines will be shown from 0 to => max.bft
   # # number of colors = max.bft + 1
   max.bft <- 3
-  bft.color <- c("darkblue","blue","green3","red")  
+  bft.color <- c("darkblue", "blue", "green3", "red")  
   
   ################################## Map Data #################################
   ### map height on screen in pixels

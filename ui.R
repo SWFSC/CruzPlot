@@ -34,13 +34,13 @@ options("digits" = 5)   # for proper display of sighting and effort coordinates
 # map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
 
 
+source(file.path("CruzPlot_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
+source(file.path("CruzPlot_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
+
+
 ### Read default values for map
 if(file.exists("StarterVals.csv")) start.ll <- suppressWarnings(read.csv("StarterVals.csv", header = TRUE))
 if(!file.exists("StarterVals.csv")) start.ll <- data.frame(X = c(-180, -110, 0, 33, 1))
-
-
-source(file.path("CruzPlot_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
-source(file.path("CruzPlot_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
 
 start.tick <- NULL
 start.tick$interval <- cruzTickUpdate(c(start.ll$X[2], start.ll$X[1]), c(start.ll$X[4], start.ll$X[3]))
