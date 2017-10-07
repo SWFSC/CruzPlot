@@ -39,20 +39,20 @@ observe({
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
   
-  lon.diff <- abs(lon.range[2]-lon.range[1])
-  lat.diff <- abs(lat.range[2]-lat.range[1])
+  lon.diff <- abs(lon.range[2] - lon.range[1])
+  lat.diff <- abs(lat.range[2] - lat.range[1])
   
   
   # Scale bar longitude start
-  lon.new <- .1*lon.diff + lon.range[1]
+  lon.new <- 0.1 * lon.diff + lon.range[1]
   lon.new <- ifelse(lon.new > 180, lon.new-360, lon.new)
   
   output$out.scale.lon <- renderUI({
-  numericInput("scale.lon", h5("Longitude"), value = lon.new)
+    numericInput("scale.lon", h5("Longitude"), value = lon.new)
   })
   
   # Scale bar latitude start
-  lat.new <- .1*lat.diff + lat.range[1]
+  lat.new <- 0.1 * lat.diff + lat.range[1]
   output$out.scale.lat <- renderUI({
     numericInput("scale.lat", h5("Latitude"), value = lat.new)
   })
@@ -69,14 +69,13 @@ observe({
   lat.pos <- cruz.scale$scale.lat
   scale.units <- input$scale.units
   
-  
   # Scale bar length
   # suppressWarnings() for if world2
   lon.range.m <- suppressWarnings(distVincentyEllipsoid(c(lon.range[1], lat.pos), 
                                                         c(lon.range[2], lat.pos)))
   len.new.km <- lon.range.m * 0.2 / 1000
-
-    # km
+  
+  # km
   if(scale.units == 1) { 
     len.new <- signif(len.new.km, 2)
     title.new <- "Length in km"
@@ -114,8 +113,12 @@ cruzMapScaleBar <- reactive({
   
   scale.x1 <- ifelse((world2 && scale.lon < 0), scale.lon + 360, scale.lon)
   scale.x2 <- destPoint(c(scale.lon, scale.lat), 90, scale.len.m)[1]
+  scale.x2 <- ifelse((world2 && scale.x2 < 0), scale.x2 + 360, scale.x2)
+  
   scale.y <- scale.lat
-
+  
+  # browser()
+  
   return(list(x1 = scale.x1, x2 = scale.x2, y = scale.y, 
               lwd = scale.lwd, len = scale.len, units.str = scale.units.str))
 })

@@ -107,9 +107,3 @@ observe({
     }
   })
 })
-
-
-# # Coastline?
-# observe({
-#   world2 <- cruzMapRangeWorld2()
-# })
