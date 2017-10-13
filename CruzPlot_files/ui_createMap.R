@@ -25,9 +25,10 @@ ui.createMap <- function() {
                   title = "Map range", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE, 
                   helpText("For longitude values, please use the range -180 to 180. ", 
                            "Thus, for a map of the Pacific, you could enter 130 and -110 for ", 
-                           "the left and right longitude, respectively", tags$br(), 
-                           "Click 'Update plot dimensions' button to replot map", tags$br(), 
-                           "Change 'Starter_Vals.csv' to update defaults"), 
+                           "the left and right longitude, respectively.", tags$br(), 
+                           "Click the 'Replot map' button to replot map after changing map range values,", 
+                           "or if the map isn't properly sized within the map box.", tags$br(), 
+                           "Change 'Starter_Vals.csv' to update default lat/long range values."), 
                   fluidRow(
                     column(
                       width = 6, 

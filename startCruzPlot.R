@@ -1,5 +1,5 @@
 ###############################################################################
-### Run the following code in order to start CruzPlot
+### Run the following code in order to run CruzPlot
 
 shiny::runApp()
 
