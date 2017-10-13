@@ -388,9 +388,9 @@ ui.dasPlot <- function() {
               )          
             )
           ), 
-          fluidRow(
-            conditionalPanel(
-              condition = "input.das_effort != 1", 
+          conditionalPanel(
+            condition = "input.das_effort != 1", 
+            fluidRow(
               box(
                 title = "Line properties", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, 
                 fluidRow(
@@ -450,32 +450,29 @@ ui.dasPlot <- function() {
                     )
                   )
                 )
+              ), 
+              box(
+                title = "Effort filters", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, 
+                checkboxInput("das_effort_filter_same", label = "Same as 'Sightings filters'", value = TRUE), 
+                conditionalPanel(
+                  condition = "input.das_effort_filter_same == false", 
+                  conditionalPanel(
+                    condition = "input.das_effort == 3", 
+                    fluidRow(
+                      column(6, selectInput("das.effort.minBeau", h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)  
+                      ), 
+                      column(6, selectInput("das.effort.maxBeau", h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
+                      )
+                    )
+                  ), 
+                  conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be  by Beaufort")), 
+                  uiOutput("das.effort.dateRange_uiOut_date"), 
+                  textInput("das.effort.cruiseNum", h5("Cruise number(s)"), value = ""), 
+                  helpText("Only effort lines from this cruise number will be plotted")
+                )
               )
             ), 
-            box(
-              title = "Effort filters", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, 
-              checkboxInput("das_effort_filter_same", label = "Same as 'Sightings filters'", value = TRUE), 
-              conditionalPanel(
-                condition = "input.das_effort_filter_same == false", 
-                conditionalPanel(
-                  condition = "input.das_effort == 3", 
-                  fluidRow(
-                    column(6, selectInput("das.effort.minBeau", h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)  
-                    ), 
-                    column(6, selectInput("das.effort.maxBeau", h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
-                    )
-                  )
-                ), 
-                conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be  by Beaufort")), 
-                uiOutput("das.effort.dateRange_uiOut_date"), 
-                textInput("das.effort.cruiseNum", h5("Cruise number(s)"), value = ""), 
-                helpText("Only effort lines from this cruise number will be plotted")
-              )
-            )
-          ), 
-          fluidRow(
-            conditionalPanel(
-              condition = "input.das_effort != 1", 
+            fluidRow(
               box(
                 title = "Interactive effort labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE, 
                 fluidRow(

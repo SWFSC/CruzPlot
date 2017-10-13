@@ -103,7 +103,11 @@ cruzDasSightFilterTrunc <- reactive({
     
     angle <- data.sight$angle
     perp.dist.nmi <- data.sight$perp.dist.nmi
-    perp.dist <- ifelse(trunc.units == 2, perp.dist.nmi, perp.dist.nmi * 1.852)
+    if (trunc.units == 2) { 
+      perp.dist <- perp.dist.nmi
+    } else {
+      perp.dist <- perp.dist.nmi * 1.852
+    }
     
     ndx.keep <- which(perp.dist < trunc.dist)
   }
