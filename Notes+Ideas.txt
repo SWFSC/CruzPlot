@@ -1,0 +1,4 @@
+- Remove large/small window thing
+- Change save functionality so that multiple workspaces can be saved and user can choose which one to load
+- Have button to set map limits to common areas (Hawaii, Cal current, ETP)
+- Handle 'regions out of bounds' error when no land is in given map
