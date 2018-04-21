@@ -7,7 +7,53 @@
 #   cruiseDasSightFilter() returns list of data frame containing data for selected species that satisfy the filters, 
 #     counts for each selected species, and selected species codes
 
-## Filter sightings data
+### Top-level function for filtering
+cruzDasSightFilter <- reactive({
+  data.list <- cruzDasSightSpecies()
+  data.temp <- data.list$data.sight
+  sight.type <- data.list$sight.type
+  sp.codes <- data.list$sp.codes
+  
+  num.keep1 <- cruzDasSightFilterEffort()
+  num.keep2 <- cruzDasSightFilterBeaufort()
+  num.keep3 <- cruzDasSightFilterDate()
+  num.keep4 <- cruzDasSightFilterCruise()
+  num.keep5 <- cruzDasSightFilterTrunc()
+  
+  num.keep <- unique(c(num.keep1, num.keep2, num.keep3, num.keep4, num.keep5))
+  
+  num.keep <- num.keep[num.keep%in%num.keep1 & 
+                         num.keep%in%num.keep2 & 
+                         num.keep%in%num.keep3 & 
+                         num.keep%in%num.keep4 & 
+                         num.keep%in%num.keep5]
+  data.sight <- data.temp[num.keep,]
+  
+  if(sight.type == 1 && input$das_sighting_code_1_all == 2) {
+    temp.all <- sapply(sp.codes, function(i) i %in% data.sight$Data5 || i %in% data.sight$Data6 ||
+                         i %in% data.sight$Data7 || i %in% data.sight$Data8)
+    sp.code.false <- sp.codes[which(!temp.all)]
+    validate(
+      need(all(temp.all), 
+           message = paste("Species with code", sp.code.false, 
+                           "does not have any sightings that match the given filters"))
+    )
+  }
+  if(sight.type == 2 && input$das_sighting_code_2_all == 2) {
+    temp.all <- sapply(sp.codes, function(i) i %in% data.sight$Data2)
+    sp.code.false <- sp.codes[which(!temp.all)]
+    validate(
+      need(all(temp.all), 
+           message = paste("Species with code", sp.code.false, 
+                           "does not have any sightings that match the given filters"))
+    )
+  }
+  
+  return(list(data.sight = data.sight, sight.type = sight.type, sp.codes = data.list$sp.codes))
+})
+
+
+### Helper functions that filter sightings data by single factor
 # On/off effort
 cruzDasSightFilterEffort <- reactive({
   data.sight <- cruzDasSightSpecies()$data.sight
@@ -118,48 +164,4 @@ cruzDasSightFilterTrunc <- reactive({
   )
   
   return(ndx.keep)
-})
-
-cruzDasSightFilter <- reactive({
-  data.list <- cruzDasSightSpecies()
-  data.temp <- data.list$data.sight
-  sight.type <- data.list$sight.type
-  sp.codes <- data.list$sp.codes
-  
-  num.keep1 <- cruzDasSightFilterEffort()
-  num.keep2 <- cruzDasSightFilterBeaufort()
-  num.keep3 <- cruzDasSightFilterDate()
-  num.keep4 <- cruzDasSightFilterCruise()
-  num.keep5 <- cruzDasSightFilterTrunc()
-  
-  num.keep <- unique(c(num.keep1, num.keep2, num.keep3, num.keep4, num.keep5))
-  
-  num.keep <- num.keep[num.keep%in%num.keep1 & 
-                         num.keep%in%num.keep2 & 
-                         num.keep%in%num.keep3 & 
-                         num.keep%in%num.keep4 & 
-                         num.keep%in%num.keep5]
-  data.sight <- data.temp[num.keep,]
-  
-  if(sight.type == 1 && input$das_sighting_code_1_all == 2) {
-    temp.all <- sapply(sp.codes, function(i) i %in% data.sight$Data5 || i %in% data.sight$Data6 ||
-                         i %in% data.sight$Data7 || i %in% data.sight$Data8)
-    sp.code.false <- sp.codes[which(!temp.all)]
-    validate(
-      need(all(temp.all), 
-           message = paste("Species with code", sp.code.false, 
-                           "does not have any sightings that match the given filters"))
-    )
-  }
-  if(sight.type == 2 && input$das_sighting_code_2_all == 2) {
-    temp.all <- sapply(sp.codes, function(i) i %in% data.sight$Data2)
-    sp.code.false <- sp.codes[which(!temp.all)]
-    validate(
-      need(all(temp.all), 
-           message = paste("Species with code", sp.code.false, 
-                           "does not have any sightings that match the given filters"))
-    )
-  }
-  
-  return(list(data.sight = data.sight, sight.type = sight.type, sp.codes = data.list$sp.codes))
 })

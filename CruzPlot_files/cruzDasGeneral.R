@@ -1,21 +1,18 @@
 # cruzDasGeneral for CruzPlot by Sam Woodman
-#   cruzDasFile() returns DAS file loaded by user
+#   cruzDasRead() is located in 'funcCruzDasRead.R'
 #   update: symbol type and color for when 'Input symbol properties as text' is clicked
 
 
-# cruzDasFile <- reactive({
-#   suppressWarnings(cruzDasRead(input$das.file$datapath))
-# })
-# das.tosave <- suppressWarnings(cruzDasRead(input$das.file$datapath))
-
 ### Read DAS file(s)
 observeEvent(input$das.file, {
-  das.tosave.list <- lapply(input$das.file$datapath, function(i) {
-    suppressWarnings(cruzDasRead(i))
+  withProgress(message = "Processing DAS file", value = 0.6, {
+    das.tosave.list <- lapply(input$das.file$datapath, function(i) {
+      suppressWarnings(cruzDasRead(i))
+    })
+    das.tosave <- do.call(rbind, das.tosave.list)
+    
+    cruz.list$das.data <- das.tosave
   })
-  das.tosave <- do.call(rbind, das.tosave.list)
-  
-  cruz.list$das.data <- das.tosave
 }, ignoreInit = TRUE)
 
 ### Conditional flag for UI code for non-null cruz.list$das.data

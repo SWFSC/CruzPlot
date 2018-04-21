@@ -6,9 +6,9 @@
 
 ###############################################################################
 ### Install packages that are required for CruzPlot but aren't downloaded
-list.of.packages <- c("maps", "mapdata", "marmap", "stringr", "geosphere", 
-                      "dplyr", "DT", 
-                      "shiny", "shinyjs", "shinydashboard")
+list.of.packages <- c("maps", "mapdata", "marmap", "geosphere", 
+                      "dplyr", "stringr", 
+                      "shiny", "shinyjs", "shinydashboard", "DT")
 
 list.of.packages.tf <- list.of.packages %in% installed.packages()[, "Package"]
 new.packages <- list.of.packages[!list.of.packages.tf]

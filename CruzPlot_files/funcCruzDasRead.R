@@ -3,21 +3,27 @@
 #   Returns: data frame with information from each entry
 
 
-cruzDasRead <- function (file) 
-{
+cruzDasRead <- function (file) {
+  #########################################################
+  ### Parse and format DAS file
+  # Read file and get initial details
   DAS <- readLines(file)
   #  DAS <- DAS[substr(DAS, 4,4)!="C"]
   DAS <- DAS[substr(DAS, 4,4) != "#"]
   Event <- substr(DAS, 4, 4)
   nDAS <- length(DAS)
   OnEffort <- (substr(DAS, 5, 5) == ".")
+  
+  # Format times and dates
   tm <- substr(DAS, 6, 11)
   tm <- gsub(" ", "", tm)
   dt <- substr(DAS, 13, 18)
   dt <- gsub(" ", "", dt)
-  if(nchar(tm[1]) == 6) Date <- strptime(paste(dt, tm), "%m%d%y %H%M%S")
-  if(nchar(tm[1]) == 4) Date <- strptime(paste(dt, tm), "%m%d%y %H%M")
+  if (nchar(tm[1]) == 6) Date <- strptime(paste(dt, tm), "%m%d%y %H%M%S")
+  if (nchar(tm[1]) == 4) Date <- strptime(paste(dt, tm), "%m%d%y %H%M")
   #else warning("Date for DAS data is in an unrecognized format")
+  
+  # Get lat/long info
   LatD <- as.numeric(substr(DAS, 21, 22))
   LatM <- as.numeric(substr(DAS, 24, 28))
   LonD <- as.numeric(substr(DAS, 31, 33))
@@ -25,6 +31,7 @@ cruzDasRead <- function (file)
   Lat <- (LatD + LatM/60) * ifelse(substr(DAS, 20, 20) == "S", -1, 1)
   Lon <- (LonD + LonM/60) * ifelse(substr(DAS, 30, 30) == "W", -1, 1)
   
+  # Get data info
   Data1 <- gsub(" ", "", substr(DAS, 40, 44))
   Data1[Data1 == ""] <- NA
   Data2 <- gsub(" ", "", substr(DAS, 45, 49))
@@ -42,6 +49,8 @@ cruzDasRead <- function (file)
   Data8 <- gsub(" ", "", substr(DAS, 75, 79))
   Data8[Data8 == ""] <- NA
   
+  
+  #########################################################
   ### Add columns for helpful info 
   # Beaufort sea state
   Bft <- rep(NA, nDAS)
@@ -104,7 +113,7 @@ cruzDasRead <- function (file)
   EffType2 <- rep(NA, nDAS)
   event.R <- Event == "R"
   EffType2[event.R] <- ifelse(is.na(Data1[event.R]), 
-                             "S", as.character(Data1[event.R]))   
+                              "S", as.character(Data1[event.R]))   
   # ^ effort type was not recorded in early data
   LastType2 <- NA
   for(i in 1:nDAS) {

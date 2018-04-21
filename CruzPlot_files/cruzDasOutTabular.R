@@ -18,6 +18,7 @@ cruzDasOutSight_Table <- reactive({
   data.sight <- data.list$data.sight
   data.sight <- data.sight[order(row.names(data.sight)),]
   sight.eff.filter <- input$das_sightings_effort
+  # browser()
   
   ### Filter by selected effort type if sightings are on-effort
   if(sight.eff.filter != 3) {
@@ -156,6 +157,7 @@ cruzDasOutSight_Save <- eventReactive(input$das_out_sight_save_execute, {
 # Effort
 
 cruzDasOutEffort_Table <- reactive({
+  # browser()
   data.list <- cruzDasEffort()
   data.effort <- data.list$data.effort
   data.effort.start <- data.effort[data.list$ndx.R,]
@@ -169,9 +171,9 @@ cruzDasOutEffort_Table <- reactive({
   
   # Calculate distance
   dist.effort.m <-  distVincentyEllipsoid(cbind(data.effort.start$Lon, 
-                                              data.effort.start$Lat), 
-                                        cbind(data.effort.end$Lon, 
-                                              data.effort.end$Lat))
+                                                data.effort.start$Lat), 
+                                          cbind(data.effort.end$Lon, 
+                                                data.effort.end$Lat))
   dist.effort <- dist.effort.m / 1000
   if(input$das_out_effort_units == 2) dist.effort <- dist.effort / 1.852
   
@@ -181,7 +183,11 @@ cruzDasOutEffort_Table <- reactive({
                                dist = dist.effort, stringsAsFactors = FALSE)
   # Add in 0's for bft levels from 0 - 6 that aren't yet included
   bft.toadd <- (0:6)[!(0:6 %in% unique(data.effort.df$bft))]
-  bft.toadd.df <- data.frame(bft = bft.toadd, snf = "S", dist = 0)
+  if (length(bft.toadd) == 0) {
+    bft.toadd.df <- NULL
+  } else {
+    bft.toadd.df <- data.frame(bft = bft.toadd, snf = "S", dist = 0)
+  }
   data.effort.df <- rbind(data.effort.df, bft.toadd.df)
   
   

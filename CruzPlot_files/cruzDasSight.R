@@ -203,12 +203,5 @@ cruzDasSightSpecies <- reactive({
   data.sight$dist.nmi <- dist.nmi
   data.sight$perp.dist.nmi <- abs(dist.nmi * sin(angle / 180 * pi))
   
-  # write.csv(data.frame(number=data.sight$Data1,species=data.sight$Data5,
-  #                      lat=data.sight$sight.lat,lon=data.sight$sight.lon),
-  #           file="sighting positions.csv", row.names=F)
-  
-  
-  
   return(list(data.sight = data.sight, sight.type = sight.type, sp.codes = sp.code.all))
 })
-
