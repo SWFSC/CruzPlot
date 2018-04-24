@@ -19,9 +19,15 @@ cruzDasRead <- function (file) {
   tm <- gsub(" ", "", tm)
   dt <- substr(DAS, 13, 18)
   dt <- gsub(" ", "", dt)
-  if (nchar(tm[1]) == 6) Date <- strptime(paste(dt, tm), "%m%d%y %H%M%S")
-  if (nchar(tm[1]) == 4) Date <- strptime(paste(dt, tm), "%m%d%y %H%M")
-  #else warning("Date for DAS data is in an unrecognized format")
+  Date <- strptime(paste(dt, tm), "%m%d%y %H%M%S")
+  Date[is.na(Date)] <- strptime(paste(dt, tm), "%m%d%y %H%M")[is.na(Date)]
+  # validate(
+  #   need(!anyNA(Date), "Some date/times are not formatted correctly")
+  # )
+  
+  # if (nchar(tm[1]) == 6) Date <- strptime(paste(dt, tm), "%m%d%y %H%M%S")
+  # if (nchar(tm[1]) == 4) Date <- strptime(paste(dt, tm), "%m%d%y %H%M")
+  # #else warning("Date for DAS data is in an unrecognized format")
   
   # Get lat/long info
   LatD <- as.numeric(substr(DAS, 21, 22))
