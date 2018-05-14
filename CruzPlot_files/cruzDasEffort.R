@@ -16,7 +16,6 @@
 cruzDasEffortClosePass <- reactive({
   data.all <- cruz.list$das.data
   req(data.all)
-  
   type.effort.1 <- input$das.effort.closePass
   
   ndx.B <- which(data.all$Event == "B")
@@ -33,7 +32,7 @@ cruzDasEffortClosePass <- reactive({
            "Please choose 1 or more of Closing/Passing effort types")
   )
   
-  ## Filter by Closing / Passing
+  ## Filter effort by Closing / Passing
   if(length(type.effort.1) != 2) {
     ## New code
     if(type.effort.1 == "C") { # C and P are only options
@@ -87,14 +86,14 @@ cruzDasEffortClosePass <- reactive({
 
 
 ###############################################################################
-# Get simplified effort or or detailed effort
+# Get simplified effort or detailed effort
 
 ### Simplified effort - defined by Jeff Moore as all R -> E segments July 2017
 # Thus no filtering done here
 cruzDasEffortSimplified <- reactive({
   data.list <- cruzDasEffortClosePass()
   data.effort <- data.list$data.effort
-
+  
   validate(
     need(length(data.effort[,1]) != 0, # Should never happen
          "No effort lines match the given simplified effort type parameters")
@@ -134,6 +133,7 @@ cruzDasEffortDetailed <- reactive({
 
 ###############################################################################
 # Get simplified or detailed effort data
+### cruzDasEffortSimpDet() called by effort filter functions
 cruzDasEffortSimpDet <- reactive({
   validate(
     need(!(!input$das_sightings && input$das_effort != 1 && input$das_effort_filter_same),
@@ -154,10 +154,6 @@ cruzDasEffortSimpDet <- reactive({
   data.effort
 })
 
-
-###############################################################################
-
-# cruzDasEffortSimpDet() called in effort filter functions
 
 ###############################################################################
 # Functions called in drawData_setVals.R
@@ -212,7 +208,7 @@ cruzDasEffortLines <- reactive({
                "S" = input$das.effort.det.col.s,
                "N" = input$das.effort.det.col.n,
                "F" = input$das.effort.det.col.f)
-        })
+      })
       eff.lwd <- sapply(snf, function(i) {
         switch(i,
                "S" = input$das.effort.det.lwd.s,
@@ -225,3 +221,4 @@ cruzDasEffortLines <- reactive({
   return(list(eff.col = eff.col, eff.lwd = eff.lwd))
 })
 
+###############################################################################

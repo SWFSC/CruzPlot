@@ -5,8 +5,30 @@
 #   cruzDasEffortFilter() returns filtered effort data
 
 
+###############################################################################
 observeEvent(input$das_sightings, {
-  if(!input$das_sightings) updateCheckboxInput(session, "das_effort_filter_same", value = FALSE)
+  if(!input$das_sightings) {
+    updateCheckboxInput(session, "das_effort_filter_same", value = FALSE)
+  }
+})
+
+
+###############################################################################
+# Top-level function for filtering sighting data
+cruzDasEffortFilter <- reactive({
+  data.effort <- cruzDasEffortSimpDet()
+  
+  num.keep1 <- cruzDasEffortFilterBeaufort()
+  num.keep2 <- cruzDasEffortFilterDate()
+  num.keep3 <- cruzDasEffortFilterCruise()
+  
+  num.keep <- unique(c(num.keep1, num.keep2, num.keep3))
+  num.keep <- num.keep[(num.keep %in% num.keep1) & (num.keep %in% num.keep2) &
+                         (num.keep %in% num.keep3)]
+  
+  data.effort.filt <- data.effort[num.keep,]
+  
+  return(data.effort.filt)
 })
 
 
@@ -91,19 +113,3 @@ cruzDasEffortFilterCruise <- reactive ({
 
 
 ###############################################################################
-# Top-level function for filtering sighting data
-cruzDasEffortFilter <- reactive({
-  data.effort <- cruzDasEffortSimpDet()
-  
-  num.keep1 <- cruzDasEffortFilterBeaufort()
-  num.keep2 <- cruzDasEffortFilterDate()
-  num.keep3 <- cruzDasEffortFilterCruise()
-  
-  num.keep <- unique(c(num.keep1, num.keep2, num.keep3))
-  num.keep <- num.keep[(num.keep %in% num.keep1) & (num.keep %in% num.keep2) &
-                         (num.keep %in% num.keep3)]
-  
-  data.effort.filt <- data.effort[num.keep,]
-  
-  return(data.effort.filt)
-})
