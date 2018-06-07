@@ -23,6 +23,9 @@ cruzDasEffortClosePass <- reactive({
   ndx.E <- which(data.all$Event == "E")
   ndx.V <- which(data.all$Event == "V")
   # data.eff <- data.all[sort(c(ndx.B, ndx.R, ndx.E, ndx.V)),]
+  # browser()
+  
+  
   
   validate(
     need(length(ndx.R) == length(ndx.E), 
@@ -109,7 +112,8 @@ cruzDasEffortDetailed <- reactive({
   data.effort <- data.list$data.effort
   
   # Standard/Non-standard/Fine Filter
-  type.effort.2 <- input$das_effort_snf       # Std/Non-std/Fine: 'S'/'N'/'F'
+  #   Std/Non-std/Fine: 'S'/'N'/'F'
+  type.effort.2 <- input$das_effort_snf
   validate(
     need(length(type.effort.2) != 0,
          message = "For Detailed effort please choose 1 or more of Standard/Non-standard/Fine effort types")

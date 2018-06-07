@@ -41,10 +41,16 @@ if(!is.null(cruz.list$das.data)) {
     
     ### Adjust data.effort$Lon points as needed for world/world2
     lon.curr <- data.effort$Lon
+    validate(
+      need(!(any(is.na(data.effort$Lon)) | any(is.na(data.effort$Lat))), 
+           "Some of the lat/long data for the effort is 'NA'")
+    )
     
     # If world2 then convert lons to 0 to 360 range
     #   assumes there won't be any weird 0/360 overlap business
-    if(world2) data.effort$Lon <- ifelse(lon.curr < 0, lon.curr + 360, lon.curr)
+    if(world2) {
+      data.effort$Lon <- ifelse(lon.curr < 0, lon.curr + 360, lon.curr)
+    }
     
     # If not world2, convert to -180 to 180 range
     #   then see if there's any weird Pacific overlap business

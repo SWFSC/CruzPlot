@@ -110,18 +110,27 @@ cruzDasRead <- function (file) {
     if(is.na(EffType1[j])) EffType1[j] <- LastType1
     else LastType1 <- EffType1[j]
   }
+  EffType1[is.na(EffType1)] <- "C" 
+  # ^ Specified by Jeff Moore June 2018 for sake of early cruises
+  
   
   # Effort type 2 (S/N/F)
   EffType2 <- rep(NA, nDAS)
   event.R <- Event == "R"
-  EffType2[event.R] <- ifelse(is.na(Data1[event.R]), 
-                              "S", as.character(Data1[event.R]))   
+  EffType2[event.R] <- ifelse(
+    is.na(Data1[event.R]), "S", as.character(Data1[event.R])
+  )
   # ^ effort type was not recorded in early data
   LastType2 <- NA
   for(i in 1:nDAS) {
     if(is.na(EffType2[i])) EffType2[i] <- LastType2
     else LastType2 <- EffType2[i]
   }
+  # EffType2[is.na(EffType2)] <- "S"
+  # ^ Specified by Jeff Moore June 2018 for sake of early cruises
+  
+  # TODO: EffType1 and EffType2 currently are not accurate in some non-effort fields because
+  #   of spill-over into subsequent cruises. However, effort info will be accurate
   
   return(data.frame(Event, OnEffort, Date, Lat, Lon, 
                     Data1, Data2, Data3, Data4, Data5, Data6, Data7, Data8, 
