@@ -13,6 +13,7 @@ if(!is.null(cruz.list$das.data)) {
   req(input$das.sight.dateRange)
   req(input$das.effort.dateRange)
   
+  #### TODO Add validate() checks for lat/long info
   # Sightings
   if(input$das_sightings) {
     source("errorDasSight.R", local = TRUE, chdir = FALSE) 

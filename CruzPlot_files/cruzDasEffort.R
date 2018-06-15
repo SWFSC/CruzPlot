@@ -23,8 +23,8 @@ cruzDasEffortClosePass <- reactive({
   ndx.E <- which(data.all$Event == "E")
   ndx.V <- which(data.all$Event == "V")
   # data.eff <- data.all[sort(c(ndx.B, ndx.R, ndx.E, ndx.V)),]
-  # browser()
-  
+  #### TODO make it so that simplified effort ignores V events
+  # Functions should only require info they need, e.g. in case V events have issues Simplified Effort can still plot
   
   
   validate(
