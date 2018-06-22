@@ -19,7 +19,7 @@ param <- cruzMapParam()$param.unit
 rect(param[1], param[3], param[2], param[4], col = map.water.col[[1]])
 
 # Depth
-if(map.water.col[[2]][1] != 0)
+if (map.water.col[[2]][1] != 0)
   plot(map.water.col[[2]], image = TRUE, land = TRUE, 
        lwd = 0.0, axes = FALSE, xlab = NA, ylab = NA,
        bpal = list(c(0, max(map.water.col[[2]]), "grey"), 
@@ -27,7 +27,7 @@ if(map.water.col[[2]][1] != 0)
 
 ### Land
 # Coastline
-if(input$coast) {
+if (input$coast) {
   validate(
     need(!is.null(map.coastline),
          message = "Please input a valid coastline file")
@@ -38,23 +38,23 @@ if(input$coast) {
 }
 
 # Map from map package
-if(!input$coast) {
+if (!input$coast) {
   map(map.name[[1]], regions = map.name[[2]], 
       xlim = lon.range[1:2], ylim = lat.range[1:2], 
       fill = TRUE, col = map.land.col, add = TRUE)
 }
 
 ### Rivers and Lakes
-if(input$color_lakes_rivers) map(map.river, col = map.water.col[[1]], 
-                                 add = TRUE)
+if (input$color_lakes_rivers) map(map.river, col = map.water.col[[1]], 
+                                  add = TRUE)
 
 graphics::box()
 
 ### Tick marks and labels
-if(input$tick) source("drawMapTick.R", local = TRUE, chdir = TRUE)
+if (input$tick) source("drawMapTick.R", local = TRUE, chdir = TRUE)
 
 ### Grid lines
-if(input$grid) {
+if (input$grid) {
   abline(v = tick.lon$maj, col = grid.param$col, lwd = grid.param$lwd, 
          lty = as.numeric(grid.param$lty))
   abline(h = tick.lat$maj, col = grid.param$col, lwd = grid.param$lwd, 
@@ -62,7 +62,7 @@ if(input$grid) {
 }
 
 ### Scale bar
-if(input$bar) {
+if (input$bar) {
   lines(c(scale.bar$x1, scale.bar$x2), c(scale.bar$y, scale.bar$y), 
         lwd = scale.bar$lwd)
   text(mean(c(scale.bar$x1, scale.bar$x2)), 
@@ -72,23 +72,43 @@ if(input$bar) {
 
 ### Labels
 # Title
-if(!is.null(title.info$lab)) title(main = title.info$lab, line = 3,
-                                   family = title.info$fam,
-                                   cex.main = title.info$cex)
+if (!is.null(title.info$lab)) {
+  title(main = title.info$lab, line = 3, family = title.info$fam, 
+        cex.main = title.info$cex)
+}
 
 # Longitude axis
-if(!is.null(axes.info$lab.lon)) title(xlab = axes.info$lab.lon, 
-                                      family = axes.info$fam,
-                                      cex.lab = axes.info$cex)
+if (!is.null(axes.info$lab.lon)) {
+  title(xlab = axes.info$lab.lon, family = axes.info$fam,
+        cex.lab = axes.info$cex)
+}
 # Latitude axis
-if(!is.null(axes.info$lab.lat)) title(ylab = axes.info$lab.lat, 
-                                      family = axes.info$fam,
-                                      cex.lab = axes.info$cex, line = 4)
+if (!is.null(axes.info$lab.lat)) {
+  title(ylab = axes.info$lab.lat, family = axes.info$fam,
+        cex.lab = axes.info$cex, line = 4)
+}
 
 ### Transect lines 
-#      Not in drawData since this isn't DAS data
-if(input$planned_transects_plot) {
-  segments(x0 = transects.toplot$lon1, y0 = transects.toplot$lat1, 
-           x1 = transects.toplot$lon2, y1 = transects.toplot$lat2, 
-           col = transects.cols, lwd = transects.lw)
+# Not in drawData since this isn't DAS data
+if (input$planned_transects_plot) {
+  if (anyNA(planned_transects_class2())) {
+    # No class2
+    for(i in pltrans.list) {
+      for(k in i) {
+        graphics::lines(x = k[[1]], y = k[[2]], col = k[[3]], 
+                        lty = k[[4]], lwd = pltrans.lwd)
+      }
+    }
+    
+  } else {
+    # Yes class 2
+    for(i in pltrans.list) {
+      for(j in i) {
+        for(k in j) {
+          graphics::lines(x = k[[1]], y = k[[2]], col = k[[3]], 
+                          lty = k[[4]], lwd = pltrans.lwd)
+        }
+      }
+    }
+  }
 }

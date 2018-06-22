@@ -11,19 +11,20 @@ observe({
   isolate({
     data.curr <- cruz.list$ndas.data
     
-    # If world2 then convert lons to 0 to 360 range
-    #   assumes there won't be any weird 0/360 overlap business
-    if(world2) {
+    if (world2) {
+      # If world2 then convert lons to 0 to 360 range
+      #   assumes there won't be any weird 0/360 overlap business
+      
       cruz.list$ndas.data <- lapply(data.curr, function(list.curr) {
         lon <- list.curr$x
         list.curr$x <- ifelse(lon < 0, lon + 360, lon)
         list.curr
       })
-    }
-    
-    # If not world2, convert to -180 to 180 range
-    #   then see if there's any weird Pacific overlap business
-    if(!world2) {
+      
+    } else {
+      # If not world2, convert to -180 to 180 range
+      #   then see if there's any weird Pacific overlap business
+      
       ndas.data.curr <- lapply(data.curr, function(list.curr) {
         lon <- list.curr$x
         list.curr$x <- ifelse(lon > 180, lon - 360, lon)
@@ -66,6 +67,9 @@ observe({
 
 
 ### Planned transects
+# Note that planned transects longs must be in range [-180 to 180] when loaded
+# 'Weird Pacific overlap business' means that if map is not world2 because of map extent but
+#   some longitudes are across the dateline, then transect lines will be very wrong
 observe({
   req(cruz.list$planned.transects)
   world2 <- cruz.map.range$world2
@@ -74,36 +78,29 @@ observe({
   isolate({
     data.curr <- cruz.list$planned.transects
     
-    # If world2 then convert lons to 0 to 360 range
-    #   assumes there won't be any weird 0/360 overlap business
-    if(world2) {
-      l1 <- data.curr$lon1
-      l2 <- data.curr$lon2
+    if (world2) {
+      # If world2 then convert lons to 0 to 360 range
+      #   assumes there won't be any weird 0/360 overlap business
       
-      cruz.list$planned.transects$lon1 <- ifelse(l1 < 0, l1 + 360, l1)
-      cruz.list$planned.transects$lon2 <- ifelse(l2 < 0, l2 + 360, l2)
-    }
-    
-    # If not world2, convert to -180 to 180 range
-    #   then see if there's any weird Pacific overlap business
-    if(!world2) {
-      l1 <- data.curr$lon1
-      l2 <- data.curr$lon2
+      l1 <- data.curr$lon
+      cruz.list$planned.transects$lon <- ifelse(l1 < 0, l1 + 360, l1)
+
+    } else {
+      # If not world2, convert to -180 to 180 range
+      #   then see if there's any weird Pacific overlap business
       
+      l1 <- data.curr$lon
       l1.fix <- ifelse(l1 > 180, l1 - 360, l1)
-      l2.fix <- ifelse(l2 > 180, l2 - 360, l2)
-      
+
       # Semi-arbitrary cutoffs to determine if transect lines are in the Pacific rather than Atlantic
-      lon.all <- c(l1.fix, l2.fix)
+      lon.all <- c(l1.fix)
       if(!(all(lon.all < 0) | all(lon.all > 0)) &
          any(lon.all > 130) & any(lon.all < -100)
       ) {
         l1.fix <- ifelse(l1.fix > 0, l1.fix - 360, l1.fix)
-        l2.fix <- ifelse(l2.fix > 0, l2.fix - 360, l2.fix)
       }
       
-      cruz.list$planned.transects$lon1 <- l1.fix
-      cruz.list$planned.transects$lon2 <- l2.fix
+      cruz.list$planned.transects$lon <- l1.fix
     }
   })
 })

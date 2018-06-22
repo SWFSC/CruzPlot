@@ -2,6 +2,17 @@
 ## Code to load and process planned transect files
 
 
+###############################################################################
+###############################################################################
+# Indicator for if any planned transects are loaded
+
+### Conditional flag for UI code
+output$cruzMapPlannedTransects_Conditional <- reactive({
+  isTruthy(cruz.list$planned.transects)
+})
+outputOptions(output, "cruzMapPlannedTransects_Conditional", suspendWhenHidden = FALSE)
+
+
 ### Turn plot checkbox on if planned transects are added
 # observe({
 #   if(!is.null(cruz.list$planned.transects))
@@ -15,6 +26,65 @@ observe({
 })
 
 ###############################################################################
+###############################################################################
+# renderUI()s for loading planned transects
+
+#----------------------------------------------------------
+### Get names from loaded csv file
+planned_transects_file_names <- reactive({
+  req(planned_transects_read_csv())
+  
+  csv.names <- names(planned_transects_read_csv()[[2]])
+  choices.list <- seq_along(csv.names)
+  names(choices.list) <- csv.names
+  
+  choices.list
+})
+
+### Create ui inputs for selecting lon/lat columns
+output$planned_transects_lon_uiOut_select <- renderUI({
+  selectInput("planned_transects_lon",  h5("Longitude column"), 
+              choices = planned_transects_file_names(), selected = 1)
+})
+
+output$planned_transects_lat_uiOut_select <- renderUI({
+  selectInput("planned_transects_lat",  h5("Latitude column"), 
+              choices = planned_transects_file_names(), selected = 2)  
+})
+
+### Widgets for transect numbers
+output$planned_transects_num_uiOut_select<- renderUI({
+  selectInput("planned_transects_num",  h5("Transect number column"), 
+              choices = planned_transects_file_names(), selected = 3)
+})
+
+### Widget for transect classes 1
+output$planned_transects_class1_uiOut_select<- renderUI({
+  selectInput("planned_transects_class1",  h5("Transect class column"), 
+              choices = planned_transects_file_names(), selected = 4)
+})
+
+### Widget for transect classes 2
+output$planned_transects_class2_uiOut_select<- renderUI({
+  choices.list <- planned_transects_file_names()
+  choices.list <- c("N/A - No class 2 info" = 0, choices.list)
+  
+  selectInput("planned_transects_class2",  h5("Transect class 2 column"), 
+              choices = choices.list, selected = 0)
+})
+
+
+#----------------------------------------------------------
+### Button to add selected transect data to CruzPlot
+output$planned_transects_execute_uiOut_button <- renderUI({
+  req(planned_transects_read_csv())
+  
+  actionButton("planned_transects_execute", "Add data to CruzPlot")
+})
+
+
+###############################################################################
+###############################################################################
 # Process transect file and data and output widget to select ones to plot
 
 ### Read csv file
@@ -23,109 +93,160 @@ planned_transects_read_csv <- reactive({
   
   file.all <- input$planned_transects_file
   file.name <- file.all$name
-  file.data <- read.csv(file.all$datapath, 
-                        # header = input$planned_transects.header, 
-                        # sep = input$planned_transects.sep, 
-                        # quote = input$planned_transects.header.quote, 
-                        stringsAsFactors = FALSE)
+  file.data <- try(read.csv(file.all$datapath, stringsAsFactors = FALSE), 
+                   silent = TRUE)
   
-  # Validate for bad files
+  validate(
+    need(isTruthy(file.data), "Error loading planned transects csv")
+  )
   
-  return(list(file.name, file.data))
+  list(file.name, file.data)
 })
 
 
 ### Add transect data to reactiveValue
 planned_transects <- eventReactive(input$planned_transects_execute, {
-  data.all <- planned_transects_read_csv()[[2]]
-  
   validate(
     need(input$planned_transects_lon != input$planned_transects_lat, 
-         "The longitude column cannot be the same as the latitude column")
+         "Error: The longitude column cannot be the same as the latitude column")
   )
   
-  data.lon <- data.all[,as.numeric(input$planned_transects_lon)]
-  data.lat <- data.all[,as.numeric(input$planned_transects_lat)]
+  x <- planned_transects_read_csv()[[2]] %>% 
+    dplyr::select(lon = as.numeric(input$planned_transects_lon), 
+                  lat = as.numeric(input$planned_transects_lat), 
+                  num = as.numeric(input$planned_transects_num), 
+                  class1 = as.numeric(input$planned_transects_class1))
   
   validate(
-    need(all(data.lon <= 180 & data.lon >= -180), 
-         "Longitude data must be in -180 to 180 range"), 
-    need(all(data.lat <= 90 & data.lat >= -90), 
-         "Latitude data must be in -90 to 90 range")
+    need(all(dplyr::between(x$lon, -180, 180)),
+         "Error: Planned transect longitude data must be in range [-180, 180]"),
+    need(all(dplyr::between(x$lat, -90, 90)),
+         "Error: Planned transect latitude data must be in range [-90, 90]"),
+    need(!anyNA(x$num), 
+         "Error: Planned transect 'number' column cannot have any NA values"), 
+    need(!anyNA(x$class1), 
+         "Error: Planned transect 'class' column cannot have any NA values")
   )
   
-  x <- seq(1, nrow(data.all), by = 3)
-  data.lon1 <- sapply(x, function(i) data.lon[i])
-  data.lon2 <- sapply(x + 1, function(i) data.lon[i])
-  data.lat1 <- sapply(x, function(i) data.lat[i])
-  data.lat2 <- sapply(x + 1, function(i) data.lat[i])
-  
-  
-  data.name <- NA
-  
-  if(input$planned_transects_name_type == "1") {
-    data.name <- data.all[x, as.numeric(input$planned_transects_names)]
-  }
-  if(input$planned_transects_name_type == "2") {
-    data.name <- input$planned_transects_name_text
-    if(data.name == "") data.name <- NA
+  if (as.numeric(input$planned_transects_class2) != 0) {
+    x <- cbind(
+      x, dplyr::select(planned_transects_read_csv()[[2]], 
+                       class2 = as.numeric(input$planned_transects_class2))
+    )
+    validate(
+      need(!anyNA(x$class2), 
+           "Error: Planned transect 'class 2' column cannot have any NA values")
+    )
+  } else {
+    x <- cbind(x, class2 = NA)
   }
   
-  validate(
-    need(!is.na(data.name), 
-         "Please choose or enter valid transect name(s)")
-  )
+  cruz.list$planned.transects <- x
   
-  transect.data <- data.frame(lon1 = data.lon1, lon2 = data.lon2, 
-                              lat1 = data.lat1, lat2 = data.lat2, 
-                              name = data.name, stringsAsFactors = FALSE)
-  
-  cruz.list$planned.transects <- rbind(cruz.list$planned.transects, 
-                                       transect.data)
-  
-  return("Transect data added to CruzPlot")
-})
-
-transects.names <- reactive({
-  choices.list.names <- unique(cruz.list$planned.transects$name)
+  "Transect data added to CruzPlot"
 })
 
 
-### Select widget for plotting transect
-output$planned_transects_toplot_uiOut_select <- renderUI({
+###############################################################################
+###############################################################################
+# Processing loaded planned transects
+
+planned_transects_class1 <- reactive({
+  unique(cruz.list$planned.transects$class1)
+})
+
+planned_transects_class2 <- reactive({
+  unique(cruz.list$planned.transects$class2)
+})
+
+
+###############################################################################
+### Widget for selecting planned transect(s) to plot
+output$planned_transects_toplot_uiOut_selectize <- renderUI({
   req(cruz.list$planned.transects)
   
-  choices.list.names <- transects.names()
+  choices.list.names <- planned_transects_class1()
   choices.list <- seq_along(choices.list.names)
   names(choices.list) <- choices.list.names
   
-  validate(
-    need(!is.null(cruz.list$planned.transects), "Please load planned transects")
-  )
-  
   selectizeInput("planned_transects_toplot", 
-                 h5("Select planned transect(s) to plot"),
+                 tags$h5("Select planned transect class(es) to plot"),
                  choices = choices.list, selected = choices.list, 
                  multiple = TRUE)
 })
-outputOptions(output, "planned_transects_toplot_uiOut_select", suspendWhenHidden = FALSE)
+
+
+output$planned_transects_color_uiOut_selectize <- renderUI({
+  req(cruz.list$planned.transects, input$planned_transects_plot)
+  
+  selectizeInput("planned_transects_color", label = NULL, #h5("Transect color(s)"), 
+                 choices = cruz.palette.color, selected = "gray", 
+                 multiple = TRUE)
+})
+
+
+#----------------------------------------------------------
+# output$planned_transects_lty_uiOut_message <- renderUI({
+#   req(cruz.list$planned.transects, input$planned_transects_plot)
+#   y <- planned_transects_class2()
+#   
+#   if (anyNA(y)) {
+#     paste("No class 2 column was selected, and thus you can only specify", 
+#           "a single line type for all planned transects")
+#   } else {
+#     HTML(paste0(
+#       paste("There are", length(y), "unique class 2 values:", 
+#             paste(y, collapse = ", ")), 
+#       tags$br(), 
+#       paste("Select either one line type or the same number of line types as", 
+#             "transect classes. The order in which the class 2 values are", 
+#             "displayed above corresponds to order of specified line type(s)")
+#     ))
+#   }
+# })
+output$planned_transects_toplot2_uiOut_selectize <- renderUI({
+  req(cruz.list$planned.transects)
+  
+  y <- planned_transects_class2()
+  
+  if (anyNA(y)) {
+    paste("No class 2 column was selected, and thus you can only specify",
+          "a single line type for all planned transects")
+    
+  } else {
+    choices.list.names <- y
+    choices.list <- seq_along(choices.list.names)
+    names(choices.list) <- choices.list.names
+    
+    selectizeInput("planned_transects_toplot2", 
+                   tags$h5("Select planned transect class 2(s) to plot"),
+                   choices = choices.list, selected = choices.list, 
+                   multiple = TRUE)
+  }
+})
+
+output$planned_transects_lty_uiOut_selectize <- renderUI({
+  req(cruz.list$planned.transects, input$planned_transects_plot)
+  
+  selectizeInput("planned_transects_lty", label = NULL, #h5("Line type"), 
+                 choices = cruz.line.type, selected = 1, 
+                 multiple = !anyNA(planned_transects_class2()))
+  
+})
 
 ###############################################################################
 # Removing loaded transects
-### Widgets
+
+### Widget for selecting planned transect(s) to remove
 output$planned_transects_toremove_uiOut_select <- renderUI({
   req(cruz.list$planned.transects)
   
-  choices.list.names <- transects.names()
+  choices.list.names <- planned_transects_class1()
   choices.list <- seq_along(choices.list.names)
   names(choices.list) <- choices.list.names
   
-  validate(
-    need(!is.null(cruz.list$planned.transects), "")
-  )
-  
   selectizeInput("planned_transects_toremove", 
-                 h5("Select planned transect(s) to remove"),
+                 tags$h5("Select planned transect class(es) to remove"),
                  choices = choices.list, multiple = TRUE)
 })
 
@@ -138,91 +259,25 @@ output$planned_transects_toremove_execute_uiOut_button <- renderUI({
 
 ### Remove selected transects
 planned_transects_remove <- eventReactive(input$planned_transects_toremove_execute, {
-  transects.all <- cruz.list$planned.transects
+  req(cruz.list$planned.transects)
+  y <- as.numeric(input$planned_transects_toremove)
   
-  transects.toremove.names.which <- as.numeric(input$planned_transects_toremove)
   validate(
-    need(length(transects.toremove.names.which) != 0, 
+    need(length(y) != 0, 
          "Please select at least one set of transects to remove")
   )
   
-  transects.toremove.names  <- transects.names()[transects.toremove.names.which]
+  x <- cruz.list$planned.transects %>% 
+    filter(!(class1 %in% planned_transects_class1()[y]))
   
-  transects.tokeep <- transects.all[!(transects.all$name %in% 
-                                        transects.toremove.names),]
-  if(nrow(transects.tokeep) == 0) transects.tokeep <- NULL
+  if (nrow(x) == 0) {
+    cruz.list$planned.transects <- NULL
+  } else {
+    cruz.list$planned.transects <- x
+  }
   
-  cruz.list$planned.transects <- transects.tokeep
-  
-  return("")
+  "Planned transects removed"
 })
-
 
 ###############################################################################
-# renderUI()s for planned transects
-
-### Create ui inputs for selecting lon/lat columns
-output$planned_transects_lon_uiOut_select <- renderUI({
-  transects.names <- names(planned_transects_read_csv()[[2]])
-  choices.list <- seq_along(transects.names)
-  names(choices.list) <- transects.names
-  
-  selectInput("planned_transects_lon",  h5("Longitude column"), 
-              choices = choices.list, selected = 1)
-})
-
-output$planned_transects_lat_uiOut_select <- renderUI({
-  transects.names <- names(planned_transects_read_csv()[[2]])
-  choices.list <- seq_along(transects.names)
-  names(choices.list) <- transects.names
-  
-  selectInput("planned_transects_lat",  h5("Latitude column"), 
-              choices = choices.list, selected = 3)  
-})
-
-
-### Widgets for naming transects
-output$planned_transects_name_type_uiOut_radio <- renderUI({
-  req(planned_transects_read_csv())
-  
-  radioButtons("planned_transects_name_type", label = NULL, 
-               choices = list("Get transect name(s) from file" = 1,
-                              "Enter transect name manually" = 2))
-})
-
-output$planned_transects_names_uiOut_select<- renderUI({
-  transects.names <- names(planned_transects_read_csv()[[2]])
-  choices.list <- seq_along(transects.names)
-  names(choices.list) <- transects.names
-  
-  choices.selected <- ifelse(length(choices.list) > 2, 3, NA)
-  validate(need(!is.na(choices.selected), "Loaded csv file only has 2 columns-enter name manually"))
-  
-  selectInput("planned_transects_names",  h5("Transects name(s) column"), 
-              choices = choices.list, selected = choices.selected)
-})
-
-
-### Button to add selected transect data to CruzPlot
-output$planned_transects_execute_uiOut_button <- renderUI({
-  req(planned_transects_read_csv())
-  
-  actionButton("planned_transects_execute", "Add selected data to CruzPlot")
-})
-
-
-### Line widths
-# output$planned_transects_lw_uiOut_text <- renderUI({
-#   textInput("planned_transects_lw", h5("Line width(s)"), 
-#             value = "1")
-# })
-
-
 ###############################################################################
-# Indicator for if any planned transects are loaded
-
-### Conditional flag for UI code
-output$cruzMapPlannedTransects_Conditional <- reactive({
-  !is.null(cruz.list$planned.transects)
-})
-outputOptions(output, "cruzMapPlannedTransects_Conditional", suspendWhenHidden = FALSE)

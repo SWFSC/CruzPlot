@@ -71,7 +71,7 @@ cruz.beaufort      <- list("0" = 0, "1" = 1, "2" = 2, "3" = 3, "4" = 4,
 
 ui.new.line <- function() {helpText(HTML("<br/>"))}
 ui.selectize.instructions <- function() {
-  helpText("To remove selected input(s), click the input(s) to remove and then click backspace or delete")
+  helpText("To remove selected input(s): click the input(s) to remove and then click backspace or delete")
 }
 
 
@@ -112,7 +112,7 @@ ui <- dashboardPage(
       radioButtons("map.size", NULL, 
                    choices = list("Large map window" = 1, 
                                   "Small map window" = 2),
-                   selected = 2),
+                   selected = 1),
       ui.new.line(),
       actionButton("stop", label = "Close CruzPlot")
     ), width = "200"
@@ -121,56 +121,62 @@ ui <- dashboardPage(
   dashboardBody(
     useShinyjs(),
     
+    ### Control validate text output
+    tags$head(
+      tags$style(HTML("
+                      .shiny-output-error-validation {
+                      color: red; font-weight: bold;
+                      }
+                      "))
+    ),
+    
     tabItems(
-      # Create a map of any region of the world and 
-      #    specify colors/axes/scale bar and other aesthetics about the map. 
       ui.createMap(),
-      
-      # Load, filter, and display data from .DAS file
       ui.dasPlot(),
-      
-      # Load and display non-DAS point/line data from .csv files
       ui.nonDasPlot(), 
       
       # Display color/Format options
-      tabItem(tabName = "dispColor",
-              fluidRow(
-                box( 
-                  title = "Color/Format Options", status = "primary", 
-                  solidHeader = TRUE,  width = 12,
-                  plotOutput("plotDisplay")
-                )
-              )       
+      tabItem(
+        tabName = "dispColor",
+        fluidRow(
+          box( 
+            title = "Color/Format Options", status = "primary", 
+            solidHeader = TRUE,  width = 12,
+            plotOutput("plotDisplay")
+          )
+        )       
       ),
       
       # Display species codes and names
-      tabItem(tabName = "dispSp",
-              fluidRow(
-                box( 
-                  title = "Species Information", status = "primary", 
-                  solidHeader = TRUE,  width = 12,
-                  radioButtons("sp_type", "Select species codes to display", 
-                               choices = list("Mammals" = 1, "Turtles" = 2, 
-                                              "All" = 3)),
-                  conditionalPanel(condition = "input.sp_type == 1",
-                                   dataTableOutput("sp1")
-                  ),
-                  conditionalPanel(condition = "input.sp_type == 2",
-                                   dataTableOutput("sp2")
-                  ),
-                  conditionalPanel(condition = "input.sp_type == 3",
-                                   dataTableOutput("sp3")
-                  )
-                )
-              )       
+      tabItem(
+        tabName = "dispSp",
+        fluidRow(
+          box( 
+            title = "Species Information", status = "primary", 
+            solidHeader = TRUE,  width = 12,
+            radioButtons("sp_type", "Select species codes to display", 
+                         choices = list("Mammals" = 1, "Turtles" = 2, 
+                                        "All" = 3)),
+            conditionalPanel(condition = "input.sp_type == 1",
+                             dataTableOutput("sp1")
+            ),
+            conditionalPanel(condition = "input.sp_type == 2",
+                             dataTableOutput("sp2")
+            ),
+            conditionalPanel(condition = "input.sp_type == 3",
+                             dataTableOutput("sp3")
+            )
+          )
+        )       
       ),
       
       # Display CruzPlot manual
-      tabItem(tabName = "manual",
-              helpText("Click 'Open in Browser' at top of the app in order to display manual in-app"),
-              # tags$iframe(style="height:400px; width:100%; scrolling=yes",
-              #             src="CruzPlot_Manual_app.pdf")
-              uiOutput("manual_pdf")
+      tabItem(
+        tabName = "manual",
+        helpText("Click 'Open in Browser' at top of the app in order to display manual in-app"),
+        # tags$iframe(style="height:400px; width:100%; scrolling=yes",
+        #             src="CruzPlot_Manual_app.pdf")
+        uiOutput("manual_pdf")
       )
     )
   )

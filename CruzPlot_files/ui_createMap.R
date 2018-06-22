@@ -97,9 +97,10 @@ ui.createMap <- function() {
             box(
               title = "Planned transects", status = "warning", solidHeader = FALSE, width = 12, collapsible = FALSE, 
               fluidRow(
-                column(
-                  width = 7, 
-                  helpText(paste("Longitudes must be in -180 to 180 range. See manual for required format of csv file")), 
+                box(
+                  width = 6, 
+                  tags$strong("Load planned transects"), 
+                  helpText(paste("Longitudes must be in -180 to 180 range. See the manual for the required .csv file format")), 
                   fluidRow(
                     column(12, fileInput("planned_transects_file", h5("Load planned transects .csv file")))
                   ), 
@@ -107,20 +108,14 @@ ui.createMap <- function() {
                     column(
                       width = 6, 
                       uiOutput("planned_transects_lon_uiOut_select"), 
-                      uiOutput("planned_transects_name_type_uiOut_radio")
+                      uiOutput("planned_transects_num_uiOut_select"), 
+                      uiOutput("planned_transects_class2_uiOut_select")
                     ), 
                     column(
                       width = 6, 
                       uiOutput("planned_transects_lat_uiOut_select"), 
-                      conditionalPanel(
-                        condition = "input.planned_transects_name_type == 1", 
-                        uiOutput("planned_transects_names_uiOut_select")), 
-                      conditionalPanel(
-                        condition = "input.planned_transects_name_type == 2", 
-                        textInput("planned_transects_name_text", NULL, value = "Primary"))
+                      uiOutput("planned_transects_class1_uiOut_select")
                     )
-                    
-                    
                   ), 
                   fluidRow(
                     ui.new.line(), 
@@ -129,34 +124,41 @@ ui.createMap <- function() {
                   )
                 ), 
                 column(
-                  width = 5, 
+                  width = 6, 
                   conditionalPanel(
                     condition = "output.cruzMapPlannedTransects_Conditional", 
-                    checkboxInput("planned_transects_plot", "Plot planned transect lines", value = FALSE), 
-                    column(
-                      width = 12, 
-                      conditionalPanel(
-                        condition = "input.planned_transects_plot", 
-                        helpText("Order in which transects are selected to be plotted corresponds to order of specified", 
-                                 "color(s) and line width(s)"), 
-                        ui.selectize.instructions(), 
-                        uiOutput("planned_transects_toplot_uiOut_select"), 
-                        fluidRow(
-                          column(7, selectizeInput("planned_transects_color", label = h5("Transect color(s)"), 
-                                                   choices = cruz.palette.color, selected = "gray", multiple = TRUE)), 
-                          column(5, textInput("planned_transects_lw", h5("Line width(s)"), value = "1"))
+                    fluidRow(
+                      box(
+                        width = 12, 
+                        tags$strong("Plot loaded planned transects"), 
+                        checkboxInput("planned_transects_plot", "Plot planned transect lines", value = TRUE), 
+                        conditionalPanel(
+                          condition = "input.planned_transects_plot",
+                          box(
+                            width = 12,
+                            ui.selectize.instructions(),
+                            uiOutput("planned_transects_toplot_uiOut_selectize"),
+                            helpText("Select either one color the same number of colors as transect classes. The order",
+                                     "in which transects are selected to be plotted corresponds to order of specified color(s)"),
+                            uiOutput("planned_transects_color_uiOut_selectize")
+                          ),
+                          box(
+                            width = 12,
+                            # uiOutput("planned_transects_lty_uiOut_message"),
+                            uiOutput("planned_transects_toplot2_uiOut_selectize"),
+                            uiOutput("planned_transects_lty_uiOut_selectize")
+                          ),
+                          box(width = 12, numericInput("planned_transects_lwd", h5("Line width"),
+                                                       value = 1, min = 0, step = 1))
                         )
-                      )
-                    ), 
-                    ui.new.line(), 
-                    checkboxInput("planned_transects_remove", "Select planned transect lines to remove", value = FALSE), 
-                    conditionalPanel("input.planned_transects_remove", 
-                                     column(7, uiOutput("planned_transects_toremove_uiOut_select")), 
-                                     column(
-                                       width = 5, 
-                                       uiOutput("planned_transects_toremove_execute_uiOut_button"), 
-                                       textOutput("planned_transects_remove_text")
-                                     )
+                      )#,
+                      # box(
+                      #   width = 12,
+                      #   tags$strong("Remove loaded planned transects"),
+                      #   uiOutput("planned_transects_toremove_uiOut_select"),
+                      #   uiOutput("planned_transects_toremove_execute_uiOut_button"),
+                      #   textOutput("planned_transects_remove_text")
+                      # )
                     )
                   )
                 )
@@ -356,12 +358,7 @@ ui.createMap <- function() {
                     selectInput("grid.line.color", label = h5("Line color"), choices = cruz.palette.color, selected = "black"), 
                     numericInput("grid.line.width", label = h5("Line width"), value = 1, min = 1, max = 6, step = 1)
                   ), 
-                  column(
-                    width = 6, 
-                    selectInput("grid.line.type", label = h5("Line type"), 
-                                choices = list("Solid" = 1, "Dash" = 2, "Dot" = 3, "Dot-dash" = 4, "Long dash" = 5, "Dot-long dash" = 6), 
-                                selected = 1))
-                )
+                  column(6, selectInput("grid.line.type", label = h5("Line type"), choices = cruz.line.type, selected = 1)))
               )
             )
           )
