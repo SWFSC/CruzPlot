@@ -49,37 +49,54 @@ cruz.tick <- reactiveValues(
 # Save and load 'current app environemnt' data
 
 ### Load data
-load_envir <- eventReactive(input$load_app_envir, {
+load_envir <- eventReactive(input$load_app_envir_file, {
+  req(input$load_app_envir_file)
+  
+  file.load <- input$load_app_envir_file
   validate(
-    need(file.exists("Cruz_App_Save_Envir.RDATA"),
-         "No saved app data to load")
+    need((substr_right(input$load_app_envir_file$name, 6) == ".RDATA" &
+            input$load_app_envir_file$type == ""),
+         "Error: Please load a file with the extension '.RDATA'")
   )
+  
+
+  # validate(
+  #   need(file.exists("Cruz_App_Save_Envir.RDATA"),
+  #        "No saved app data to load")
+  # )
   cruz.load.color$load.flag <- TRUE
   
   withProgress(message = "Loading saved data", value = 0.5, {
-    load("Cruz_App_Save_Envir.RDATA")
+    # load("Cruz_App_Save_Envir.RDATA")
+    load(file.load$datapath)
+    files.list <- list("cruz.list.save", "map.info", "das.info", "ndas.info")
+    validate(
+      need(all(sapply(files.list, function(i) exists(i))),
+      "Error: Loaded .RDATA file does not contain an environment saved using CruzPlot")
+    )
+    rm(files.list)
     incProgress(0.4)
     
     #######################################################
     ### Update reactiveValues
     cruz.list$planned.transects <- cruz.list.save[["planned.transects"]]
-    cruz.list$coastline <- cruz.list.save[["coastline"]]
-    cruz.list$bathy <- cruz.list.save[["bathy"]]
-    cruz.list$das.data <- cruz.list.save[["das.data"]]
-    cruz.list$ndas.data <- cruz.list.save[["ndas.data"]]
-    cruz.list$ndas.df <- cruz.list.save[["ndas.df"]]
+    cruz.list$coastline   <- cruz.list.save[["coastline"]]
+    cruz.list$bathy       <- cruz.list.save[["bathy"]]
+    cruz.list$das.data    <- cruz.list.save[["das.data"]]
+    cruz.list$ndas.data   <- cruz.list.save[["ndas.data"]]
+    cruz.list$ndas.df     <- cruz.list.save[["ndas.df"]]
     cruz.list$ndas.toplot <- cruz.list.save[["ndas.toplot"]]
     
     cruz.map.range$lon.range <- map.info$lon.range
     cruz.map.range$lat.range <- map.info$lat.range
-    cruz.map.range$world2 <- map.info$world2
-    cruz.map.range$map.name <- map.info$map.name
+    cruz.map.range$world2    <- map.info$world2
+    cruz.map.range$map.name  <- map.info$map.name
     incProgress(0.05)
     
     #######################################################
     ### Update variable defaults (if nec)
     if(!is.null(cruz.list$ndas.toplot)) updateCheckboxInput(session, "ndas_plot", value = TRUE)
-
+    
     
     ###################################
     ## Map info
@@ -247,7 +264,7 @@ load_envir <- eventReactive(input$load_app_envir, {
     incProgress(0.05)
   })
   
-  return("App data loaded")
+  "Workspace loaded"
 })
 
 output$load_app_text <- renderText({
@@ -256,170 +273,177 @@ output$load_app_text <- renderText({
 
 
 ### Save data
-save_envir <- eventReactive(input$save_app_envir, {
-  withProgress(message = "Saving app data", value = 0.3, {
-    cruz.list.save <- reactiveValuesToList(cruz.list)
-    map.info <- list()
-    das.info <- list()
-    ndas.info <- list()
-    
-    
-    ###################################
-    # Map info
-    map.info$lon.range <- cruz.map.range$lon.range
-    map.info$lat.range <- cruz.map.range$lat.range
-    map.info$world2 <- cruz.map.range$world2
-    map.info$map.name <- cruz.map.range$map.name
-    map.info$lon.left <- input$lon.left
-    map.info$lon.right <- input$lon.right
-    map.info$resolution <- input$resolution
-    map.info$coast <- input$coast
-    map.info$bar <- input$bar
-    map.info$scale.lon <- input$scale.lon
-    map.info$scale.lat <- input$scale.lat
-    map.info$scale.units <- input$scale.units
-    map.info$scale.len <- input$scale.len
-    map.info$scale.width <- input$scale.width
-    
-    map.info$planned_transects_plot <- input$planned_transects_plot
-    map.info$planned_transects_toplot <- input$planned_transects_toplot
-    map.info$planned_transects_color <- input$planned_transects_color
-    map.info$planned_transects_lw <- input$planned_transects_lw
-    
-    map.info$tick <- input$tick
-    map.info$tick.left <- input$tick.left
-    map.info$tick.right <- input$tick.right
-    map.info$tick.bot <- input$tick.bot
-    map.info$tick.top <- input$tick.top
-    map.info$tick.interval.major <- input$tick.interval.major
-    map.info$tick.interval.minor <- input$tick.interval.minor
-    map.info$tick.style <- input$tick.style
-    map.info$tick.length <- input$tick.length
-    map.info$tick.left.lab <- input$tick.left.lab
-    map.info$tick.right.lab <- input$tick.right.lab
-    map.info$tick.bot.lab <- input$tick.bot.lab
-    map.info$tick.top.lab <- input$tick.top.lab
-    map.info$label.lon.start <- input$label.lon.start
-    map.info$label.lat.start <- input$label.lat.start
-    map.info$label.tick.font <- input$label.tick.font
-    map.info$label.tick.size <- input$label.tick.size
-    
-    map.info$label.title <- input$label.title
-    map.info$label.title.font <- input$label.title.font
-    map.info$label.title.size <- input$label.title.size
-    map.info$label.axis.lon <- input$label.axis.lon
-    map.info$label.axis.lat <- input$label.axis.lat
-    map.info$label.axis.font <- input$label.axis.font
-    map.info$label.axis.size <- input$label.axis.size
-    
-    map.info$color_style <- input$color_style
-    map.info$color_land_all <- input$color_land_all
-    map.info$color.land <- input$color.land
-    map.info$color_lakes_rivers <- input$color_lakes_rivers
-    map.info$color_water_style <- input$color_water_style
-    map.info$color.water <- input$color.water
-    map.info$depth_style <- input$depth_style
-    
-    map.info$grid <- input$grid
-    map.info$grid.line.color <- input$grid.line.color
-    map.info$grid.line.type <- input$grid.line.type
-    map.info$grid.line.width <- input$grid.line.width
-    
-    
-    ###################################
-    # DAS info
-    das.info$das_sightings <- input$das_sightings
-    das.info$das_sighting_type <- input$das_sighting_type
-    das.info$das_sighting_code_1_all <- input$das_sighting_code_1_all
-    das.info$das_sighting_code_2_all <- input$das_sighting_code_2_all
-    das.info$das.sighting.code.1 <- input$das.sighting.code.1
-    das.info$das.sighting.code.2 <- input$das.sighting.code.2
-    das.info$das.sighting.probable <- input$das.sighting.probable
-    
-    das.info$das.symbol.type <- input$das.symbol.type
-    das.info$das.symbol.color <- input$das.symbol.color
-    das.info$das.symbol.size <- input$das.symbol.size
-    das.info$das.symbol.linewidth <- input$das.symbol.linewidth
-    das.info$das_symbol_mult <- input$das_symbol_mult
-    das.info$das.symbol.type.mult <- input$das.symbol.type.mult
-    das.info$das.symbol.color.mult <- input$das.symbol.color.mult
-    das.info$das.symbol.type.boat <- input$das.symbol.type.boat
-    das.info$das.symbol.color.boat <- input$das.symbol.color.boat
-    das.info$das.symbol.size.boat <- input$das.symbol.size.boat
-    das.info$das.symbol.linewidth.boat <- input$das.symbol.linewidth.boat
-    
-    das.info$das_sightings_effort <- input$das_sightings_effort
-    das.info$das.sight.minBeau <- input$das.sight.minBeau
-    das.info$das.sight.maxBeau <- input$das.sight.maxBeau
-    das.info$das.sight.dateRange <- as.character(input$das.sight.dateRange)
-    das.info$das.sight.cruiseNum <- input$das.sight.cruiseNum
-    das.info$das.sight.trunc.units <- input$das.sight.trunc.units
-    das.info$das.sight.trunc <- input$das.sight.trunc
-    
-    das.info$das_legend <- input$das_legend
-    das.info$das_legend_pos <- input$das_legend_pos
-    das.info$das.legend.lon <- input$das.legend.lon
-    das.info$das.legend.lat <- input$das.legend.lat
-    das.info$das.legend.boxCol <- input$das.legend.boxCol
-    das.info$das.legend.font <- input$das.legend.font
-    das.info$das.legend.textSize <- input$das.legend.textSize
-    das.info$das.legend.title <- input$das.legend.title
-    das.info$das.legend.names <- input$das.legend.names
-    das.info$das.legend.num <- input$das.legend.num
-
-    das.info$eff_legend <- input$eff_legend
-    das.info$eff_legend_pos <- input$eff_legend_pos
-    das.info$eff.legend.lon <- input$eff.legend.lon
-    das.info$eff.legend.lat <- input$eff.legend.lat
-    das.info$eff.legend.boxCol <- input$eff.legend.boxCol
-    das.info$eff.legend.font <- input$eff.legend.font
-    das.info$eff.legend.textSize <- input$eff.legend.textSize
-    
-    das.info$das_effort <- input$das_effort
-    das.info$das.effort.closePass <- input$das.effort.closePass
-    das.info$das_effort_snf <- input$das_effort_snf
-    
-    das.info$das.effort.simp.col <- input$das.effort.simp.col
-    das.info$das.effort.simp.lwd <- input$das.effort.simp.lwd
-    
-    das.info$das_effort_det_byBft <- input$das_effort_det_byBft
-    das.info$das.effort.det.col.s <- input$das.effort.det.col.s
-    das.info$das.effort.det.lwd.s <- input$das.effort.det.lwd.s
-    das.info$das.effort.det.col.n <- input$das.effort.det.col.n
-    das.info$das.effort.det.lwd.n <- input$das.effort.det.lwd.n
-    das.info$das.effort.det.col.f <- input$das.effort.det.col.f
-    das.info$das.effort.det.lwd.f <- input$das.effort.det.lwd.f
-    
-    das.info$das_effort_filter_same <- input$das_effort_filter_same
-    das.info$das.effort.minBeau <- input$das.effort.minBeau
-    das.info$das.effort.maxBeau <- input$das.effort.maxBeau
-    das.info$das.effort.dateRange <- as.character(input$das.effort.dateRange)
-    das.info$das.effort.cruiseNum <- input$das.effort.cruiseNum
-    das.info$das.effort.trunc.units <- input$das.effort.trunc.units
-    das.info$das.effort.trunc <- input$das.effort.trunc
-    
-    das.info$das_out_effort_units <- input$das_out_effort_units
-    das.info$das.out.sight.closePass <- input$das.out.sight.closePass
-    das.info$das.out.sight.snf <- input$das.out.sight.snf
-    
-    
-    ###################################
-    # Non-DAS info
-    ndas.info$ndas_plot <- input$ndas_plot
-
-    
-    incProgress(0.3)
-    
-    save(cruz.list.save, map.info, das.info, ndas.info, file = "Cruz_App_Save_Envir.RDATA")
-    incProgress(0.4)
-  })
+# save_envir <- eventReactive(input$save_app_envir, {
+output$save_app_envir <- downloadHandler(
+  filename = function() {
+    paste0("CruzPlot_", Sys.Date(), ".RDATA")
+  },
   
-  return("App data saved")
-})
+  content = function(file) {
+    withProgress(message = "Saving app data", value = 0.3, {
+      cruz.list.save <- reactiveValuesToList(cruz.list)
+      map.info <- list()
+      das.info <- list()
+      ndas.info <- list()
+      
+      
+      ###################################
+      # Map info
+      map.info$lon.range <- cruz.map.range$lon.range
+      map.info$lat.range <- cruz.map.range$lat.range
+      map.info$world2 <- cruz.map.range$world2
+      map.info$map.name <- cruz.map.range$map.name
+      map.info$lon.left <- input$lon.left
+      map.info$lon.right <- input$lon.right
+      map.info$resolution <- input$resolution
+      map.info$coast <- input$coast
+      map.info$bar <- input$bar
+      map.info$scale.lon <- input$scale.lon
+      map.info$scale.lat <- input$scale.lat
+      map.info$scale.units <- input$scale.units
+      map.info$scale.len <- input$scale.len
+      map.info$scale.width <- input$scale.width
+      
+      map.info$planned_transects_plot <- input$planned_transects_plot
+      map.info$planned_transects_toplot <- input$planned_transects_toplot
+      map.info$planned_transects_color <- input$planned_transects_color
+      map.info$planned_transects_lw <- input$planned_transects_lw
+      
+      map.info$tick <- input$tick
+      map.info$tick.left <- input$tick.left
+      map.info$tick.right <- input$tick.right
+      map.info$tick.bot <- input$tick.bot
+      map.info$tick.top <- input$tick.top
+      map.info$tick.interval.major <- input$tick.interval.major
+      map.info$tick.interval.minor <- input$tick.interval.minor
+      map.info$tick.style <- input$tick.style
+      map.info$tick.length <- input$tick.length
+      map.info$tick.left.lab <- input$tick.left.lab
+      map.info$tick.right.lab <- input$tick.right.lab
+      map.info$tick.bot.lab <- input$tick.bot.lab
+      map.info$tick.top.lab <- input$tick.top.lab
+      map.info$label.lon.start <- input$label.lon.start
+      map.info$label.lat.start <- input$label.lat.start
+      map.info$label.tick.font <- input$label.tick.font
+      map.info$label.tick.size <- input$label.tick.size
+      
+      map.info$label.title <- input$label.title
+      map.info$label.title.font <- input$label.title.font
+      map.info$label.title.size <- input$label.title.size
+      map.info$label.axis.lon <- input$label.axis.lon
+      map.info$label.axis.lat <- input$label.axis.lat
+      map.info$label.axis.font <- input$label.axis.font
+      map.info$label.axis.size <- input$label.axis.size
+      
+      map.info$color_style <- input$color_style
+      map.info$color_land_all <- input$color_land_all
+      map.info$color.land <- input$color.land
+      map.info$color_lakes_rivers <- input$color_lakes_rivers
+      map.info$color_water_style <- input$color_water_style
+      map.info$color.water <- input$color.water
+      map.info$depth_style <- input$depth_style
+      
+      map.info$grid <- input$grid
+      map.info$grid.line.color <- input$grid.line.color
+      map.info$grid.line.type <- input$grid.line.type
+      map.info$grid.line.width <- input$grid.line.width
+      
+      
+      ###################################
+      # DAS info
+      das.info$das_sightings <- input$das_sightings
+      das.info$das_sighting_type <- input$das_sighting_type
+      das.info$das_sighting_code_1_all <- input$das_sighting_code_1_all
+      das.info$das_sighting_code_2_all <- input$das_sighting_code_2_all
+      das.info$das.sighting.code.1 <- input$das.sighting.code.1
+      das.info$das.sighting.code.2 <- input$das.sighting.code.2
+      das.info$das.sighting.probable <- input$das.sighting.probable
+      
+      das.info$das.symbol.type <- input$das.symbol.type
+      das.info$das.symbol.color <- input$das.symbol.color
+      das.info$das.symbol.size <- input$das.symbol.size
+      das.info$das.symbol.linewidth <- input$das.symbol.linewidth
+      das.info$das_symbol_mult <- input$das_symbol_mult
+      das.info$das.symbol.type.mult <- input$das.symbol.type.mult
+      das.info$das.symbol.color.mult <- input$das.symbol.color.mult
+      das.info$das.symbol.type.boat <- input$das.symbol.type.boat
+      das.info$das.symbol.color.boat <- input$das.symbol.color.boat
+      das.info$das.symbol.size.boat <- input$das.symbol.size.boat
+      das.info$das.symbol.linewidth.boat <- input$das.symbol.linewidth.boat
+      
+      das.info$das_sightings_effort <- input$das_sightings_effort
+      das.info$das.sight.minBeau <- input$das.sight.minBeau
+      das.info$das.sight.maxBeau <- input$das.sight.maxBeau
+      das.info$das.sight.dateRange <- as.character(input$das.sight.dateRange)
+      das.info$das.sight.cruiseNum <- input$das.sight.cruiseNum
+      das.info$das.sight.trunc.units <- input$das.sight.trunc.units
+      das.info$das.sight.trunc <- input$das.sight.trunc
+      
+      das.info$das_legend <- input$das_legend
+      das.info$das_legend_pos <- input$das_legend_pos
+      das.info$das.legend.lon <- input$das.legend.lon
+      das.info$das.legend.lat <- input$das.legend.lat
+      das.info$das.legend.boxCol <- input$das.legend.boxCol
+      das.info$das.legend.font <- input$das.legend.font
+      das.info$das.legend.textSize <- input$das.legend.textSize
+      das.info$das.legend.title <- input$das.legend.title
+      das.info$das.legend.names <- input$das.legend.names
+      das.info$das.legend.num <- input$das.legend.num
+      
+      das.info$eff_legend <- input$eff_legend
+      das.info$eff_legend_pos <- input$eff_legend_pos
+      das.info$eff.legend.lon <- input$eff.legend.lon
+      das.info$eff.legend.lat <- input$eff.legend.lat
+      das.info$eff.legend.boxCol <- input$eff.legend.boxCol
+      das.info$eff.legend.font <- input$eff.legend.font
+      das.info$eff.legend.textSize <- input$eff.legend.textSize
+      
+      das.info$das_effort <- input$das_effort
+      das.info$das.effort.closePass <- input$das.effort.closePass
+      das.info$das_effort_snf <- input$das_effort_snf
+      
+      das.info$das.effort.simp.col <- input$das.effort.simp.col
+      das.info$das.effort.simp.lwd <- input$das.effort.simp.lwd
+      
+      das.info$das_effort_det_byBft <- input$das_effort_det_byBft
+      das.info$das.effort.det.col.s <- input$das.effort.det.col.s
+      das.info$das.effort.det.lwd.s <- input$das.effort.det.lwd.s
+      das.info$das.effort.det.col.n <- input$das.effort.det.col.n
+      das.info$das.effort.det.lwd.n <- input$das.effort.det.lwd.n
+      das.info$das.effort.det.col.f <- input$das.effort.det.col.f
+      das.info$das.effort.det.lwd.f <- input$das.effort.det.lwd.f
+      
+      das.info$das_effort_filter_same <- input$das_effort_filter_same
+      das.info$das.effort.minBeau <- input$das.effort.minBeau
+      das.info$das.effort.maxBeau <- input$das.effort.maxBeau
+      das.info$das.effort.dateRange <- as.character(input$das.effort.dateRange)
+      das.info$das.effort.cruiseNum <- input$das.effort.cruiseNum
+      das.info$das.effort.trunc.units <- input$das.effort.trunc.units
+      das.info$das.effort.trunc <- input$das.effort.trunc
+      
+      das.info$das_out_effort_units <- input$das_out_effort_units
+      das.info$das.out.sight.closePass <- input$das.out.sight.closePass
+      das.info$das.out.sight.snf <- input$das.out.sight.snf
+      
+      
+      ###################################
+      # Non-DAS info
+      ndas.info$ndas_plot <- input$ndas_plot
+      
+      
+      incProgress(0.3)
+      
+      # save(cruz.list.save, map.info, das.info, ndas.info, file = "Cruz_App_Save_Envir.RDATA")
+      save(cruz.list.save, map.info, das.info, ndas.info, file = file)
+      incProgress(0.4)
+    })
+    
+    # "App data saved"
+  })
 
-output$save_app_text <- renderText({
-  save_envir()
-})
+# output$save_app_text <- renderText({
+#   save_envir()
+# })
 
 
 ### Show and hide load button and text as appropriate

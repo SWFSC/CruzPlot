@@ -83,7 +83,7 @@ source(file.path("CruzPlot_files", "ui_nonDasPlot.R"), local = TRUE, chdir = TRU
 
 ### UI function
 ui <- dashboardPage(
-  dashboardHeader(title = "CruzPlot"),
+  dashboardHeader(title = "CruzPlot", titleWidth = "200"),
   
   dashboardSidebar(
     sidebarMenu(
@@ -99,22 +99,29 @@ ui <- dashboardPage(
       menuItem("CruzPlot Manual", tabName = "manual", icon = icon("th")), 
       ui.new.line(),
       ui.new.line(),
-      helpText(HTML(paste0("Click button in order to load", "<br/>", 
-                           "or save current CruzPlot", "<br/>", 
-                           "workspace:")), style = "color: white"), 
-      actionButton("load_app_envir", "Load saved workspace", 
-                   style = "color: NA; background-color: NA; 
-                                  border-color: black"), 
+      # helpText(HTML(paste0("Click button in order to load", "<br/>", 
+      #                      "or save current CruzPlot", "<br/>", 
+      #                      "workspace:")), style = "color: white"), 
+      # actionButton("load_app_envir", "Load saved workspace", 
+      #              style = "color: NA; background-color: NA; 
+      #                             border-color: black"), 
+      # textOutput("load_app_text"), 
+      # actionButton("save_app_envir", "Save current workspace"), 
+      # textOutput("save_app_text"),
+      # helpText(HTML(paste0("Click button in order to load", "<br/>", 
+      #                      "or save current CruzPlot", "<br/>", 
+      #                      "workspace:")), style = "color: white"), 
+      fileInput("load_app_envir_file", "Load workspace"),
       textOutput("load_app_text"), 
-      actionButton("save_app_envir", "Save current workspace"), 
-      textOutput("save_app_text"),
-      ui.new.line(),
+      tags$br(), 
+      downloadButton("save_app_envir", "Save workspace", style = "color: black"), 
+      tags$br(), tags$br(), 
       radioButtons("map.size", NULL, 
                    choices = list("Large map window" = 1, 
                                   "Small map window" = 2),
                    selected = 1),
       ui.new.line(),
-      actionButton("stop", label = "Close CruzPlot")
+      actionButton("stop", "Close CruzPlot")
     ), width = "200"
   ),
   

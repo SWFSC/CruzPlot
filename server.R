@@ -23,6 +23,7 @@ server <- function(input, output, session) {
   source(file.path("CruzPlot_files", "funcTickMinor.R"), local = TRUE, chdir = TRUE) # Determine minor tick locations
   source(file.path("CruzPlot_files", "funcCruzDasRead.R"), local = TRUE, chdir = TRUE) # Read .das data file
   source(file.path("CruzPlot_files", "funcCruzSpeciesRead.R"), local = TRUE, chdir = TRUE) # Read .dat species file
+  source(file.path("CruzPlot_files", "server_funcs_misc.R"), local = TRUE, chdir = TRUE) # misc functions
   
   # Countries to be removed for world2 map
   # Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
