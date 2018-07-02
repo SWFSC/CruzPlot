@@ -8,13 +8,13 @@ cruz.load.color <- reactiveValues(load.flag = FALSE)
 
 ### For data storage and loading again in new session
 cruz.list <- reactiveValues(
-  planned.transects = NULL,     # Dataframe of planned transect lines
-  coastline = NULL,             # Coastline file
-  bathy = NULL,                 # Bathymetric data
-  das.data = NULL,              # DAS dataframe
-  ndas.data = list(),           # List of non-DAS line and point data
-  ndas.df = NULL,               # Dataframe of ndas information
-  ndas.toplot = NULL            # Non-DAS objects currently being plotted
+  planned.transects = NULL, # Dataframe of planned transect lines
+  coastline = NULL,         # Coastline file
+  bathy = NULL,             # Bathymetric data
+  das.data = NULL,          # DAS dataframe
+  ndas.data = list(),       # List of non-DAS line and point data
+  ndas.df = NULL,           # Dataframe of ndas information
+  ndas.toplot = NULL        # Non-DAS objects currently being plotted
 )
 
 ### Map range so that range can be triggered by button 
@@ -59,15 +59,9 @@ load_envir <- eventReactive(input$load_app_envir_file, {
          "Error: Please load a file with the extension '.RDATA'")
   )
   
-
-  # validate(
-  #   need(file.exists("Cruz_App_Save_Envir.RDATA"),
-  #        "No saved app data to load")
-  # )
   cruz.load.color$load.flag <- TRUE
   
   withProgress(message = "Loading saved data", value = 0.5, {
-    # load("Cruz_App_Save_Envir.RDATA")
     load(file.load$datapath)
     files.list <- list("cruz.list.save", "map.info", "das.info", "ndas.info")
     validate(
@@ -95,7 +89,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     
     #######################################################
     ### Update variable defaults (if nec)
-    if(!is.null(cruz.list$ndas.toplot)) updateCheckboxInput(session, "ndas_plot", value = TRUE)
+    if (!is.null(cruz.list$ndas.toplot)) updateCheckboxInput(session, "ndas_plot", value = TRUE)
     
     
     ###################################
@@ -148,7 +142,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     
     updateRadioButtons(session, "color_style", selected = map.info$color_style)
     # Upadte color palettes here
-    if(map.info$color_style == 1) {
+    if (map.info$color_style == 1) {
       palette("default")
       updateSelectInput(session, "color.land", choices = cruz.palette.color, selected = "bisque1")
       updateSelectInput(session, "color.water", choices = cruz.palette.color, selected = "white")
@@ -273,7 +267,6 @@ output$load_app_text <- renderText({
 
 
 ### Save data
-# save_envir <- eventReactive(input$save_app_envir, {
 output$save_app_envir <- downloadHandler(
   filename = function() {
     paste0("CruzPlot_", Sys.Date(), ".RDATA")
@@ -437,34 +430,4 @@ output$save_app_envir <- downloadHandler(
       save(cruz.list.save, map.info, das.info, ndas.info, file = file)
       incProgress(0.4)
     })
-    
-    # "App data saved"
   })
-
-# output$save_app_text <- renderText({
-#   save_envir()
-# })
-
-
-### Show and hide load button and text as appropriate
-# observe({
-#   cruz.list$planned.transects
-#   cruz.list$bathy
-#   cruz.list$coastline
-#   cruz.list$das.data
-#   cruz.list$ndas.data
-#   cruz.list$ndas.df
-#   cruz.list$ndas.toplot
-#   
-#   cruz.list.list <- reactiveValuesToList(cruz.list)
-#   cruz.list.list.lens <- sapply(cruz.list.list, length)
-#   
-#   if(any(cruz.list.list.lens != 0)) {
-#     shinyjs::hide("load_app_envir")
-#     shinyjs::hide("load_app_text")
-#   }
-#   if(all(cruz.list.list.lens == 0)) {
-#     shinyjs::show("load_app_envir")
-#     shinyjs::show("load_app_text")
-#   }
-# })
