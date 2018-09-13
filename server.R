@@ -293,7 +293,6 @@ server <- function(input, output, session) {
   #     Manual opens in new window from RStudio Shiny viewer, 
   #     but displays in-app on Chrome
   output$manual_pdf <- renderUI({
-    tags$iframe(style = "height:600px; width:100%", 
-                src = "CruzPlot_Manual_app.pdf")
+    tags$iframe(style = "height:850px; width:100%", src = "CruzPlot_Manual_app.pdf")
   })
 }

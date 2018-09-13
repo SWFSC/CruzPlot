@@ -92,60 +92,64 @@ ui.createMap <- function() {
         
         ################################### Panel 2
         tabPanel(
-          title = "Planned Transects", 
+          title = "Planned Transects",
           fluidRow(
             box(
-              title = "Planned transects", status = "warning", solidHeader = FALSE, width = 12, collapsible = FALSE, 
+              title = "Planned transects", status = "warning", solidHeader = FALSE, width = 12, collapsible = FALSE,
               fluidRow(
                 box(
-                  width = 6, 
-                  tags$strong("Load planned transects"), 
-                  helpText(paste("Longitudes must be in -180 to 180 range. See the manual for the required .csv file format")), 
-                  fluidRow(
-                    column(12, fileInput("planned_transects_file", h5("Load planned transects .csv file")))
-                  ), 
+                  width = 6,
+                  tags$strong("Load planned transects"),
+                  helpText(paste("Longitudes must be in -180 to 180 range. See the manual for the required .csv file format")),
+                  fileInput("planned_transects_file", h5("Load planned transects .csv file")),
                   fluidRow(
                     column(
-                      width = 6, 
-                      uiOutput("planned_transects_lon_uiOut_select"), 
-                      uiOutput("planned_transects_num_uiOut_select"), 
+                      width = 6,
+                      uiOutput("planned_transects_lon_uiOut_select"),
+                      uiOutput("planned_transects_num_uiOut_select"),
                       uiOutput("planned_transects_class2_uiOut_select")
-                    ), 
+                    ),
                     column(
-                      width = 6, 
-                      uiOutput("planned_transects_lat_uiOut_select"), 
+                      width = 6,
+                      uiOutput("planned_transects_lat_uiOut_select"),
                       uiOutput("planned_transects_class1_uiOut_select")
                     )
-                  ), 
+                  ),
                   fluidRow(
-                    ui.new.line(), 
-                    column(6, uiOutput("planned_transects_execute_uiOut_button")), 
+                    ui.new.line(),
+                    column(6, uiOutput("planned_transects_execute_uiOut_button")),
                     column(6, textOutput("planned_transects_text"))
                   )
-                ), 
+                ),
                 column(
-                  width = 6, 
+                  width = 6,
                   conditionalPanel(
-                    condition = "output.cruzMapPlannedTransects_Conditional", 
+                    condition = "output.cruzMapPlannedTransects_Conditional",
                     fluidRow(
                       box(
-                        width = 12, 
-                        tags$strong("Plot loaded planned transects"), 
-                        checkboxInput("planned_transects_plot", "Plot planned transect lines", value = TRUE), 
+                        width = 12,
+                        tags$strong("Plot loaded planned transects"),
+                        checkboxInput("planned_transects_plot", "Plot planned transect lines", value = TRUE),
                         conditionalPanel(
                           condition = "input.planned_transects_plot",
+                          column(12, helpText("For the color(s) and (if a class 2 column is specified) the line type(s),", 
+                                              "select either one or the same number as transect classes or class 2s, respectively.",
+                                              "When multiple colors or line types are selected,", 
+                                              "the order in which transect classes and class 2s are selected to be plotted", 
+                                              "corresponds to order of specified colors and line types, respectively.")),
                           box(
                             width = 12,
                             ui.selectize.instructions(),
                             uiOutput("planned_transects_toplot_uiOut_selectize"),
-                            helpText("Select either one color the same number of colors as transect classes. The order",
-                                     "in which transects are selected to be plotted corresponds to order of specified color(s)"),
+                            # helpText("Select either one color the same number of colors as transect classes.",
+                            #          "When multiple colors are selected, the order in which transect class(es)",
+                            #          "are selected to be plotted corresponds to order of specified color(s)."),
                             uiOutput("planned_transects_color_uiOut_selectize")
                           ),
                           box(
                             width = 12,
-                            # uiOutput("planned_transects_lty_uiOut_message"),
                             uiOutput("planned_transects_toplot2_uiOut_selectize"),
+                            # uiOutput("planned_transects_lty_uiOut_message"),
                             uiOutput("planned_transects_lty_uiOut_selectize")
                           ),
                           box(width = 12, numericInput("planned_transects_lwd", h5("Line width"),
@@ -165,8 +169,8 @@ ui.createMap <- function() {
               )
             )
           )
-        ), 
-        
+        ),
+
         ################################### Panel 3
         tabPanel(
           title = "Ticks & Labels", 

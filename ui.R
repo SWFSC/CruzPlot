@@ -183,9 +183,9 @@ ui <- dashboardPage(
       tabItem(
         tabName = "manual",
         helpText("Click 'Open in Browser' at top of the app in order to display manual in-app"),
-        # tags$iframe(style="height:400px; width:100%; scrolling=yes",
+        # tags$iframe(style="height:850px; width:100%; scrolling=yes",
         #             src="CruzPlot_Manual_app.pdf")
-        uiOutput("manual_pdf")
+        uiOutput("manual_pdf") #output$manual_pdf is in 'server.R'
       )
     )
   )

@@ -14,14 +14,14 @@ outputOptions(output, "cruzMapPlannedTransects_Conditional", suspendWhenHidden =
 
 
 ### Turn plot checkbox on if planned transects are added
-# observe({
-#   if(!is.null(cruz.list$planned.transects))
-#     updateCheckboxInput(session, "planned_transects_plot", value = TRUE)
-# })
+observe({
+  if (!is.null(cruz.list$planned.transects))
+    updateCheckboxInput(session, "planned_transects_plot", value = TRUE)
+})
 
 ### Turn plot checkbox off if all planned transects are removed
 observe({
-  if(is.null(cruz.list$planned.transects))
+  if (is.null(cruz.list$planned.transects))
     updateCheckboxInput(session, "planned_transects_plot", value = FALSE)
 })
 
@@ -161,7 +161,7 @@ planned_transects_class2 <- reactive({
 
 
 ###############################################################################
-### Widget for selecting planned transect(s) to plot
+### Widgets for selecting planned transect class(es) to plot and their color
 output$planned_transects_toplot_uiOut_selectize <- renderUI({
   req(cruz.list$planned.transects)
   
@@ -170,7 +170,7 @@ output$planned_transects_toplot_uiOut_selectize <- renderUI({
   names(choices.list) <- choices.list.names
   
   selectizeInput("planned_transects_toplot", 
-                 tags$h5("Select planned transect class(es) to plot"),
+                 tags$h5("Class(es) to plot"),
                  choices = choices.list, selected = choices.list, 
                  multiple = TRUE)
 })
@@ -179,39 +179,22 @@ output$planned_transects_toplot_uiOut_selectize <- renderUI({
 output$planned_transects_color_uiOut_selectize <- renderUI({
   req(cruz.list$planned.transects, input$planned_transects_plot)
   
-  selectizeInput("planned_transects_color", label = NULL, #h5("Transect color(s)"), 
+  selectizeInput("planned_transects_color", label = tags$h5("Color(s)"), 
                  choices = cruz.palette.color, selected = "gray", 
                  multiple = TRUE)
 })
 
 
 #----------------------------------------------------------
-# output$planned_transects_lty_uiOut_message <- renderUI({
-#   req(cruz.list$planned.transects, input$planned_transects_plot)
-#   y <- planned_transects_class2()
-#   
-#   if (anyNA(y)) {
-#     paste("No class 2 column was selected, and thus you can only specify", 
-#           "a single line type for all planned transects")
-#   } else {
-#     HTML(paste0(
-#       paste("There are", length(y), "unique class 2 values:", 
-#             paste(y, collapse = ", ")), 
-#       tags$br(), 
-#       paste("Select either one line type or the same number of line types as", 
-#             "transect classes. The order in which the class 2 values are", 
-#             "displayed above corresponds to order of specified line type(s)")
-#     ))
-#   }
-# })
+### Widgets for selecting planned transect class 2(s) to plot and their lty
 output$planned_transects_toplot2_uiOut_selectize <- renderUI({
   req(cruz.list$planned.transects)
   
   y <- planned_transects_class2()
   
   if (anyNA(y)) {
-    paste("No class 2 column was selected, and thus you can only specify",
-          "a single line type for all planned transects")
+    helpText("No class 2 column was selected, and thus you can only specify",
+             "a single line type for all planned transects")
     
   } else {
     choices.list.names <- y
@@ -219,16 +202,32 @@ output$planned_transects_toplot2_uiOut_selectize <- renderUI({
     names(choices.list) <- choices.list.names
     
     selectizeInput("planned_transects_toplot2", 
-                   tags$h5("Select planned transect class 2(s) to plot"),
+                   tags$h5("Class 2(s) to plot"),
                    choices = choices.list, selected = choices.list, 
                    multiple = TRUE)
   }
 })
 
+# output$planned_transects_lty_uiOut_message <- renderUI({
+#   req(cruz.list$planned.transects, input$planned_transects_plot)
+#   
+#   if (!anyNA(planned_transects_class2())) {
+#     helpText("Select either one line type or the same number of line types as transect class 2s.", 
+#              "When multiple line types are selected, the order in which transect class 2(s) are", 
+#              "selected to be plotted corresponds to order of specified line type(s).")
+#   } else {
+#     NULL
+#   }
+# })
+
 output$planned_transects_lty_uiOut_selectize <- renderUI({
   req(cruz.list$planned.transects, input$planned_transects_plot)
   
-  selectizeInput("planned_transects_lty", label = NULL, #h5("Line type"), 
+  input.lab <- ifelse(
+    anyNA(planned_transects_class2()), "Line type", "Line type(s)"
+    )
+  
+  selectizeInput("planned_transects_lty", label = tags$h5(input.lab), 
                  choices = cruz.line.type, selected = 1, 
                  multiple = !anyNA(planned_transects_class2()))
   
