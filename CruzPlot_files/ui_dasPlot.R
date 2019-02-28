@@ -45,6 +45,7 @@ ui.dasPlot <- function() {
       ), 
       tabBox(
         title = "Plot Sightings and/or Effort", id = "tabset2", width = 6, 
+        ##############################################################################################################
         tabPanel(
           title = "Data & Sightings", 
           fluidRow(
@@ -191,7 +192,7 @@ ui.dasPlot <- function() {
             )
           )
         ), 
-        
+        ##############################################################################################################
         tabPanel(
           title = "Filters", 
           fluidRow(
@@ -238,7 +239,7 @@ ui.dasPlot <- function() {
             )
           )
         ), 
-        
+        ##############################################################################################################
         tabPanel(
           title = "Legends", 
           fluidRow(
@@ -352,6 +353,7 @@ ui.dasPlot <- function() {
             )
           )
         ), 
+        ##############################################################################################################
         tabPanel(
           title = "Effort", 
           fluidRow(
@@ -490,6 +492,7 @@ ui.dasPlot <- function() {
             )
           )
         ), 
+        ##############################################################################################################
         tabPanel(
           title = "Tabular Output", 
           fluidRow(
@@ -507,8 +510,9 @@ ui.dasPlot <- function() {
                                  selected = 2), 
                     ui.new.line(), 
                     uiOutput("das_out_effort_save_name_uiOut_text"), 
-                    actionButton("das_out_effort_save_execute", "Save specified effort data"), 
-                    textOutput("cruzDasOutEffort_Save_text")
+                    downloadButton("das_out_effort_save", "Save table of tabular output for effort")
+                    # actionButton("das_out_effort_save_execute", "Save specified effort data"), 
+                    # textOutput("cruzDasOutEffort_Save_text")
                   ), 
                   column(8, tableOutput("das_out_effort_table"))
                 )
@@ -545,8 +549,9 @@ ui.dasPlot <- function() {
                       ), 
                       ui.new.line(), 
                       uiOutput("das_out_sight_save_name_uiOut_text"), 
-                      actionButton("das_out_sight_save_execute", "Save specified sighting data"), 
-                      textOutput("cruzDasOutSight_Save_text")
+                      downloadButton("das_out_sight_save", "Save table of tabular output for sightings")
+                      # actionButton("das_out_sight_save_execute", "Save specified sighting data"), 
+                      # textOutput("cruzDasOutSight_Save_text")
                     )
                   ), 
                   column(8, tableOutput("das_out_sight_table"))

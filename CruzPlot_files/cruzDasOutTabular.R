@@ -18,7 +18,6 @@ cruzDasOutSight_Table <- reactive({
   data.sight <- data.list$data.sight
   data.sight <- data.sight[order(row.names(data.sight)),]
   sight.eff.filter <- input$das_sightings_effort
-  # browser()
   
   ### Filter by selected effort type if sightings are on-effort
   if(sight.eff.filter != 3) {
@@ -129,7 +128,7 @@ cruzDasOutSight_Table <- reactive({
 })
 
 output$das_out_sight_save_name_uiOut_text <- renderUI({
-  cruzDasOutSight_Table()
+  # cruzDasOutSight_Table()
   
   csv.name <- paste0("Sight_", Sys.time(), ".csv")
   csv.name <- gsub(" ", "_", csv.name)
@@ -140,24 +139,29 @@ output$das_out_sight_save_name_uiOut_text <- renderUI({
             value = csv.name)
 })
 
-cruzDasOutSight_Save <- eventReactive(input$das_out_sight_save_execute, {
-  validate(
-    need(!is.null(cruz.list$das.data), "Please load DAS file")
-  )
-  
-  csv.towrite <- cruzDasOutSight_Table()
-  csv.name <- paste0("Outputs/", input$das_out_sight_save_name)
-  write.csv(csv.towrite, file = csv.name, quote = TRUE, row.names = FALSE)
-  
-  return("Saved to 'Outputs' folder")
-})
+output$das_out_sight_save <- downloadHandler(
+  filename = function() input$das_out_sight_save_name, 
+  content = function(file) {
+    write.csv(cruzDasOutSight_Table(), file = file, row.names = FALSE)
+  }
+)
+
+# cruzDasOutSight_Save <- eventReactive(input$das_out_sight_save_execute, {
+#   validate(
+#     need(!is.null(cruz.list$das.data), "Please load DAS file")
+#   )
+# 
+#   csv.towrite <- cruzDasOutSight_Table()
+#   csv.name <- paste0("Outputs/", input$das_out_sight_save_name)
+#   write.csv(csv.towrite, file = csv.name, quote = TRUE, row.names = FALSE)
+# 
+#   return("Saved to 'Outputs' folder")
+# })
 
 
 ###############################################################################
 # Effort
-
 cruzDasOutEffort_Table <- reactive({
-  # browser()
   data.list <- cruzDasEffort()
   data.effort <- data.list$data.effort
   data.effort.start <- data.effort[data.list$ndx.R,]
@@ -216,7 +220,7 @@ cruzDasOutEffort_Table <- reactive({
 
 
 output$das_out_effort_save_name_uiOut_text <- renderUI({
-  cruzDasOutEffort_Table()
+  # cruzDasOutEffort_Table()
   
   csv.name <- paste0("Effort_", Sys.time(), ".csv")
   csv.name <- gsub(" ", "_", csv.name)
@@ -227,14 +231,21 @@ output$das_out_effort_save_name_uiOut_text <- renderUI({
             value = csv.name)
 })
 
-cruzDasOutEffort_Save <- eventReactive(input$das_out_effort_save_execute, {
-  validate(
-    need(!is.null(cruz.list$das.data), "Please load DAS file")
-  )
-  
-  csv.towrite <- cruzDasOutEffort_Table()
-  csv.name <- paste0("Outputs/", input$das_out_effort_save_name)
-  write.csv(csv.towrite, file = csv.name, quote = TRUE, row.names = FALSE)
-  
-  return("Saved to 'Outputs' folder")
-})
+output$das_out_effort_save <- downloadHandler(
+  filename = function() input$das_out_effort_save_name, 
+  content = function(file) {
+    write.csv(cruzDasOutEffort_Table(), file = file, row.names = FALSE)
+  }
+)
+
+# cruzDasOutEffort_Save <- eventReactive(input$das_out_effort_save_execute, {
+#   validate(
+#     need(!is.null(cruz.list$das.data), "Please load DAS file")
+#   )
+#   
+#   csv.towrite <- cruzDasOutEffort_Table()
+#   csv.name <- paste0("Outputs/", input$das_out_effort_save_name)
+#   write.csv(csv.towrite, file = csv.name, quote = TRUE, row.names = FALSE)
+#   
+#   return("Saved to 'Outputs' folder")
+# })
