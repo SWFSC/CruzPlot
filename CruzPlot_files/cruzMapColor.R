@@ -24,7 +24,8 @@ cruzMapColorWater <- reactive({
                  as.numeric(input$depth.res) <= 60,
                message = "Please ensure depth resolution is between 0 and 60")
         )
-        browser()
+
+        # browser()
         # getNOAA.bathy() operates on -180 to 180 scale, thus use user inputs not lonRange() output
         bathy <- getNOAA.bathy(lon1 = as.numeric(input$lon.left), 
                                lon2 = as.numeric(input$lon.right), 
