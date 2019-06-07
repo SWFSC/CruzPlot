@@ -10,5 +10,8 @@ r:
   - devel
 
 
-before_install:
-  - sudo apt-get install --yes netcdf-bin
+addons:
+    apt:
+        packages:
+            - libnetcdf-dev
+            - netcdf-bin
