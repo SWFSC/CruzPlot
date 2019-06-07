@@ -48,26 +48,38 @@ start.tick$lon <- cruzTickStart(c(start.ll$X[1], start.ll$X[2]), start.tick$inte
 start.tick$lat <- cruzTickStart(c(start.ll$X[3], start.ll$X[4]), start.tick$interval)
 
 
-cruz.palette.color <- list("Black" = "black", "Dark Blue" = "darkblue", "Dark Red" = "red4",
-                           "Brown" = "tan4", "Green" = "forestgreen", "Orange" = "orange",
-                           "Blue" = "blue", "Red" = "red", "Yellow" = "yellow","Aqua" = "aquamarine2",
-                           "Tan" = "bisque1", "Pink" = "hotpink", "Light Green" = "green",
-                           "Light Brown" = "wheat3", "Light Blue" = "lightblue",
-                           "Light Red" = "indianred2", "Gray" = "gray", "White" = "white")
-cruz.palette.gray  <- list("Black" = 1, "Dark Gray" = 2, "Charcoal" = 3,
-                           "Gray" = 4, "Light Gray" = 5, "White" = 0)
-font.family        <- list("Sans" = 1, "Serif" = 2, "Mono" = 3)
-cruz.symbol.type   <- list("0: Open Square" = 0, "1: Open Circle" = 1, "2: Open Up Triangle" = 2, "3: Plus" = 3,
-                           "4: X" = 4, "5: Open Diamond" = 5, "6: Open Down Triangle" = 6, "7: Square with X" = 7,
-                           "8: Asterisk" = 8, "9: Diamond with Plus" = 9, "10: Circle with Plus" = 10,
-                           "11: Up-Down Triangles" = 11, "12: Square with Plus" = 12, "13: Circle with X" = 13,
-                           "14: Square with Up Triangle" = 14, "15: Filled Square" = 15,
-                           "16: Filled Circle" = 16, "17: Filled Up Triangle" = 17, "18: Filled Diamond" = 18,
-                           "19: Filled Large Circle" = 19, "20: Filled Small Circle" = 20)
-cruz.line.type     <- list("Solid" = 1, "Dash" = 2, "Dot" = 3, "Dot-dash" = 4,
-                           "Long dash" = 5, "Dot-long dash" = 6)
-cruz.beaufort      <- list("0" = 0, "1" = 1, "2" = 2, "3" = 3, "4" = 4,
-                           "5" = 5, "6" = 6, "7" = 7, "8" = 8, "9" = 9)
+cruz.palette.color <- list(
+  "Black" = "black", "Dark Blue" = "darkblue", "Dark Red" = "red4",
+  "Brown" = "tan4", "Green" = "forestgreen", "Orange" = "orange",
+  "Blue" = "blue", "Red" = "red", "Yellow" = "yellow","Aqua" = "aquamarine2",
+  "Tan" = "bisque1", "Pink" = "hotpink", "Light Green" = "green",
+  "Light Brown" = "wheat3", "Light Blue" = "lightblue",
+  "Light Red" = "indianred2", "Gray" = "gray", "White" = "white"
+)
+cruz.palette.gray <- list(
+  "Black" = 1, "Dark Gray" = 2, "Charcoal" = 3,
+  "Gray" = 4, "Light Gray" = 5, "White" = 0
+)
+font.family <- list(
+  "Sans" = 1, "Serif" = 2, "Mono" = 3
+)
+cruz.symbol.type   <- list(
+  "0: Open Square" = 0, "1: Open Circle" = 1, "2: Open Up Triangle" = 2, "3: Plus" = 3,
+  "4: X" = 4, "5: Open Diamond" = 5, "6: Open Down Triangle" = 6, "7: Square with X" = 7,
+  "8: Asterisk" = 8, "9: Diamond with Plus" = 9, "10: Circle with Plus" = 10,
+  "11: Up-Down Triangles" = 11, "12: Square with Plus" = 12, "13: Circle with X" = 13,
+  "14: Square with Up Triangle" = 14, "15: Filled Square" = 15,
+  "16: Filled Circle" = 16, "17: Filled Up Triangle" = 17, "18: Filled Diamond" = 18,
+  "19: Filled Large Circle" = 19, "20: Filled Small Circle" = 20
+)
+cruz.line.type <- list(
+  "Solid" = 1, "Dash" = 2, "Dot" = 3, "Dot-dash" = 4,
+  "Long dash" = 5, "Dot-long dash" = 6
+)
+cruz.beaufort <- list(
+  "0" = 0, "1" = 1, "2" = 2, "3" = 3, "4" = 4,
+  "5" = 5, "6" = 6, "7" = 7, "8" = 8, "9" = 9
+)
 
 ui.new.line <- function() {helpText(HTML("<br/>"))}
 ui.selectize.instructions <- function() {
