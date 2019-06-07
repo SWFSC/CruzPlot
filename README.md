@@ -21,6 +21,8 @@ shiny::runApp()
 ```
 
 ## Additional details
-CruzPlot was developed using R version 3.4.4 and RStudio version 1.1.447. Although unlikely, using older versions of these programs or outdated R packages could cause errors within CruzPlot.
-
 The CruzPlot manual can be accessed within CruzPlot (i.e., when running CruzPlot) by clicking the "CruzPlot Manual" tab. It is recommended for new users to read the first two pages of the manual for orientation purposes; the rest of the manual contains section-specific information (formatting requirements, etc.) and can be read on an as-needed basis.
+
+If text or images overlap within the CruzPlot window, please make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus ('-') on Windows systems)
+
+CruzPlot was developed using R version 3.4.4 and RStudio version 1.1.447. Although unlikely, using older versions of these programs or outdated R packages could cause errors within CruzPlot.
