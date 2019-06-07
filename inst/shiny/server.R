@@ -19,11 +19,8 @@ server <- function(input, output, session) {
 
   ########################  Non-reactive expressions  #########################
 
-  source(file.path("server_files", "cruzDisplaySymbolProp.R"), local = TRUE, chdir = TRUE) # Display symbols
-  source(file.path("server_files", "funcTickMinor.R"), local = TRUE, chdir = TRUE) # Determine minor tick locations
-  source(file.path("server_files", "funcCruzDasRead.R"), local = TRUE, chdir = TRUE) # Read .das data file
-  source(file.path("server_files", "funcCruzSpeciesRead.R"), local = TRUE, chdir = TRUE) # Read .dat species file
-  source(file.path("server_files", "server_funcs_misc.R"), local = TRUE, chdir = TRUE) # misc functions
+   source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
+  # Reading DAS file is done using CruzPlot::das_read()
 
   # Countries to be removed for world2 map
   # Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
@@ -39,9 +36,9 @@ server <- function(input, output, session) {
   font.family = c("sans", "serif", "mono")
 
   ######################## MUST BE UPDATED IF TURTLE CODES IN SpCodes.dat ARE CHANGED ########################
-  turtle.codes <- c("CC", "CM", "DC", "EI", "HT", "LK", "LV", "ND", "UH", "UT")
   # NOTE: Assumed less likely to have new turtle codes added than mammal codes, so turtle codes are hardcoded
   #    so that app can split up codes into mammal and turtle categories
+  turtle.codes <- c("CC", "CM", "DC", "EI", "HT", "LK", "LV", "ND", "UH", "UT")
   ############################################################################################################
 
   # DAS data-symbol property text inputs

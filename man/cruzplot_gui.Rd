@@ -14,7 +14,7 @@ Open the CruzPlot utility program, an R Shiny application
 }
 \examples{
 \dontrun{
-cruzzplot_gui()
+cruzplot_gui()
 }
 
 }

@@ -26,6 +26,7 @@ library(marmap)
 library(stringr)
 library(geosphere)
 library(dplyr)
+library(CruzPlot)
 
 
 ###############################################################################
@@ -33,9 +34,7 @@ options(shiny.maxRequestSize = 50 * 1024^2) # Max file size is 50MB
 options("digits" = 5)   # for proper display of sighting and effort coordinates
 # map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
 
-
-source(file.path("server_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
-source(file.path("server_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
+source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
 
 
 ### Read default values for map
