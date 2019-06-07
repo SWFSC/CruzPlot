@@ -1,0 +1,25 @@
+Package: CruzPlot
+Title: Create Maps of DAS Data from WinCruz
+Version: 0.1.0.9000
+Authors@R: 
+    c(person("Samuel", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov"), 
+      person("Tim", "Gerrodette", role = c("ctb")))
+Description: a utility program oriented to create maps, plot data, and do basic data summaries
+  from data files in the "DAS" format produced by WinCruz.
+License: MIT + file LICENSE
+BugReports: https://github.com/smwoodman/CruzPlot/issues
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 6.1.1
+Imports: 
+    dplyr,
+    DT,
+    geosphere,
+    mapdata,
+    marmap,
+    maps,
+    shiny,
+    shinydashboard,
+    shinyjs,
+    stringr
