@@ -6,7 +6,7 @@
 #'
 #' @examples
 #' \dontrun{
-#' cruzzplot_gui()
+#' cruzplot_gui()
 #' }
 #'
 #' @importFrom shiny runApp
