@@ -3,3 +3,12 @@
 language: R
 cache: packages
 sudo: required
+
+
+r:
+  - release
+  - devel
+
+
+before_install:
+  - sudo apt-get install --yes netcdf-bin
