@@ -34,13 +34,16 @@ options("digits" = 5)   # for proper display of sighting and effort coordinates
 # map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
 
 
-source(file.path("CruzPlot_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
-source(file.path("CruzPlot_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
+source(file.path("server_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
+source(file.path("server_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
 
 
 ### Read default values for map
-if(file.exists("StarterVals.csv")) start.ll <- suppressWarnings(read.csv("StarterVals.csv", header = TRUE))
-if(!file.exists("StarterVals.csv")) start.ll <- data.frame(X = c(-180, -110, 0, 33, 1))
+if(file.exists("StarterVals.csv")) {
+  start.ll <- suppressWarnings(read.csv("StarterVals.csv", header = TRUE))
+} else {
+  start.ll <- data.frame(X = c(-180, -110, 0, 33, 1))
+}
 
 start.tick <- NULL
 start.tick$interval <- cruzTickUpdate(c(start.ll$X[2], start.ll$X[1]), c(start.ll$X[4], start.ll$X[3]))
@@ -88,9 +91,9 @@ ui.selectize.instructions <- function() {
 
 
 ### Load files with UI code
-source(file.path("CruzPlot_files", "ui_createMap.R"), local = TRUE, chdir = TRUE)
-source(file.path("CruzPlot_files", "ui_dasPlot.R"), local = TRUE, chdir = TRUE)
-source(file.path("CruzPlot_files", "ui_nonDasPlot.R"), local = TRUE, chdir = TRUE)
+source(file.path("ui_files", "ui_createMap.R"), local = TRUE, chdir = TRUE)
+source(file.path("ui_files", "ui_dasPlot.R"), local = TRUE, chdir = TRUE)
+source(file.path("ui_files", "ui_nonDasPlot.R"), local = TRUE, chdir = TRUE)
 
 
 ### UI function
