@@ -24,7 +24,7 @@
 #' }
 #'
 #' @export
-das_read <- function (file) {
+das_read <- function(file) {
   #----------------------------------------------------------------------------
   ### Parse and format DAS file
   # Read file and get initial details
