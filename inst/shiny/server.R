@@ -137,9 +137,9 @@ server <- function(input, output, session) {
   source(file.path("server_files", "cruzMapInterval.R"), local = TRUE, chdir = TRUE)
 
   # Tick labels
-  source(file.path("server_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "funcTickMinor.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_files", "funcTickMinor.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
 
   source(file.path("server_files", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
 
@@ -178,7 +178,7 @@ server <- function(input, output, session) {
   source(file.path("server_files", "cruzDasInteractive.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "cruzDasInteractiveSight.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "cruzDasInteractiveEffort.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "funcCruzClosestPt.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_files", "funcCruzClosestPt.R"), local = TRUE, chdir = TRUE)
 
 
   ############################### Non-DAS Data ################################
