@@ -375,8 +375,6 @@ ui.createMap <- function() {
             box(
               title = "Save map", status = "warning", solidHeader = FALSE, width = 12,
               helpText("When saving file in RStudio window, be sure to specify '.png', '.pdf', or '.jpeg extention"),
-              # radioButtons("download.format", label = h5("Download map as"), choices = list("jpeg" = 1, "pdf" = 2, "png" = 3),
-              #              selected = 3),
               fluidRow(
                 column(6, radioButtons("download.format", label = h5("Download map as"),
                                        choices = list("jpeg" = 1, "pdf" = 2, "png" = 3),
