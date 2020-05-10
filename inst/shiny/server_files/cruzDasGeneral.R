@@ -7,10 +7,10 @@
 observeEvent(input$das.file, {
   withProgress(message = "Processing DAS file", value = 0.6, {
     das.tosave.list <- lapply(input$das.file$datapath, function(i) {
-      suppressWarnings(cruzDasRead(i))
+      suppressWarnings(CruzPlot::das_read(i))
     })
     das.tosave <- do.call(rbind, das.tosave.list)
-    
+
     cruz.list$das.data <- das.tosave
   })
 }, ignoreInit = TRUE)
@@ -23,7 +23,7 @@ outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 
 
 ###############################################################################
-# Code for keeping current inputs the same when switching 
+# Code for keeping current inputs the same when switching
 #    from or to text symbol properties input
 
 observeEvent(input$das_symbol_mult, {
@@ -31,7 +31,7 @@ observeEvent(input$das_symbol_mult, {
   curr.col <- input$das.symbol.color
   if(length(curr.pch) == 0) curr.pch <- "1"
   if(is.null(curr.col)) curr.col <- "Black"
-  
+
   # Covert color codes to color names
   if(curr.col[1] != "Black") {
     if(input$color_style == 1) {
@@ -43,7 +43,7 @@ observeEvent(input$das_symbol_mult, {
       curr.col <- symbol.col.gray[curr.col]
     }
   }
-  
+
   updateTextInput(session, "das.symbol.type.mult", value = paste(curr.pch, collapse = ", "))
   updateTextInput(session, "das.symbol.color.mult", value = paste(curr.col, collapse = ", "))
 })
@@ -53,7 +53,7 @@ observeEvent(!input$das_symbol_mult, {
   curr.col <- unlist(strsplit(input$das.symbol.color.mult, ", "))
   if(length(curr.pch) == 0) curr.pch <- 1
   if(length(curr.col) == 0) curr.col <- "black"
-  
+
   # Covert color names to color codes
   if(curr.col[1] != "black") {
     if(input$color_style == 1) {
@@ -65,18 +65,18 @@ observeEvent(!input$das_symbol_mult, {
       curr.col <- symbol.col.code.gray[curr.col]
     }
   }
-  
+
   updateSelectizeInput(session, "das.symbol.type", selected = curr.pch)
   updateSelectizeInput(session, "das.symbol.color", selected = curr.col)
 })
 
 # observe({
 #   mult <- input$das_symbol_mult
-#   isolate({  
+#   isolate({
 #     sight <- input$das_sighting_type
 #     if(sight == 1) sp.len <- length(input$das.sighting.code.1)
 #     if(sight == 2) sp.len <- length(input$das.sighting.code.2)
 #     if(sight == 3) sp.len <- NULL
 #   })
-#   
+#
 # })
