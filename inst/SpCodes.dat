@@ -119,10 +119,10 @@
  119             Sotalia guianensis                      Costero                                                    
  120             Orcaella heinsohni                      Australian snubfin dolphin                                                    
  149                                                     Unidentified small beaked whale (includes Mesoplodon and Ziphius; excludes Berardius; since 4/2007)                                                    
- 189             Mesoplodon hotaula
  177 UNID_S_DEL  unid. small delphinid                   Unidentified small delphinid (Delphinus, Lagenorhynchus, Lissodelphis or Stenella)                                                    
+ 189             Mesoplodon hotaula
  197                                                     Unidentified marine mammal (since 4/2007)                                                    
- 199 FIN/SEI/BRYDES Balaenoptera physalus/borealis/edeni Rorqualidentified as Fin, Sei, or Bryde's
+ 199             Balaenoptera physalus/borealis/edeni    Rorqualidentified as Fin, Sei, or Bryde's
  277 UNID_M_DEL  unid. medium delphinid                  Unidentified medium delphinid (Feresa, Grampus, Steno or Tursiops)                                                    
  377 UNID_L_DEL  unid. large delphinid                   nidentified large delphinid (Pseudorca, Orca or Globicephala)                           U                        
  477 UNID_PORP   unid. porpoise                          Unidentified porpoise (Phocoena or Phocoenoides)                                                    
