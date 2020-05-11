@@ -2,10 +2,15 @@
 
 language: R
 cache: packages
-sudo: required
 
 
 r:
   - release
   - devel
 
+
+before_cache: Rscript -e 'remotes::install_cran("pkgdown")'
+deploy:
+  provider: script
+  script: Rscript -e 'pkgdown::deploy_site_github()'
+  skip_cleanup: true
