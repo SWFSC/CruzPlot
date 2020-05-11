@@ -214,7 +214,7 @@ ui.createMap <- function() {
                     checkboxInput("tick.left.lab", label = "Left", value = TRUE),
                     checkboxInput("tick.bot.lab", label = "Bottom", value = TRUE),
                     numericInput("label.lon.start", h5("Start longitude tick labels at"), value = as.character(start.tick$lon)),
-                    selectInput("label.tick.font", label = h5("Tick label font"), choices = font.family.ui, selected = 1)
+                    selectInput("label.tick.font", label = h5("Tick label font"), choices = font.family, selected = 1)
                   ),
                   column(
                     width = 6,
@@ -237,7 +237,7 @@ ui.createMap <- function() {
               title = "Title", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 315,
               textInput("label.title", h5("Map title"), value = ""),
               fluidRow(
-                column(6, selectInput("label.title.font", label = h5("Title font"), choices = font.family.ui, selected = 1)),
+                column(6, selectInput("label.title.font", label = h5("Title font"), choices = font.family, selected = 1)),
                 column(6, numericInput("label.title.size", label = h5("Title size"), value = 1.5, min = 0.1, max = 3, step = 0.1))
               )
             ),
@@ -246,7 +246,7 @@ ui.createMap <- function() {
               textInput("label.axis.lon", h5("Longitude axis label"), value = ""),
               textInput("label.axis.lat", h5("Latitude axis label"), value = ""),
               fluidRow(
-                column(6, selectInput("label.axis.font", label = h5("Axis label font"), choices = font.family.ui, selected = 1)),
+                column(6, selectInput("label.axis.font", label = h5("Axis label font"), choices = font.family, selected = 1)),
                 column(6, numericInput("label.axis.size", label = h5("Axis label size"), value = 1.2, min = 0.1, max = 3, step = 0.1))
               )
             )

@@ -289,7 +289,7 @@ ui.dasPlot <- function() {
                       ),
                       column(
                         width = 5,
-                        selectInput("das.legend.font", label = h5("Font"), choices = font.family.ui, selected = 1),
+                        selectInput("das.legend.font", label = h5("Font"), choices = font.family, selected = 1),
                         numericInput("das.legend.textSize", label = h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
                       )
                     )
@@ -345,7 +345,7 @@ ui.dasPlot <- function() {
                       textInput("eff.legend.lat", label = h5("Latitude"), value = "")
                     )
                   ),
-                  column(3, selectInput("eff.legend.font", label = h5("Font"), choices = font.family.ui, selected = 1)),
+                  column(3, selectInput("eff.legend.font", label = h5("Font"), choices = font.family, selected = 1)),
                   column(2, numericInput("eff.legend.textSize", label = h5("Legend size"),
                                          value = 1.0, min = 0.1, max = 3, step = 0.1))
                 )

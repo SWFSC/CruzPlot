@@ -8,12 +8,12 @@
 
 
 ###############################################################################
-# Update reactiveValues cruz.tick at start (cruz.tick's = NULL) and 
+# Update reactiveValues cruz.tick at start (cruz.tick's = NULL) and
 #    if inputs change and are different from cruz.tick
 
 observe({
   req(input$tick.interval.major)
-  
+
   in.tick.interval.major <- input$tick.interval.major
   isolate({
     if(cruz.tick$tick.interval.major != in.tick.interval.major)
@@ -24,7 +24,7 @@ observe({
 observe({
   req(input$label.lon.start)
   validate(need(!is.na(input$label.lon.start), "This is never printed"))
-  
+
   in.label.lon.start <- as.numeric(input$label.lon.start)
   isolate({
     if(cruz.tick$label.lon.start != in.label.lon.start)
@@ -35,7 +35,7 @@ observe({
 observe({
   req(input$label.lat.start)
   validate(need(!is.na(input$label.lat.start), "This is never printed"))
-  
+
   in.label.lat.start <- as.numeric(input$label.lat.start)
   isolate({
     if(cruz.tick$label.lat.start != in.label.lat.start)
@@ -51,18 +51,18 @@ observe({
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
   tick.val <- cruzTickUpdate(lon.range, lat.range)
-  
+
   updateNumericInput(session, "tick.interval.major", value = tick.val)
   cruz.tick$tick.interval.major <- tick.val
 }, priority = 2)
 
-# Tick label longitude start 
+# Tick label longitude start
 observe({
   b <- cruz.tick$tick.interval.major
   if(b != 0 && !is.na(b)) {
     lon.range <- cruz.map.range$lon.range
     lon.start <- cruzTickStart(lon.range, b)
-    
+
     updateTextInput(session, "label.lon.start", value = paste(lon.start))
     cruz.tick$label.lon.start <- lon.start
   }
@@ -74,7 +74,7 @@ observe({
   if(b != 0 && !is.na(b)) {
     lat.range <- cruz.map.range$lat.range
     lat.start <- cruzTickStart(lat.range, b)
-    
+
     updateTextInput(session, "label.lat.start", value = paste(lat.start))
     cruz.tick$label.lat.start <- lat.start
   }
@@ -101,7 +101,7 @@ cruzMapTickLatBool <- reactive({
 cruzMapTickLonLab <- reactive({
   tick.lab.loc <- cruzMapIntervalLon()$label.loc
   format <- input$tick.style
-  
+
   tick.lab <- parse(text = sapply(tick.lab.loc, function(i) {
     i <- ifelse(i > 180, i - 360, i)
     i <- ifelse(i < -180, 360 - i, i)
@@ -112,7 +112,7 @@ cruzMapTickLonLab <- reactive({
     l <- ifelse((format == 3 || format == 4), "*degree", "")
     paste(a, l, b, sep = "")
   }))
-  
+
   return(tick.lab)
 })
 
@@ -120,7 +120,7 @@ cruzMapTickLonLab <- reactive({
 cruzMapTickLatLab <- reactive({
   tick.lab.loc <- cruzMapIntervalLat()$label.loc
   format <- input$tick.style
-  
+
   tick.lab <- parse(text = sapply(tick.lab.loc, function(i) {
     a <- ifelse(i < 0, -1 * i, i)
     b <- ifelse(i < 0, "~S", "~N")
@@ -129,13 +129,13 @@ cruzMapTickLatLab <- reactive({
     l <- ifelse((format == 3 || format == 4), "*degree", "")
     paste(a, l, b, sep = "")
   }))
-  
+
   return(tick.lab)
 })
 
 cruzMapTickParam <- reactive({
   tick.len <- input$tick.length
-  lab.font <- font.family[as.numeric(input$label.tick.font)]
+  lab.font <- font.family.vals[as.numeric(input$label.tick.font)]
   lab.scale <- input$label.tick.size
   return(list(len = tick.len, font = lab.font, scale = lab.scale))
 })
