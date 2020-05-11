@@ -20,15 +20,9 @@ sapply(list.packages, require, character.only = TRUE)
 
 
 ###############################################################################
-##### Assorted...
-options(shiny.maxRequestSize = 50 * 1024^2) # Max file size is 50MB
-options("digits" = 5)   # for proper display of sighting and effort coordinates
-# map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
-
+### Read default values for map - better way to do this..?
 source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
 
-
-### Read default values for map
 if(file.exists("StarterVals.csv")) {
   start.ll <- suppressWarnings(read.csv("StarterVals.csv", header = TRUE))
 } else {
@@ -40,6 +34,12 @@ start.tick$interval <- cruzTickUpdate(c(start.ll$X[2], start.ll$X[1]), c(start.l
 start.tick$lon <- cruzTickStart(c(start.ll$X[1], start.ll$X[2]), start.tick$interval)
 start.tick$lat <- cruzTickStart(c(start.ll$X[3], start.ll$X[4]), start.tick$interval)
 
+
+###############################################################################
+##### Assorted other stuf...
+options(shiny.maxRequestSize = 50 * 1024^2) # Max file size is 50MB
+options("digits" = 5)   # for proper display of sighting and effort coordinates
+# map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
 
 cruz.palette.color <- list(
   "Black" = "black", "Dark Blue" = "darkblue", "Dark Red" = "red4",
@@ -53,10 +53,10 @@ cruz.palette.gray <- list(
   "Black" = 1, "Dark Gray" = 2, "Charcoal" = 3,
   "Gray" = 4, "Light Gray" = 5, "White" = 0
 )
-font.family <- list(
+font.family.ui <- list(
   "Sans" = 1, "Serif" = 2, "Mono" = 3
 )
-cruz.symbol.type   <- list(
+cruz.symbol.type <- list(
   "0: Open Square" = 0, "1: Open Circle" = 1, "2: Open Up Triangle" = 2, "3: Plus" = 3,
   "4: X" = 4, "5: Open Diamond" = 5, "6: Open Down Triangle" = 6, "7: Square with X" = 7,
   "8: Asterisk" = 8, "9: Diamond with Plus" = 9, "10: Circle with Plus" = 10,
@@ -74,6 +74,23 @@ cruz.beaufort <- list(
   "5" = 5, "6" = 6, "7" = 7, "8" = 8, "9" = 9
 )
 
+#----------
+# DAS data-symbol property text inputs
+symbol.col <- c(
+  "Black", "Dark Blue", "Dark Red", "Green", "Orange",
+  "Blue", "Brown", "Red", "Yellow", "Aqua", "Tan", "Pink",
+  "Light Green", "Light Brown", "Light Blue", "Light Red", "Gray", "White"
+)
+symbol.col.code <- c(
+  "black", "darkblue", "red4", "forestgreen", "orange",
+  "blue", "tan4", "red", "yellow", "aquamarine2", "bisque1", "hotpink",
+  "green", "wheat3", "lightblue", "indianred2", "gray", "white"
+)
+symbol.col.gray <- list(
+  "Black", "Dark Gray", "Charcoal", "Gray", "Light Gray", "White"
+)
+symbol.col.code.gray <- c(1, 2, 3, 4, 5, 0)
+
 
 ###############################################################################
 ##### UI
@@ -87,6 +104,7 @@ ui.selectize.instructions <- function() {
 source(file.path("ui_files", "ui_createMap.R"), local = TRUE, chdir = TRUE)
 source(file.path("ui_files", "ui_dasPlot.R"), local = TRUE, chdir = TRUE)
 source(file.path("ui_files", "ui_nonDasPlot.R"), local = TRUE, chdir = TRUE)
+source(file.path("ui_files", "ui_other.R"), local = TRUE, chdir = TRUE)
 
 
 ### UI function
@@ -100,7 +118,7 @@ ui <- dashboardPage(
       menuItem("Plot Non-DAS Data", tabName = "nonDASplot", icon = icon("th")),
       menuItem(HTML(paste0("Color and Formatting", "<br/>", "Options")), tabName = "dispColor", icon = icon("th")),
       menuItem("Species Information", tabName = "dispSp", icon = icon("th")),
-      menuItem("CruzPlot Manual", tabName = "manual", icon = icon("th")),
+      menuItem("CruzPlot Manual", tabName = "dispManual", icon = icon("th")),
       ui.new.line(),
       fileInput("load_app_envir_file", "Load workspace"),
       column(
@@ -121,54 +139,20 @@ ui <- dashboardPage(
 
   dashboardBody(
     useShinyjs(),
-
-    ### Control validate text output
-    tags$head(
+    tags$head( #validation text
       tags$style(HTML("
                       .shiny-output-error-validation {
                       color: red; font-weight: bold;
                       }
                       "))
     ),
-
     tabItems(
       ui.createMap(),
       ui.dasPlot(),
       ui.nonDasPlot(),
-
-      # Display color/Format options
-      tabItem(
-        tabName = "dispColor",
-        fluidRow(
-          box(
-            title = "Color/Format Options", status = "primary", solidHeader = TRUE,  width = 12,
-            plotOutput("plotDisplay")
-          )
-        )
-      ),
-
-      # Display species codes and names
-      tabItem(
-        tabName = "dispSp",
-        fluidRow(
-          box(
-            title = "Species Information", status = "primary", solidHeader = TRUE,  width = 12,
-            radioButtons("sp_type", "Select species codes to display",
-                         choices = list("Mammals" = 1, "Turtles" = 2, "All" = 3)),
-            conditionalPanel(condition = "input.sp_type == 1", dataTableOutput("sp1")),
-            conditionalPanel(condition = "input.sp_type == 2", dataTableOutput("sp2")),
-            conditionalPanel(condition = "input.sp_type == 3", dataTableOutput("sp3"))
-          )
-        )
-      ),
-
-      # Display CruzPlot manual
-      tabItem(
-        tabName = "manual",
-        helpText("Click 'Open in Browser' at top of the app in order to display manual in-app"),
-        # tags$iframe(style="height:850px; width:100%; scrolling=yes", src="CruzPlot_Manual_app.pdf")
-        uiOutput("manual_pdf") #output$manual_pdf is in 'server.R'
-      )
+      ui.dispColor(),
+      ui.dispSp(),
+      ui.dispManual()
     )
   )
 )
@@ -191,72 +175,27 @@ server <- function(input, output, session) {
 
   ########################  Non-reactive expressions  #########################
 
-  source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
   # Reading DAS file is done using CruzPlot::das_read()
 
   # Countries to be removed for world2 map
   # Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
-  remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali",
-              "Burkina Faso", "Ghana", "Togo")
-  mapnames <- map("world2", fill=TRUE, plot=FALSE)$names
-  mapnames.hires <- map("world2Hires", fill=TRUE, plot=FALSE)$names
+  remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali", "Burkina Faso", "Ghana", "Togo")
+  mapnames <- map("world2", fill = TRUE, plot = FALSE)$names
+  mapnames.hires <- map("world2Hires", fill = TRUE, plot = FALSE)$names
   regions.rm <- mapnames[!(mapnames %in% remove)]
   regions.rm.hires <- mapnames.hires[!(mapnames.hires %in% remove)]
 
   bathy.col <- c("lightsteelblue4", "lightsteelblue3", "lightsteelblue2", "lightsteelblue1")
 
-  # font.family = c("sans", "serif", "mono")
+  font.family = c("sans", "serif", "mono")
 
   ######################## MUST BE UPDATED IF TURTLE CODES IN SpCodes.dat ARE CHANGED ########################
   # NOTE: Assumed less likely to have new turtle codes added than mammal codes, so turtle codes are hardcoded
   #    so that app can split up codes into mammal and turtle categories
   turtle.codes <- c("CC", "CM", "DC", "EI", "HT", "LK", "LV", "ND", "UH", "UT")
+
   ############################################################################################################
-
-  #----------
-  # DAS data-symbol property text inputs
-  symbol.col <- c(
-    "Black", "Dark Blue", "Dark Red", "Green", "Orange",
-    "Blue", "Brown", "Red", "Yellow", "Aqua", "Tan", "Pink",
-    "Light Green", "Light Brown", "Light Blue", "Light Red", "Gray", "White"
-  )
-  symbol.col.code <- c(
-    "black", "darkblue", "red4", "forestgreen", "orange",
-    "blue", "tan4", "red", "yellow", "aquamarine2", "bisque1", "hotpink",
-    "green", "wheat3", "lightblue", "indianred2", "gray", "white"
-  )
-  symbol.col.gray <- list(
-    "Black", "Dark Gray", "Charcoal", "Gray", "Light Gray", "White"
-  )
-  symbol.col.code.gray <- c(1, 2, 3, 4, 5, 0)
-
-  # cruz.palette.color <- list(
-  #   "Black" = "black", "Dark Blue" = "darkblue", "Dark Red" = "red4",
-  #   "Brown" = "tan4", "Green" = "forestgreen", "Orange" = "orange",
-  #   "Blue" = "blue", "Red" = "red", "Yellow" = "yellow","Aqua" = "aquamarine2",
-  #   "Tan" = "bisque1", "Pink" = "hotpink", "Light Green" = "green",
-  #   "Light Brown" = "wheat3", "Light Blue" = "lightblue",
-  #   "Light Red" = "indianred2", "Gray" = "gray", "White" = "white"
-  # )
-  # cruz.palette.gray <- list(
-  #   "Black" = 1, "Dark Gray" = 2, "Charcoal" = 3,
-  #   "Gray" = 4, "Light Gray" = 5, "White" = 0
-  # )
-  # cruz.symbol.type <- list(
-  #   "0: Open Square" = 0, "1: Open Circle" = 1, "2: Open Up Triangle" = 2, "3: Plus" = 3,
-  #   "4: X" = 4, "5: Open Diamond" = 5, "6: Open Down Triangle" = 6, "7: Square with X" = 7,
-  #   "8: Asterisk" = 8, "9: Diamond with Plus" = 9, "10: Circle with Plus" = 10,
-  #   "11: Up-Down Triangles" = 11, "12: Square with Plus" = 12, "13: Circle with X" = 13,
-  #   "14: Square with Up Triangle" = 14, "15: Filled Square" = 15,
-  #   "16: Filled Circle" = 16, "17: Filled Up Triangle" = 17, "18: Filled Diamond" = 18,
-  #   "19: Filled Large Circle" = 19, "20: Filled Small Circle" = 20
-  # )
-  # cruz.line.type <- list(
-  #   "Solid" = 1, "Dash" = 2, "Dot" = 3, "Dot-dash" = 4,
-  #   "Long dash" = 5, "Dot-long dash" = 6
-  # )
-  #----------
-
   # colors for displaying effort by Beaufort
   # effort lines will be shown from 0 to => max.bft
   # # number of colors = max.bft + 1
@@ -289,41 +228,16 @@ server <- function(input, output, session) {
   #   print(map.height.server)
   # })
 
-  # Lon dimensions and world2, lat dimensions
   source(file.path("server_files", "cruzMapRange.R"), local = TRUE, chdir = TRUE)
-
-  # Map name and countries to remove if world2 map
   source(file.path("server_files", "cruzMapName.R"), local = TRUE, chdir = TRUE)
-
-  # Water color and depth, land color
   source(file.path("server_files", "cruzMapColor.R"), local = TRUE, chdir = TRUE)
-
-  # Rivers
   source(file.path("server_files", "cruzMapRiver.R"), local = TRUE, chdir = TRUE)
-
-  # Scale bar
   source(file.path("server_files", "cruzMapScaleBar.R"), local = TRUE, chdir = TRUE)
-
-  # Coastline
   source(file.path("server_files", "cruzMapCoastline.R"), local = TRUE, chdir = TRUE)
-
-  # Major intervals
   source(file.path("server_files", "cruzMapInterval.R"), local = TRUE, chdir = TRUE)
-
-  # Tick labels
-  # source(file.path("server_files", "funcTickUpdate.R"), local = TRUE, chdir = TRUE)
-  # source(file.path("server_files", "funcTickMinor.R"), local = TRUE, chdir = TRUE)
-  # source(file.path("server_files", "funcTickStart.R"), local = TRUE, chdir = TRUE)
-
   source(file.path("server_files", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
-
-  # Grid lines
   source(file.path("server_files", "cruzMapGrid.R"), local = TRUE, chdir = TRUE)
-
-  # Figure labels
   source(file.path("server_files", "cruzMapLabel.R"), local = TRUE, chdir = TRUE)
-
-  # Planned transect lines
   source(file.path("server_files", "cruzMapPlannedTransects.R"), local = TRUE, chdir = TRUE)
 
 
