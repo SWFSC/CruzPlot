@@ -2,21 +2,20 @@
 #'
 #' Open the CruzPlot utility program, an R Shiny application
 #'
+#' @param launch.browser Logical with default of \code{TRUE}; passed to \code{launch.browser}
+#'   argument of \code{\link[shiny]{runApp}}#'
 #' @param ... Passed to \code{\link[shiny]{runApp}}
 #'
-#' @examples
-#' \dontrun{
-#' cruzplot_gui()
-#' }
+#' @usage cruzplot_gui(launch.browser = TRUE)
 #'
-#' @importFrom shiny runApp
+#' @seealso # TODOurl
 #'
 #' @export
-cruzplot_gui <- function(...) {
+cruzplot_gui <- function(launch.browser = TRUE, ...) {
   appDir <- system.file("shiny", package = "CruzPlot")
   if (appDir == "") {
     stop("There was an error opening CruzPlot; try re-installing 'CruzPlot'",
          call. = FALSE)
   }
-  runApp(appDir, ...)
+  runApp(appDir, launch.browser = launch.browser, display.mode = "normal", ...)
 }

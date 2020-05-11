@@ -4,14 +4,10 @@ Version: 0.1.0.9000
 Authors@R: 
     c(person("Samuel", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov"), 
       person("Tim", "Gerrodette", role = c("ctb")))
-Description: a utility program oriented to create maps, plot data, and do basic data summaries
+Description: A utility program oriented to create maps, plot data, and do basic data summaries
   from data files in the "DAS" format produced by WinCruz.
-License: MIT + file LICENSE
+URL: https://github.com/smwoodman/CruzPlot
 BugReports: https://github.com/smwoodman/CruzPlot/issues
-Encoding: UTF-8
-LazyData: true
-Roxygen: list(markdown = TRUE)
-RoxygenNote: 6.1.1
 Imports: 
     dplyr,
     DT,
@@ -23,3 +19,7 @@ Imports:
     shinydashboard,
     shinyjs,
     stringr
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+RoxygenNote: 7.1.0
