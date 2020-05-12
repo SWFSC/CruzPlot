@@ -2,7 +2,6 @@
 
 ###############################################################################
 # Check for and attach packages
-stopifnot(require(CruzPlot))
 list.packages <- list(
   "dplyr", "DT", "geosphere", "mapdata", "marmap", "maps", "shiny",
   "shinydashboard", "shinyjs", "stringr"
@@ -16,7 +15,10 @@ if (!all(p.check))
        "install.packages(c(\"", paste(list.packages[!p.check],
                                       collapse = "\", \""), "\"))")
 
-sapply(list.packages, require, character.only = TRUE)
+stopifnot(
+  "Error attaching CruzPlot package - please reintall CruzPlot" = require(CruzPlot),
+  "Error attaching packages - please reinstall CruzPlot" = all(sapply(list.packages, require, character.only = TRUE))
+)
 
 
 ###############################################################################
@@ -125,7 +127,7 @@ server <- function(input, output, session) {
   source(file.path("server_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)
 
 
-    ################################## Map Data #################################
+  ################################## Map Data #################################
   ### map height on screen in pixels
   #     set for specific computer display here and 5% larger in ui.R
   #     set to 600 for laptops, 900 for standard monitor
@@ -151,17 +153,13 @@ server <- function(input, output, session) {
   #   print(map.height.server)
   # })
 
-  source(file.path("server_files", "cruzMapRange.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapName.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapColor.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapRiver.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapScaleBar.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapCoastline.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapInterval.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapGrid.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapLabel.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzMapPlannedTransects.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_1_map", "cruzMapCoastline.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_1_map", "cruzMapColorGrid.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_1_map", "cruzMapLabel.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_1_map", "cruzMapPlannedTransects.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_1_map", "cruzMapRange.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_1_map", "cruzMapScaleBar.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_1_map", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
 
 
   ################################## DAS Data #################################
@@ -289,7 +287,7 @@ server <- function(input, output, session) {
   # slight bug: display does not occur when window is resized
   output$plotDisplay <- renderPlot({
     cruzDisplaySymbolProp()
-    })
+  })
 
 
   # Display mammals, turtles, and all species codes
