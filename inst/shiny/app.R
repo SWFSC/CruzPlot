@@ -86,10 +86,7 @@ ui <- dashboardPage(
       ),
       ui.new.line(),
       ui.new.line(),
-      radioButtons("map.size", NULL,
-                   choices = list("Large map window" = 1,
-                                  "Small map window" = 2),
-                   selected = 1),
+      numericInput("map.size", tags$h5("Map height (pixels)"), value = 900, min = 0, step = 100),
       ui.new.line(),
       actionButton("stop", "Close CruzPlot")
     ), width = "200"
@@ -136,26 +133,27 @@ server <- function(input, output, session) {
 
   #----------------------------------------------------------------------------
   ### Map tab
+  map.height <- reactive(input$map.size)
 
   # map height on screen in pixels????
   #   set for specific computer display here and 5% larger in ui.R
   #   set to 600 for laptops, 900 for standard monitor
-  map.height.server <- reactive({
-    if(input$map.size == 1) map.h <- 900
-    if(input$map.size == 2) map.h <- 600
-
-    map.h
-  })
-
-  map.height.ui <- reactive({
-    if(input$map.size == 1) map.h <- 950
-    if(input$map.size == 2) map.h <- 630
-
-    map.h
-  })
-
+  # map.height.server <- reactive({
+  #   if(input$map.size == 1) map.h <- 900
+  #   if(input$map.size == 2) map.h <- 600
+  #
+  #   map.h
+  # })
+  #
+  # map.height.ui <- reactive({
+  #   if(input$map.size == 1) map.h <- 950
+  #   if(input$map.size == 2) map.h <- 630
+  #
+  #   map.h
+  # })
+  #
   # map.height.server.val <- reactiveVal(value = map.height.server())
-
+  #
   # map.height.server = 600
   # observe({
   #   map.height.server <- map.height.func()

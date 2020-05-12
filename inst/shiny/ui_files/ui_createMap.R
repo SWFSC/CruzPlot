@@ -7,8 +7,7 @@ ui.createMap <- function() {
     fluidRow(
       box(
         status = "primary",  width = 6,
-        uiOutput("plot1.ui")
-        # plotOutput("plot1")
+        plotOutput("plot1", height = "auto")
       ),
 
       tabBox(

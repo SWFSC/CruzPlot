@@ -43,11 +43,11 @@ output$cruzNonDasRemove_text <- renderText({
 
 #------------------------------------------------------------------------------
 ### DAS tabular output
-output$das_out_sight_table <- renderTable({ cruzDasOutSight_Table() })
-output$cruzDasOutSight_Save_text <- renderText({ cruzDasOutSight_Save() })
+output$das_out_sight_table <- renderTable(cruzDasOutSight_Table())
+output$cruzDasOutSight_Save_text <- renderText(cruzDasOutSight_Save())
 
-output$das_out_effort_table <- renderTable({ cruzDasOutEffort_Table() })
-output$cruzDasOutEffort_Save_text <- renderText({ cruzDasOutEffort_Save() })
+output$das_out_effort_table <- renderTable(cruzDasOutEffort_Table())
+output$cruzDasOutEffort_Save_text <- renderText(cruzDasOutEffort_Save())
 
 
 #------------------------------------------------------------------------------
@@ -55,55 +55,31 @@ output$cruzDasOutEffort_Save_text <- renderText({ cruzDasOutEffort_Save() })
 output$plot1 <- renderPlot({
   plotMap()()
   plotInteractive()()
-})
+}, height = map.height, units = "px")
 output$plot2 <- renderPlot({
   plotMap()()
   plotInteractive()()
-})
+}, height = map.height, units = "px")
 output$plot3 <- renderPlot({
   plotMap()()
   plotInteractive()()
-})
+}, height = map.height, units = "px")
 output$plot4 <- renderPlot({
   plotMap()()
   plotInteractive()()
-})
+}, height = map.height, units = "px")
 output$plot5 <- renderPlot({
   plotMap()()
   plotInteractive()()
-})
+}, height = map.height, units = "px")
 output$plot6 <- renderPlot({
   plotMap()()
   plotInteractive()()
-})
+}, height = map.height, units = "px")
 output$plot7 <- renderPlot({
   plotMap()()
   plotInteractive()()
-})
-
-
-# Plot Map pt 2
-output$plot1.ui <- renderUI({
-  plotOutput("plot1", height = map.height.ui())
-})
-output$plot2.ui <- renderUI({
-  plotOutput("plot2", height = map.height.ui())
-})
-output$plot3.ui <- renderUI({
-  plotOutput("plot3", height = map.height.ui(), click = "sight_click")
-})
-output$plot4.ui <- renderUI({
-  plotOutput("plot4", height = map.height.ui(), hover  = "sight_hover")
-})
-output$plot5.ui <- renderUI({
-  plotOutput("plot5", height = map.height.ui(), click = "effort_click")
-})
-output$plot6.ui <- renderUI({
-  plotOutput("plot6", height = map.height.ui(), hover = "effort_hover")
-})
-output$plot7.ui <- renderUI({
-  plotOutput("plot7", height = map.height.ui())
-})
+}, height = map.height, units = "px")
 
 
 #------------------------------------------------------------------------------
