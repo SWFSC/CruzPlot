@@ -1,4 +1,4 @@
-# drawData for CruzPlot by Sam Woodman
+# drawData for CruzPlot
 #   Plots selected sightings, legends, and effort lines from DAS file
 #   Plots non-DAS data (lines or points)
 
@@ -15,7 +15,7 @@ if(!is.null(data.ndas)) {
             lwd = data.ndas.l.curr$lwd)
     }
   }
-  
+
   # Plot points
   data.ndas.p <- data.ndas[[2]]
   if(length(data.ndas.p) > 0) {
@@ -29,15 +29,15 @@ if(!is.null(data.ndas)) {
 }
 
 
-### Plot DAS data 
+### Plot DAS data
 if(!is.null(cruz.list$das.data)) {
   ## Plot effort segments
   if(input$das_effort != "1") {
-    segments(x0 = data.effort$Lon[eff.ndx.R], x1 = data.effort$Lon[eff.ndx.E], 
-             y0 = data.effort$Lat[eff.ndx.R], y1 = data.effort$Lat[eff.ndx.E], 
+    segments(x0 = data.effort$Lon[eff.ndx.R], x1 = data.effort$Lon[eff.ndx.E],
+             y0 = data.effort$Lat[eff.ndx.R], y1 = data.effort$Lat[eff.ndx.E],
              col = eff.col, lwd = eff.lwd)
   }
-  
+
   ## Plot legend for effort by bft
   if(input$eff_legend & input$das_effort_det_byBft & input$das_effort == "3") {
     op <- par(family = data.eff.legend$font.fam)
@@ -63,28 +63,28 @@ if(!is.null(cruz.list$das.data)) {
            bg = "white")
     par(op)
   }
-  
-  
+
+
   ## Plot sightings and legend
   if(input$das_sightings) {
-    points(data.sight$sight.lon, data.sight$sight.lat, 
+    points(data.sight$sight.lon, data.sight$sight.lat,
            pch = data.sight.symbol$pt.pch, col = data.sight.symbol$pt.col,
            cex = data.sight.symbol$pt.cex, lwd = data.sight.symbol$pt.lwd)
-    
+
     if(input$das_legend & sight.type < 3) {
       op <- par(family = data.sight.legend$font.fam)
-      legend(x = data.sight.legend$leg.x, 
-             y = data.sight.legend$leg.y, 
-             legend = data.sight.legend$leg.lab, 
-             title = data.sight.legend$leg.title, 
-             pch = data.sight.legend$leg.pch, 
-             col = data.sight.legend$leg.col, 
-             pt.cex = data.sight.legend$leg.cex, 
-             pt.lwd = data.sight.legend$leg.lwd, 
-             bty = data.sight.legend$leg.bty, 
-             box.col = data.sight.legend$leg.box.col, 
-             box.lwd = data.sight.legend$leg.box.lwd, 
-             cex = data.sight.legend$leg.box.cex, 
+      legend(x = data.sight.legend$leg.x,
+             y = data.sight.legend$leg.y,
+             legend = data.sight.legend$leg.lab,
+             title = data.sight.legend$leg.title,
+             pch = data.sight.legend$leg.pch,
+             col = data.sight.legend$leg.col,
+             pt.cex = data.sight.legend$leg.cex,
+             pt.lwd = data.sight.legend$leg.lwd,
+             bty = data.sight.legend$leg.bty,
+             box.col = data.sight.legend$leg.box.col,
+             box.lwd = data.sight.legend$leg.box.lwd,
+             cex = data.sight.legend$leg.box.cex,
              bg = "white")
       par(op)
     }

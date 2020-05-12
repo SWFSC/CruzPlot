@@ -1,5 +1,4 @@
-# drawInteractive for CruzPlot by Sam Woodman
-#   Plots interactive points
+# drawInteractive for CruzPlot: Plot interactive points
 
 lon.range <- cruz.map.range$lon.range
 lat.range <- cruz.map.range$lat.range
@@ -20,7 +19,7 @@ if(!is.null(sight$click)) {
   for(i in 1:(length(sight$click)/2)) {
     text(x = sight$click[(2*i)-1], sight$click[(2*i)], sight$lab[i], pos = 1)
   }
-  if(sight$miss) text(x=(lon.range[1]+1), y = (lat.range[1] + 3), 
+  if(sight$miss) text(x=(lon.range[1]+1), y = (lat.range[1] + 3),
                       "Click was not close enough to a point", pos = 4)
 }
 
@@ -29,15 +28,15 @@ if(!is.null(effort$click)) {
   for(i in 1:(length(effort$click)/2)) {
     text(x = effort$click[(2*i)-1], effort$click[(2*i)], effort$lab[i], pos = 1)
   }
-  if(effort$miss) text(x=(abs(lon.range[2]-lon.range[1])*.1)+lon.range[1], 
-                       y = (abs(lat.range[2]-lat.range[1])*.1)+lat.range[1], 
+  if(effort$miss) text(x=(abs(lon.range[2]-lon.range[1])*.1)+lon.range[1],
+                       y = (abs(lat.range[2]-lat.range[1])*.1)+lat.range[1],
                        "Click was not close enough to a point", pos = 4)
 }
 
 if(!is.null(effort$hover)) {
   if(!effort$hover.miss) text(x = effort$hover[1], effort$hover[2], labels = effort$hover.lab, pos = 1)
-  if(effort$hover.miss) text(x = (abs(lon.range[2]-lon.range[1])*.1)+lon.range[1], 
-                             y = (abs(lat.range[2]-lat.range[1])*.1)+lat.range[1], 
+  if(effort$hover.miss) text(x = (abs(lon.range[2]-lon.range[1])*.1)+lon.range[1],
+                             y = (abs(lat.range[2]-lat.range[1])*.1)+lat.range[1],
                              labels = "Cursor not close enough\nto an effort line", pos = 4)
   if(input$das_effort_interactive != 3) effort$hover <- NULL
 }

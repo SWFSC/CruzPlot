@@ -1,5 +1,4 @@
-### cruzServerRender
-## Render statements 
+# Render statements
 
 ### Planned transects outputs
 output$planned_transects_text <- renderText({
@@ -16,7 +15,7 @@ output$cruzNonDasLoaded <- renderDataTable({
   df <- cruz.list$ndas.df
   req(df)
   row.names(df) <- 1:nrow(df)
-  
+
   df
 }, options = list(dom = 't'), rownames = TRUE)
 

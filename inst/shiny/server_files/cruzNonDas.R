@@ -1,5 +1,4 @@
-### cruzNonDas for CruzPlot by Sam Woodman
-## Load and store non-DAS data
+# Load and store non-DAS data
 
 
 ###############################################################################
@@ -18,11 +17,7 @@ observe({
 ### Read in csv file
 cruzNonDasFileLoad <- reactive({
   if(is.null(input$ndas.file)) return(NULL)
-  ndas.file <- read.csv(input$ndas.file$datapath, # header = input$ndas.header, 
-                        # sep = input$ndas.sep, quote = input$ndas.quote, 
-                        stringsAsFactors = FALSE)
-  
-  return(ndas.file)
+  read.csv(input$ndas.file$datapath, stringsAsFactors = FALSE)
 })
 
 ### Get long/lat data
@@ -30,34 +25,34 @@ cruzNonDasFile_LonLat <- reactive({
   req(cruzNonDasFileLoad())
   ndas.file <- cruzNonDasFileLoad()
 
-  ndx.lon <- which(names(ndas.file) %in% c("Longitude", "longitude", 
+  ndx.lon <- which(names(ndas.file) %in% c("Longitude", "longitude",
                                            "LONGITUDE", "Lon","lon","LON"))
-  ndx.lat <- which(names(ndas.file) %in% c("Latitude", "latitude", 
+  ndx.lat <- which(names(ndas.file) %in% c("Latitude", "latitude",
                                            "LATITUDE", "Lat","lat","LAT"))
-  
+
   validate(
-    need(length(ndx.lon) < 2, 
-         paste("Multiple columns of loaded non-DAS data have one of the", 
-               "following headings: 'Longitude', 'longitude', 'LONGITUDE',", 
-               "'Lon', 'lon', or 'LON'")), 
-    need(length(ndx.lon) > 0, 
-         paste("None columns of loaded non-DAS data have one of the", 
-               "following headings: 'Longitude', 'longitude', 'LONGITUDE',", 
-               "'Lon', 'lon', or 'LON'")),   
-    need(length(ndx.lat) < 2, 
-         paste("Multiple columns of loaded non-DAS data have one of the", 
-               "following headings: 'Latitude', 'latitude', 'LATITUDE',", 
-               "'Lat', 'lat', or 'LAT'")), 
-    need(length(ndx.lon) > 0, 
-         paste("None of loaded non-DAS data have one of the", 
+    need(length(ndx.lon) < 2,
+         paste("Multiple columns of loaded non-DAS data have one of the",
+               "following headings: 'Longitude', 'longitude', 'LONGITUDE',",
+               "'Lon', 'lon', or 'LON'")),
+    need(length(ndx.lon) > 0,
+         paste("None columns of loaded non-DAS data have one of the",
+               "following headings: 'Longitude', 'longitude', 'LONGITUDE',",
+               "'Lon', 'lon', or 'LON'")),
+    need(length(ndx.lat) < 2,
+         paste("Multiple columns of loaded non-DAS data have one of the",
+               "following headings: 'Latitude', 'latitude', 'LATITUDE',",
+               "'Lat', 'lat', or 'LAT'")),
+    need(length(ndx.lon) > 0,
+         paste("None of loaded non-DAS data have one of the",
                "following headings: 'Latitude', 'latitude', 'LATITUDE',",
                "'Lat', 'lat', or 'LAT'"))
   )
-  
+
   ndas.x <- ndas.file[,ndx.lon]
   ndas.y <- ndas.file[,ndx.lat]
-  
-  return(list(ndas.x = ndas.x, ndas.y = ndas.y)) 
+
+  return(list(ndas.x = ndas.x, ndas.y = ndas.y))
 })
 
 ### Conditional flag for UI code
@@ -76,52 +71,52 @@ outputOptions(output, "cruzNonDasFile_Conditional", suspendWhenHidden = FALSE)
 # Lines
 cruzNonDasAdd_Line <- reactive({
   req(cruzNonDasFileLoad())
-  
+
   ndas.x <- cruzNonDasFile_LonLat()[[1]]
   ndas.y <- cruzNonDasFile_LonLat()[[2]]
-  
+
   line.lty <- as.numeric(input$ndas.line.lty)
   line.col <- input$ndas.line.col
   line.col.which <- which(cruz.palette.color == line.col)
   line.lwd <- input$ndas.line.lwd
-  
-  list.curr <- list(ind = 1, x = ndas.x, y = ndas.y, type = line.lty, 
+
+  list.curr <- list(ind = 1, x = ndas.x, y = ndas.y, type = line.lty,
                     col = line.col, cex = NA, lwd = line.lwd)
-  list.curr.df <- data.frame(a = length(ndas.x) - 1, 
-                             b = names(cruz.line.type)[line.lty], 
-                             c = names(cruz.palette.color)[line.col.which], 
-                             d = NA, e = line.lwd, 
-                             stringsAsFactors = FALSE)
-  
+  list.curr.df <- data.frame(
+    a = length(ndas.x) - 1, b = names(cruz.line.type)[line.lty],
+    c = names(cruz.palette.color)[line.col.which], d = NA, e = line.lwd,
+    stringsAsFactors = FALSE
+  )
+
   cruz.list$ndas.data <- c(cruz.list$ndas.data, list(list.curr))
-  
+
   return(list.curr.df)
 })
 
 # Points
 cruzNonDasAdd_Point <- reactive({
   req(cruzNonDasFileLoad())
-  
+
   ndas.x <- cruzNonDasFile_LonLat()[[1]]
   ndas.y <- cruzNonDasFile_LonLat()[[2]]
-  
+
   pt.pch <- as.numeric(input$ndas.pt.pch)
   pt.col <- input$ndas.pt.col
   pt.col.which <- which(cruz.palette.color == pt.col)
   pt.cex <- input$ndas.pt.cex
   pt.lwd <- input$ndas.pt.lwd
-  
-  list.curr <- list(ind = 2, x = ndas.x, y = ndas.y, type = pt.pch,  
+
+  list.curr <- list(ind = 2, x = ndas.x, y = ndas.y, type = pt.pch,
                     col = pt.col, cex = pt.cex, lwd = pt.lwd)
-  list.curr.df <- data.frame(a = length(ndas.x), 
-                             b = names(cruz.symbol.type)[pt.pch + 1], 
-                             c = names(cruz.palette.color)[pt.col.which], 
-                             d = pt.cex, e = pt.lwd, 
-                             stringsAsFactors = FALSE)
-  
+  list.curr.df <- data.frame(
+    a = length(ndas.x), b = names(cruz.symbol.type)[pt.pch + 1],
+    c = names(cruz.palette.color)[pt.col.which], d = pt.cex, e = pt.lwd,
+    stringsAsFactors = FALSE
+  )
+
   cruz.list$ndas.data <- c(cruz.list$ndas.data, list(list.curr))
-  
-  
+
+
   return(list.curr.df)
 })
 
@@ -131,66 +126,65 @@ cruzNonDasAdd <- eventReactive(input$ndas_load_execute, {
   ndas.file <- cruzNonDasFileLoad()
   ndas.type <- input$ndas_plot_type
   ndas.type.name <- ifelse(ndas.type == 1, "Line", "Point")
-  
+
   # Add line data to lines reactiveValue
   if(ndas.type == 1) {
     list.curr.df <- cruzNonDasAdd_Line() # Data added to cruz.list
     text.out <- "Line data added"
   }
-  
+
   # Add pts data to pts reactiveValue
   if(ndas.type == 2) {
     list.curr.df <- cruzNonDasAdd_Point() # Data added to cruz.list
     text.out <- "Point data added"
   }
-  
-  ndas.df.curr <- cbind(data.frame("File.name" = input$ndas.file$name, 
-                                   "Type" = ndas.type.name, 
-                                   stringsAsFactors = FALSE), 
+
+  ndas.df.curr <- cbind(data.frame("File.name" = input$ndas.file$name,
+                                   "Type" = ndas.type.name,
+                                   stringsAsFactors = FALSE),
                         list.curr.df)
-  names(ndas.df.curr) <- c("File name", "Type", "Count", "Line or point type", 
+  names(ndas.df.curr) <- c("File name", "Type", "Count", "Line or point type",
                            "Color", "Size", "Line width")
-  
+
   cruz.list$ndas.df <- rbind(cruz.list$ndas.df, ndas.df.curr)
-  
+
   return(text.out)
 })
 
 
-### Remove specified non-DAS data 
+### Remove specified non-DAS data
 output$ndas_remove_execute <- renderUI({
   req(cruz.list$ndas.df)
-  
+
   actionButton("ndas_remove_execute", "Remove selected non-DAS data")
 })
 
 cruzNonDasRemove <- eventReactive(input$ndas_remove_execute, {
   req(cruz.list$ndas.df)
-  # browser()
-  
+
   which.toremove <- input$cruzNonDasLoaded_rows_selected
   validate(
-    need(length(which.toremove) > 0, 
+    need(length(which.toremove) > 0,
          "Please select at least one row to remove")
   )
-  
+
   cruz.list$ndas.data <- cruz.list$ndas.data[-which.toremove]
-  
+
   cruz.list$ndas.df <- cruz.list$ndas.df[-which.toremove,]
   if(nrow(cruz.list$ndas.df) == 0) cruz.list$ndas.df <- NULL
-  
+
   x <- cruz.list$ndas.toplot
   cruz.list$ndas.toplot <- x[!(x %in% which.toremove)]
-  cruz.list$ndas.toplot <- unname(sapply(cruz.list$ndas.toplot, 
-                                  function(i) {
-                                    i.num <- as.numeric(i)
-                                    ifelse(i.num > which.toremove, 
-                                           as.character(i.num - 1), 
-                                           i)
-                                  }))
+  cruz.list$ndas.toplot <- unname(
+    sapply(cruz.list$ndas.toplot,
+           function(i) {
+             i.num <- as.numeric(i)
+             ifelse(i.num > which.toremove, as.character(i.num - 1), i)
+           })
+  )
   if(length(cruz.list$ndas.toplot) == 0) cruz.list$ndas.toplot <- NULL
   updateSelectizeInput(session, "ndas_toplot", selected = cruz.list$ndas.toplot)
-  
+
   return("")
 })
 
@@ -200,8 +194,7 @@ cruzNonDasRemove <- eventReactive(input$ndas_remove_execute, {
 
 observe({
   req(input$ndas_toplot)
-  
-  # browser()
+
   isolate({
     if(is.null(cruz.list$ndas.toplot)) {
       cruz.list$ndas.toplot <- input$ndas_toplot
@@ -217,18 +210,18 @@ output$ndas_toplot_uiOut_select <- renderUI({
   validate(
     need(!is.null(df), "Please load non-DAS data")
   )
-  
+
   isolate(curr.sel <- cruz.list$ndas.toplot)
 
-  choices.list.names <- apply(df, 1, 
+  choices.list.names <- apply(df, 1,
                               function(i) paste(i[1], i[2], sep = " || "))
   choices.list <- seq_along(choices.list.names)
   choices.list.names <- paste0(choices.list, ": ", choices.list.names)
-  
+
   names(choices.list) <- choices.list.names
-  
-  selectizeInput("ndas_toplot", h5("Select non-DAS data to be plotted"), 
-                 choices = choices.list, multiple = TRUE, 
+
+  selectizeInput("ndas_toplot", h5("Select non-DAS data to be plotted"),
+                 choices = choices.list, multiple = TRUE,
                  selected = curr.sel)
 })
 outputOptions(output, "ndas_toplot_uiOut_select", suspendWhenHidden = FALSE)
@@ -236,24 +229,23 @@ outputOptions(output, "ndas_toplot_uiOut_select", suspendWhenHidden = FALSE)
 ### Get non-DAS data for plotting
 cruzNonDas <- reactive({
   req(input$ndas_plot)
-  # browser()
-  
+
   all.data <- cruz.list$ndas.data
-  
+
   validate(
-    need(length(all.data) > 0, 
+    need(length(all.data) > 0,
          "Please load at least one non-DAS object before plotting")
   )
-  
+
   all.data.sel <- all.data[as.numeric(cruz.list$ndas.toplot)]
 
   validate(
-    need(length(all.data.sel) > 0, 
+    need(length(all.data.sel) > 0,
          "Please select at least one non-DAS object to plot")
   )
-  
+
   all.data.sel.ind <- sapply(all.data.sel, function(i) i$ind)
-  
+
   # Get line and point data to plot
   x <- all.data.sel[all.data.sel.ind == 1]
   y <- all.data.sel[all.data.sel.ind == 2]

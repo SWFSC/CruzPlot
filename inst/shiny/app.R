@@ -129,6 +129,7 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$stop, {
+    # browser()
     js$closeWindow()
     stopApp(returnValue = "CruzPlot was closed")
   })
@@ -219,24 +220,21 @@ server <- function(input, output, session) {
   #----------------------------------------------------------------------------
   ### Plot Land/Water
   plotMap <- reactive({ function() {
-    # Set values and call reactive functions
-    #   Both done first so validate statements are triggered before drawing
-
-    source(file.path("server_files", "drawMap_setVals.R"), local = TRUE, chdir = TRUE)
-    source(file.path("server_files", "drawData_setVals.R"), local = TRUE, chdir = TRUE)
+    # Set values and call reactive functions; done first to trigger validate statements
+    source(file.path("server_draw_local", "draw_setVals.R"), local = TRUE, chdir = TRUE)
 
     # Plot map: window, water, land, and map extras
-    source(file.path("server_files", "drawMap.R"), local = TRUE, chdir = TRUE)
+    source(file.path("server_draw_local", "drawMap.R"), local = TRUE, chdir = TRUE)
 
     # Plot data: sightings, legend, and effort
-    source(file.path("server_files", "drawData.R"), local = TRUE, chdir = TRUE)
+    source(file.path("server_draw_local", "drawData.R"), local = TRUE, chdir = TRUE)
   }})
 
 
   #----------------------------------------------------------------------------
   ### Plot Interactive Labels
   plotInteractive <- reactive({ function() {
-    source(file.path("server_files", "drawInteractive.R"), local = TRUE, chdir = TRUE)
+    source(file.path("server_draw_local", "drawInteractive.R"), local = TRUE, chdir = TRUE)
   }})
 
 
