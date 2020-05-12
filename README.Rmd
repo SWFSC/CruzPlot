@@ -20,6 +20,8 @@ knitr::opts_chunk$set(
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/smwoodman/CruzPlot?branch=master&svg=true)](https://ci.appveyor.com/project/smwoodman/CruzPlot)
 <!-- badges: end -->
 
+WARNING - CruzPlot is currently under active development. Please contact the author (sam.woodman@noaa.gov) before installing and using.
+
 CruzPlot is an R package for creating maps, plotting data, and performing basic data summaries from data files in the "DAS" format produced by WinCruz.
 
 ## Installation
