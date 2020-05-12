@@ -2,11 +2,11 @@
 #   Creates a display of options for symbols, colors, line types, typefaces, and fonts
 
 cruzDisplaySymbolProp <- reactive({
-  oldpar <- par(mar = rep(1, 4),family = "sans")
+  oldpar <- par(mar = rep(1, 4), family = "sans")
   plot(c(0, 1), c(0, 28), type = "n", axes = FALSE, bty = "n")
 
   # Top labels
-  text(c(0.05, 0.32, 0.7, 0.95), rep(26.5, 4), c("Symbols", "Colors", "Line Types", "Widths"), cex=1.4)
+  text(c(0.05, 0.32, 0.7, 0.95), rep(26.5, 4), c("Symbols", "Colors", "Line Types", "Widths"), cex = 1.4)
   #text(c(0.05,0.3,0.7,0.95),rep(26.5,4),c("(pch= )","(col= )","(lty= )","(lwd= )"),cex=1.3)
 
   # Symbols

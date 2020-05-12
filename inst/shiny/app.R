@@ -1,4 +1,4 @@
-### app.R for eSDM GUI by Sam Woodman, modified 2015 by Tim Gerrodette
+# app.R for CruzPlot
 
 ###############################################################################
 # Check for and attach packages
@@ -208,6 +208,7 @@ server <- function(input, output, session) {
 
   #----------------------------------------------------------------------------
   ### Other
+  source(file.path("server_files", "cruzDisplaySymbolProp.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "cruzWorld2DataRange.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "server_render.R"), local = TRUE, chdir = TRUE)
