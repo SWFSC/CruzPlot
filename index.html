@@ -70,35 +70,32 @@
 
       </header><div class="row">
   <div class="contents col-md-9">
-
-
 <div id="cruzplot" class="section level1">
 <div class="page-header"><h1 class="hasAnchor">
 <a href="#cruzplot" class="anchor"></a>CruzPlot</h1></div>
+<!-- badges: start -->
+
 <p>CruzPlot is an R package for creating maps, plotting data, and performing basic data summaries from data files in the “DAS” format produced by WinCruz.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>You must have both R and RStudio installed to use CruzPlot. To install CruzPlot, run the following code in RStudio:</p>
-<pre class="{r}"><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages(devtools)
-devtools::install_github("smwoodman/CruzPlot")</a></code></pre>
+<p>You can install CruzPlot from <a href="https://github.com/">GitHub</a> with:</p>
+<div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("devtools")</span>
+<span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/CruzPlot"</span>)</pre></div>
 </div>
 <div id="run-cruzplot" class="section level2">
 <h2 class="hasAnchor">
 <a href="#run-cruzplot" class="anchor"></a>Run CruzPlot</h2>
-<p>To open and run CruzPlot, run the following code in RStudio:</p>
-<pre class="{r}"><code><a href="https://rdrr.io/r/utils/install.packages.html">install.packages("shiny")
-shiny::runApp()</a></code></pre>
+<p>To open and run the CruzPlot GUI, run the following code in RStudio:</p>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">CruzPlot</span><span class="kw ns">::</span><span class="fu"><a href="reference/cruzplot_gui.html">cruzplot_gui</a></span>()</pre></div>
 </div>
 <div id="additional-details" class="section level2">
 <h2 class="hasAnchor">
 <a href="#additional-details" class="anchor"></a>Additional details</h2>
 <p>The CruzPlot manual can be accessed within CruzPlot (i.e., when running CruzPlot) by clicking the “CruzPlot Manual” tab. It is recommended for new users to read the first two pages of the manual for orientation purposes; the rest of the manual contains section-specific information (formatting requirements, etc.) and can be read on an as-needed basis.</p>
 <p>If text or images overlap within the CruzPlot window, please make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus (‘-’) on Windows systems)</p>
-<p>CruzPlot was developed using R version 3.4.4 and RStudio version 1.1.447. Although unlikely, using older versions of these programs or outdated R packages could cause errors within CruzPlot.</p>
 </div>
 </div>
-
   </div>
 
   <div class="col-md-3 hidden-xs hidden-sm" id="pkgdown-sidebar">
