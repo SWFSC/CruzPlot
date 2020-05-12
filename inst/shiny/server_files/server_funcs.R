@@ -1,5 +1,4 @@
 ### Non-reactive functions used in CruzPlot R Shiny app
-### Reading DAS file is done using CruzPlot::das_read()
 
 
 #------------------------------------------------------------------------------

@@ -51,20 +51,21 @@ source(file.path("app_vals.R"), local = TRUE, chdir = TRUE)
 
 ###############################################################################
 ##### UI
-ui.new.line <- function() {helpText(HTML("<br/>"))}
+ui.new.line <- function() helpText(HTML("<br/>"))
 ui.selectize.instructions <- function() {
-  helpText("To remove selected input(s): click the input(s) to remove and then click backspace or delete")
+  helpText("To remove selected input(s): click the input(s) to remove, ",
+           "and then click backspace or delete")
 }
 
 
-### Load files with UI code
+# Load files with UI code
 source(file.path("ui_files", "ui_createMap.R"), local = TRUE, chdir = TRUE)
 source(file.path("ui_files", "ui_dasPlot.R"), local = TRUE, chdir = TRUE)
 source(file.path("ui_files", "ui_nonDasPlot.R"), local = TRUE, chdir = TRUE)
 source(file.path("ui_files", "ui_other.R"), local = TRUE, chdir = TRUE)
 
 
-### UI function
+# UI function
 ui <- dashboardPage(
   dashboardHeader(title = "CruzPlot", titleWidth = "200"),
 
@@ -121,7 +122,6 @@ ui <- dashboardPage(
 ##### server
 `%then%` <- shiny:::`%OR%` # For sequential need() evals within one validate()
 
-##### CruzPlot server function
 server <- function(input, output, session) {
   ### Quit GUI
   session$onSessionEnded(function() {
@@ -129,14 +129,9 @@ server <- function(input, output, session) {
   })
 
   observeEvent(input$stop, {
-    # browser()
     js$closeWindow()
     stopApp(returnValue = "CruzPlot was closed")
   })
-
-
-  ### Code for reactive values and handling load/save environment options
-  source(file.path("server_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)
 
 
   #----------------------------------------------------------------------------
@@ -213,12 +208,12 @@ server <- function(input, output, session) {
 
   #----------------------------------------------------------------------------
   ### Other
-  source(file.path("server_files", "cruzServerRender.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "cruzWorld2DataRange.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_files", "server_render.R"), local = TRUE, chdir = TRUE)
 
 
-  #----------------------------------------------------------------------------
-  ### Plot Land/Water
+  ### Other output - static plot
   plotMap <- reactive({ function() {
     # Set values and call reactive functions; done first to trigger validate statements
     source(file.path("server_draw_local", "draw_setVals.R"), local = TRUE, chdir = TRUE)
@@ -231,100 +226,10 @@ server <- function(input, output, session) {
   }})
 
 
-  #----------------------------------------------------------------------------
-  ### Plot Interactive Labels
+  ### Other output - plot interactive labels
   plotInteractive <- reactive({ function() {
     source(file.path("server_draw_local", "drawInteractive.R"), local = TRUE, chdir = TRUE)
   }})
-
-
-  #----------------------------------------------------------------------------
-  ### Outputs
-
-  # Plot Map
-  output$plot1 <- renderPlot({
-    plotMap()()
-    plotInteractive()()
-  })
-  output$plot2 <- renderPlot({
-    plotMap()()
-    plotInteractive()()
-  })
-  output$plot3 <- renderPlot({
-    plotMap()()
-    plotInteractive()()
-  })
-  output$plot4 <- renderPlot({
-    plotMap()()
-    plotInteractive()()
-  })
-  output$plot5 <- renderPlot({
-    plotMap()()
-    plotInteractive()()
-  })
-  output$plot6 <- renderPlot({
-    plotMap()()
-    plotInteractive()()
-  })
-  output$plot7 <- renderPlot({
-    plotMap()()
-    plotInteractive()()
-  })
-
-  # Plot Map pt 2
-  output$plot1.ui <- renderUI({
-    plotOutput("plot1", height = map.height.ui())
-  })
-  output$plot2.ui <- renderUI({
-    plotOutput("plot2", height = map.height.ui())
-  })
-  output$plot3.ui <- renderUI({
-    plotOutput("plot3", height = map.height.ui(), click = "sight_click")
-  })
-  output$plot4.ui <- renderUI({
-    plotOutput("plot4", height = map.height.ui(), hover  = "sight_hover")
-  })
-  output$plot5.ui <- renderUI({
-    plotOutput("plot5", height = map.height.ui(), click = "effort_click")
-  })
-  output$plot6.ui <- renderUI({
-    plotOutput("plot6", height = map.height.ui(), hover = "effort_hover")
-  })
-  output$plot7.ui <- renderUI({
-    plotOutput("plot7", height = map.height.ui())
-  })
-
-
-  # Display color/formatting options
-  # slight bug: display does not occur when window is resized
-  output$plotDisplay <- renderPlot({
-    cruzDisplaySymbolProp()
-  })
-
-
-  # Display mammals, turtles, and all species codes
-  output$sp1 <- renderDataTable({
-    sp.mammals <- cruzSpeciesMammals()
-    names(sp.mammals) <- c("Species Code", "Abbreviation", "Scientific Name", "Common Name")
-    sp.mammals
-  })
-  output$sp2 <- renderDataTable({ # Turtles
-    sp.turtles <- cruzSpeciesTurtles()
-    names(sp.turtles) <- c("Species Code", "Abbreviation", "Scientific Name", "Common Name")
-    sp.turtles
-  })
-  output$sp3 <- renderDataTable({ # All
-    sp.all <- cruzSpecies()
-    names(sp.all) <- c("Species Code", "Abbreviation", "Scientific Name", "Common Name")
-    sp.all
-  })
-
-
-  ### Display pdf of manual
-  # Manual opens in new window from RStudio Shiny viewer, but displays in-app on Chrome
-  output$manual_pdf <- renderUI({
-    tags$iframe(style = "height:850px; width:100%", src = "CruzPlot_Manual_app.pdf")
-  })
 }
 
 shiny::shinyApp(ui = ui, server = server)
