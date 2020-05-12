@@ -1,5 +1,4 @@
-# cruzDasGeneral for CruzPlot by Sam Woodman
-#   cruzDasRead() is located in 'funcCruzDasRead.R'
+# cruzDasGeneral for CruzPlot
 #   update: symbol type and color for when 'Input symbol properties as text' is clicked
 
 
@@ -17,7 +16,7 @@ observeEvent(input$das.file, {
 
 ### Conditional flag for UI code for non-null cruz.list$das.data
 output$cruzDasFile_Conditional <- reactive({
-  return(!is.null(cruz.list$das.data))
+  !is.null(cruz.list$das.data)
 })
 outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 

@@ -1,31 +1,31 @@
-# cruzDasInteractive for CruzPlot by Sam Woodman
+# cruzDasInteractive for CruzPlot
 #   Handles events realted to labelling sightings interactively
 #   cruzInteractiveSight handles interactive labels for sightings
 #   cruzInteractiveEffort handles interactive labels for effort
 
 
 sight <- reactiveValues(
-  click = NULL, 
+  click = NULL,
   hover = NULL,
-  lab = NULL, 
+  lab = NULL,
   miss = FALSE
 )
 
 effort <- reactiveValues(
-  click = NULL, 
+  click = NULL,
   hover = NULL,
-  lab = NULL, 
+  lab = NULL,
   miss = FALSE
 )
 
 # If .DAS file changes, reset interactive everything
-observeEvent(input$das.file, { 
+observeEvent(input$das.file, {
   # Remove all points
   sight$click <- NULL
   sight$hover <- NULL
   sight$lab <- NULL
   sight$miss <- FALSE
-  
+
   effort$click <- NULL
   effort$hover <- NULL
   effort$lab <- NULL
@@ -42,7 +42,7 @@ observe({
   input$das_sighting_code_1_al2
   input$das.sighting.code.1
   input$das.sighting.code.2
-  
+
   # Filters
   input$das.sightings.effort
   input$das.sight.minBeau
@@ -50,7 +50,7 @@ observe({
   input$das.sight.dateRange
   input$das.sight.cruiseNum
   input$das.sight.cruiseNum
-  
+
   sight$click <- NULL
   sight$hover <- NULL
   sight$lab <- NULL
@@ -63,14 +63,14 @@ observe({
   input$das_effort
   input$das.effort.closePass
   input$effort.std
-  
+
   # Filters
   input$das_effort_filter_same
   input$das.effort.minBeau
   input$das.effort.maxBeau
   input$das.effort.dateRange
   input$das.effort.cruiseNum
-  
+
   effort$click <- NULL
   effort$hover <- NULL
   effort$lab <- NULL

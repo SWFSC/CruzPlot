@@ -43,6 +43,9 @@ options(shiny.maxRequestSize = 50 * 1024^2) # Max file size is 50MB
 options("digits" = 5)   # for proper display of sighting and effort coordinates
 # map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
 
+jscode <- "shinyjs.closeWindow = function() { window.close(); }"
+
+
 source(file.path("app_vals.R"), local = TRUE, chdir = TRUE)
 
 
@@ -93,6 +96,8 @@ ui <- dashboardPage(
 
   dashboardBody(
     useShinyjs(),
+    extendShinyjs(text = jscode, functions = c("closeWindow")),
+
     tags$head( #validation text
       tags$style(HTML("
                       .shiny-output-error-validation {
@@ -118,19 +123,27 @@ ui <- dashboardPage(
 
 ##### CruzPlot server function
 server <- function(input, output, session) {
-  ### Quit CruzPlot
-  observeEvent(input$stop, {
-    stopApp(returnValue = "CruzPlot closed")
+  ### Quit GUI
+  session$onSessionEnded(function() {
+    stopApp(returnValue = "CruzPlot was closed")
   })
+
+  observeEvent(input$stop, {
+    js$closeWindow()
+    stopApp(returnValue = "CruzPlot was closed")
+  })
+
 
   ### Code for reactive values and handling load/save environment options
   source(file.path("server_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)
 
 
-  ################################## Map Data #################################
-  ### map height on screen in pixels
-  #     set for specific computer display here and 5% larger in ui.R
-  #     set to 600 for laptops, 900 for standard monitor
+  #----------------------------------------------------------------------------
+  ### Map tab
+
+  # map height on screen in pixels????
+  #   set for specific computer display here and 5% larger in ui.R
+  #   set to 600 for laptops, 900 for standard monitor
   map.height.server <- reactive({
     if(input$map.size == 1) map.h <- 900
     if(input$map.size == 2) map.h <- 600
@@ -162,47 +175,48 @@ server <- function(input, output, session) {
   source(file.path("server_1_map", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
 
 
-  ################################## DAS Data #################################
+  #----------------------------------------------------------------------------
+  ### DAS data tab
   # Read Species codes and renderUI for mammal and turtle codes
   source(file.path("server_files", "cruzSpecies.R"), local = TRUE, chdir = TRUE)
 
   # Load DAS file and update symbol properties
   # using fileInput, the output dataframe das.file has name,size,type and datapath
   # the actual data are stored at the temporary file and location given by datapath
-  source(file.path("server_files", "cruzDasGeneral.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasGeneral.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasRenderUI.R"), local = TRUE, chdir = TRUE)
 
-  # Sightings
-  source(file.path("server_files", "cruzDasSight.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasSightFilter.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasSightRange.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasSightSymbol.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasSightLegend.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSight.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSightFilter.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSightRange.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSightSymbol.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSightLegend.R"), local = TRUE, chdir = TRUE)
 
-  # Effort
-  source(file.path("server_files", "cruzDasEffort.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasEffortFilter.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasEffortLegend.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasEffort.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasEffortFilter.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasEffortLegend.R"), local = TRUE, chdir = TRUE)
 
-  # Interactive labels
-  source(file.path("server_files", "cruzDasInteractive.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasInteractiveSight.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasInteractiveEffort.R"), local = TRUE, chdir = TRUE)
-  # source(file.path("server_files", "funcCruzClosestPt.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasInteractive.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasInteractiveSight.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasInteractiveEffort.R"), local = TRUE, chdir = TRUE)
+
+  source(file.path("server_2_das", "cruzDasTabular.R"), local = TRUE, chdir = TRUE)
 
 
-  ############################### Non-DAS Data ################################
+  #----------------------------------------------------------------------------
+  ### Non-DAS data tab
   # Read csv file and plot lines or points
   source(file.path("server_files", "cruzNonDas.R"), local = TRUE, chdir = TRUE)
 
 
-  ################################## Other ####################################
+  #----------------------------------------------------------------------------
+  ### Other
   source(file.path("server_files", "cruzServerRender.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "cruzWorld2DataRange.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasRenderUI.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_files", "cruzDasOutTabular.R"), local = TRUE, chdir = TRUE)
 
 
-  ############################## Plot Land/Water ##############################
+  #----------------------------------------------------------------------------
+  ### Plot Land/Water
   plotMap <- reactive({ function() {
     # Set values and call reactive functions
     #   Both done first so validate statements are triggered before drawing
@@ -218,13 +232,15 @@ server <- function(input, output, session) {
   }})
 
 
-  ########################## Plot Interactive Labels ##########################
+  #----------------------------------------------------------------------------
+  ### Plot Interactive Labels
   plotInteractive <- reactive({ function() {
     source(file.path("server_files", "drawInteractive.R"), local = TRUE, chdir = TRUE)
   }})
 
 
-  ################################## Outputs ##################################
+  #----------------------------------------------------------------------------
+  ### Outputs
   # Download Map
   source(file.path("server_files", "saveMap.R"), local = TRUE, chdir = TRUE)
 

@@ -1,5 +1,5 @@
-# cruzDasSightSymbol for CruzPlot by Sam Woodman
-#   cruzDasSightSymbol() returns list of sighting type, species count, and 
+# cruzDasSightSymbol for CruzPlot
+#   cruzDasSightSymbol() returns list of sighting type, species count, and
 #     point type, color, size, and linewidth for legend and points, respectively
 #   cruzDasSightSymbolAnimalSelected() returns list of point type, color, size, and linewidth for selected mammal or turtle sightings
 #   cruzDasSightSymbolAnimalAll() returns list of point type, color, size, and linewidth for all mammal or turtle sightings
@@ -13,35 +13,35 @@ cruzDasSightSymbol <- reactive({
   sp.codes <- data.list$sp.codes
   sp.codes.len <- length(sp.codes)
   sp.count <- data.list$sp.count
-  
+
   if(sight.type == 3 | sight.type == 4) {
     symbol.prop <- cruzDasSightSymbolBoat()
-    leg.pch <- pt.pch <- symbol.prop$pt.pch 
+    leg.pch <- pt.pch <- symbol.prop$pt.pch
     leg.col <- pt.col <- symbol.prop$pt.col
     leg.cex <- pt.cex <- symbol.prop$pt.cex
     leg.lwd <- pt.lwd <- symbol.prop$pt.lwd
   }
   #   if(sight.type == 4) {
   #     symbol.prop <- cruzDasSightSymbolCPOD()
-  #     leg.pch <- pt.pch <- symbol.prop$pt.pch 
+  #     leg.pch <- pt.pch <- symbol.prop$pt.pch
   #     leg.col <- pt.col <- symbol.prop$pt.col
   #     leg.cex <- pt.cex <- symbol.prop$pt.cex
   #     leg.lwd <- pt.lwd <- symbol.prop$pt.lwd
   #   }
-  else { 
+  else {
     if((sight.type == 1 && input$das_sighting_code_1_all == 1) || (sight.type == 2 && input$das_sighting_code_2_all == 1)) {
       symbol.prop <- cruzDasSightSymbolAnimalAll()
     }
     if((sight.type == 1 && input$das_sighting_code_1_all == 2) || (sight.type == 2 && input$das_sighting_code_2_all == 2)) {
       symbol.prop <- cruzDasSightSymbolAnimalSelected()
     }
-    
+
     # Set before lengthened for vector
-    leg.pch <- pt.pch <- symbol.prop$pt.pch 
+    leg.pch <- pt.pch <- symbol.prop$pt.pch
     leg.col <- pt.col <- symbol.prop$pt.col
     leg.cex <- pt.cex <- symbol.prop$pt.cex
     leg.lwd <- pt.lwd <- symbol.prop$pt.lwd
-    
+
     # Empty input check
     validate(
       need(pt.pch != "",
@@ -57,7 +57,7 @@ cruzDasSightSymbol <- reactive({
       need(all(0 < pt.lwd & pt.lwd < 20),
            message = "Please ensure all symbol line width entries are valid numberical entries")
     )
-    
+
     #
     if(length(pt.pch)>sp.codes.len)  pt.pch <- pt.pch[1:sp.codes.len]
     #     if(length(pt.pch)<sp.codes.len)  pt.pch <- rep(pt.pch,sp.codes.len)[1:sp.codes.len]
@@ -102,7 +102,7 @@ cruzDasSightSymbol <- reactive({
       pt.lwd <- unlist(sapply(1:sp.codes.len, function(j) rep(pt.lwd[j], sp.count[j])))
     }
   }
-  return(list(sight.type = sight.type, sp.count = sp.count, sp.codes = sp.codes, 
+  return(list(sight.type = sight.type, sp.count = sp.count, sp.codes = sp.codes,
               leg.pch = leg.pch, leg.col = leg.col, leg.cex = leg.cex, leg.lwd = leg.lwd,
               pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd))
 })
@@ -114,7 +114,7 @@ cruzDasSightSymbolAnimalSelected <- reactive({
     pt.pch <- as.numeric(input$das.symbol.type)
     pt.col <- input$das.symbol.color
   }
-  if(input$das_symbol_mult) {    
+  if(input$das_symbol_mult) {
     pt.pch <- as.numeric(unlist(strsplit(input$das.symbol.type.mult, ",")))
     pt.col <- str_trim(unlist(strsplit(input$das.symbol.color.mult, ",")))
     validate(
@@ -123,10 +123,10 @@ cruzDasSightSymbolAnimalSelected <- reactive({
       need(length(pt.col) != 0,
            message = "Please enter at least one number for symbol color"),
       need(all(pt.col %in% symbol.col),
-           message = paste("Not all symbol color entries are valid. Please be sure each entry matches", 
+           message = paste("Not all symbol color entries are valid. Please be sure each entry matches",
                            "a color in the Display Color/Formatt Options tab"))
     )
-    
+
     # Covert color names to color codes-codes established in server file
     if(input$color_style == 1) {
       pt.col <- sapply(1:length(pt.col), function(i) which(symbol.col %in% pt.col[i])) # keeps numbers in order
@@ -140,7 +140,7 @@ cruzDasSightSymbolAnimalSelected <- reactive({
   # Same whether input$das_symbol_mult is checked or not
   pt.cex <- as.numeric(unlist(strsplit(input$das.symbol.size, ",")))
   pt.lwd <- as.numeric(unlist(strsplit(input$das.symbol.linewidth, ",")))
-  
+
   return(list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd))
 })
 
@@ -150,7 +150,7 @@ cruzDasSightSymbolAnimalAll <- reactive({
   pt.col <- "black"
   pt.cex <- 1
   pt.lwd <- 1
-  
+
   return(list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd))
 })
 
@@ -160,7 +160,7 @@ cruzDasSightSymbolBoat <- reactive({
   pt.col <- input$das.symbol.color.boat
   pt.cex <- as.numeric(input$das.symbol.size.boat)
   pt.lwd <- as.numeric(input$das.symbol.linewidth.boat)
-  
+
   return(list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd))
 })
 
@@ -170,6 +170,6 @@ cruzDasSightSymbolBoat <- reactive({
 #   pt.col <- input$das.symbol.color.cpod
 #   pt.cex <- as.numeric(input$das.symbol.size.cpod)
 #   pt.lwd <- as.numeric(input$das.symbol.linewidth.cpod)
-#   
+#
 #   return(list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd))
 # })
