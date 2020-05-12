@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 # CruzPlot
 
 <!-- badges: start -->
-[![Travis build status](https://travis-ci.org/smwoodman/CruzPlot.svg?branch=master)](https://travis-ci.org/smwoodman/CruzPlot)
+[![Travis build status](https://travis-ci.com/smwoodman/CruzPlot.svg?branch=master)](https://travis-ci.com/smwoodman/CruzPlot)
 [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/smwoodman/CruzPlot?branch=master&svg=true)](https://ci.appveyor.com/project/smwoodman/CruzPlot)
 <!-- badges: end -->
 
