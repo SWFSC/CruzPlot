@@ -7,7 +7,7 @@
 #'
 #' @usage cruzplot_gui(launch.browser = TRUE)
 #'
-#' @seealso # TODOurl
+#' @seealso \url{https://smwoodman.github.io/CruzPlot/}
 #'
 #' @export
 cruzplot_gui <- function(launch.browser = TRUE) {

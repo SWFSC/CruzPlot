@@ -6,7 +6,7 @@ Authors@R:
       person("Tim", "Gerrodette", role = c("ctb")))
 Description: A utility program oriented to create maps, plot data, and do basic data summaries
   from data files in the "DAS" format produced by WinCruz.
-URL: https://github.com/smwoodman/CruzPlot
+URL: https://smwoodman.github.io/CruzPlot/, https://github.com/smwoodman/CruzPlot
 BugReports: https://github.com/smwoodman/CruzPlot/issues
 Imports: 
     dplyr,

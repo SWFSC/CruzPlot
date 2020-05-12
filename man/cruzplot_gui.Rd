@@ -14,5 +14,5 @@ passed to \code{launch.browser} argument of \code{\link[shiny]{runApp}}}
 Open the CruzPlot utility program, an R Shiny application
 }
 \seealso{
-# TODOurl
+\url{https://smwoodman.github.io/CruzPlot/}
 }

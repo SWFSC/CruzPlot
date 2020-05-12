@@ -8,7 +8,7 @@
 #' @docType package
 #' @title CruzPlot
 #' @author Sam Woodman \email{sam.woodman@@noaa.gov}
-#' @seealso todo
+#' @seealso \url{https://smwoodman.github.io/CruzPlot/}
 #'
 #' @importFrom shiny runApp
 #'

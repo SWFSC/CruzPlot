@@ -14,7 +14,7 @@ A utility program oriented to create maps, plot data, and do basic data summarie
 from data files in the "DAS" format produced by WinCruz.
 }
 \seealso{
-todo
+\url{https://smwoodman.github.io/CruzPlot/}
 }
 \author{
 Sam Woodman \email{sam.woodman@noaa.gov}
