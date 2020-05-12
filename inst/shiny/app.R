@@ -173,6 +173,7 @@ server <- function(input, output, session) {
   source(file.path("server_1_map", "cruzMapRange.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_1_map", "cruzMapScaleBar.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_1_map", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_1_map", "cruzMapSave.R"), local = TRUE, chdir = TRUE)
 
 
   #----------------------------------------------------------------------------
@@ -241,9 +242,6 @@ server <- function(input, output, session) {
 
   #----------------------------------------------------------------------------
   ### Outputs
-  # Download Map
-  source(file.path("server_files", "saveMap.R"), local = TRUE, chdir = TRUE)
-
 
   # Plot Map
   output$plot1 <- renderPlot({
