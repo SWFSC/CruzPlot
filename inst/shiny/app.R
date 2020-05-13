@@ -4,7 +4,7 @@
 # Check for and attach packages
 list.packages <- list(
   "dplyr", "DT", "geosphere", "mapdata", "marmap", "maps", "shiny",
-  "shinydashboard", "shinyjs", "stringr"
+  "shinydashboard", "shinyjs", "stringr", "swfscDAS"
 )
 
 p.check <- vapply(list.packages, requireNamespace, as.logical(1), quietly = TRUE)
@@ -71,6 +71,7 @@ ui <- dashboardPage(
 
   dashboardSidebar(
     sidebarMenu(
+      id = "tabs",
       menuItem("Create and Save Map", tabName = "createmap", icon = icon("th", lib = "font-awesome")),
       menuItem("Plot DAS Data", tabName = "DASplot", icon = icon("th")),
       menuItem("Plot Non-DAS Data", tabName = "nonDASplot", icon = icon("th")),
@@ -189,20 +190,24 @@ server <- function(input, output, session) {
 
   ### Other output - static plot
   plotMap <- reactive({
-    # Set values and call reactive functions; done first to trigger validate statements
-    source(file.path("server_draw_local", "draw_setVals.R"), local = TRUE, chdir = TRUE)
+    function() {
+      # Set values and call reactive functions; done first to trigger validate statements
+      source(file.path("server_draw_local", "draw_setVals.R"), local = TRUE, chdir = TRUE)
 
-    # Plot map: window, water, land, and map extras
-    source(file.path("server_draw_local", "drawMap.R"), local = TRUE, chdir = TRUE)
+      # Plot map: window, water, land, and map extras
+      source(file.path("server_draw_local", "drawMap.R"), local = TRUE, chdir = TRUE)
 
-    # Plot data: sightings, legend, and effort
-    source(file.path("server_draw_local", "drawData.R"), local = TRUE, chdir = TRUE)
+      # Plot data: sightings, legend, and effort
+      source(file.path("server_draw_local", "drawData.R"), local = TRUE, chdir = TRUE)
+    }
   })
 
 
   ### Other output - plot interactive labels
   plotInteractive <- reactive({
-    source(file.path("server_draw_local", "drawInteractive.R"), local = TRUE, chdir = TRUE)
+    function() {
+      source(file.path("server_draw_local", "drawInteractive.R"), local = TRUE, chdir = TRUE)
+    }
   })
 }
 

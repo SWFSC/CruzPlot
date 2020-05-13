@@ -20,8 +20,7 @@ output$planned_transects_remove_text <- renderText({
 #------------------------------------------------------------------------------
 ### Non-DAS outputs
 output$cruzNonDasLoaded <- renderDataTable({
-  df <- cruz.list$ndas.df
-  req(df)
+  df <- req(cruz.list$ndas.df)
   row.names(df) <- 1:nrow(df)
 
   df
@@ -33,7 +32,7 @@ output$cruzNonDasAdd_text <- renderText({
 
 output$cruzNonDasFile_LonLat_text <- renderText({
   cruzNonDasFile_LonLat()
-  return("")
+  ""
 })
 
 output$cruzNonDasRemove_text <- renderText({
@@ -53,32 +52,32 @@ output$cruzDasOutEffort_Save_text <- renderText(cruzDasOutEffort_Save())
 #------------------------------------------------------------------------------
 # Plot Map
 output$plot1 <- renderPlot({
-  plotMap()
-  plotInteractive()
+  plotMap()()
+  plotInteractive()()
 }, height = map.height, units = "px")
 output$plot2 <- renderPlot({
-  plotMap()
-  plotInteractive()
+  plotMap()()
+  plotInteractive()()
 }, height = map.height, units = "px")
 output$plot3 <- renderPlot({
-  plotMap()
-  plotInteractive()
+  plotMap()()
+  plotInteractive()()
 }, height = map.height, units = "px")
 output$plot4 <- renderPlot({
-  plotMap()
-  plotInteractive()
+  plotMap()()
+  plotInteractive()()
 }, height = map.height, units = "px")
 output$plot5 <- renderPlot({
-  plotMap()
-  plotInteractive()
+  plotMap()()
+  plotInteractive()()
 }, height = map.height, units = "px")
 output$plot6 <- renderPlot({
-  plotMap()
-  plotInteractive()
+  plotMap()()
+  plotInteractive()()
 }, height = map.height, units = "px")
 output$plot7 <- renderPlot({
-  plotMap()
-  plotInteractive()
+  plotMap()()
+  plotInteractive()()
 }, height = map.height, units = "px")
 
 

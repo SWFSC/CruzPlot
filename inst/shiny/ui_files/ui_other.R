@@ -1,8 +1,7 @@
-### ui_other
-## UI code for CruzPlot's disply tabs
+# UI code for CruzPlot's disply tabs
 
+# Display color/Format options
 ui.dispColor <- function() {
-  # Display color/Format options
   tabItem(
     tabName = "dispColor",
     fluidRow(
@@ -14,8 +13,8 @@ ui.dispColor <- function() {
   )
 }
 
+# Display species codes and names
 ui.dispSp <- function() {
-  # Display species codes and names
   tabItem(
     tabName = "dispSp",
     fluidRow(
@@ -31,8 +30,8 @@ ui.dispSp <- function() {
   )
 }
 
+# Display CruzPlot manual
 ui.dispManual <- function() {
-  # Display CruzPlot manual
   tabItem(
     tabName = "dispManual",
     helpText("Click 'Open in Browser' at top of the app in order to display manual in-app"),

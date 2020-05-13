@@ -1,15 +1,10 @@
-### ui_createMap
-## UI code for Create Map tab in CruzPlot
+# UI code for Create Map tab in CruzPlot
 
 ui.createMap <- function() {
   tabItem(
     tabName = "createmap",
     fluidRow(
-      box(
-        status = "primary",  width = 6,
-        plotOutput("plot1", height = "auto")
-      ),
-
+      box(status = "primary", width = 6, plotOutput("plot1", height = "auto")),
       tabBox(
         title = "Map", width = 6, id = "tabset1",
 

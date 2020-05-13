@@ -1,13 +1,11 @@
-### ui_dasPlot
-## UI code for Plot DAS Data tab in CruzPlot
-
+# UI code for Plot DAS Data tab in CruzPlot
 
 ui.dasPlot <- function() {
   tabItem(
     tabName = "DASplot",
     fluidRow(
       box(
-        status = "primary", width = 6, #height = map.height,
+        status = "primary", width = 6,
         conditionalPanel(
           condition = "input.das_sight_interactive==1",
           conditionalPanel(

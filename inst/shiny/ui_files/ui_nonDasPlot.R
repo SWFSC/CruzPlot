@@ -1,5 +1,4 @@
-### ui_nonDasPlot
-## UI code for plotting non-das data
+# UI code for plotting non-das data
 
 ui.nonDasPlot <- function() {
   tabItem(
