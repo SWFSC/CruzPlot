@@ -5,18 +5,19 @@
 ### Read DAS file(s)
 observeEvent(input$das.file, {
   withProgress(message = "Processing DAS file", value = 0.6, {
-    das.tosave.list <- lapply(input$das.file$datapath, function(i) {
-      suppressWarnings(CruzPlot::das_read(i))
-    })
-    das.tosave <- do.call(rbind, das.tosave.list)
-
-    cruz.list$das.data <- das.tosave
+    # TODO: provide some way for the user to specify das_process arguments
+    cruz.list$das.data <- suppressWarnings(
+      swfscDAS::das_process(
+        input$das.file$datapath, skip = 0,
+        reset.event = TRUE, reset.effort = TRUE, reset.day = TRUE
+      )
+    )
   })
 }, ignoreInit = TRUE)
 
 ### Conditional flag for UI code for non-null cruz.list$das.data
 output$cruzDasFile_Conditional <- reactive({
-  !is.null(cruz.list$das.data)
+  isTruthy(cruz.list$das.data)
 })
 outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 
