@@ -3,8 +3,9 @@
 ## Plots scale bar, tick marks/labels, map labels, and grid lines as specified
 
 ###############################################################################
-# Action button trigger for range
+# Range and map window triggers for redrawing the map
 input$map.replot
+input$map.size
 
 
 ###############################################################################

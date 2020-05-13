@@ -135,31 +135,6 @@ server <- function(input, output, session) {
   ### Map tab
   map.height <- reactive(input$map.size)
 
-  # map height on screen in pixels????
-  #   set for specific computer display here and 5% larger in ui.R
-  #   set to 600 for laptops, 900 for standard monitor
-  # map.height.server <- reactive({
-  #   if(input$map.size == 1) map.h <- 900
-  #   if(input$map.size == 2) map.h <- 600
-  #
-  #   map.h
-  # })
-  #
-  # map.height.ui <- reactive({
-  #   if(input$map.size == 1) map.h <- 950
-  #   if(input$map.size == 2) map.h <- 630
-  #
-  #   map.h
-  # })
-  #
-  # map.height.server.val <- reactiveVal(value = map.height.server())
-  #
-  # map.height.server = 600
-  # observe({
-  #   map.height.server <- map.height.func()
-  #   print(map.height.server)
-  # })
-
   source(file.path("server_1_map", "cruzMapCoastline.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_1_map", "cruzMapColorGrid.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_1_map", "cruzMapLabel.R"), local = TRUE, chdir = TRUE)
@@ -213,7 +188,7 @@ server <- function(input, output, session) {
 
 
   ### Other output - static plot
-  plotMap <- reactive({ function() {
+  plotMap <- reactive({
     # Set values and call reactive functions; done first to trigger validate statements
     source(file.path("server_draw_local", "draw_setVals.R"), local = TRUE, chdir = TRUE)
 
@@ -222,13 +197,13 @@ server <- function(input, output, session) {
 
     # Plot data: sightings, legend, and effort
     source(file.path("server_draw_local", "drawData.R"), local = TRUE, chdir = TRUE)
-  }})
+  })
 
 
   ### Other output - plot interactive labels
-  plotInteractive <- reactive({ function() {
+  plotInteractive <- reactive({
     source(file.path("server_draw_local", "drawInteractive.R"), local = TRUE, chdir = TRUE)
-  }})
+  })
 }
 
 shiny::shinyApp(ui = ui, server = server)

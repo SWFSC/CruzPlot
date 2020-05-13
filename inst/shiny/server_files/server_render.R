@@ -53,32 +53,32 @@ output$cruzDasOutEffort_Save_text <- renderText(cruzDasOutEffort_Save())
 #------------------------------------------------------------------------------
 # Plot Map
 output$plot1 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
+  plotMap()
+  plotInteractive()
 }, height = map.height, units = "px")
 output$plot2 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
+  plotMap()
+  plotInteractive()
 }, height = map.height, units = "px")
 output$plot3 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
+  plotMap()
+  plotInteractive()
 }, height = map.height, units = "px")
 output$plot4 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
+  plotMap()
+  plotInteractive()
 }, height = map.height, units = "px")
 output$plot5 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
+  plotMap()
+  plotInteractive()
 }, height = map.height, units = "px")
 output$plot6 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
+  plotMap()
+  plotInteractive()
 }, height = map.height, units = "px")
 output$plot7 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
+  plotMap()
+  plotInteractive()
 }, height = map.height, units = "px")
 
 
