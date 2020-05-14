@@ -12,6 +12,7 @@ cruz.list <- reactiveValues(
   coastline = NULL,         # Coastline file
   bathy = NULL,             # Bathymetric data
   das.data = NULL,          # DAS dataframe
+  das.data.name = NULL,     # Names of loaded DAS files
   ndas.data = list(),       # List of non-DAS line and point data
   ndas.df = NULL,           # Dataframe of ndas information
   ndas.toplot = NULL        # Non-DAS objects currently being plotted
@@ -52,8 +53,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
 
   file.load <- input$load_app_envir_file
   validate(
-    need((substr_right(input$load_app_envir_file$name, 6) == ".RDATA" &
-            input$load_app_envir_file$type == ""),
+    need(identical(toupper(substr_right(file.load$name, 6)), ".RDATA") &
+           file.load$type == "",
          "Error: Please load a file with the extension '.RDATA'")
   )
 
@@ -72,12 +73,13 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     #--------------------------------------------------------------------------
     ### Update reactiveValues
     cruz.list$planned.transects <- cruz.list.save[["planned.transects"]]
-    cruz.list$coastline   <- cruz.list.save[["coastline"]]
-    cruz.list$bathy       <- cruz.list.save[["bathy"]]
-    cruz.list$das.data    <- cruz.list.save[["das.data"]]
-    cruz.list$ndas.data   <- cruz.list.save[["ndas.data"]]
-    cruz.list$ndas.df     <- cruz.list.save[["ndas.df"]]
-    cruz.list$ndas.toplot <- cruz.list.save[["ndas.toplot"]]
+    cruz.list$coastline     <- cruz.list.save[["coastline"]]
+    cruz.list$bathy         <- cruz.list.save[["bathy"]]
+    cruz.list$das.data      <- cruz.list.save[["das.data"]]
+    cruz.list$das.data.name <- cruz.list.save[["das.data.name"]]
+    cruz.list$ndas.data     <- cruz.list.save[["ndas.data"]]
+    cruz.list$ndas.df       <- cruz.list.save[["ndas.df"]]
+    cruz.list$ndas.toplot   <- cruz.list.save[["ndas.toplot"]]
 
     cruz.map.range$lon.range <- map.info$lon.range
     cruz.map.range$lat.range <- map.info$lat.range

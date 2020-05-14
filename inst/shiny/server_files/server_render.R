@@ -41,7 +41,20 @@ output$cruzNonDasRemove_text <- renderText({
 
 
 #------------------------------------------------------------------------------
-### DAS tabular output
+### DAS
+
+# Loading DAS file(s)
+output$das_file_load_text <- renderText(das_file_load())
+
+output$das_loaded_text <- renderText({
+  req(cruz.list$das.data)
+  paste(
+    "The following DAS files are loaded:",
+    paste(cruz.list$das.data.name, collapse = ", ")
+  )
+})
+
+# Tabular output
 output$das_out_sight_table <- renderTable(cruzDasOutSight_Table())
 output$cruzDasOutSight_Save_text <- renderText(cruzDasOutSight_Save())
 

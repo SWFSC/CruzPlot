@@ -2,17 +2,41 @@
 #   update: symbol type and color for when 'Input symbol properties as text' is clicked
 
 
+###############################################################################
 ### Read DAS file(s)
-observeEvent(input$das.file, {
+das_file_load <- eventReactive(input$das.file, {
+  # Clear reactive vals
+  cruz.list$das.data <- NULL
+  cruz.list$das.data.name <- NULL
+
+  # Check file name
+  file.name <- input$das.file$name
+  validate(
+    need(all(tolower(substr_right(file.name, 4)) ==".das"),
+         "Error: All DAS files must have the file extension '.das'")
+  )
+
+  # Process DAS file
   withProgress(message = "Processing DAS file", value = 0.6, {
     # TODO: provide some way for the user to specify das_process arguments
-    cruz.list$das.data <- suppressWarnings(
+    das.proc <- try(suppressWarnings(
       swfscDAS::das_process(
         input$das.file$datapath, skip = 0,
         reset.event = TRUE, reset.effort = TRUE, reset.day = TRUE
       )
-    )
+    ), silent = TRUE)
   })
+
+  validate(
+    need(isTruthy(das.proc),
+         "Error: unable to read and process the provided DAS files")
+  )
+
+  # Savein reactive values
+  cruz.list$das.data <- das.proc
+  cruz.list$das.data.name <- file.name
+
+  ""
 }, ignoreInit = TRUE)
 
 ### Conditional flag for UI code for non-null cruz.list$das.data
@@ -80,3 +104,45 @@ observeEvent(!input$das_symbol_mult, {
 #   })
 #
 # })
+
+
+###############################################################################
+# Flags for inputs for plotting detailed effort not by Beaufort
+
+output$das_effort_det_s_flag <- reactive({
+  flag <- FALSE
+  if(input$das_effort == 3) {
+    if(!input$das_effort_det_byBft) {
+      if("S" %in% input$das_effort_snf) flag <- TRUE
+    }
+  }
+
+  flag
+})
+outputOptions(output, "das_effort_det_s_flag", suspendWhenHidden = FALSE)
+
+output$das_effort_det_n_flag <- reactive({
+  flag <- FALSE
+  if(input$das_effort == 3) {
+    if(!input$das_effort_det_byBft) {
+      if("N" %in% input$das_effort_snf) flag <- TRUE
+    }
+  }
+
+  flag
+})
+outputOptions(output, "das_effort_det_n_flag", suspendWhenHidden = FALSE)
+
+output$das_effort_det_f_flag <- reactive({
+  flag <- FALSE
+  if(input$das_effort == 3) {
+    if(!input$das_effort_det_byBft) {
+      if("F" %in% input$das_effort_snf) flag <- TRUE
+    }
+  }
+
+  flag
+})
+outputOptions(output, "das_effort_det_f_flag", suspendWhenHidden = FALSE)
+
+###############################################################################

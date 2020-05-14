@@ -166,7 +166,7 @@ cruzDasSightSpecies <- reactive({
 
     validate(
       need(length(ndx.X) != 0,
-           "There are no boat sightings in given .DAS file")
+           "There are no C-POD sightings in given .DAS file")
     )
 
     comment.str.df <- data.all[,6:13]

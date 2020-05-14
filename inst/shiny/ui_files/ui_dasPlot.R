@@ -37,7 +37,7 @@ ui.dasPlot <- function() {
         )
       ),
       tabBox(
-        title = "Plot Sightings and/or Effort", id = "tabset2", width = 6,
+        title = "Plot Sightings and Effort", id = "tabset2", width = 6,
         ##############################################################################################################
         tabPanel(
           title = "Data & Sightings",
@@ -48,7 +48,8 @@ ui.dasPlot <- function() {
                 box(
                   title = "Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                   fileInput("das.file", label = h5("DAS file input"), multiple = TRUE),
-                  textOutput("das_loaded_text"),
+                  textOutput("das_file_load_text"),
+                  tags$span(textOutput("das_loaded_text"), style = "color: blue;"),
                   helpText("To load DAS data file(s), first click the \"Browse...\" button. In the pop-up window",
                            "select the file(s) you want to load. Hold down the Shift key to select multiple files if desired.",
                            "Currently, you can 'remove' a file by browsing again and selecting only the DAS file(s)",
@@ -57,8 +58,7 @@ ui.dasPlot <- function() {
                 conditionalPanel(
                   condition = "input.das_sightings==true",
                   box(
-                    title = "Sighting type & species", status = "warning", solidHeader = FALSE,
-                    collapsible = TRUE, width = 12,
+                    title = "Sighting type & species", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
                     selectInput("das_sighting_type", label = h5("Sighting type"),
                                 choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3, "CPODs" = 4),
                                 selected = 1),

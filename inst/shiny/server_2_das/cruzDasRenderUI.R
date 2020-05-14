@@ -1,13 +1,6 @@
 ## renderUI()'s for Plot DAS Data tab
 
 
-### Message for when DAS data is loaded
-output$das_loaded_text <- renderText({
-  req(cruz.list$das.data)
-  "DAS data is loaded"
-})
-
-
 ###############################################################################
 ### Codes for mammals and turtles
 # renderUIs for mammal and turtle species
@@ -92,47 +85,7 @@ output$das.out.effort.dateRange_uiOut_date <- renderUI({
 })
 
 
-###############################################################################
-# Flags for inputs for plotting detailed effort not by Beaufort
-
-output$das_effort_det_s_flag <- reactive({
-  flag <- FALSE
-  if(input$das_effort == 3) {
-    if(!input$das_effort_det_byBft) {
-      if("S" %in% input$das_effort_snf) flag <- TRUE
-    }
-  }
-
-  flag
-})
-outputOptions(output, "das_effort_det_s_flag", suspendWhenHidden = FALSE)
-
-output$das_effort_det_n_flag <- reactive({
-  flag <- FALSE
-  if(input$das_effort == 3) {
-    if(!input$das_effort_det_byBft) {
-      if("N" %in% input$das_effort_snf) flag <- TRUE
-    }
-  }
-
-  flag
-})
-outputOptions(output, "das_effort_det_n_flag", suspendWhenHidden = FALSE)
-
-output$das_effort_det_f_flag <- reactive({
-  flag <- FALSE
-  if(input$das_effort == 3) {
-    if(!input$das_effort_det_byBft) {
-      if("F" %in% input$das_effort_snf) flag <- TRUE
-    }
-  }
-
-  flag
-})
-outputOptions(output, "das_effort_det_f_flag", suspendWhenHidden = FALSE)
-
-
-###############################################################################
+##############################################################################
 # renderUI for truncation input
 
 output$das.sight.trunc.uiOut.numeric <- renderUI({
@@ -145,3 +98,5 @@ output$das.sight.trunc.uiOut.numeric <- renderUI({
   numericInput("das.sight.trunc", label = h5(widget.name), value = curr.value)
 })
 outputOptions(output, "das.sight.trunc.uiOut.numeric", suspendWhenHidden = FALSE, priority = 3)
+
+##############################################################################
