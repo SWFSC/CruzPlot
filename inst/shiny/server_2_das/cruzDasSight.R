@@ -6,61 +6,81 @@
 #     adds sight.lat, sight.lon, angle, distance (nmi) to data.sight dataframe
 
 
+###############################################################################
 cruzDasSightSpeciesMammals <- reactive({
-  if(input$das_sighting_code_1_all == 1) sp.code.all <- cruzSpeciesMammals()$Code
-  if(input$das_sighting_code_1_all == 2) {
-    sp.code.all <- gsub(" ", "", substring(input$das.sighting.code.1, 1, 3))
-    validate(
-      need(length(sp.code.all) != 0, message = "Please choose at least one valid mammal species code")
-    )
+  sp.code.all <- if (input$das_sighting_code_1_all == 1) {
+    cruzSpeciesMammals()$Code
+  } else if (input$das_sighting_code_1_all == 2) {
+    gsub(" ", "", substring(input$das.sighting.code.1, 1, 3))
+  } else {
+    stop("Invalid CruzPlot input$das_sighting_code_1_all value. ",
+         "Please report this as an issue")
   }
 
-  return(sp.code.all)
+  validate(
+    need(length(sp.code.all) > 0, "Please choose at least one valid mammal species code")
+  )
+
+  sp.code.all
 })
 
 cruzDasSightSpeciesTurtles <- reactive({
-  if(input$das_sighting_code_2_all == 1) sp.code.all <- cruzSpeciesTurtles()$Code
-  if(input$das_sighting_code_2_all == 2) {
-    sp.code.all <- substring(input$das.sighting.code.2, 1, 2)
-    validate(
-      need(length(sp.code.all) != 0, message = "Please choose at least one valid turtle species code")
-    )
+  sp.code.all <- if (input$das_sighting_code_2_all == 1) {
+    cruzSpeciesTurtles()$Code
+  } else if (input$das_sighting_code_2_all == 2) {
+    substring(input$das.sighting.code.2, 1, 2)
+  } else {
+    stop("Invalid CruzPlot input$das_sighting_code_2_all value. ",
+         "Please report this as an issue")
   }
 
-  return(sp.code.all)
+  validate(
+    need(length(sp.code.all) > 0, "Please choose at least one valid turtle species code")
+  )
+
+  sp.code.all
 })
 
 
+###############################################################################
 cruzDasSightSpecies <- reactive({
-  req(cruz.list$das.data)
+  data.all <- req(cruz.list$das.data)
+  browser()
 
-  data.all <- cruz.list$das.data
-
-  ## Sightings to plot
+  ### Sightings to plot
   # Filter by type of sighting (Mammal(A), Turtle(t), Boat(F)) and species code for M and T
   sight.type <- input$das_sighting_type
-  # 1: Mammals
-  if(sight.type == 1) {
-    data.all$num <- seq(1:length(data.all[,1]))
+  stopifnot(sight.type %in% 1:4)
+
+  # TODO: Simply use das_sight, and filter. Will need to extract X events separately
+
+  #----------------------------------------------------------------------------
+  if (sight.type == 1) {
+    # 1: Mammals
+    # Get species codes - also does validate() check for valid species
+    sp.code.all <- cruzDasSightSpeciesMammals()
+    sp.code.len <- length(sp.code.all)
+
+    data.all$idx <- seq(1:length(data.all[,1]))
     data.sight <- data.all[data.all$Event == "A", ]
 
     # Update probable sightings species if necessary
-    if(input$das.sighting.probable) {
+    if (input$das.sighting.probable) {
       prob <- data.all[data.all$Event == "?", ]
 
       validate(
-        need(nrow(prob) != 0,
-             "There are no probable sightings in given .DAS file")
+        need(nrow(prob) > 0,
+             "There are no probable sightings in the loaded DAS file(s)")
       )
 
-      prob.loc <- prob$num - 1
-      data.sight[which(data.sight$num %in% prob.loc),]$Data5 <- prob$Data5
-      data.sight[which(data.sight$num %in% prob.loc),]$Data6 <- prob$Data6
-      data.sight[which(data.sight$num %in% prob.loc),]$Data7 <- prob$Data7
-      data.sight[which(data.sight$num %in% prob.loc),]$Data8 <- prob$Data8
+      prob.loc <- prob$idx - 1
+      data.sight[which(data.sight$idx %in% prob.loc), ]$Data5 <- prob$Data5
+      data.sight[which(data.sight$idx %in% prob.loc), ]$Data6 <- prob$Data6
+      data.sight[which(data.sight$idx %in% prob.loc), ]$Data7 <- prob$Data7
+      data.sight[which(data.sight$idx %in% prob.loc), ]$Data8 <- prob$Data8
       # special code for possible vaquita sighting
       prob.vaq <- which(data.all$Data5 == "977")
-      data.sight[which(data.sight$num %in% prob.vaq),]$Data5 <- "041"
+      data.sight[which(data.sight$idx %in% prob.vaq),]$Data5 <- "041"
       # Data1 method
       # data.sight[which(data.sight$Data1 %in% prob$Data1),]$Data5 <- prob$Data5
       # data.sight[which(data.sight$Data1 %in% prob$Data1),]$Data6 <- prob$Data6
@@ -71,12 +91,10 @@ cruzDasSightSpecies <- reactive({
     data.all <- data.all #[,1:15]
     data.sight <- data.sight #[,1:15]
 
-    sp.code.all <- cruzDasSightSpeciesMammals()
-    sp.code.len <- length(sp.code.all)
+    data.sight2 <- swfscDAS::das_sight(data.all)
 
     ndx.sp <- NULL
-    for(i in 1:sp.code.len)
-    {
+    for(i in 1:sp.code.len) {
       ndx <- c(which(data.sight$Data5 == sp.code.all[i]),
                which(data.sight$Data6 == sp.code.all[i]),
                which(data.sight$Data7 == sp.code.all[i]),
@@ -93,7 +111,7 @@ cruzDasSightSpecies <- reactive({
     angle <- as.numeric(data.temp$Data5)
     dist.nmi <- as.numeric(data.temp$Data7)
 
-    if(input$das_sighting_code_1_all == 2) {                # selected species codes
+    if (input$das_sighting_code_1_all == 2) {                # selected species codes
       temp.all <- sapply(sp.code.all, function(i) i %in% data.sight$Data5 ||
                            i %in% data.sight$Data6 ||
                            i %in% data.sight$Data7 ||
@@ -105,10 +123,11 @@ cruzDasSightSpecies <- reactive({
                              "does not have any sightings in the data"))
       )
     }
-  }
 
-  # 2: Turtles
-  if(sight.type == 2) {
+
+    #--------------------------------------------------------------------------
+  } else if (sight.type == 2) {
+    # 2: Turtles
     data.sight <- data.all[data.all$Event == "t", ]
 
     validate(
@@ -141,10 +160,11 @@ cruzDasSightSpecies <- reactive({
                              "does not have any sightings in the given data"))
       )
     }
-  }
 
-  # 3: Boats
-  if(sight.type == 3) {
+
+    #--------------------------------------------------------------------------
+  } else if (sight.type == 3) {
+    # 3: Boats
     data.sight <- data.all[data.all$Event == "F", ]
 
     validate(
@@ -156,12 +176,13 @@ cruzDasSightSpecies <- reactive({
     angle <- as.numeric(data.sight$Data2)
     dist.nmi <- as.numeric(data.sight$Data3)
     sp.code.all <- NULL
-  }
 
-  # 4: C-PODs
-  # C-POD sightings are entered as objects with sighting angle and distance
-  # the string "cpod" in the comment on the next line indicates object is a CPOD
-  if(sight.type == 4) {
+
+    #--------------------------------------------------------------------------
+  } else if (sight.type == 4) {
+    # 4: C-PODs
+    # C-POD sightings are entered as objects with sighting angle and distance
+    # the string "cpod" in the comment on the next line indicates object is a CPOD
     ndx.X <- which(data.all$Event == "X")
 
     validate(
@@ -180,6 +201,7 @@ cruzDasSightSpecies <- reactive({
   }
 
 
+  #----------------------------------------------------------------------------
   ### Check to see if any sightings match species code
   validate(
     need(length(data.sight[,1]) > 0,
@@ -203,5 +225,7 @@ cruzDasSightSpecies <- reactive({
   data.sight$dist.nmi <- dist.nmi
   data.sight$perp.dist.nmi <- abs(dist.nmi * sin(angle / 180 * pi))
 
-  return(list(data.sight = data.sight, sight.type = sight.type, sp.codes = sp.code.all))
+  list(data.sight = data.sight, sight.type = sight.type, sp.codes = sp.code.all)
 })
+
+###############################################################################
