@@ -9,16 +9,20 @@ Description: A utility program oriented to create maps, plot data, and do basic 
 URL: https://smwoodman.github.io/CruzPlot/, https://github.com/smwoodman/CruzPlot
 BugReports: https://github.com/smwoodman/CruzPlot/issues
 Imports: 
+    shiny
+Suggests:
     dplyr,
     DT,
     geosphere,
     mapdata,
     marmap,
     maps,
-    shiny,
     shinydashboard,
     shinyjs,
-    stringr
+    stringr, 
+    swfscDAS
+Remotes:
+    smwoodman/swfscDAS
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true
