@@ -93,8 +93,23 @@ ui.dasPlot <- function() {
               width = 6,
               fluidRow(
                 box(
-                  title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE, height = 124,
-                  checkboxInput("das_sightings", label = h5("Plot sightings"), value = FALSE)
+                  title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+                  fluidRow(
+                    column(6, checkboxInput("das_sightings", label = h5("Plot sightings"), value = FALSE)),
+                    column(
+                      width = 6,
+                      conditionalPanel(
+                        condition = "input.das_sightings",
+                        radioButtons("das_sightings_pos", NULL, choices = list("Plot ship position" = 1, "Plot sighting position" = 2), selected = 1)
+                      )
+                    )
+                  ),
+                  conditionalPanel(
+                    condition = "input.das_sightings",
+                    helpText("Sighting position is calculated using the ship position, ship course, sighting bearing (angle),",
+                             "and radial distance to the sighting.",
+                             "If any of these values are NA, then the ship position is used for those sighting(s)")
+                  )
                 )
               )
             ),
@@ -205,24 +220,25 @@ ui.dasPlot <- function() {
               box(
                 title = "Sightings filters", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
                 fluidRow(
-                  column(6, selectInput("das.sight.minBeau", label = h5("Min Beaufort"),
+                  column(6, selectInput("das_sight_minBft", label = h5("Min Beaufort"),
                                         choices = cruz.beaufort, selected = 0)),
-                  column(6, selectInput("das.sight.maxBeau", label = h5("Max Beaufort"),
+                  column(6, selectInput("das_sight_maxBft", label = h5("Max Beaufort"),
                                         choices = cruz.beaufort, selected = 9))
                 ),
-                uiOutput("das.sight.dateRange_uiOut_date"),
+                uiOutput("das_sight_dateRange_uiOut_date"),
                 br(),
-                helpText("To stop applying the cruise number(s) and truncation filters, delete all text from their boxes"),
+                helpText("To stop applying the cruise number(s) and truncation (perpendicular distance) filters,",
+                         "delete all text from their boxes"),
                 fluidRow(
                   column(
                     width = 6,
-                    textInput("das.sight.cruiseNum", label = h5("Cruise number(s)"), value = ""),
+                    textInput("das_sight_cruiseNum", label = h5("Cruise number(s)"), value = ""),
                     helpText("Only sightings from entered cruise(s) will be plotted. Enter cruise numbers as 'number, number'")
                   ),
                   column(
                     width = 6,
-                    uiOutput("das.sight.trunc.uiOut.numeric"),
-                    radioButtons("das.sight.trunc.units", h5("Truncation distance units"),
+                    uiOutput("das_sight_trunc_uiOut_numeric"),
+                    radioButtons("das_sight_trunc_units", h5("Truncation distance units"),
                                  choices = list("Kilometers" = 1, "Nautical miles" = 2),
                                  selected = 2),
                     helpText("Only sightings less than or equal to this perpendicular distance from the trackline will be plotted")
@@ -461,7 +477,7 @@ ui.dasPlot <- function() {
                     )
                   ),
                   conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be  by Beaufort")),
-                  uiOutput("das.effort.dateRange_uiOut_date"),
+                  uiOutput("das_effort_dateRange_uiOut_date"),
                   textInput("das.effort.cruiseNum", h5("Cruise number(s)"), value = ""),
                   helpText("Only effort lines from this cruise number will be plotted")
                 )

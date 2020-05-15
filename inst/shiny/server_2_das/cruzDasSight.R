@@ -44,15 +44,13 @@ cruzDasSightSpeciesTurtles <- reactive({
 
 ###############################################################################
 cruzDasSightSpecies <- reactive({
-  data.all <- req(cruz.list$das.data)
-  browser()
+  das.proc <- req(cruz.list$das.data)
 
   ### Sightings to plot
-  # Filter by type of sighting (Mammal(A), Turtle(t), Boat(F)) and species code for M and T
   sight.type <- input$das_sighting_type
   stopifnot(sight.type %in% 1:4)
 
-  # TODO: Simply use das_sight, and filter. Will need to extract X events separately
+  das.sight <- das_sight(das.proc, mixed.multi = TRUE)
 
   #----------------------------------------------------------------------------
   if (sight.type == 1) {
@@ -60,67 +58,32 @@ cruzDasSightSpecies <- reactive({
     # Get species codes - also does validate() check for valid species
     sp.code.all <- cruzDasSightSpeciesMammals()
     sp.code.len <- length(sp.code.all)
-
-    data.all$idx <- seq(1:length(data.all[,1]))
-    data.sight <- data.all[data.all$Event == "A", ]
+    das.sight <- das.sight %>% filter(.data$Event %in% c("S", "K", "M"))
 
     # Update probable sightings species if necessary
     if (input$das.sighting.probable) {
-      prob <- data.all[data.all$Event == "?", ]
+      validate(need(FALSE, "CruzPlot not ready for probable yet"))
+      if (any(is.na(das.sight$Prob)))
+        warning("A marine mammal sighting has an NA Prob value")
 
       validate(
-        need(nrow(prob) > 0,
+        need(sum(das.sight$Prob) > 0,
              "There are no probable sightings in the loaded DAS file(s)")
       )
 
-      prob.loc <- prob$idx - 1
-      data.sight[which(data.sight$idx %in% prob.loc), ]$Data5 <- prob$Data5
-      data.sight[which(data.sight$idx %in% prob.loc), ]$Data6 <- prob$Data6
-      data.sight[which(data.sight$idx %in% prob.loc), ]$Data7 <- prob$Data7
-      data.sight[which(data.sight$idx %in% prob.loc), ]$Data8 <- prob$Data8
-      # special code for possible vaquita sighting
-      prob.vaq <- which(data.all$Data5 == "977")
-      data.sight[which(data.sight$idx %in% prob.vaq),]$Data5 <- "041"
-      # Data1 method
-      # data.sight[which(data.sight$Data1 %in% prob$Data1),]$Data5 <- prob$Data5
-      # data.sight[which(data.sight$Data1 %in% prob$Data1),]$Data6 <- prob$Data6
-      # data.sight[which(data.sight$Data1 %in% prob$Data1),]$Data7 <- prob$Data7
-      # data.sight[which(data.sight$Data1 %in% prob$Data1),]$Data8 <- prob$Data8
+      # 977 used as probable vaquita sighting on some cruises
+      das.sight$Sp <- ifelse(das.sight$Sp == "977", "041", das.sight$Sp)
     }
 
-    data.all <- data.all #[,1:15]
-    data.sight <- data.sight #[,1:15]
+    # Filter for selected species, and check that all selected species are in data
+    das.sight <- das.sight %>% filter(.data$Sp %in% sp.code.all)
 
-    data.sight2 <- swfscDAS::das_sight(data.all)
-
-    ndx.sp <- NULL
-    for(i in 1:sp.code.len) {
-      ndx <- c(which(data.sight$Data5 == sp.code.all[i]),
-               which(data.sight$Data6 == sp.code.all[i]),
-               which(data.sight$Data7 == sp.code.all[i]),
-               which(data.sight$Data8 == sp.code.all[i]))
-      ndx.sp <- c(ndx.sp, ndx)
-    }
-    data.sight <- data.sight[ndx.sp, ]
-    data.sight <- data.sight[!duplicated(data.sight$Data1),]  # if a sighting is matched (2 teams), it has the same sighting number
-    # this code might be a problem with sighting numbers starting
-    # over each day in data for 1990 and earlier
-
-    ndx <- as.numeric(rownames(data.sight))-1    # row names are the indices of the A records
-    data.temp <- data.all[ndx,]
-    angle <- as.numeric(data.temp$Data5)
-    dist.nmi <- as.numeric(data.temp$Data7)
-
-    if (input$das_sighting_code_1_all == 2) {                # selected species codes
-      temp.all <- sapply(sp.code.all, function(i) i %in% data.sight$Data5 ||
-                           i %in% data.sight$Data6 ||
-                           i %in% data.sight$Data7 ||
-                           i %in% data.sight$Data8)
-      sp.code.false <- sp.code.all[which(!temp.all)]
+    if (input$das_sighting_code_1_all == 2) {
+      sp.code.false <- sp.code.all[!(sp.code.all %in% das.sight$Sp)]
       validate(
-        need(all(temp.all),
-             message = paste("Species with code", sp.code.false,
-                             "does not have any sightings in the data"))
+        need(length(sp.code.false) == 0,
+             paste("Species with code(s)", sp.code.false,
+                   "does (do) not have any sightings in the data"))
       )
     }
 
@@ -128,36 +91,25 @@ cruzDasSightSpecies <- reactive({
     #--------------------------------------------------------------------------
   } else if (sight.type == 2) {
     # 2: Turtles
-    data.sight <- data.all[data.all$Event == "t", ]
-
     validate(
-      need(nrow(data.sight) != 0,
-           "There are no turtle sightings in given .DAS file")
+      need(sum(das.sight$Event == "t") > 0,
+           "There are no turtle sightings in the loaded DAS file(s)")
     )
 
     sp.code.all <- cruzDasSightSpeciesTurtles()
     sp.code.len <- length(sp.code.all)
-    data.temp <- NULL
-    for(i in 1:sp.code.len)
-    {
-      sp.code <- sp.code.all[i]
-      temp <- which(data.sight$Data2 == sp.code)
-      data.temp <- c(data.temp, temp)
-    }
-    data.sight <- data.sight[data.temp, ]
 
-    ndx <- as.numeric(rownames(data.sight))
-    angle <- as.numeric(data.sight$Data3)
-    dist.nmi <- as.numeric(data.sight$Data4)
+    das.sight <- das.sight %>%
+      filter(.data$Event %in% c("t"),
+             .data$TurtleSp %in% sp.code.all) %>%
+      mutate(Sp = .data$TurtleSp)
 
-    if(input$das_sighting_code_2_all == 2) {
-      temp.all <- sapply(sp.code.all, function(i) i %in% data.sight$Data2)
-      sp.code.false <- sp.code.all[which(!temp.all)]
-
+    if (input$das_sighting_code_2_all == 2) {
+      sp.code.false <- sp.code.all[!(sp.code.all %in% das.sight$Sp)]
       validate(
-        need(all(temp.all),
-             message = paste("Species with code", sp.code.false,
-                             "does not have any sightings in the given data"))
+        need(length(sp.code.false) == 0,
+             paste("Species with code(s)", sp.code.false,
+                   "does (do) not have any sightings in the data"))
       )
     }
 
@@ -165,17 +117,13 @@ cruzDasSightSpecies <- reactive({
     #--------------------------------------------------------------------------
   } else if (sight.type == 3) {
     # 3: Boats
-    data.sight <- data.all[data.all$Event == "F", ]
+    das.sight <- das.sight %>% filter(.data$Event == "F")
+    sp.code.all <- NULL
 
     validate(
-      need(nrow(data.sight) != 0,
-           "There are no boat sightings in given .DAS file")
+      need(nrow(das.sight) > 0,
+           "There are no boat sightings in the loaded DAS file(s)")
     )
-
-    ndx <- as.numeric(rownames(data.sight))
-    angle <- as.numeric(data.sight$Data2)
-    dist.nmi <- as.numeric(data.sight$Data3)
-    sp.code.all <- NULL
 
 
     #--------------------------------------------------------------------------
@@ -183,49 +131,70 @@ cruzDasSightSpecies <- reactive({
     # 4: C-PODs
     # C-POD sightings are entered as objects with sighting angle and distance
     # the string "cpod" in the comment on the next line indicates object is a CPOD
-    ndx.X <- which(data.all$Event == "X")
+    sp.code.all <- NULL
 
     validate(
-      need(length(ndx.X) != 0,
-           "There are no C-POD sightings in given .DAS file")
+      need(sum(das.proc$Event == "X") > 0,
+           "There are no C-POD sightings in the loaded DAS file(s)")
     )
 
-    comment.str.df <- data.all[,6:13]
-    comment.str <- apply(comment.str.df,1,paste,collapse="")
-    ndx.cpod <- grep("cpod",comment.str)
-    ndx <- ndx.X[(ndx.X+1) %in% ndx.cpod]
-    data.sight <- data.all[ndx,]
-    angle <- as.numeric(data.sight$Data2)
-    dist.nmi <- as.numeric(data.sight$Data4)
-    sp.code.all <- NULL
+
+    ndx.x <- which(das.proc$Event == "X")
+    comm.x1 <- apply(das.proc[ndx.X + 1, paste0("Data", 1:7)], 1, function(i) {
+      paste(na.omit(i), collapse = "")
+    })
+    comm.x1.cpod <- grepl("cpod", comm.x1, ignore.case = TRUE)
+    stopifnot(length(ndx.x) == length(comm.x1))
+
+    ndx.x <- ndx.x[comm.x1.cpod]
+
+    das.sight <- das.proc %>%
+      slice(ndx.x) %>%
+      mutate(Bearing = as.numeric(.data$Data2),
+             DistNm = as.numeric(.data$Data4),
+             PerpDistKm = abs(sin(.data$Bearing*pi/180) * .data$DistNm) * 1.852)
+
+    validate(
+      need(nrow(das.sight) > 0,
+           "There are no C-POD sightings in the loaded DAS file(s)")
+    )
+    # comment.str.df <- data.all[,6:13]
+    # comment.str <- apply(comment.str.df,1,paste,collapse="")
+    # ndx.cpod <- grep("cpod",comment.str)
+    # ndx <- ndx.X[(ndx.X+1) %in% ndx.cpod]
+    # data.sight <- data.all[ndx,]
+    # angle <- as.numeric(data.sight$Data2)
+    # dist.nmi <- as.numeric(data.sight$Data4)
   }
 
 
   #----------------------------------------------------------------------------
-  ### Check to see if any sightings match species code
+  # Final check to ensure some sightings match provided selection
   validate(
-    need(length(data.sight[,1]) > 0,
-         message = paste("No sightings exist for the selected code(s)"))
+    need(nrow(das.sight) > 0,
+         "No sightings exist for the selected type and code(s)")
   )
 
+  # Calculate sighting location
+  bearing2 <- (das.sight$Course + das.sight$Bearing) %% 360
+  ll.sight <- destPoint(matrix(c(das.sight$Lon, das.sight$Lat), ncol = 2),
+                        bearing2, das.sight$DistNm * 1852)
 
-  ### Compute lat and lon of sighted object from sighting angle, ship course, ship bearing and distance
-  angle[is.na(angle)] <- 0
-  dist.nmi[is.na(dist.nmi)] <- 0  # Distance in DAS file is nmi
-  course <- cruz.list$das.data$Course[ndx]
-  ship.bearing <- cruz.list$das.data$Bearing[ndx]
-  sight.bearing <- ifelse(is.na(ship.bearing), course+angle, ship.bearing+angle) %% 360
-  dist.m <- dist.nmi*1852  # dist in m
-  sight.loc <- destPoint(matrix(c(data.sight$Lon, data.sight$Lat), ncol=2),
-                         sight.bearing, dist.m)  # location of sighting
+  das.sight <- das.sight %>%
+    mutate(Lat_ship = .data$Lat,
+           Lon_ship = .data$Lon,
+           Lat_sight = ll.sight[, "lat"],
+           Lon_sight = ll.sight[, "lon"])
 
-  data.sight$sight.lon <- sight.loc[,"lon"]
-  data.sight$sight.lat <- sight.loc[,"lat"]
-  data.sight$angle <- angle
-  data.sight$dist.nmi <- dist.nmi
-  data.sight$perp.dist.nmi <- abs(dist.nmi * sin(angle / 180 * pi))
+  # # Calculate sighting location using swfscMisc
+  # ll.sight.dest <- apply(das.sight, 1, function(i) {
+  # i <- as.numeric(i[c("Lat", "Lon", "bearing2", "DistNm")])
+  #   swfscMisc::destination(i["Lat"], i["Lon"], i["bearing2"], i["DistNm"],
+  #                          units = "nm", type = "ellipsoid")
+  # })
 
-  list(data.sight = data.sight, sight.type = sight.type, sp.codes = sp.code.all)
+  # Return list
+  list(das.sight = das.sight, sight.type = sight.type, sp.codes = sp.code.all)
 })
 
 ###############################################################################

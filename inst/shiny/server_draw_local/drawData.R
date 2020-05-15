@@ -4,7 +4,7 @@
 
 
 ### Plot non-DAS data
-if(!is.null(data.ndas)) {
+if(isTruthy(data.ndas)) {
   # Plot lines
   data.ndas.l <- data.ndas[[1]]
   if(length(data.ndas.l) > 0) {
@@ -30,7 +30,7 @@ if(!is.null(data.ndas)) {
 
 
 ### Plot DAS data
-if(!is.null(cruz.list$das.data)) {
+if(isTruthy(cruz.list$das.data)) {
   ## Plot effort segments
   if(input$das_effort != "1") {
     segments(x0 = data.effort$Lon[eff.ndx.R], x1 = data.effort$Lon[eff.ndx.E],
@@ -67,24 +67,24 @@ if(!is.null(cruz.list$das.data)) {
 
   ## Plot sightings and legend
   if(input$das_sightings) {
-    points(data.sight$sight.lon, data.sight$sight.lat,
-           pch = data.sight.symbol$pt.pch, col = data.sight.symbol$pt.col,
-           cex = data.sight.symbol$pt.cex, lwd = data.sight.symbol$pt.lwd)
+    points(das.sight$sight.lon, das.sight$sight.lat,
+           pch = das.sight.symbol$pt.pch, col = das.sight.symbol$pt.col,
+           cex = das.sight.symbol$pt.cex, lwd = das.sight.symbol$pt.lwd)
 
     if(input$das_legend & sight.type < 3) {
-      op <- par(family = data.sight.legend$font.fam)
-      legend(x = data.sight.legend$leg.x,
-             y = data.sight.legend$leg.y,
-             legend = data.sight.legend$leg.lab,
-             title = data.sight.legend$leg.title,
-             pch = data.sight.legend$leg.pch,
-             col = data.sight.legend$leg.col,
-             pt.cex = data.sight.legend$leg.cex,
-             pt.lwd = data.sight.legend$leg.lwd,
-             bty = data.sight.legend$leg.bty,
-             box.col = data.sight.legend$leg.box.col,
-             box.lwd = data.sight.legend$leg.box.lwd,
-             cex = data.sight.legend$leg.box.cex,
+      op <- par(family = das.sight.legend$font.fam)
+      legend(x = das.sight.legend$leg.x,
+             y = das.sight.legend$leg.y,
+             legend = das.sight.legend$leg.lab,
+             title = das.sight.legend$leg.title,
+             pch = das.sight.legend$leg.pch,
+             col = das.sight.legend$leg.col,
+             pt.cex = das.sight.legend$leg.cex,
+             pt.lwd = das.sight.legend$leg.lwd,
+             bty = das.sight.legend$leg.bty,
+             box.col = das.sight.legend$leg.box.col,
+             box.lwd = das.sight.legend$leg.box.lwd,
+             cex = das.sight.legend$leg.box.cex,
              bg = "white")
       par(op)
     }

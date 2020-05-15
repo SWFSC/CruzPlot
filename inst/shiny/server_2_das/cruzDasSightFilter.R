@@ -7,12 +7,14 @@
 #   cruiseDasSightFilter() returns list of data frame containing data for selected species that satisfy the filters,
 #     counts for each selected species, and selected species codes
 
+###############################################################################
 ### Top-level function for filtering
 cruzDasSightFilter <- reactive({
   data.list <- cruzDasSightSpecies()
-  data.temp <- data.list$data.sight
+
+  das.sight  <- data.list$das.sight
   sight.type <- data.list$sight.type
-  sp.codes <- data.list$sp.codes
+  sp.codes   <- data.list$sp.codes
 
   num.keep1 <- cruzDasSightFilterEffort()
   num.keep2 <- cruzDasSightFilterBeaufort()
@@ -20,15 +22,11 @@ cruzDasSightFilter <- reactive({
   num.keep4 <- cruzDasSightFilterCruise()
   num.keep5 <- cruzDasSightFilterTrunc()
 
-  num.keep <- unique(c(num.keep1, num.keep2, num.keep3, num.keep4, num.keep5))
+  num.keep <- sort(unique(num.keep1, num.keep2, num.keep3, num.keep4, num.keep5))
+  das.sight <- das.sight %>% slice(num.keep)
 
-  num.keep <- num.keep[num.keep%in%num.keep1 &
-                         num.keep%in%num.keep2 &
-                         num.keep%in%num.keep3 &
-                         num.keep%in%num.keep4 &
-                         num.keep%in%num.keep5]
-  data.sight <- data.temp[num.keep,]
-
+  browser()
+  # If plotting selected mammals, check that all selected still have sightings
   if(sight.type == 1 && input$das_sighting_code_1_all == 2) {
     temp.all <- sapply(sp.codes, function(i) i %in% data.sight$Data5 || i %in% data.sight$Data6 ||
                          i %in% data.sight$Data7 || i %in% data.sight$Data8)
@@ -39,6 +37,8 @@ cruzDasSightFilter <- reactive({
                            "does not have any sightings that match the given filters"))
     )
   }
+
+  # If plotting selected turtles, check that all selected still have sightings
   if(sight.type == 2 && input$das_sighting_code_2_all == 2) {
     temp.all <- sapply(sp.codes, function(i) i %in% data.sight$Data2)
     sp.code.false <- sp.codes[which(!temp.all)]
@@ -49,119 +49,115 @@ cruzDasSightFilter <- reactive({
     )
   }
 
-  return(list(data.sight = data.sight, sight.type = sight.type, sp.codes = data.list$sp.codes))
+  list(das.sight = das.sight, sight.type = sight.type, sp.codes = sp.codes)
 })
 
 
+###############################################################################
 ### Helper functions that filter sightings data by single factor
+
+#------------------------------------------------------------------------------
 # On/off effort
 cruzDasSightFilterEffort <- reactive({
-  data.sight <- cruzDasSightSpecies()$data.sight
-  sight.eff <- input$das_sightings_effort
-  ndx.keep <- seq(1:length(data.sight[,1]))
+  das.sight <- cruzDasSightSpecies()$das.sight
+  effort.val <- switch(
+    as.numeric(input$das_sightings_effort), c(0, 1), 1, 0
+  )
+  ndx.keep <- which(as.numeric(das.sight$OnEffort) %in% effort.val)
 
-  if(sight.eff == 2) ndx.keep <- which(data.sight$OnEffort == TRUE)
-  if(sight.eff == 3) ndx.keep <- which(data.sight$OnEffort == FALSE)
+  validate(
+    need(ndx.keep, "No sightings match the given on/off effort filters")
+  )
 
-  return(ndx.keep)
+  ndx.keep
 })
 
+#------------------------------------------------------------------------------
 # Beaufort
 cruzDasSightFilterBeaufort <- reactive({
-  data.sight <- cruzDasSightSpecies()$data.sight
-  bft.min <- input$das.sight.minBeau
-  bft.max <- input$das.sight.maxBeau
-
-  ndx.keep <- which((data.sight$Bft >= bft.min) & (data.sight$Bft <= bft.max))
+  das.sight <- cruzDasSightSpecies()$das.sight
+  bft.min <- as.numeric(input$das_sight_minBft)
+  bft.max <- as.numeric(input$das_sight_maxBft)
 
   validate(
-    need(length(ndx.keep) != 0,
-         message = "No sightings match the given beaufort filters")
+    need(input$das_sight_minBft <= input$das_sight_maxBft,
+         "Minimum Beaufort must be less than or equal to maximum Beaufort")
   )
 
-  return(ndx.keep)
+  ndx.keep <- which(between(das.sight$Bft, bft.min, bft.max))
+
+  validate(
+    need(ndx.keep, "No sightings match the given Beaufort filters")
+  )
+
+  ndx.keep
 })
 
+#------------------------------------------------------------------------------
 # Dates
 cruzDasSightFilterDate <- reactive({
-  data.sight <- cruzDasSightSpecies()$data.sight
-  date.range <- input$das.sight.dateRange
+  das.sight <- cruzDasSightSpecies()$das.sight
+  date.vals <- input$das_sight_dateRange
 
-  date.keep <- rep(FALSE, length(data.sight[,1]))
-  if(length(data.sight[,1]) != 0) {
-    for(i in 1:length(data.sight[,1])) {
-      current.date <- substring(data.sight$Date[i], 1, 10)
-      diff.min <- difftime(current.date, date.range[1],units="days")
-      diff.max <- difftime(current.date, date.range[2],units="days")-1
-      if((diff.min >= 0 ) && (diff.max <= 0)) date.keep[i] <- TRUE
-    }
-    ndx.keep <- which(date.keep)
-  }
   validate(
-    need(length(ndx.keep) != 0,
-         message = "No sightings match the given date filters")
+    need(input$das_sight_dateRange[1] <= input$das_sight_dateRange[2],
+         "Minimum date must be less than or equal to maximum date")
   )
 
-  return(ndx.keep)
+  ndx.keep <- which(between(
+    as.Date(das.sight$DateTime), date.vals[1], date.vals[2]
+  ))
+
+  validate(
+    need(ndx.keep, "No sightings match the given date filter")
+  )
+
+  ndx.keep
 })
 
+#------------------------------------------------------------------------------
 # Cruise numbers
 cruzDasSightFilterCruise <- reactive({
-  data.sight <- cruzDasSightSpecies()$data.sight
-  cruise.nums.in <- input$das.sight.cruiseNum
-  ndx.keep <- seq(1:length(data.sight[,1]))
+  das.sight <- cruzDasSightSpecies()$das.sight
 
-  if(cruise.nums.in != "") {
-    cruise.nums <- as.numeric(unlist(strsplit(cruise.nums.in, split = ",")))
-    cruise.present <- cruise.nums %in% data.sight$Cruise
-    cruise.absent.num <- cruise.nums[!cruise.present]
-    validate(
-      need(all(cruise.present),
-           message = paste("Based on given filter parameters, no sightings found for cruise number", cruise.absent.num))
-    )
-    ndx.keep <- which(data.sight$Cruise %in% cruise.nums)
+  cruise.vals <- if (identical(input$das_sight_cruiseNum, "")) {
+    unique(das.sight$Cruise)
+  } else {
+    as.numeric(unlist(strsplit(input$das_sight_cruiseNum, split = ",")))
   }
 
-  return(ndx.keep)
-})
-
-# Truncation
-cruzDasSightFilterTrunc <- reactive({
-  req(cruz.list$das.data)
-
-  data.all <- cruz.list$das.data
-  data.list <- cruzDasSightSpecies()
-  data.sight <- data.list$data.sight
-  sight.type <- data.list$sight.type
-
-  ### Convert truncation distance
-  trunc.dist <- input$das.sight.trunc
-  isolate(trunc.units <- input$das.sight.trunc.units)
-  # ^ changing trunc.units always changes trunc.dist
-
-  ndx.keep <- seq(1:nrow(data.sight))
-
-  if(!is.na(trunc.dist)) {
-    validate(
-      need(trunc.dist > 0,
-           "Please ensure truncation distance is greater than 0")
-    )
-
-    angle <- data.sight$angle
-    perp.dist.nmi <- data.sight$perp.dist.nmi
-    if (trunc.units == 2) {
-      perp.dist <- perp.dist.nmi
-    } else {
-      perp.dist <- perp.dist.nmi * 1.852
-    }
-
-    ndx.keep <- which(perp.dist < trunc.dist)
-  }
+  ndx.keep <- which(das.sight$Cruise %in% cruise.vals)
 
   validate(
-    need(length(ndx.keep) != 0,
-         "No sightings are within the given truncation distance")
+    need(ndx.keep, "No sightings match the given Cruise number filter")
   )
 
-  return(ndx.keep)
+  ndx.keep
 })
+
+#------------------------------------------------------------------------------
+# Perpendicular distance truncation
+cruzDasSightFilterTrunc <- reactive({
+  das.sight <- cruzDasSightSpecies()$das.sight
+
+  pdist.val <- ifelse(
+    input$das_sight_trunc_units == 1,
+    input$das_sight_trunc, input$das_sight_trunc * 1.852
+  )
+
+  if (is.na(pdist.val)) {
+    1:nrow(das.sight)
+
+  } else {
+    ndx.keep <- which(das.sight$PerpDistKm <= pdist.val)
+
+    validate(
+      need(ndx.keep,
+           "No sightings match the given truncation (perpendicular distance) filter")
+    )
+
+    ndx.keep
+  }
+})
+
+###############################################################################

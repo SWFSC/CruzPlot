@@ -259,35 +259,30 @@ if (input$planned_transects_plot) {
 
 #------------------------------------------------------------------------------
 ### Non-DAS
-data.ndas <- NULL
-if (input$ndas_plot) data.ndas <- cruzNonDas()
+data.ndas <- if (input$ndas_plot) cruzNonDas() else NULL
 
 #------------------------------------------------------------------------------
 ### DAS
-if (!is.null(cruz.list$das.data)) {
-  req(input$das.sight.dateRange)
-  req(input$das.effort.dateRange)
+if (isTruthy(cruz.list$das.data)) {
+  req(input$das_sight_dateRange, input$das_effort_dateRange)
 
   #### TODO Add validate() checks for lat/long info
   # Sightings
   if (input$das_sightings) {
     # Error check - other specific checks in cruzDasSight... functions
-    validate(
-      need(input$das.sight.minBeau <= input$das.sight.maxBeau,
-           message = "Minimum beaufort must be less than or equal to maximum beaufort"),
-      need(as.numeric(difftime(input$das.sight.dateRange[2], input$das.sight.dateRange[1])) >= 0,
-           message = paste0("Minimum date, ",
-                            format(input$das.sight.dateRange[1], format = "%d%b%Y"),
-                            ", is after maximimum date, ",
-                            format(input$das.sight.dateRange[2], format = "%d%b%Y")))
-    )
+    # validate(
+    #   need(input$das_sight_minBft <= input$das_sight_maxBft,
+    #        "Minimum Beaufort must be less than or equal to maximum Beaufort"),
+    #   need(input$das_sight_dateRange[1] <= input$das_sight_dateRange,
+    #        "Minimum date must be less than or equal to maximum date")
+    # )
 
-    data.list <- cruzDasSightRange()
+    # data.list <- cruzDasSightRange()
 
-    data.sight <- data.list$data.sight
-    sight.type <- data.list$sight.type
-    data.sight.symbol <- cruzDasSightSymbol()
-    if (input$das_legend) data.sight.legend <- cruzDasSightLegend()
+    das.sight <- cruzDasSightRange()$das.sight
+    # sight.type <- data.list$sight.type
+    das.sight.symbol <- cruzDasSightSymbol()
+    if (input$das_legend) das.sight.legend <- cruzDasSightLegend()
   }
 
   # Effort

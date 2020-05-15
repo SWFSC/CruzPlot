@@ -6,6 +6,9 @@
 cruzDasSightRange <- reactive({
   req(cruz.list$das.data)
 
+  # TODO: 'select' ship or sighting position
+  input$das_sightings_pos == 1
+
   # data.all <- cruz.list$das.data
   data.list <- cruzDasSightFilter()
   data.sight <- data.list$data.sight

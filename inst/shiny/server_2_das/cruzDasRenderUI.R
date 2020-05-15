@@ -40,27 +40,27 @@ dateRange_min_max <- reactive({
 })
 
 ### renderUI for date range filter for plotting sightings and effort
-output$das.sight.dateRange_uiOut_date <- renderUI({
+output$das_sight_dateRange_uiOut_date <- renderUI({
   req(cruz.list$das.data)
 
   dates <- dateRange_min_max()
 
-  dateRangeInput("das.sight.dateRange",
+  dateRangeInput("das_sight_dateRange",
                  label = h5("Range of dates for which sightings are plotted"),
                  start = dates[1], end = dates[2])
 })
-outputOptions(output, "das.sight.dateRange_uiOut_date", suspendWhenHidden = FALSE, priority = 3)
+outputOptions(output, "das_sight_dateRange_uiOut_date", suspendWhenHidden = FALSE, priority = 3)
 
-output$das.effort.dateRange_uiOut_date <- renderUI({
+output$das_effort_dateRange_uiOut_date <- renderUI({
   req(cruz.list$das.data)
 
   dates <- dateRange_min_max()
 
-  dateRangeInput("das.effort.dateRange",
+  dateRangeInput("das_effort_dateRange",
                  label = h5("Range of dates for which effort is plotted"),
                  start = dates[1], end = dates[2])
 })
-outputOptions(output, "das.effort.dateRange_uiOut_date", suspendWhenHidden = FALSE, priority = 3)
+outputOptions(output, "das_effort_dateRange_uiOut_date", suspendWhenHidden = FALSE, priority = 3)
 
 
 ### renderUIs for date range filters for tabular outputs
@@ -88,15 +88,15 @@ output$das.out.effort.dateRange_uiOut_date <- renderUI({
 ##############################################################################
 # renderUI for truncation input
 
-output$das.sight.trunc.uiOut.numeric <- renderUI({
-  isolate(curr.value <- input$das.sight.trunc)
+output$das_sight_trunc_uiOut_numeric <- renderUI({
+  isolate(curr.value <- input$das_sight_trunc)
 
-  trunc.units <- input$das.sight.trunc.units
+  trunc.units <- input$das_sight_trunc_units
   if(trunc.units == 1) widget.name <- "Truncation (km)"
   if(trunc.units == 2) widget.name <- "Truncation (nmi)"
 
-  numericInput("das.sight.trunc", label = h5(widget.name), value = curr.value)
+  numericInput("das_sight_trunc", label = h5(widget.name), value = curr.value)
 })
-outputOptions(output, "das.sight.trunc.uiOut.numeric", suspendWhenHidden = FALSE, priority = 3)
+outputOptions(output, "das_sight_trunc_uiOut_numeric", suspendWhenHidden = FALSE, priority = 3)
 
 ##############################################################################
