@@ -277,11 +277,9 @@ if (isTruthy(cruz.list$das.data)) {
     #        "Minimum date must be less than or equal to maximum date")
     # )
 
-    # data.list <- cruzDasSightRange()
-
     das.sight <- cruzDasSightRange()$das.sight
-    # sight.type <- data.list$sight.type
-    das.sight.symbol <- cruzDasSightSymbol()
+    sight.type <- cruzDasSightRange()$sight.type
+    das.sight.pt <- cruzDasSightSymbol()$pt.df
     if (input$das_legend) das.sight.legend <- cruzDasSightLegend()
   }
 

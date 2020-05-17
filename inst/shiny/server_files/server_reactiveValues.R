@@ -177,6 +177,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     #------------------------------------------------------
     ## Sighting info
     updateCheckboxInput(session, "das_sightings", value = das.info$das_sightings)
+    updateRadioButtons(session, "das_sightings_position", selected = das.info$das_sightings_position)
     updateSelectInput(session, "das_sighting_type", selected = das.info$das_sighting_type)
     updateRadioButtons(session, "das_sighting_code_1_all", selected = das.info$das_sighting_code_1_all)
     updateRadioButtons(session, "das_sighting_code_1_all", selected = das.info$das_sighting_code_1_al2)
@@ -348,6 +349,7 @@ output$save_app_envir <- downloadHandler(
       #----------------------------------------------------
       # DAS info
       das.info$das_sightings <- input$das_sightings
+      das.info$das_sightings_position <- input$das_sightings_position
       das.info$das_sighting_type <- input$das_sighting_type
       das.info$das_sighting_code_1_all <- input$das_sighting_code_1_all
       das.info$das_sighting_code_2_all <- input$das_sighting_code_2_all

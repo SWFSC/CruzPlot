@@ -1,20 +1,22 @@
-# cruzDasSightFilter for CruzPlot
+# cruzDasSightFilter for CruzPlot - step 2 of processing species data
+#   cruiseDasSightFilter() pulls individual filters together
+
 #   cruzDasSightFilterEffort() returns row numbers of data.sight that satisfy the effort filter
 #   cruzDasSightFilterBeaufort() returns row numbers of data.sight that satisfy the beaufort filter
 #   cruzDasSightFilterDate() returns row numbers of data.sight that satisfy the date filter
 #   cruzDasSightFilterCruise() returns row numbers of data.sight entries from the given cruise number(s)
 #   cruzDasSightFilterTrunc() returns row numbers of data.sight entries within the given truncation distance
-#   cruiseDasSightFilter() returns list of data frame containing data for selected species that satisfy the filters,
-#     counts for each selected species, and selected species codes
+
 
 ###############################################################################
 ### Top-level function for filtering
 cruzDasSightFilter <- reactive({
   data.list <- cruzDasSightSpecies()
 
-  das.sight  <- data.list$das.sight
-  sight.type <- data.list$sight.type
-  sp.codes   <- data.list$sp.codes
+  das.sight    <- data.list$das.sight
+  sight.type   <- data.list$sight.type
+  sp.codes     <- data.list$sp.codes
+  sp.selection <- data.list$sp.selection
 
   num.keep1 <- cruzDasSightFilterEffort()
   num.keep2 <- cruzDasSightFilterBeaufort()
@@ -22,39 +24,40 @@ cruzDasSightFilter <- reactive({
   num.keep4 <- cruzDasSightFilterCruise()
   num.keep5 <- cruzDasSightFilterTrunc()
 
-  num.keep <- sort(unique(num.keep1, num.keep2, num.keep3, num.keep4, num.keep5))
-  das.sight <- das.sight %>% slice(num.keep)
+  num.keep.all <- 1:nrow(das.sight)
+  num.keep <- num.keep.all[num.keep.all %in% num.keep1 &
+                             num.keep.all %in% num.keep2 &
+                             num.keep.all %in% num.keep3 &
+                             num.keep.all %in% num.keep4 &
+                             num.keep.all %in% num.keep5]
+  das.sight.filt <- das.sight %>% slice(num.keep)
 
-  browser()
   # If plotting selected mammals, check that all selected still have sightings
-  if(sight.type == 1 && input$das_sighting_code_1_all == 2) {
-    temp.all <- sapply(sp.codes, function(i) i %in% data.sight$Data5 || i %in% data.sight$Data6 ||
-                         i %in% data.sight$Data7 || i %in% data.sight$Data8)
-    sp.code.false <- sp.codes[which(!temp.all)]
+  if (sp.selection) {
+    sp.codes.none <- base::setdiff(sp.codes, das.sight.filt$Sp)
     validate(
-      need(all(temp.all),
-           message = paste("Species with code", sp.code.false,
-                           "does not have any sightings that match the given filters"))
+      need(length(sp.codes.none) == 0,
+           paste("The following species code(s) does (do) not",
+                 "have any sightings that match the given filters:",
+                 paste(sp.codes.none, collapse = ", ")))
     )
   }
 
-  # If plotting selected turtles, check that all selected still have sightings
-  if(sight.type == 2 && input$das_sighting_code_2_all == 2) {
-    temp.all <- sapply(sp.codes, function(i) i %in% data.sight$Data2)
-    sp.code.false <- sp.codes[which(!temp.all)]
-    validate(
-      need(all(temp.all),
-           message = paste("Species with code", sp.code.false,
-                           "does not have any sightings that match the given filters"))
-    )
-  }
-
-  list(das.sight = das.sight, sight.type = sight.type, sp.codes = sp.codes)
+  list(das.sight = das.sight.filt, sight.type = sight.type, sp.codes = sp.codes,
+       sp.selection = sp.selection)
 })
 
 
 ###############################################################################
-### Helper functions that filter sightings data by single factor
+### Helper functions that filter sightings data by single property
+
+.func_sight_filt_validate <- function(x, x.txt) {
+  validate(
+    need(x, paste("No sightings match the given", x.txt, "filters"))
+  )
+
+  x
+}
 
 #------------------------------------------------------------------------------
 # On/off effort
@@ -65,11 +68,12 @@ cruzDasSightFilterEffort <- reactive({
   )
   ndx.keep <- which(as.numeric(das.sight$OnEffort) %in% effort.val)
 
-  validate(
-    need(ndx.keep, "No sightings match the given on/off effort filters")
-  )
-
-  ndx.keep
+  # validate(
+  #   need(ndx.keep, "No sightings match the given on/off effort filters")
+  # )
+  #
+  # ndx.keep
+  .func_sight_filt_validate(ndx.keep, "on/off effort")
 })
 
 #------------------------------------------------------------------------------
@@ -86,11 +90,12 @@ cruzDasSightFilterBeaufort <- reactive({
 
   ndx.keep <- which(between(das.sight$Bft, bft.min, bft.max))
 
-  validate(
-    need(ndx.keep, "No sightings match the given Beaufort filters")
-  )
-
-  ndx.keep
+  # validate(
+  #   need(ndx.keep, "No sightings match the given Beaufort filters")
+  # )
+  #
+  # ndx.keep
+  .func_sight_filt_validate(ndx.keep, "Beaufort")
 })
 
 #------------------------------------------------------------------------------
@@ -108,11 +113,12 @@ cruzDasSightFilterDate <- reactive({
     as.Date(das.sight$DateTime), date.vals[1], date.vals[2]
   ))
 
-  validate(
-    need(ndx.keep, "No sightings match the given date filter")
-  )
-
-  ndx.keep
+  # validate(
+  #   need(ndx.keep, "No sightings match the given date filter")
+  # )
+  #
+  # ndx.keep
+  .func_sight_filt_validate(ndx.keep, "date")
 })
 
 #------------------------------------------------------------------------------
@@ -128,11 +134,12 @@ cruzDasSightFilterCruise <- reactive({
 
   ndx.keep <- which(das.sight$Cruise %in% cruise.vals)
 
-  validate(
-    need(ndx.keep, "No sightings match the given Cruise number filter")
-  )
-
-  ndx.keep
+  # validate(
+  #   need(ndx.keep, "No sightings match the given Cruise number filter")
+  # )
+  #
+  # ndx.keep
+  .func_sight_filt_validate(ndx.keep, "cruise number")
 })
 
 #------------------------------------------------------------------------------
@@ -151,12 +158,13 @@ cruzDasSightFilterTrunc <- reactive({
   } else {
     ndx.keep <- which(das.sight$PerpDistKm <= pdist.val)
 
-    validate(
-      need(ndx.keep,
-           "No sightings match the given truncation (perpendicular distance) filter")
-    )
-
-    ndx.keep
+    # validate(
+    #   need(ndx.keep,
+    #        "No sightings match the given truncation (perpendicular distance) filter")
+    # )
+    #
+    # ndx.keep
+    .func_sight_filt_validate(ndx.keep, "truncation (perpendicular distance)")
   }
 })
 

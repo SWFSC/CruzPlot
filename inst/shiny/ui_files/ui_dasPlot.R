@@ -100,7 +100,9 @@ ui.dasPlot <- function() {
                       width = 6,
                       conditionalPanel(
                         condition = "input.das_sightings",
-                        radioButtons("das_sightings_pos", NULL, choices = list("Plot ship position" = 1, "Plot sighting position" = 2), selected = 1)
+                        radioButtons("das_sightings_position", NULL,
+                                     choices = list("Plot ship position" = 1, "Plot sighting position" = 2),
+                                     selected = 1)
                       )
                     )
                   ),

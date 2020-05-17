@@ -4,10 +4,10 @@
 
 
 ### Plot non-DAS data
-if(isTruthy(data.ndas)) {
+if (isTruthy(data.ndas)) {
   # Plot lines
   data.ndas.l <- data.ndas[[1]]
-  if(length(data.ndas.l) > 0) {
+  if (length(data.ndas.l) > 0) {
     for(i in seq_along(data.ndas.l)) {
       data.ndas.l.curr <- data.ndas.l[[i]]
       lines(x = data.ndas.l.curr$x, y = data.ndas.l.curr$y,
@@ -18,7 +18,7 @@ if(isTruthy(data.ndas)) {
 
   # Plot points
   data.ndas.p <- data.ndas[[2]]
-  if(length(data.ndas.p) > 0) {
+  if (length(data.ndas.p) > 0) {
     for(j in seq_along(data.ndas.p)) {
       data.ndas.p.curr <- data.ndas.p[[j]]
       points(x = data.ndas.p.curr$x, y = data.ndas.p.curr$y,
@@ -30,16 +30,16 @@ if(isTruthy(data.ndas)) {
 
 
 ### Plot DAS data
-if(isTruthy(cruz.list$das.data)) {
+if (isTruthy(cruz.list$das.data)) {
   ## Plot effort segments
-  if(input$das_effort != "1") {
+  if (input$das_effort != "1") {
     segments(x0 = data.effort$Lon[eff.ndx.R], x1 = data.effort$Lon[eff.ndx.E],
              y0 = data.effort$Lat[eff.ndx.R], y1 = data.effort$Lat[eff.ndx.E],
              col = eff.col, lwd = eff.lwd)
   }
 
   ## Plot legend for effort by bft
-  if(input$eff_legend & input$das_effort_det_byBft & input$das_effort == "3") {
+  if (input$eff_legend & input$das_effort_det_byBft & input$das_effort == "3") {
     op <- par(family = data.eff.legend$font.fam)
     # bft.limit <- as.numeric(min(input$das.effort.maxBeau,
     #                             input$das.sight.maxBeau,
@@ -66,12 +66,12 @@ if(isTruthy(cruz.list$das.data)) {
 
 
   ## Plot sightings and legend
-  if(input$das_sightings) {
-    points(das.sight$sight.lon, das.sight$sight.lat,
-           pch = das.sight.symbol$pt.pch, col = das.sight.symbol$pt.col,
-           cex = das.sight.symbol$pt.cex, lwd = das.sight.symbol$pt.lwd)
+  if (input$das_sightings) {
+    points(das.sight.pt$Lon, das.sight.pt$Lat,
+           pch = das.sight.pt$pch, col = das.sight.pt$col,
+           cex = das.sight.pt$cex, lwd = das.sight.pt$lwd)
 
-    if(input$das_legend & sight.type < 3) {
+    if (input$das_legend & sight.type < 3) {
       op <- par(family = das.sight.legend$font.fam)
       legend(x = das.sight.legend$leg.x,
              y = das.sight.legend$leg.y,
