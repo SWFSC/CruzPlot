@@ -47,13 +47,29 @@ ui.dasPlot <- function() {
               fluidRow(
                 box(
                   title = "Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                  fileInput("das.file", label = h5("DAS file input"), multiple = TRUE),
+                  checkboxInput("das_file_extra", "Adjust arguments passed to DAS processing functions", value = FALSE),
+                  conditionalPanel(
+                    condition = "input.das_file_extra",
+                    helpText("See swfscDAS documentation for details"),
+                    fluidRow(
+                      column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading data"),
+                                             value = 0, min = 0)),
+                      column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
+                                            choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+                    ),
+                    fluidRow(
+                      column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
+                                            choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
+                      column(6, selectInput("das_file_reset_day", tags$h5("reset.day argument of das_process()"),
+                                            choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+                    )
+                  ),
+                  fileInput("das_file", label = h5("DAS file input"), multiple = TRUE),
                   textOutput("das_file_load_text"),
                   tags$span(textOutput("das_loaded_text"), style = "color: blue;"),
-                  helpText("To load DAS data file(s), first click the \"Browse...\" button. In the pop-up window",
-                           "select the file(s) you want to load. Hold down the Shift key to select multiple files if desired.",
-                           "Currently, you can 'remove' a file by browsing again and selecting only the DAS file(s)",
-                           "that you want.")
+                  helpText("To load DAS data file(s), first click the \"Browse...\" button and",
+                           "select the file(s) you want to load. Hold the Shift key to select multiple files.",
+                           "To 'remove' a file, browse again and select only the desired DAS file(s)")
                 ),
                 conditionalPanel(
                   condition = "input.das_sightings==true",
@@ -67,11 +83,15 @@ ui.dasPlot <- function() {
                       radioButtons("das_sighting_code_1_all", label = NULL,
                                    choices = list("Plot all mammal sightings" = 1, "Plot selected mammal sightings" = 2),
                                    selected = 2),
+                      checkboxInput("das_sighting_probable", label = "Use probable species code", value = FALSE),
+                      checkboxGroupInput("das_sighting_events", label = tags$h5("Plot sightings from"), inline = TRUE,
+                                         choices = list("S events" = "S", "K events" = "K", "M events" = "M",
+                                                        "G events" = "G", "p events" = "p"),
+                                         selected = c("S", "G")),
                       conditionalPanel(
                         condition = "input.das_sighting_code_1_all==2",
-                        checkboxInput("das.sighting.probable", label = "Include probable species sightings", value = FALSE),
                         ui.selectize.instructions(),
-                        uiOutput("das.sighting.code.1_uiOut_select")
+                        uiOutput("das_sighting_code_1_uiOut_select")
                       )
                     ),
                     conditionalPanel(
@@ -82,7 +102,7 @@ ui.dasPlot <- function() {
                       conditionalPanel(
                         condition = "input.das_sighting_code_2_all==2",
                         ui.selectize.instructions(),
-                        uiOutput("das.sighting.code.2_uiOut_select")
+                        uiOutput("das_sighting_code_2_uiOut_select")
                       )
                     )
                   )
@@ -108,9 +128,10 @@ ui.dasPlot <- function() {
                   ),
                   conditionalPanel(
                     condition = "input.das_sightings",
+                    tags$span(textOutput("das_sight_message_text"), style = "color: red;"),
                     helpText("Sighting position is calculated using the ship position, ship course, sighting bearing (angle),",
                              "and radial distance to the sighting.",
-                             "If any of these values are NA, then the ship position is used for those sighting(s)")
+                             "If any of these values are NA, then the sighting position will be NA")
                   )
                 )
               )
@@ -119,50 +140,55 @@ ui.dasPlot <- function() {
               width = 6,
               fluidRow(
                 conditionalPanel(
-                  condition = "input.das_sightings==true & input.das_sighting_code_1_all==2",
+                  condition = "input.das_sightings",
                   box(
                     title = "Symbol properties", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                    helpText("To remove selected species, click the input(s) to remove and then click backspace or delete"),
-                    helpText("The order in which species are selected to be plotted",
-                             "corresponds to the order of specified symbol properties"),
+                    helpText("Not available when 'Plot all...sightings' is selected"),
 
-                    # Mammal or turtle symbol properties, allows species properties and multiple input
+                    # Mammal or turtle symbol properties for selected species
                     conditionalPanel(
-                      condition = "input.das_sighting_type==1 | input.das_sighting_type==2",
+                      condition = "(input.das_sighting_type == 1  & input.das_sighting_code_1_all == 2) | (input.das_sighting_type==2 & input.das_sighting_code_2_all == 2)",
+                      helpText("To remove selected species, click the input(s) to remove and then click backspace or delete"),
+                      helpText("The order in which species are selected to be plotted",
+                               "corresponds to the order of specified symbol properties"),
                       conditionalPanel(
                         condition = "input.das_symbol_mult==false",
-                        selectizeInput("das.symbol.type", label = h5("Symbol type(s)"),
+                        selectizeInput("das_symbol_type", label = h5("Symbol type(s)"),
                                        choices = cruz.symbol.type, selected = 1, multiple = TRUE),
-                        selectizeInput("das.symbol.color", label = h5("Symbol color(s)"),
+                        selectizeInput("das_symbol_color", label = h5("Symbol color(s)"),
                                        choices = cruz.palette.color, selected = "black", multiple = TRUE)
                       ),
                       conditionalPanel(
                         condition = "input.das_symbol_mult",
-                        textInput("das.symbol.type.mult", h5("Symbol type(s) - text input"), value = "1"),
-                        textInput("das.symbol.color.mult", h5("Symbol color(s) - text input (case sensitive)"), value = "Black")
+                        textInput("das_symbol_type_mult", h5("Symbol type(s) - text input"), value = "1"),
+                        textInput("das_symbol_color_mult", h5("Symbol color(s) - text input (case sensitive)"), value = "Black")
                       ),
                       fluidRow(
-                        column(6, textInput("das.symbol.size", h5("Symbol size(s)"), "1")),
-                        column(6, textInput("das.symbol.linewidth", h5("Symbol line width(s)"), "1"))
+                        column(6, textInput("das_symbol_size", h5("Symbol size(s)"), "1")),
+                        column(6, textInput("das_symbol_linewidth", h5("Symbol line width(s)"), "1"))
                       ),
                       checkboxInput("das_symbol_mult", label = "Input symbol properties as text", value = FALSE)
                     ),
-                    # Boat symbol properties (or CPOD for vaquita cruise)
+
+                    # Boat or CPOD symbol properties
                     conditionalPanel(
                       condition = "input.das_sighting_type==3 | input.das_sighting_type==4",
+                      helpText("To remove selected species, click the input(s) to remove and then click backspace or delete"),
+                      helpText("The order in which species are selected to be plotted",
+                               "corresponds to the order of specified symbol properties"),
                       fluidRow(
                         column(
                           width = 7,
-                          selectInput("das.symbol.type.boat", label = h5("Symbol type"),
+                          selectInput("das_symbol_type_boat", label = h5("Symbol type"),
                                       choices = cruz.symbol.type, selected = 1),
-                          numericInput("das.symbol.size.boat", label = h5("Symbol size"),
+                          numericInput("das_symbol_size_boat", label = h5("Symbol size"),
                                        value = 1, min = 0.1, max = 6, step = 0.1)
                         ),
                         column(
                           width = 5,
-                          selectInput("das.symbol.color.boat", label = h5("Symbol color"),
+                          selectInput("das_symbol_color_boat", label = h5("Symbol color"),
                                       choices = cruz.palette.color, selected = "black"),
-                          numericInput("das.symbol.linewidth.boat", label = h5("Symbol line width"),
+                          numericInput("das_symbol_linewidth_boat", label = h5("Symbol line width"),
                                        value = 1, min = 1, max = 6, step = 1)
                         )
                       )
@@ -185,7 +211,7 @@ ui.dasPlot <- function() {
               )
             ),
             conditionalPanel(
-              condition = "input.das_sightings==true",
+              condition = "input.das_sighting",
               box(title = "Interactive sighting labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE,
                   fluidRow(
                     column(6, radioButtons("das_sight_interactive", label = NULL,
@@ -290,18 +316,18 @@ ui.dasPlot <- function() {
                                     selected = "topright"),
                         conditionalPanel(
                           condition = "input.das_legend_pos == 1",
-                          textInput("das.legend.lon", label = h5("Longitude"), value = ""),
-                          textInput("das.legend.lat", label = h5("Latitude"), value = "")
+                          numericInput("das_legend_lon", label = h5("Longitude"), value = 0),
+                          numericInput("das_legend_lat", label = h5("Latitude"), value = 0)
                         ),
-                        selectInput("das.legend.boxCol", label = h5("Box style"),
+                        selectInput("das_legend_boxCol", label = h5("Box style"),
                                     choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
                                     selected = 3
                         )
                       ),
                       column(
                         width = 5,
-                        selectInput("das.legend.font", label = h5("Font"), choices = font.family, selected = 1),
-                        numericInput("das.legend.textSize", label = h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
+                        selectInput("das_legend_font", label = h5("Font"), choices = font.family, selected = 1),
+                        numericInput("das_legend_textSize", label = h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
                       )
                     )
                   )
@@ -315,15 +341,15 @@ ui.dasPlot <- function() {
                   condition="input.das_legend==true & input.das_sightings==true",
                   box(
                     title = "Sighting legend contents", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                    textInput("das.legend.title", label = h5("Title (optional)"), value = ""),
+                    textInput("das_legend_title", label = h5("Title (optional)"), value = ""),
                     conditionalPanel(
                       condition = "input.das_sighting_type!=3",
-                      checkboxGroupInput("das.legend.names", h5("Legend sighting information"),
+                      checkboxGroupInput("das_legend_names", h5("Legend sighting information"),
                                          choices = list("Species code" = 1, "Species abbreviation" = 2,
                                                         "Scientific name" = 3, "Common name" = 4),
                                          selected = c(1, 3))
                     ),
-                    checkboxInput("das.legend.num", label = "Include number of sightings", value = TRUE)
+                    checkboxInput("das_legend_num", label = "Include number of sightings", value = TRUE)
                   )
                 )
               )

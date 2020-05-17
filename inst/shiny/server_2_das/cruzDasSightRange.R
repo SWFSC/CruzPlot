@@ -1,23 +1,15 @@
 # cruzDasSightRange for CruzPlot - step 3 of processing species data
-#   cruzDasSightRange() returns a list of sightings within map range, selected sighting type,
-#     species codes, and counts for each species
+#   cruzDasSightPosition returns das_sight with Lat/Lon columns adjusted for
+#     world2 and ship/sighting position
+#   cruzDasSightRange() returns list, which includes sightings within map range,
+#     selected sighting type, species codes, and counts for each species
 
 
-cruzDasSightRange <- reactive({
-  #----------------------------------------------------------------------------
+###############################################################################
+cruzDasSightPosition <- reactive({
   req(cruz.list$das.data)
-  data.list <- cruzDasSightFilter()
+  das.sight <- cruzDasSightFilter()$das.sight
 
-  das.sight    <- data.list$das.sight
-  sight.type   <- data.list$sight.type
-  sp.codes     <- data.list$sp.codes
-  sp.selection <- data.list$sp.selection
-
-  lon.range <- cruz.map.range$lon.range
-  lat.range <- cruz.map.range$lat.range
-
-
-  #----------------------------------------------------------------------------
   # 'Select' ship or sighting position
   if (input$das_sightings_position == 1) {
     das.sight$Lat <- das.sight$Lat_ship
@@ -32,9 +24,24 @@ cruzDasSightRange <- reactive({
   if (cruz.map.range$world2)
     das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
 
-  if (anyNA(das.sight$Lat) | anyNA(das.sight$Lon)) {
-    warning("NA sighting lat/lon")
-  }
+  das.sight
+})
+
+
+###############################################################################
+cruzDasSightRange <- reactive({
+  #----------------------------------------------------------------------------
+  req(cruz.list$das.data)
+
+  das.sight <- cruzDasSightPosition()
+
+  data.list <- cruzDasSightFilter()
+  sight.type   <- data.list$sight.type
+  sp.codes     <- data.list$sp.codes
+  sp.selection <- data.list$sp.selection
+
+  lon.range <- cruz.map.range$lon.range
+  lat.range <- cruz.map.range$lat.range
 
   das.sight.filt <- das.sight %>%
     filter(!is.na(.data$Lat), !is.na(.data$Lon),

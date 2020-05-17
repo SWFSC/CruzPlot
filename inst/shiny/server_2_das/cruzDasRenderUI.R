@@ -4,25 +4,25 @@
 ###############################################################################
 ### Codes for mammals and turtles
 # renderUIs for mammal and turtle species
-output$das.sighting.code.1_uiOut_select <- renderUI({
+output$das_sighting_code_1_uiOut_select <- renderUI({
   sp.mammals <- cruzSpeciesMammals()
   sp.mammals.lab <- paste(sp.mammals$Code, sp.mammals$Name.Scientific)
 
-  selectizeInput("das.sighting.code.1", h5("Select species"),
+  selectizeInput("das_sighting_code_1", h5("Select species"),
                  choices = sp.mammals.lab, multiple = TRUE,
                  selected = NULL)
 })
-outputOptions(output, "das.sighting.code.1_uiOut_select",
+outputOptions(output, "das_sighting_code_1_uiOut_select",
               suspendWhenHidden = FALSE)
 
-output$das.sighting.code.2_uiOut_select <- renderUI({
+output$das_sighting_code_2_uiOut_select <- renderUI({
   sp.turtles <- cruzSpeciesTurtles()
   sp.turtles.lab <- paste(sp.turtles$Code, sp.turtles$Name.Scientific)
 
-  selectizeInput("das.sighting.code.2", h5("Select species"),
+  selectizeInput("das_sighting_code_2", h5("Select species"),
                  choices = sp.turtles.lab, multiple = TRUE, selected = NULL)
 })
-outputOptions(output, "das.sighting.code.2_uiOut_select", suspendWhenHidden = FALSE)
+outputOptions(output, "das_sighting_code_2_uiOut_select", suspendWhenHidden = FALSE)
 
 
 ###############################################################################
@@ -64,27 +64,6 @@ output$das_effort_dateRange_uiOut_date <- renderUI({
 })
 outputOptions(output, "das_effort_dateRange_uiOut_date", suspendWhenHidden = FALSE, priority = 3)
 
-
-### renderUIs for date range filters for tabular outputs
-output$das.out.sight.dateRange_uiOut_date <- renderUI({
-  req(cruz.list$das.data)
-
-  dates <- dateRange_min_max()
-
-  dateRangeInput("das.out.sight.dateRange",
-                 label = h5("Range of dates for sightings output"),
-                 start = dates[1], end = dates[2])
-})
-
-output$das.out.effort.dateRange_uiOut_date <- renderUI({
-  req(cruz.list$das.data)
-
-  dates <- dateRange_min_max()
-
-  dateRangeInput("das.out.effort.dateRange",
-                 label = h5("Range of dates for effort output"),
-                 start = dates[1], end = dates[2])
-})
 
 ### Truncation input
 output$das_sight_trunc_uiOut_numeric <- renderUI({

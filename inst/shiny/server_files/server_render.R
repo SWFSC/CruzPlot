@@ -54,6 +54,31 @@ output$das_loaded_text <- renderText({
   )
 })
 
+
+# Text with notice(s) about sightings, e.g. NA lat/lons
+output$das_sight_message_text <- renderText({
+  das.sight <- cruzDasSightPosition()
+
+  count.na <- sum(is.na(das.sight$Lat) | is.na(das.sight$Lon))
+  # validate(
+  #   need(count.na == 0,
+  #        paste("There are", count.na,
+  #              "sightings with NA lat/lon values that will not be plotted"))
+  # )
+
+  if (count.na > 0) {
+    paste(
+      "There are", count.na,
+      "sightings with NA lat/lon values that will not be plotted"
+    )
+  } else {
+    NULL
+  }
+})
+
+
+
+
 # Tabular output
 output$das_out_sight_table <- renderTable(cruzDasOutSight_Table())
 output$cruzDasOutSight_Save_text <- renderText(cruzDasOutSight_Save())

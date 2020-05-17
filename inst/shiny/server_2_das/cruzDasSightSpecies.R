@@ -11,7 +11,7 @@ cruzDasSightSpeciesMammals <- reactive({
   sp.codes <- if (input$das_sighting_code_1_all == 1) {
     cruzSpeciesMammals()$Code
   } else if (input$das_sighting_code_1_all == 2) {
-    gsub(" ", "", substring(input$das.sighting.code.1, 1, 3))
+    gsub(" ", "", substring(input$das_sighting_code_1, 1, 3))
   } else {
     stop("Invalid CruzPlot input$das_sighting_code_1_all value. ",
          "Please report this as an issue")
@@ -28,7 +28,7 @@ cruzDasSightSpeciesTurtles <- reactive({
   sp.codes <- if (input$das_sighting_code_2_all == 1) {
     cruzSpeciesTurtles()$Code
   } else if (input$das_sighting_code_2_all == 2) {
-    substring(input$das.sighting.code.2, 1, 2)
+    substring(input$das_sighting_code_2, 1, 2)
   } else {
     stop("Invalid CruzPlot input$das_sighting_code_2_all value. ",
          "Please report this as an issue")
@@ -61,16 +61,23 @@ cruzDasSightSpecies <- reactive({
     # 1: Mammals
     # Get species codes - also does validate() check for valid species
     sp.codes <- cruzDasSightSpeciesMammals()
-    das.sight <- das.sight %>% filter(.data$Event %in% c("S", "K", "M", "G"))
+    sp.events <- input$das_sighting_events
+    validate(
+      need(sp.events, "Please select at least one event code to plot")
+    )
+
+    das.sight <- das.sight %>%
+      filter(.data$Event %in% sp.events) #c("S", "K", "M", "G", "p"))
 
     validate(
       need(nrow(das.sight) > 0,
-           "There are no mammal sightings (S/K/M/G events) in the loaded DAS file(s)")
+           paste("There are no mammal sightings for the selected event(s)",
+                 "in the loaded DAS file(s)"))
     )
 
     # Update probable sightings species if necessary
-    if (input$das.sighting.probable) {
-      validate(need(FALSE, "CruzPlot not ready for probable yet"))
+    if (input$das_sighting_probable) {
+      das.sight$Prob[das.sight$Event == "p"] <- FALSE
       if (any(is.na(das.sight$Prob)))
         warning("A marine mammal sighting has an NA Prob value")
 
@@ -80,7 +87,9 @@ cruzDasSightSpecies <- reactive({
       )
 
       # 977 used as probable vaquita sighting on some cruises
-      das.sight$Sp <- ifelse(das.sight$Sp == "977", "041", das.sight$Sp)
+      das.sight <- das.sight %>%
+        mutate(Sp = ifelse(.data$Sp == "977", "041", .data$Sp),
+               Sp = ifelse(.data$Prob, .data$ProbSp, .data$Sp))
     }
 
     # Filter for selected species, and check that all selected species are in data

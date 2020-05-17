@@ -1,28 +1,49 @@
 # cruzDasGeneral for CruzPlot
+#   read and process DAS file
 #   update: symbol type and color for when 'Input symbol properties as text' is clicked
 
 
 ###############################################################################
-### Read DAS file(s)
-das_file_load <- eventReactive(input$das.file, {
+### Read and process DAS file(s)
+das_file_load <- eventReactive(input$das_file, {
   # Clear reactive vals
   cruz.list$das.data <- NULL
   cruz.list$das.data.name <- NULL
 
   # Check file name
-  file.name <- input$das.file$name
+  file.name <- input$das_file$name
   validate(
     need(all(tolower(substr_right(file.name, 4)) ==".das"),
          "Error: All DAS files must have the file extension '.das'")
   )
+
+  # Get additional parameters
+  if (input$das_file_extra) {
+    skip <- input$das_file_skip
+    reset.event  <- input$das_file_reset_event == 1
+    reset.effort <- input$das_file_reset_effort == 1
+    reset.day    <- input$das_file_reset_day == 1
+
+    validate(
+      need(!is.na(skip), "skip must be a valid number") %then%
+        need(isTRUE(all.equal(skip %% 1, 0)), "skip must be a whole number") %then%
+        need(skip >= 0, "skip must be greater than or equal to zero")
+    )
+
+  } else {
+    skip <- 0
+    reset.event <- TRUE
+    reset.effort <- TRUE
+    reset.day <- TRUE
+  }
 
   # Process DAS file
   withProgress(message = "Processing DAS file", value = 0.6, {
     # TODO: provide some way for the user to specify das_process arguments
     das.proc <- try(suppressWarnings(
       swfscDAS::das_process(
-        input$das.file$datapath, skip = 0,
-        reset.event = TRUE, reset.effort = TRUE, reset.day = TRUE
+        input$das_file$datapath, skip = skip, reset.event = reset.event,
+        reset.effort = reset.effort, reset.day = reset.day
       )
     ), silent = TRUE)
   })
@@ -39,6 +60,7 @@ das_file_load <- eventReactive(input$das.file, {
   ""
 }, ignoreInit = TRUE)
 
+
 ### Conditional flag for UI code for non-null cruz.list$das.data
 output$cruzDasFile_Conditional <- reactive({
   isTruthy(cruz.list$das.data)
@@ -51,8 +73,8 @@ outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 #    from or to text symbol properties input
 
 observeEvent(input$das_symbol_mult, {
-  curr.pch <- as.numeric(input$das.symbol.type)
-  curr.col <- input$das.symbol.color
+  curr.pch <- as.numeric(input$das_symbol_type)
+  curr.col <- input$das_symbol_color
 
   if (length(curr.pch) == 0) curr.pch <- "1"
   if (is.null(curr.col)) curr.col <- "Black"
@@ -72,13 +94,13 @@ observeEvent(input$das_symbol_mult, {
     }
   }
 
-  updateTextInput(session, "das.symbol.type.mult", value = paste(curr.pch, collapse = ", "))
-  updateTextInput(session, "das.symbol.color.mult", value = paste(curr.col, collapse = ", "))
+  updateTextInput(session, "das_symbol_type_mult", value = paste(curr.pch, collapse = ", "))
+  updateTextInput(session, "das_symbol_color_mult", value = paste(curr.col, collapse = ", "))
 })
 
 observeEvent(!input$das_symbol_mult, {
-  curr.pch <- as.numeric(unlist(strsplit(input$das.symbol.type.mult, ", ")))
-  curr.col <- unlist(strsplit(input$das.symbol.color.mult, ", "))
+  curr.pch <- as.numeric(unlist(strsplit(input$das_symbol_type_mult, ", ")))
+  curr.col <- unlist(strsplit(input$das_symbol_color_mult, ", "))
 
   if (length(curr.pch) == 0) curr.pch <- 1
   if (is.null(curr.col)) curr.col <- "black"
@@ -98,8 +120,8 @@ observeEvent(!input$das_symbol_mult, {
     }
   }
 
-  updateSelectizeInput(session, "das.symbol.type", selected = curr.pch)
-  updateSelectizeInput(session, "das.symbol.color", selected = curr.col)
+  updateSelectizeInput(session, "das_symbol_type", selected = curr.pch)
+  updateSelectizeInput(session, "das_symbol_color", selected = curr.col)
 })
 
 # observe({

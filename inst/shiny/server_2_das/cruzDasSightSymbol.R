@@ -112,13 +112,12 @@ cruzDasSightSymbol <- reactive({
 # Plot parameters for plotting selected mammal/turtle species
 cruzDasSightSymbolAnimalSelected <- reactive({
   if (!input$das_symbol_mult) {
-    pt.pch <- as.numeric(input$das.symbol.type)
-    pt.col <- input$das.symbol.color
+    pt.pch <- as.numeric(input$das_symbol_type)
+    pt.col <- input$das_symbol_color
 
   } else {
-    pt.pch <- as.numeric(unlist(strsplit(input$das.symbol.type.mult, ",")))
-    pt.col <- str_trim(unlist(strsplit(input$das.symbol.color.mult, ",")))
-    browser()
+    pt.pch <- as.numeric(unlist(strsplit(input$das_symbol_type_mult, ",")))
+    pt.col <- str_trim(unlist(strsplit(input$das_symbol_color_mult, ",")))
     validate(
       need(all(pt.pch %in% 0:20),
            "Not all symbol type entries are valid. Please be sure all entries are a number from 0 to 20"),
@@ -140,8 +139,8 @@ cruzDasSightSymbolAnimalSelected <- reactive({
   }
 
   # Same whether input$das_symbol_mult is checked or not
-  pt.cex <- as.numeric(unlist(strsplit(input$das.symbol.size, ",")))
-  pt.lwd <- as.numeric(unlist(strsplit(input$das.symbol.linewidth, ",")))
+  pt.cex <- as.numeric(unlist(strsplit(input$das_symbol_size, ",")))
+  pt.lwd <- as.numeric(unlist(strsplit(input$das_symbol_linewidth, ",")))
 
   list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd)
 })
@@ -176,10 +175,10 @@ cruzDasSightSymbolAnimalAll <- reactive({
 
 # Plot parameters for plotting boats or CPODs
 cruzDasSightSymbolBoat <- reactive({
-  pt.pch <- as.numeric(input$das.symbol.type.boat)
-  pt.col <- input$das.symbol.color.boat
-  pt.cex <- as.numeric(input$das.symbol.size.boat)
-  pt.lwd <- as.numeric(input$das.symbol.linewidth.boat)
+  pt.pch <- as.numeric(input$das_symbol_type_boat)
+  pt.col <- input$das_symbol_color_boat
+  pt.cex <- as.numeric(input$das_symbol_size_boat)
+  pt.lwd <- as.numeric(input$das_symbol_linewidth_boat)
 
   list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd)
 })
