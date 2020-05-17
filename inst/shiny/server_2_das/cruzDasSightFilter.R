@@ -1,11 +1,11 @@
 # cruzDasSightFilter for CruzPlot - step 2 of processing species data
 #   cruiseDasSightFilter() pulls individual filters together
 
-#   cruzDasSightFilterEffort() returns row numbers of data.sight that satisfy the effort filter
-#   cruzDasSightFilterBeaufort() returns row numbers of data.sight that satisfy the beaufort filter
-#   cruzDasSightFilterDate() returns row numbers of data.sight that satisfy the date filter
-#   cruzDasSightFilterCruise() returns row numbers of data.sight entries from the given cruise number(s)
-#   cruzDasSightFilterTrunc() returns row numbers of data.sight entries within the given truncation distance
+#   cruzDasSightFilterEffort() returns a logical indicating which rows satisfy the effort filter
+#   cruzDasSightFilterBeaufort() returns a logical indicating which rows satisfy the beaufort filter
+#   cruzDasSightFilterDate() returns a logical indicating which rows satisfy the date filter
+#   cruzDasSightFilterCruise() returns a logical indicating which rows are from the given cruise number(s)
+#   cruzDasSightFilterTrunc() returns a logical indicating which rows are within the given truncation distance
 
 
 ###############################################################################
@@ -18,18 +18,13 @@ cruzDasSightFilter <- reactive({
   sp.codes     <- data.list$sp.codes
   sp.selection <- data.list$sp.selection
 
-  num.keep1 <- cruzDasSightFilterEffort()
-  num.keep2 <- cruzDasSightFilterBeaufort()
-  num.keep3 <- cruzDasSightFilterDate()
-  num.keep4 <- cruzDasSightFilterCruise()
-  num.keep5 <- cruzDasSightFilterTrunc()
+  keep1 <- cruzDasSightFilterEffort()
+  keep2 <- cruzDasSightFilterBeaufort()
+  keep3 <- cruzDasSightFilterDate()
+  keep4 <- cruzDasSightFilterCruise()
+  keep5 <- cruzDasSightFilterTrunc()
 
-  num.keep.all <- 1:nrow(das.sight)
-  num.keep <- num.keep.all[num.keep.all %in% num.keep1 &
-                             num.keep.all %in% num.keep2 &
-                             num.keep.all %in% num.keep3 &
-                             num.keep.all %in% num.keep4 &
-                             num.keep.all %in% num.keep5]
+  num.keep <- which(keep1 & keep2 & keep3 & keep4 & keep5)
   das.sight.filt <- das.sight %>% slice(num.keep)
 
   # If plotting selected mammals, check that all selected still have sightings
@@ -53,7 +48,7 @@ cruzDasSightFilter <- reactive({
 
 .func_sight_filt_validate <- function(x, x.txt) {
   validate(
-    need(x, paste("No sightings match the given", x.txt, "filters"))
+    need(any(x), paste("No sightings match the given", x.txt, "filters"))
   )
   x
 }
@@ -66,8 +61,8 @@ cruzDasSightFilterEffort <- reactive({
     as.numeric(input$das_sightings_effort), c(0, 1), 1, 0
   )
 
-  ndx.keep <- which(as.numeric(das.sight$OnEffort) %in% effort.val)
-  .func_sight_filt_validate(ndx.keep, "on/off effort")
+  keep <- as.numeric(das.sight$OnEffort) %in% effort.val
+  .func_sight_filt_validate(keep, "on/off effort")
 })
 
 #------------------------------------------------------------------------------
@@ -82,8 +77,8 @@ cruzDasSightFilterBeaufort <- reactive({
          "Minimum Beaufort must be less than or equal to maximum Beaufort")
   )
 
-  ndx.keep <- which(between(das.sight$Bft, bft.min, bft.max))
-  .func_sight_filt_validate(ndx.keep, "Beaufort")
+  keep <- between(das.sight$Bft, bft.min, bft.max)
+  .func_sight_filt_validate(keep, "Beaufort")
 })
 
 #------------------------------------------------------------------------------
@@ -97,10 +92,10 @@ cruzDasSightFilterDate <- reactive({
          "Minimum date must be less than or equal to maximum date")
   )
 
-  ndx.keep <- which(between(
+  keep <- between(
     as.Date(das.sight$DateTime), date.vals[1], date.vals[2]
-  ))
-  .func_sight_filt_validate(ndx.keep, "date")
+  )
+  .func_sight_filt_validate(keep, "date")
 })
 
 #------------------------------------------------------------------------------
@@ -120,8 +115,8 @@ cruzDasSightFilterCruise <- reactive({
                paste(base::setdiff(cruise.vals, das.sight$Cruise), collapse = ", ")))
   )
 
-  ndx.keep <- which(das.sight$Cruise %in% cruise.vals)
-  .func_sight_filt_validate(ndx.keep, "cruise number")
+  keep <- das.sight$Cruise %in% cruise.vals
+  .func_sight_filt_validate(keep, "cruise number")
 })
 
 #------------------------------------------------------------------------------
@@ -138,12 +133,12 @@ cruzDasSightFilterTrunc <- reactive({
     1:nrow(das.sight)
 
   } else {
-    ndx.keep <- which(das.sight$PerpDistKm <= pdist.val)
+    keep <- das.sight$PerpDistKm <= pdist.val
     validate(
-      need(ndx.keep,
+      need(any(keep),
            "There are no selected sightings within the given truncation distance")
     )
-    .func_sight_filt_validate(ndx.keep, "truncation (perpendicular distance)")
+    .func_sight_filt_validate(keep, "truncation (perpendicular distance)")
   }
 })
 

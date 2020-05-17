@@ -549,20 +549,18 @@ ui.dasPlot <- function() {
                     ),
                     conditionalPanel(
                       condition = "input.das_sightings_effort != 3",
-                      tags$strong("Filter sightings by effort type"),
+                      tags$strong("Filter sightings by mode and effort type"),
                       fluidRow(
-                        column(5, checkboxGroupInput("das.out.sight.closePass", label = NULL,
+                        column(5, checkboxGroupInput("das_out_sight_cp", label = NULL,
                                                      choices = list("Closing" = "C", "Passing" = "P"),
                                                      selected = c("C", "P"))),
-                        column(7, checkboxGroupInput("das.out.sight.snf", label = NULL,
+                        column(7, checkboxGroupInput("das_out_sight_snf", label = NULL,
                                                      choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
                                                      selected = c("S", "N", "F")))
                       ),
                       ui.new.line(),
                       uiOutput("das_out_sight_save_name_uiOut_text"),
-                      downloadButton("das_out_sight_save", "Save table of tabular output for sightings")
-                      # actionButton("das_out_sight_save_execute", "Save specified sighting data"),
-                      # textOutput("cruzDasOutSight_Save_text")
+                      downloadButton("das_out_sight_save", "Save sightings tabls")
                     )
                   ),
                   column(8, tableOutput("das_out_sight_table"))

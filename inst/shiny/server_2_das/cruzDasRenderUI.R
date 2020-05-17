@@ -26,8 +26,10 @@ outputOptions(output, "das.sighting.code.2_uiOut_select", suspendWhenHidden = FA
 
 
 ###############################################################################
+# Filters
+
 # Date widgets
-### Get min and max dats in DAS file
+### Get min and max datws in DAS file
 dateRange_min_max <- reactive({
   req(cruz.list$das.data)
   input$das.file
@@ -84,10 +86,7 @@ output$das.out.effort.dateRange_uiOut_date <- renderUI({
                  start = dates[1], end = dates[2])
 })
 
-
-##############################################################################
-# renderUI for truncation input
-
+### Truncation input
 output$das_sight_trunc_uiOut_numeric <- renderUI({
   isolate(curr.value <- input$das_sight_trunc)
 
@@ -98,5 +97,20 @@ output$das_sight_trunc_uiOut_numeric <- renderUI({
   numericInput("das_sight_trunc", label = h5(widget.name), value = curr.value)
 })
 outputOptions(output, "das_sight_trunc_uiOut_numeric", suspendWhenHidden = FALSE, priority = 3)
+
+
+##############################################################################
+# Name of tabular outputs
+
+### Sightings
+output$das_out_sight_save_name_uiOut_text <- renderUI({
+  csv.name <- paste0("Sight_", Sys.time(), ".csv")
+  csv.name <- gsub(" ", "_", csv.name)
+  csv.name <- gsub(":", "-", csv.name)
+  csv.name <- gsub("-", "", csv.name)
+
+  textInput("das_out_sight_save_name", h5("Sightings file name"),
+            value = csv.name)
+})
 
 ##############################################################################
