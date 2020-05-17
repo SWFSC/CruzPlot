@@ -118,11 +118,12 @@ cruzDasSightSymbolAnimalSelected <- reactive({
   } else {
     pt.pch <- as.numeric(unlist(strsplit(input$das.symbol.type.mult, ",")))
     pt.col <- str_trim(unlist(strsplit(input$das.symbol.color.mult, ",")))
+    browser()
     validate(
       need(all(pt.pch %in% 0:20),
            "Not all symbol type entries are valid. Please be sure all entries are a number from 0 to 20"),
       need(length(pt.col) != 0,
-           "Please enter at least one number for symbol color"),
+           "Please enter at least one value for symbol color"),
       need(all(pt.col %in% symbol.col),
            paste("Not all symbol color entries are valid. Please be sure each entry matches",
                  "a color in the Display Color/Formatt Options tab"))

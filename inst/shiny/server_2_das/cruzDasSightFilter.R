@@ -55,7 +55,6 @@ cruzDasSightFilter <- reactive({
   validate(
     need(x, paste("No sightings match the given", x.txt, "filters"))
   )
-
   x
 }
 
@@ -66,13 +65,8 @@ cruzDasSightFilterEffort <- reactive({
   effort.val <- switch(
     as.numeric(input$das_sightings_effort), c(0, 1), 1, 0
   )
-  ndx.keep <- which(as.numeric(das.sight$OnEffort) %in% effort.val)
 
-  # validate(
-  #   need(ndx.keep, "No sightings match the given on/off effort filters")
-  # )
-  #
-  # ndx.keep
+  ndx.keep <- which(as.numeric(das.sight$OnEffort) %in% effort.val)
   .func_sight_filt_validate(ndx.keep, "on/off effort")
 })
 
@@ -89,12 +83,6 @@ cruzDasSightFilterBeaufort <- reactive({
   )
 
   ndx.keep <- which(between(das.sight$Bft, bft.min, bft.max))
-
-  # validate(
-  #   need(ndx.keep, "No sightings match the given Beaufort filters")
-  # )
-  #
-  # ndx.keep
   .func_sight_filt_validate(ndx.keep, "Beaufort")
 })
 
@@ -112,12 +100,6 @@ cruzDasSightFilterDate <- reactive({
   ndx.keep <- which(between(
     as.Date(das.sight$DateTime), date.vals[1], date.vals[2]
   ))
-
-  # validate(
-  #   need(ndx.keep, "No sightings match the given date filter")
-  # )
-  #
-  # ndx.keep
   .func_sight_filt_validate(ndx.keep, "date")
 })
 
@@ -129,16 +111,16 @@ cruzDasSightFilterCruise <- reactive({
   cruise.vals <- if (identical(input$das_sight_cruiseNum, "")) {
     unique(das.sight$Cruise)
   } else {
-    as.numeric(unlist(strsplit(input$das_sight_cruiseNum, split = ",")))
+    as.numeric(unlist(strsplit(input$das_sight_cruiseNum, split = ", ")))
   }
 
-  ndx.keep <- which(das.sight$Cruise %in% cruise.vals)
+  validate(
+    need(all(cruise.vals %in% das.sight$Cruise),
+         paste("There are no selected sightings in the following cruises:",
+               paste(base::setdiff(cruise.vals, das.sight$Cruise), collapse = ", ")))
+  )
 
-  # validate(
-  #   need(ndx.keep, "No sightings match the given Cruise number filter")
-  # )
-  #
-  # ndx.keep
+  ndx.keep <- which(das.sight$Cruise %in% cruise.vals)
   .func_sight_filt_validate(ndx.keep, "cruise number")
 })
 
@@ -157,13 +139,10 @@ cruzDasSightFilterTrunc <- reactive({
 
   } else {
     ndx.keep <- which(das.sight$PerpDistKm <= pdist.val)
-
-    # validate(
-    #   need(ndx.keep,
-    #        "No sightings match the given truncation (perpendicular distance) filter")
-    # )
-    #
-    # ndx.keep
+    validate(
+      need(ndx.keep,
+           "There are no selected sightings within the given truncation distance")
+    )
     .func_sight_filt_validate(ndx.keep, "truncation (perpendicular distance)")
   }
 })

@@ -34,8 +34,8 @@ cruzDasSightLegend <- reactive({
 
     if (input$das.legend.num) {
       if ("1" %in% names.lab || "2" %in% names.lab || "3" %in% names.lab || "4" %in% names.lab)
-        leg.lab <- paste(leg.lab, ", ", sep = "")
-      leg.lab <- paste(leg.lab, "n = ", sp.count, sep = "")
+        leg.lab <- paste0(leg.lab, ", ")
+      leg.lab <- paste0(leg.lab, "n = ", sp.count)
     }
   }
   leg.title <- NULL
@@ -59,8 +59,6 @@ cruzDasSightLegend <- reactive({
     leg.x = leg.x, leg.y = leg.y, leg.lab = leg.lab, leg.title = leg.title,
     leg.pch = leg.df$pch, leg.col = leg.df$col,
     leg.cex = leg.df$cex, leg.lwd = leg.df$lwd,
-    # leg.pch = symbol.prop$leg.pch, leg.col = symbol.prop$leg.col,
-    # leg.cex = symbol.prop$leg.cex, leg.lwd = symbol.prop$leg.lwd,
     leg.bty = leg.bty, leg.box.col = leg.box.col,
     leg.box.lwd = leg.box.lwd, leg.box.cex = leg.box.cex,
     font.fam = font.fam

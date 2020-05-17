@@ -53,17 +53,21 @@ outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 observeEvent(input$das_symbol_mult, {
   curr.pch <- as.numeric(input$das.symbol.type)
   curr.col <- input$das.symbol.color
-  if(length(curr.pch) == 0) curr.pch <- "1"
-  if(is.null(curr.col)) curr.col <- "Black"
+
+  if (length(curr.pch) == 0) curr.pch <- "1"
+  if (is.null(curr.col)) curr.col <- "Black"
 
   # Covert color codes to color names
-  if(curr.col[1] != "Black") {
-    if(input$color_style == 1) {
-      curr.col <- sapply(1:length(curr.col), function(i) which(symbol.col.code %in% curr.col[i])) # keeps numbers in order
+  if (curr.col[1] != "Black") {
+    if (input$color_style == 1) {
+      curr.col <- sapply(1:length(curr.col), function(i) {
+        which(symbol.col.code %in% curr.col[i])
+      }) # keeps numbers in order
       curr.col <- symbol.col[curr.col]
-    }
-    if(input$color_style == 2) {
-      curr.col <- sapply(1:length(curr.col), function(i) which(symbol.col.code.gray %in% curr.col[i])) # keeps numbers in order
+    } else if (input$color_style == 2) {
+      curr.col <- sapply(1:length(curr.col), function(i) {
+        which(symbol.col.code.gray %in% curr.col[i])
+      }) # keeps numbers in order
       curr.col <- symbol.col.gray[curr.col]
     }
   }
@@ -75,17 +79,21 @@ observeEvent(input$das_symbol_mult, {
 observeEvent(!input$das_symbol_mult, {
   curr.pch <- as.numeric(unlist(strsplit(input$das.symbol.type.mult, ", ")))
   curr.col <- unlist(strsplit(input$das.symbol.color.mult, ", "))
-  if(length(curr.pch) == 0) curr.pch <- 1
-  if(length(curr.col) == 0) curr.col <- "black"
+
+  if (length(curr.pch) == 0) curr.pch <- 1
+  if (is.null(curr.col)) curr.col <- "black"
 
   # Covert color names to color codes
-  if(curr.col[1] != "black") {
-    if(input$color_style == 1) {
-      curr.col <- sapply(1:length(curr.col), function(i) which(symbol.col %in% curr.col[i])) # keeps numbers in order
+  if (curr.col[1] != "black") {
+    if (input$color_style == 1) {
+      curr.col <- sapply(1:length(curr.col), function(i) {
+        which(symbol.col %in% curr.col[i])
+      }) # keeps numbers in order
       curr.col <- symbol.col.code[curr.col]
-    }
-    if(input$color_style == 2) {
-      curr.col <- sapply(1:length(curr.col), function(i) which(symbol.col.gray %in% curr.col[i])) # keeps numbers in order
+    } else if (input$color_style == 2) {
+      curr.col <- sapply(1:length(curr.col), function(i) {
+        which(symbol.col.gray %in% curr.col[i])
+      }) # keeps numbers in order
       curr.col <- symbol.col.code.gray[curr.col]
     }
   }
@@ -111,9 +119,9 @@ observeEvent(!input$das_symbol_mult, {
 
 output$das_effort_det_s_flag <- reactive({
   flag <- FALSE
-  if(input$das_effort == 3) {
-    if(!input$das_effort_det_byBft) {
-      if("S" %in% input$das_effort_snf) flag <- TRUE
+  if (input$das_effort == 3) {
+    if (!input$das_effort_det_byBft) {
+      if ("S" %in% input$das_effort_snf) flag <- TRUE
     }
   }
 
@@ -123,9 +131,9 @@ outputOptions(output, "das_effort_det_s_flag", suspendWhenHidden = FALSE)
 
 output$das_effort_det_n_flag <- reactive({
   flag <- FALSE
-  if(input$das_effort == 3) {
-    if(!input$das_effort_det_byBft) {
-      if("N" %in% input$das_effort_snf) flag <- TRUE
+  if (input$das_effort == 3) {
+    if (!input$das_effort_det_byBft) {
+      if ("N" %in% input$das_effort_snf) flag <- TRUE
     }
   }
 
@@ -135,9 +143,9 @@ outputOptions(output, "das_effort_det_n_flag", suspendWhenHidden = FALSE)
 
 output$das_effort_det_f_flag <- reactive({
   flag <- FALSE
-  if(input$das_effort == 3) {
-    if(!input$das_effort_det_byBft) {
-      if("F" %in% input$das_effort_snf) flag <- TRUE
+  if (input$das_effort == 3) {
+    if (!input$das_effort_det_byBft) {
+      if ("F" %in% input$das_effort_snf) flag <- TRUE
     }
   }
 

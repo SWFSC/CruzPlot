@@ -138,8 +138,8 @@ ui.dasPlot <- function() {
                       ),
                       conditionalPanel(
                         condition = "input.das_symbol_mult",
-                        textInput("das.symbol.type.mult", h5("Symbol type(s)-text input"), value = "1"),
-                        textInput("das.symbol.color.mult", h5("Symbol color(s)-text input"), value = "Black")
+                        textInput("das.symbol.type.mult", h5("Symbol type(s) - text input"), value = "1"),
+                        textInput("das.symbol.color.mult", h5("Symbol color(s) - text input (case sensitive)"), value = "Black")
                       ),
                       fluidRow(
                         column(6, textInput("das.symbol.size", h5("Symbol size(s)"), "1")),
@@ -321,9 +321,9 @@ ui.dasPlot <- function() {
                       checkboxGroupInput("das.legend.names", h5("Legend sighting information"),
                                          choices = list("Species code" = 1, "Species abbreviation" = 2,
                                                         "Scientific name" = 3, "Common name" = 4),
-                                         selected = 3)
+                                         selected = c(1, 3))
                     ),
-                    checkboxInput("das.legend.num", label = "Include number of sightings", value = FALSE)
+                    checkboxInput("das.legend.num", label = "Include number of sightings", value = TRUE)
                   )
                 )
               )
