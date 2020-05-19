@@ -15,10 +15,16 @@ if (!all(p.check))
        "install.packages(c(\"", paste(list.packages[!p.check],
                                       collapse = "\", \""), "\"))")
 
-stopifnot(
-  "Error attaching CruzPlot package - please reintall CruzPlot" = require(CruzPlot),
-  "Error attaching packages - please reinstall CruzPlot" = all(sapply(list.packages, require, character.only = TRUE))
-)
+# stopifnot(
+#   "Error attaching CruzPlot package - please reintall CruzPlot" = require(CruzPlot),
+#   "Error attaching packages - please reinstall CruzPlot" =
+#     all(sapply(list.packages, require, character.only = TRUE))
+# )
+
+if (!require(CruzPlot))
+  stop("Error attaching CruzPlot package - please reintall CruzPlot")
+if (!all(sapply(list.packages, require, character.only = TRUE)))
+  stop("Error attaching packages - please reinstall CruzPlot")
 
 
 ###############################################################################
@@ -87,7 +93,7 @@ ui <- dashboardPage(
       ),
       ui.new.line(),
       ui.new.line(),
-      numericInput("map.size", tags$h5("Map height (pixels)"), value = 900, min = 0, step = 100),
+      numericInput("map_size", tags$h5("Map height (pixels)"), value = 900, min = 0, step = 100),
       ui.new.line(),
       actionButton("stop", "Close CruzPlot")
     ), width = "200"
@@ -134,7 +140,7 @@ server <- function(input, output, session) {
 
   #----------------------------------------------------------------------------
   ### Map tab
-  map.height <- reactive(input$map.size)
+  map.height <- reactive(input$map_size)
 
   source(file.path("server_1_map", "cruzMapCoastline.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_1_map", "cruzMapColorGrid.R"), local = TRUE, chdir = TRUE)

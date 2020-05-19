@@ -368,16 +368,17 @@ ui.createMap <- function() {
           fluidRow(
             box(
               title = "Save map", status = "warning", solidHeader = FALSE, width = 12,
-              helpText("When saving file in RStudio window, be sure to specify '.png', '.pdf', or '.jpeg extention"),
+              # helpText("When saving file in RStudio window, be sure to specify '.png', '.pdf', or '.jpeg extention"),
               fluidRow(
                 column(6, radioButtons("download.format", label = h5("Download map as"),
                                        choices = list("jpeg" = 1, "pdf" = 2, "png" = 3),
                                        selected = 3)),
-                column(6, radioButtons("download.res", tags$h5("Resolution"),
-                                       choices = list("High (300 ppi)" = 1, "Low (72 ppi)" = 2),
-                                       selected = 1))
+                column(6, numericInput("download.res", tags$h5("Resolution"), value = 300, step = 50, min = 0))
+                # column(6, radioButtons("download.res", tags$h5("Resolution"),
+                #                        choices = list("High (300 ppi)" = 1, "Low (72 ppi)" = 2),
+                #                        selected = 1))
               ),
-              downloadButton("downloadMap", label = "Download map")
+              uiOutput("downloadMap_button")
             )
           )
         )

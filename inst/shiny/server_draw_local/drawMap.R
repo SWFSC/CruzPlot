@@ -5,7 +5,7 @@
 ###############################################################################
 # Range and map window triggers for redrawing the map
 input$map.replot
-input$map.size
+input$map_size
 
 
 ###############################################################################

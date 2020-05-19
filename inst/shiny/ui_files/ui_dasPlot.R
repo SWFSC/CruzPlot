@@ -47,7 +47,7 @@ ui.dasPlot <- function() {
               fluidRow(
                 box(
                   title = "Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                  checkboxInput("das_file_extra", "Adjust arguments passed to DAS processing functions", value = FALSE),
+                  checkboxInput("das_file_extra", "Pass arguments DAS processing functions", value = FALSE),
                   conditionalPanel(
                     condition = "input.das_file_extra",
                     helpText("See swfscDAS documentation for details"),
@@ -64,7 +64,7 @@ ui.dasPlot <- function() {
                                             choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
                     )
                   ),
-                  fileInput("das_file", label = h5("DAS file input"), multiple = TRUE),
+                  fileInput("das_file", label = tags$h5("DAS file input"), multiple = TRUE),
                   textOutput("das_file_load_text"),
                   tags$span(textOutput("das_loaded_text"), style = "color: blue;"),
                   helpText("To load DAS data file(s), first click the \"Browse...\" button and",
@@ -72,10 +72,10 @@ ui.dasPlot <- function() {
                            "To 'remove' a file, browse again and select only the desired DAS file(s)")
                 ),
                 conditionalPanel(
-                  condition = "input.das_sightings==true",
+                  condition = "input.das_sightings",
                   box(
                     title = "Sighting type & species", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
-                    selectInput("das_sighting_type", label = h5("Sighting type"),
+                    selectInput("das_sighting_type", label = tags$h5("Sighting type"),
                                 choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3, "CPODs" = 4),
                                 selected = 1),
                     conditionalPanel(
@@ -115,7 +115,7 @@ ui.dasPlot <- function() {
                 box(
                   title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                   fluidRow(
-                    column(6, checkboxInput("das_sightings", label = h5("Plot sightings"), value = FALSE)),
+                    column(6, checkboxInput("das_sightings", label = tags$h5("Plot sightings"), value = FALSE)),
                     column(
                       width = 6,
                       conditionalPanel(
@@ -153,19 +153,19 @@ ui.dasPlot <- function() {
                                "corresponds to the order of specified symbol properties"),
                       conditionalPanel(
                         condition = "input.das_symbol_mult==false",
-                        selectizeInput("das_symbol_type", label = h5("Symbol type(s)"),
+                        selectizeInput("das_symbol_type", label = tags$h5("Symbol type(s)"),
                                        choices = cruz.symbol.type, selected = 1, multiple = TRUE),
-                        selectizeInput("das_symbol_color", label = h5("Symbol color(s)"),
+                        selectizeInput("das_symbol_color", label = tags$h5("Symbol color(s)"),
                                        choices = cruz.palette.color, selected = "black", multiple = TRUE)
                       ),
                       conditionalPanel(
                         condition = "input.das_symbol_mult",
-                        textInput("das_symbol_type_mult", h5("Symbol type(s) - text input"), value = "1"),
-                        textInput("das_symbol_color_mult", h5("Symbol color(s) - text input (case sensitive)"), value = "Black")
+                        textInput("das_symbol_type_mult", tags$h5("Symbol type(s) - text input"), value = "1"),
+                        textInput("das_symbol_color_mult", tags$h5("Symbol color(s) - text input (case sensitive)"), value = "Black")
                       ),
                       fluidRow(
-                        column(6, textInput("das_symbol_size", h5("Symbol size(s)"), "1")),
-                        column(6, textInput("das_symbol_linewidth", h5("Symbol line width(s)"), "1"))
+                        column(6, textInput("das_symbol_size", tags$h5("Symbol size(s)"), "1")),
+                        column(6, textInput("das_symbol_linewidth", tags$h5("Symbol line width(s)"), "1"))
                       ),
                       checkboxInput("das_symbol_mult", label = "Input symbol properties as text", value = FALSE)
                     ),
@@ -179,31 +179,31 @@ ui.dasPlot <- function() {
                       fluidRow(
                         column(
                           width = 7,
-                          selectInput("das_symbol_type_boat", label = h5("Symbol type"),
+                          selectInput("das_symbol_type_boat", label = tags$h5("Symbol type"),
                                       choices = cruz.symbol.type, selected = 1),
-                          numericInput("das_symbol_size_boat", label = h5("Symbol size"),
+                          numericInput("das_symbol_size_boat", label = tags$h5("Symbol size"),
                                        value = 1, min = 0.1, max = 6, step = 0.1)
                         ),
                         column(
                           width = 5,
-                          selectInput("das_symbol_color_boat", label = h5("Symbol color"),
+                          selectInput("das_symbol_color_boat", label = tags$h5("Symbol color"),
                                       choices = cruz.palette.color, selected = "black"),
-                          numericInput("das_symbol_linewidth_boat", label = h5("Symbol line width"),
+                          numericInput("das_symbol_linewidth_boat", label = tags$h5("Symbol line width"),
                                        value = 1, min = 1, max = 6, step = 1)
                         )
                       )
                     )
                     # # CPOD symbol properties
                     #             conditionalPanel(condition = "input.das_sighting_type==4",
-                    #                  selectInput("das.symbol.type.cpod", label = h5("Symbol type"),
+                    #                  selectInput("das_symbol_type_cpod", label = tags$h5("Symbol type"),
                     #                              choices = cruz.symbol.type,
                     #                              selected = 1),
-                    #                  selectInput("das.symbol.color.cpod", label = h5("Symbol color"),
+                    #                  selectInput("das_symbol_color_cpod", label = tags$h5("Symbol color"),
                     #                              choices = cruz.palette.color,
                     #                              selected = "black"),
-                    #                  textInput("das.symbol.size.cpod", label = h5("Symbol size"),
+                    #                  textInput("das_symbol_size_cpod", label = tags$h5("Symbol size"),
                     #                            value = "1"),
-                    #                  textInput("das.symbol.linewidth.cpod", label = h5("Symbol line width"),
+                    #                  textInput("das_symbol_linewidth_cpod", label = tags$h5("Symbol line width"),
                     #                            value = "1")
                     #             )
                   )
@@ -220,8 +220,8 @@ ui.dasPlot <- function() {
                                            selected = 1)),
                     column(
                       width = 6,
-                      actionButton("das.sight.interactive.reset.last", "Remove last sighting label"),
-                      actionButton("das.sight.interactive.reset.all", "Remove all sighting labels")
+                      actionButton("das_sight_interactive_reset_last", "Remove last sighting label"),
+                      actionButton("das_sight_interactive_reset_all", "Remove all sighting labels")
                     )
                   )
               )
@@ -233,11 +233,11 @@ ui.dasPlot <- function() {
           title = "Filters",
           fluidRow(
             conditionalPanel(
-              condition = "input.das_sightings!=true",
+              condition = "input.das_sightings==false",
               column(12, helpText("Because 'Plot sightings' is not checked, there are no sightings to filter"))
             ),
             conditionalPanel(
-              condition = "input.das_sightings==true",
+              condition = "input.das_sightings",
               box(
                 title = "Sightings to plot", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
                 radioButtons("das_sightings_effort", label = NULL,
@@ -248,9 +248,9 @@ ui.dasPlot <- function() {
               box(
                 title = "Sightings filters", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
                 fluidRow(
-                  column(6, selectInput("das_sight_minBft", label = h5("Min Beaufort"),
+                  column(6, selectInput("das_sight_minBft", label = tags$h5("Min Beaufort"),
                                         choices = cruz.beaufort, selected = 0)),
-                  column(6, selectInput("das_sight_maxBft", label = h5("Max Beaufort"),
+                  column(6, selectInput("das_sight_maxBft", label = tags$h5("Max Beaufort"),
                                         choices = cruz.beaufort, selected = 9))
                 ),
                 uiOutput("das_sight_dateRange_uiOut_date"),
@@ -260,13 +260,13 @@ ui.dasPlot <- function() {
                 fluidRow(
                   column(
                     width = 6,
-                    textInput("das_sight_cruiseNum", label = h5("Cruise number(s)"), value = ""),
+                    textInput("das_sight_cruiseNum", label = tags$h5("Cruise number(s)"), value = ""),
                     helpText("Only sightings from entered cruise(s) will be plotted. Enter cruise numbers as 'number, number'")
                   ),
                   column(
                     width = 6,
                     uiOutput("das_sight_trunc_uiOut_numeric"),
-                    radioButtons("das_sight_trunc_units", h5("Truncation distance units"),
+                    radioButtons("das_sight_trunc_units", tags$h5("Truncation distance units"),
                                  choices = list("Kilometers" = 1, "Nautical miles" = 2),
                                  selected = 2),
                     helpText("Only sightings less than or equal to this perpendicular distance from the trackline will be plotted")
@@ -286,48 +286,48 @@ ui.dasPlot <- function() {
                 box(
                   title = "Legends", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                   conditionalPanel(
-                    condition = "input.das_sightings!=true",
+                    condition = "input.das_sightings==false",
                     helpText("*** No legend for sightings unless 'Plot sightings' is selected (Data & Sightings tab)")
                   ),
                   conditionalPanel(
-                    condition = "input.das_sightings==true",
+                    condition = "input.das_sightings",
                     checkboxInput("das_legend", label = "Include legend for sightings", value = TRUE)
                   ),
                   conditionalPanel(
-                    condition = "input.das_effort!=3 | input.das_effort_det_byBft!=true",
+                    condition = "input.das_effort!=3 | input.das_effort_det_byBft==false",
                     helpText("*** No legend for effort unless both 'Detailed effort' and",
                              "'Show effort by Beaufort' are selected (Effort tab)")
                   ),
                   conditionalPanel(
-                    condition = "input.das_effort==3 & input.das_effort_det_byBft==true",
+                    condition = "input.das_effort==3 & input.das_effort_det_byBft",
                     checkboxInput("eff_legend", label = "Include legend for effort", value = TRUE)
                   )
                 ),
                 conditionalPanel(
-                  condition = "input.das_legend == true & input.das_sightings==true",
+                  condition = "input.das_legend == true & input.das_sightings",
                   box(
                     title = "Sighting legend options", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                     fluidRow(
                       column(
                         width = 7,
-                        selectInput("das_legend_pos", label = h5("Position"),
+                        selectInput("das_legend_pos", label = tags$h5("Position"),
                                     choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
                                                    "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
                                     selected = "topright"),
                         conditionalPanel(
                           condition = "input.das_legend_pos == 1",
-                          numericInput("das_legend_lon", label = h5("Longitude"), value = 0),
-                          numericInput("das_legend_lat", label = h5("Latitude"), value = 0)
+                          numericInput("das_legend_lon", label = tags$h5("Longitude"), value = 0),
+                          numericInput("das_legend_lat", label = tags$h5("Latitude"), value = 0)
                         ),
-                        selectInput("das_legend_boxCol", label = h5("Box style"),
+                        selectInput("das_legend_boxCol", label = tags$h5("Box style"),
                                     choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
                                     selected = 3
                         )
                       ),
                       column(
                         width = 5,
-                        selectInput("das_legend_font", label = h5("Font"), choices = font.family, selected = 1),
-                        numericInput("das_legend_textSize", label = h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
+                        selectInput("das_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1),
+                        numericInput("das_legend_textSize", label = tags$h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
                       )
                     )
                   )
@@ -338,13 +338,13 @@ ui.dasPlot <- function() {
               width = 6,
               fluidRow(
                 conditionalPanel(
-                  condition="input.das_legend==true & input.das_sightings==true",
+                  condition="input.das_legend & input.das_sightings",
                   box(
                     title = "Sighting legend contents", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                    textInput("das_legend_title", label = h5("Title (optional)"), value = ""),
+                    textInput("das_legend_title", label = tags$h5("Title (optional)"), value = ""),
                     conditionalPanel(
                       condition = "input.das_sighting_type!=3",
-                      checkboxGroupInput("das_legend_names", h5("Legend sighting information"),
+                      checkboxGroupInput("das_legend_names", tags$h5("Legend sighting information"),
                                          choices = list("Species code" = 1, "Species abbreviation" = 2,
                                                         "Scientific name" = 3, "Common name" = 4),
                                          selected = c(1, 3))
@@ -357,33 +357,33 @@ ui.dasPlot <- function() {
           ),
           fluidRow(
             conditionalPanel(
-              condition="input.eff_legend==true & input.das_effort==3 & input.das_effort_det_byBft",
+              condition="input.eff_legend & input.das_effort==3 & input.das_effort_det_byBft",
               box(
                 title = "Effort legend options", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                 fluidRow(
                   column(
                     width = 3,
-                    selectInput("eff_legend_pos", label = h5("Position"),
+                    selectInput("eff_legend_pos", label = tags$h5("Position"),
                                 choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
                                                "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
                                 selected = "bottomright"),
                     conditionalPanel(
                       condition = "input.eff_legend_pos == 1",
-                      textInput("eff.legend.lon", label = h5("Longitude"), value = "")
+                      numericInput("eff_legend_lon", label = tags$h5("Longitude"), value = 0)
                     )
                   ),
                   column(
                     width = 4,
-                    selectInput("eff.legend.boxCol", label = h5("Box color"),
+                    selectInput("eff_legend_boxCol", label = tags$h5("Box color"),
                                 choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
                                 selected = 3),
                     conditionalPanel(
                       condition = "input.eff_legend_pos == 1",
-                      textInput("eff.legend.lat", label = h5("Latitude"), value = "")
+                      numericInput("eff_legend_lat", label = tags$h5("Latitude"), value = 0)
                     )
                   ),
-                  column(3, selectInput("eff.legend.font", label = h5("Font"), choices = font.family, selected = 1)),
-                  column(2, numericInput("eff.legend.textSize", label = h5("Legend size"),
+                  column(3, selectInput("eff_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1)),
+                  column(2, numericInput("eff_legend_textSize", label = tags$h5("Legend size"),
                                          value = 1.0, min = 0.1, max = 3, step = 0.1))
                 )
               )
@@ -406,7 +406,7 @@ ui.dasPlot <- function() {
               box(
                 title = "Effort types to plot", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
                 fluidRow(
-                  column(5, checkboxGroupInput("das.effort.closePass", label = NULL,
+                  column(5, checkboxGroupInput("das_effort_closePass", label = NULL,
                                                choices = list("Closing" = "C", "Passing" = "P"),
                                                selected = "C")
                   ),
@@ -435,9 +435,9 @@ ui.dasPlot <- function() {
                 fluidRow(
                   conditionalPanel(
                     condition = "input.das_effort == 2",
-                    column(6, selectInput("das.effort.simp.col", h5("Simplified effort line color"),
+                    column(6, selectInput("das_effort_simp_col", tags$h5("Simplified effort line color"),
                                           choices = cruz.palette.color, selected = "black")),
-                    column(6, numericInput("das.effort.simp.lwd", h5("Simplified effort line width"),
+                    column(6, numericInput("das_effort_simp_lwd", tags$h5("Simplified effort line width"),
                                            value = 2, min = 1, max = 6, step = 1))
                   ),
                   conditionalPanel(
@@ -450,22 +450,22 @@ ui.dasPlot <- function() {
                     )
                   ),
                   conditionalPanel(
-                    condition = "input.das_effort_det_byBft != true",
+                    condition = "input.das_effort_det_byBft == false",
                     column(
                       width = 6,
                       conditionalPanel(
                         condition = "output.das_effort_det_s_flag",
-                        selectInput("das.effort.det.col.s", h5("Standard effort line color"),
+                        selectInput("das_effort_det_col_s", tags$h5("Standard effort line color"),
                                     choices = cruz.palette.color, selected = "black")
                       ),
                       conditionalPanel(
                         condition = "output.das_effort_det_n_flag",
-                        selectInput("das.effort.det.col.n", h5("Non-standard effort line color"),
+                        selectInput("das_effort_det_col_n", tags$h5("Non-standard effort line color"),
                                     choices = cruz.palette.color, selected = "black")
                       ),
                       conditionalPanel(
                         condition = "output.das_effort_det_f_flag",
-                        selectInput("das.effort.det.col.f", h5("Fine effort line color"),
+                        selectInput("das_effort_det_col_f", tags$h5("Fine effort line color"),
                                     choices = cruz.palette.color, selected = "black")
                       )
                     ),
@@ -473,17 +473,17 @@ ui.dasPlot <- function() {
                       width = 6,
                       conditionalPanel(
                         condition = "output.das_effort_det_s_flag",
-                        numericInput("das.effort.det.lwd.s", h5("Standard effort line width"),
+                        numericInput("das_effort_det_lwd_s", tags$h5("Standard effort line width"),
                                      value = 2, min = 1, max = 6, step = 1)
                       ),
                       conditionalPanel(
                         condition = "output.das_effort_det_n_flag",
-                        numericInput("das.effort.det.lwd.n", h5("Non-standard effort line width"),
+                        numericInput("das_effort_det_lwd_n", tags$h5("Non-standard effort line width"),
                                      value = 2, min = 1, max = 6, step = 1)
                       ),
                       conditionalPanel(
                         condition = "output.das_effort_det_f_flag",
-                        numericInput("das.effort.det.lwd.f", h5("Fine effort line width"),
+                        numericInput("das_effort_det_lwd_f", tags$h5("Fine effort line width"),
                                      value = 2, min = 1, max = 6, step = 1)
                       )
                     )
@@ -498,15 +498,15 @@ ui.dasPlot <- function() {
                   conditionalPanel(
                     condition = "input.das_effort == 3",
                     fluidRow(
-                      column(6, selectInput("das.effort.minBeau", h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)
+                      column(6, selectInput("das_effort_minBeau", tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)
                       ),
-                      column(6, selectInput("das.effort.maxBeau", h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
+                      column(6, selectInput("das_effort_maxBeau", tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
                       )
                     )
                   ),
-                  conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be  by Beaufort")),
+                  conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be plotted by Beaufort")),
                   uiOutput("das_effort_dateRange_uiOut_date"),
-                  textInput("das.effort.cruiseNum", h5("Cruise number(s)"), value = ""),
+                  textInput("das_effort_cruiseNum", tags$h5("Cruise number(s)"), value = ""),
                   helpText("Only effort lines from this cruise number will be plotted")
                 )
               )
@@ -521,8 +521,8 @@ ui.dasPlot <- function() {
                                          selected = 1)),
                   column(
                     width = 5,
-                    actionButton("das.effort.interactive.reset.last", "Remove last effort label"),
-                    actionButton("das.effort.interactive.reset.all", "Remove all effort labels")
+                    actionButton("das_effort_interactive_reset_last", "Remove last effort label"),
+                    actionButton("das_effort_interactive_reset_all", "Remove all effort labels")
                   )
                 )
               )
@@ -542,7 +542,7 @@ ui.dasPlot <- function() {
                   column(
                     width = 4,
                     helpText("Uses the same filters as those applied to plotted effort"),
-                    radioButtons("das_out_effort_units", h5("Effort distance units"),
+                    radioButtons("das_out_effort_units", tags$h5("Effort distance units"),
                                  choices = list("Kilometers" = 1, "Nautical miles" = 2),
                                  selected = 2),
                     ui.new.line(),

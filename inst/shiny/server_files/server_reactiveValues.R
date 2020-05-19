@@ -94,6 +94,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
 
     #------------------------------------------------------
     ## Map info
+    updateNumericInput(session, "map_size", value = map.info$map_size)
+
     updateNumericInput(session, "lon.left", value = map.info$lon.left)
     updateNumericInput(session, "lon.right", value = map.info$lon.right)
     updateNumericInput(session, "lat.bot", value = map.info$lat.range[1])
@@ -147,8 +149,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "color.land", choices = cruz.palette.color, selected = "bisque1")
       updateSelectInput(session, "color.water", choices = cruz.palette.color, selected = "white")
       updateSelectInput(session, "grid.line.color", choices = cruz.palette.color, selected = "black")
-      updateSelectizeInput(session, "das.symbol.color", choices = cruz.palette.color, selected = "black")
-      updateSelectInput(session, "das.effort.lineCol", choices = cruz.palette.color, selected = "black")
+      updateSelectizeInput(session, "das_symbol_color", choices = cruz.palette.color, selected = "black")
+      updateSelectInput(session, "das_effort_lineCol", choices = cruz.palette.color, selected = "black")
       updateSelectInput(session, "ndas.line.col", choices = cruz.palette.color, selected = "black")
       updateSelectInput(session, "ndas.pt.col", choices = cruz.palette.color, selected = "black")
     } else {
@@ -156,7 +158,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "color.land", choices = cruz.palette.gray, selected = 4)
       updateSelectInput(session, "color.water", choices = cruz.palette.gray, selected = 0)
       updateSelectInput(session, "grid.line.color", choices = cruz.palette.gray, selected = 1)
-      updateSelectizeInput(session, "das.symbol.color", choices = cruz.palette.gray, selected = 1)
+      updateSelectizeInput(session, "das_symbol_color", choices = cruz.palette.gray, selected = 1)
       updateSelectInput(session, "ndas.line.col", choices = cruz.palette.gray, selected = 1)
       updateSelectInput(session, "ndas.pt.col", choices = cruz.palette.gray, selected = 1)
     }
@@ -175,84 +177,95 @@ load_envir <- eventReactive(input$load_app_envir_file, {
 
 
     #------------------------------------------------------
-    ## Sighting info
-    updateCheckboxInput(session, "das_sightings", value = das.info$das_sightings)
-    updateRadioButtons(session, "das_sightings_position", selected = das.info$das_sightings_position)
-    updateSelectInput(session, "das_sighting_type", selected = das.info$das_sighting_type)
-    updateRadioButtons(session, "das_sighting_code_1_all", selected = das.info$das_sighting_code_1_all)
-    updateRadioButtons(session, "das_sighting_code_1_all", selected = das.info$das_sighting_code_1_al2)
-    updateSelectizeInput(session, "das.sighting.code.1", selected = das.info$das.sighting.code.1)
-    updateSelectizeInput(session, "das.sighting.code.2", selected = das.info$das.sighting.code.2)
-    updateCheckboxInput(session, "das.sighting.probable", value = das.info$das.sighting.probable)
+    ## DAS data
+    if (isTruthy(cruz.list$das.data)) {
+      #------------------------------------------------------
+      ## Sighting info
+      updateCheckboxInput(session, "das_sightings", value = das.info$das_sightings)
+      updateRadioButtons(session, "das_sightings_position", selected = das.info$das_sightings_position)
+      updateSelectInput(session, "das_sighting_type", selected = das.info$das_sighting_type)
+      updateRadioButtons(session, "das_sighting_code_1_all", selected = das.info$das_sighting_code_1_all)
+      updateRadioButtons(session, "das_sighting_code_2_all", selected = das.info$das_sighting_code_2_all)
+      updateSelectizeInput(session, "das_sighting_code_1", selected = das.info$das_sighting_code_1)
+      updateSelectizeInput(session, "das_sighting_code_2", selected = das.info$das_sighting_code_2)
+      updateCheckboxInput(session, "das_sighting_probable", value = das.info$das_sighting_probable)
+      updateCheckboxGroupInput(session, "das_sighting_events", selected = das.info$das_sighting_events)
+      updateCheckboxInput(session, "das_file_extra", value = das.info$das_file_extra)
+      updateNumericInput(session, "das_file_skip", value = das.info$das_file_skip)
+      updateSelectInput(session, "das_file_reset_effort", selected = das.info$das_file_reset_effort)
+      updateSelectInput(session, "das_file_reset_event", selected = das.info$das_file_reset_event)
+      updateSelectInput(session, "das_file_reset_day", selected = das.info$das_file_reset_day)
 
-    updateSelectizeInput(session, "das.symbol.type", selected = das.info$das.symbol.type)
-    updateSelectizeInput(session, "das.symbol.color", selected = das.info$das.symbol.color)
-    updateTextInput(session, "das.symbol.size", value = das.info$das.symbol.size)
-    updateTextInput(session, "das.symbol.linewidth", value = das.info$das.symbol.linewidth)
-    updateCheckboxInput(session, "das_symbol_mult", value = das.info$das_symbol_mult)
-    updateTextInput(session, "das.symbol.type.mult", value = das.info$das.symbol.type.mult)
-    updateTextInput(session, "das.symbol.color.mult", value = das.info$das.symbol.color.mult)
-    updateSelectInput(session, "das.symbol.type.boat", selected = das.info$das.symbol.type.boat)
-    updateSelectInput(session, "das.symbol.color.boat", selected = das.info$das.symbol.color.boat)
-    updateNumericInput(session, "das.symbol.size.boat", value = map.info$das.symbol.size.boat)
-    updateNumericInput(session, "das.symbol.linewidth.boat", value = map.info$das.symbol.linewidth.boat)
+      updateSelectizeInput(session, "das_symbol_type", selected = das.info$das_symbol_type)
+      updateSelectizeInput(session, "das_symbol_color", selected = das.info$das_symbol_color)
+      updateTextInput(session, "das_symbol_size", value = das.info$das_symbol_size)
+      updateTextInput(session, "das_symbol_linewidth", value = das.info$das_symbol_linewidth)
+      updateCheckboxInput(session, "das_symbol_mult", value = das.info$das_symbol_mult)
+      updateTextInput(session, "das_symbol_type_mult", value = das.info$das_symbol_type_mult)
+      updateTextInput(session, "das_symbol_color_mult", value = das.info$das_symbol_color_mult)
+      updateSelectInput(session, "das_symbol_type_boat", selected = das.info$das_symbol_type_boat)
+      updateSelectInput(session, "das_symbol_color_boat", selected = das.info$das_symbol_color_boat)
+      updateNumericInput(session, "das_symbol_size_boat", value = map.info$das.symbol_size_boat)
+      updateNumericInput(session, "das_symbol_linewidth_boat", value = map.info$das_symbol_linewidth_boat)
 
-    updateRadioButtons(session, "das_sightings_effort", selected = das.info$das_sightings_effort)
-    updateSelectInput(session, "das.sight.minBeau", selected = das.info$das.sight.minBeau)
-    updateSelectInput(session, "das.sight.maxBeau", selected = das.info$das.sight.maxBeau)
-    updateDateRangeInput(session, "das.sight.dateRange", start = das.info$das.sight.dateRange[1], end = das.info$das.sight.dateRange[2])
-    updateTextInput(session, "das.sight.cruiseNum", value = das.info$das.sight.cruiseNum)
-    updateRadioButtons(session, "das.sight.trunc.units", selected = das.info$das.sight.trunc.units)
-    updateNumericInput(session, "das.sight.trunc", value = das.info$das.sight.trunc)
+      updateRadioButtons(session, "das_sightings_effort", selected = das.info$das_sightings_effort)
+      updateSelectInput(session, "das_sight_minBeau", selected = das.info$das_sight_minBeau)
+      updateSelectInput(session, "das_sight_maxBeau", selected = das.info$das_sight_maxBeau)
+      updateDateRangeInput(session, "das_sight_dateRange", start = das.info$das_sight_dateRange[1], end = das.info$das_sight_dateRange[2])
+      updateTextInput(session, "das_sight_cruiseNum", value = das.info$das_sight_cruiseNum)
+      updateRadioButtons(session, "das_sight_trunc_units", selected = das.info$das_sight_trunc_units)
+      updateNumericInput(session, "das_sight_trunc", value = das.info$das_sight_trunc)
 
-    updateCheckboxInput(session, "das_legend", value = das.info$das_legend)
-    updateSelectInput(session, "das_legend_pos", selected = das.info$das_legend_pos)
-    updateTextInput(session, "das.legend.lon", value = das.info$das.legend.lon)
-    updateTextInput(session, "das.legend.lat", value = das.info$das.legend.lat)
-    updateSelectInput(session, "das.legend.boxCol", selected = das.info$das.legend.boxCol)
-    updateSelectInput(session, "das.legend.font", selected = das.info$das.legend.font)
-    updateNumericInput(session, "das.legend.textSize", value = das.info$das.legend.textSize)
-    updateTextInput(session, "das.legend.title", value = das.info$das.legend.title)
-    updateCheckboxGroupInput(session, "das.legend.names", selected = das.info$das.legend.names)
-    updateCheckboxInput(session, "das.legend.num", value = das.info$das.legend.num)
+      updateCheckboxInput(session, "das_legend", value = das.info$das_legend)
+      updateSelectInput(session, "das_legend_pos", selected = das.info$das_legend_pos)
+      updateTextInput(session, "das_legend_lon", value = das.info$das_legend_lon)
+      updateTextInput(session, "das_legend_lat", value = das.info$das_legend_lat)
+      updateSelectInput(session, "das_legend_boxCol", selected = das.info$das_legend_boxCol)
+      updateSelectInput(session, "das_legend_font", selected = das.info$das_legend_font)
+      updateNumericInput(session, "das_legend_textSize", value = das.info$das_legend_textSize)
+      updateTextInput(session, "das_legend_title", value = das.info$das_legend_title)
+      updateCheckboxGroupInput(session, "das_legend_names", selected = das.info$das_legend_names)
+      updateCheckboxInput(session, "das_legend_num", value = das.info$das_legend_num)
 
-    updateCheckboxInput(session, "eff_legend", value = das.info$eff_legend)
-    updateSelectInput(session, "eff_legend_pos", selected = das.info$eff_legend_pos)
-    updateTextInput(session, "eff.legend.lon", value = das.info$eff.legend.lon)
-    updateTextInput(session, "eff.legend.lat", value = das.info$eff.legend.lat)
-    updateSelectInput(session, "eff.legend.boxCol", selected = das.info$eff.legend.boxCol)
-    updateSelectInput(session, "eff.legend.font", selected = das.info$eff.legend.font)
-    updateNumericInput(session, "eff.legend.textSize", value = das.info$eff.legend.textSize)
+      updateCheckboxInput(session, "eff_legend", value = das.info$eff_legend)
+      updateSelectInput(session, "eff_legend_pos", selected = das.info$eff_legend_pos)
+      updateTextInput(session, "eff_legend_lon", value = das.info$eff_legend_lon)
+      updateTextInput(session, "eff_legend_lat", value = das.info$eff_legend_lat)
+      updateSelectInput(session, "eff_legend_boxCol", selected = das.info$eff_legend_boxCol)
+      updateSelectInput(session, "eff_legend_font", selected = das.info$eff_legend_font)
+      updateNumericInput(session, "eff_legend_textSize", value = das.info$eff_legend_textSize)
 
 
-    #------------------------------------------------------
-    ## Effort info
-    updateRadioButtons(session, "das_effort", selected = das.info$das_effort)
-    updateCheckboxGroupInput(session, "das.effort.closePass", selected = das.info$das.effort.closePass)
-    updateCheckboxGroupInput(session, "das_effort_snf", selected = das.info$das_effort_snf)
+      #------------------------------------------------------
+      ## Effort info
+      updateRadioButtons(session, "das_effort", selected = das.info$das_effort)
+      updateCheckboxGroupInput(session, "das_effort_closePass", selected = das.info$das_effort_closePass)
+      updateCheckboxGroupInput(session, "das_effort_snf", selected = das.info$das_effort_snf)
 
-    updateSelectInput(session, "das.effort.simp.col", selected = das.info$das.effort.simp.col)
-    updateNumericInput(session, "das.effort.simp.lwd", value = das.info$das.effort.simp.lwd)
+      updateSelectInput(session, "das_effort_simp_col", selected = das.info$das_effort_simp_col)
+      updateNumericInput(session, "das_effort_simp_lwd", value = das.info$das_effort_simp_lwd)
 
-    updateCheckboxInput(session, "das_effort_det_byBft", value = das.info$das_effort_det_byBft)
-    updateSelectInput(session, "das.effort.det.col.s", selected = das.info$das.effort.det.col.s)
-    updateNumericInput(session, "das.effort.det.lwd.s", value = das.info$das.effort.det.lwd.s)
-    updateSelectInput(session, "das.effort.det.col.n", selected = das.info$das.effort.det.col.n)
-    updateNumericInput(session, "das.effort.det.lwd.n", value = das.info$das.effort.det.lwd.n)
-    updateSelectInput(session, "das.effort.det.col.f", selected = das.info$das.effort.det.col.f)
-    updateNumericInput(session, "das.effort.det.lwd.f", value = das.info$das.effort.det.lwd.f)
+      updateCheckboxInput(session, "das_effort_det_byBft", value = das.info$das_effort_det_byBft)
+      updateSelectInput(session, "das_effort_det_col_s", selected = das.info$das_effort_det_col_s)
+      updateNumericInput(session, "das_effort_det_lwd_s", value = das.info$das_effort_det_lwd_s)
+      updateSelectInput(session, "das_effort_det_col_n", selected = das.info$das_effort_det_col_n)
+      updateNumericInput(session, "das_effort_det_lwd_n", value = das.info$das_effort_det_lwd_n)
+      updateSelectInput(session, "das_effort_det_col_f", selected = das.info$das_effort_det_col_f)
+      updateNumericInput(session, "das_effort_det_lwd_f", value = das.info$das_effort_det_lwd_f)
 
-    updateCheckboxInput(session, "das_effort_filter_same", value = das.info$das_effort_filter_same)
-    updateSelectInput(session, "das.effort.minBeau", selected = das.info$das.effort.minBeau)
-    updateSelectInput(session, "das.effort.maxBeau", selected = das.info$das.effort.maxBeau)
-    updateDateRangeInput(session, "das.effort.dateRange", start = das.info$das.effort.dateRange[1], end = das.info$das.effort.dateRange[2])
-    updateTextInput(session, "das.effort.cruiseNum", value = das.info$das.effort.cruiseNum)
-    updateRadioButtons(session, "das.effort.trunc.units", selected = das.info$das.effort.trunc.units)
-    updateNumericInput(session, "das.effort.trunc", value = das.info$das.effort.trunc)
+      updateCheckboxInput(session, "das_effort_filter_same", value = das.info$das_effort_filter_same)
+      updateSelectInput(session, "das_effort_minBeau", selected = das.info$das_effort_minBeau)
+      updateSelectInput(session, "das_effort_maxBeau", selected = das.info$das_effort_maxBeau)
+      updateDateRangeInput(session, "das_effort_dateRange",
+                           start = das.info$das_effort_dateRange[1], end = das.info$das_effort_dateRange[2])
+      updateTextInput(session, "das_effort_cruiseNum", value = das.info$das_effort_cruiseNum)
+      updateRadioButtons(session, "das_effort_trunc_units", selected = das.info$das_effort_trunc_units)
+      updateNumericInput(session, "das_effort_trunc", value = das.info$das_effort_trunc)
 
-    updateRadioButtons(session, "das_out_effort_units", selected = das.info$das_out_effort_units)
-    updateCheckboxGroupInput(session, "das.out.sight.closePass", selected = das.info$das.out.sight.closePass)
-    updateCheckboxGroupInput(session, "das.out.sight.snf", selected = das.info$das.out.sight.snf)
+      updateRadioButtons(session, "das_out_effort_units", selected = das.info$das_out_effort_units)
+      updateCheckboxGroupInput(session, "das_out_sight_cp", selected = das.info$das_out_sight_cp)
+      updateCheckboxGroupInput(session, "das_out_sight_snf", selected = das.info$das_out_sight_snf)
+    }
 
     updateCheckboxInput(session, "ndas_plot", value = ndas.info$ndas_plot)
 
@@ -284,6 +297,7 @@ output$save_app_envir <- downloadHandler(
 
       #----------------------------------------------------
       # Map info
+      map.info$map_size <- input$map_size
       map.info$lon.range <- cruz.map.range$lon.range
       map.info$lat.range <- cruz.map.range$lat.range
       map.info$world2 <- cruz.map.range$world2
@@ -348,80 +362,88 @@ output$save_app_envir <- downloadHandler(
 
       #----------------------------------------------------
       # DAS info
-      das.info$das_sightings <- input$das_sightings
-      das.info$das_sightings_position <- input$das_sightings_position
-      das.info$das_sighting_type <- input$das_sighting_type
-      das.info$das_sighting_code_1_all <- input$das_sighting_code_1_all
-      das.info$das_sighting_code_2_all <- input$das_sighting_code_2_all
-      das.info$das.sighting.code.1 <- input$das.sighting.code.1
-      das.info$das.sighting.code.2 <- input$das.sighting.code.2
-      das.info$das.sighting.probable <- input$das.sighting.probable
+      if (isTruthy(cruz.list$das.data)) {
+        das.info$das_sightings <- input$das_sightings
+        das.info$das_sightings_position <- input$das_sightings_position
+        das.info$das_sighting_type <- input$das_sighting_type
+        das.info$das_sighting_code_1_all <- input$das_sighting_code_1_all
+        das.info$das_sighting_code_2_all <- input$das_sighting_code_2_all
+        das.info$das_sighting_code_1 <- input$das_sighting_code_1
+        das.info$das_sighting_code_2 <- input$das_sighting_code_2
+        das.info$das_sighting_probable <- input$das_sighting_probable
+        das.info$das_sighting_events <- input$das_sighting_events
+        das.info$das_file_extra <- input$das_file_extra
+        das.info$das_file_skip <- input$das_file_skip
+        das.info$das_file_reset_effort <- input$das_file_reset_effort
+        das.info$das_file_reset_event <- input$das_file_reset_event
+        das.info$das_file_reset_day <- input$das_file_reset_day
 
-      das.info$das.symbol.type <- input$das.symbol.type
-      das.info$das.symbol.color <- input$das.symbol.color
-      das.info$das.symbol.size <- input$das.symbol.size
-      das.info$das.symbol.linewidth <- input$das.symbol.linewidth
-      das.info$das_symbol_mult <- input$das_symbol_mult
-      das.info$das.symbol.type.mult <- input$das.symbol.type.mult
-      das.info$das.symbol.color.mult <- input$das.symbol.color.mult
-      das.info$das.symbol.type.boat <- input$das.symbol.type.boat
-      das.info$das.symbol.color.boat <- input$das.symbol.color.boat
-      das.info$das.symbol.size.boat <- input$das.symbol.size.boat
-      das.info$das.symbol.linewidth.boat <- input$das.symbol.linewidth.boat
+        das.info$das_symbol_type <- input$das_symbol_type
+        das.info$das_symbol_color <- input$das_symbol_color
+        das.info$das_symbol_size <- input$das_symbol_size
+        das.info$das_symbol_linewidth <- input$das_symbol_linewidth
+        das.info$das_symbol_mult <- input$das_symbol_mult
+        das.info$das_symbol_type_mult <- input$das_symbol_type_mult
+        das.info$das_symbol_color_mult <- input$das_symbol_color_mult
+        das.info$das_symbol_type_boat <- input$das_symbol_type_boat
+        das.info$das_symbol_color_boat <- input$das_symbol_color_boat
+        das.info$das_symbol_size_boat <- input$das_symbol_size_boat
+        das.info$das_symbol_linewidth_boat <- input$das_symbol_linewidth_boat
 
-      das.info$das_sightings_effort <- input$das_sightings_effort
-      das.info$das.sight.minBeau <- input$das.sight.minBeau
-      das.info$das.sight.maxBeau <- input$das.sight.maxBeau
-      das.info$das.sight.dateRange <- as.character(input$das.sight.dateRange)
-      das.info$das.sight.cruiseNum <- input$das.sight.cruiseNum
-      das.info$das.sight.trunc.units <- input$das.sight.trunc.units
-      das.info$das.sight.trunc <- input$das.sight.trunc
+        das.info$das_sightings_effort <- input$das_sightings_effort
+        das.info$das_sight_minBeau <- input$das_sight_minBeau
+        das.info$das_sight_maxBeau <- input$das_sight_maxBeau
+        das.info$das_sight_dateRange <- as.character(input$das_sight_dateRange)
+        das.info$das_sight_cruiseNum <- input$das_sight_cruiseNum
+        das.info$das_sight_trunc_units <- input$das_sight_trunc_units
+        das.info$das_sight_trunc <- input$das_sight_trunc
 
-      das.info$das_legend <- input$das_legend
-      das.info$das_legend_pos <- input$das_legend_pos
-      das.info$das.legend.lon <- input$das.legend.lon
-      das.info$das.legend.lat <- input$das.legend.lat
-      das.info$das.legend.boxCol <- input$das.legend.boxCol
-      das.info$das.legend.font <- input$das.legend.font
-      das.info$das.legend.textSize <- input$das.legend.textSize
-      das.info$das.legend.title <- input$das.legend.title
-      das.info$das.legend.names <- input$das.legend.names
-      das.info$das.legend.num <- input$das.legend.num
+        das.info$das_legend <- input$das_legend
+        das.info$das_legend_pos <- input$das_legend_pos
+        das.info$das_legend_lon <- input$das_legend_lon
+        das.info$das_legend_lat <- input$das_legend_lat
+        das.info$das_legend_boxCol <- input$das_legend_boxCol
+        das.info$das_legend_font <- input$das_legend_font
+        das.info$das_legend_textSize <- input$das_legend_textSize
+        das.info$das_legend_title <- input$das_legend_title
+        das.info$das_legend_names <- input$das_legend_names
+        das.info$das_legend_num <- input$das_legend_num
 
-      das.info$eff_legend <- input$eff_legend
-      das.info$eff_legend_pos <- input$eff_legend_pos
-      das.info$eff.legend.lon <- input$eff.legend.lon
-      das.info$eff.legend.lat <- input$eff.legend.lat
-      das.info$eff.legend.boxCol <- input$eff.legend.boxCol
-      das.info$eff.legend.font <- input$eff.legend.font
-      das.info$eff.legend.textSize <- input$eff.legend.textSize
+        das.info$eff_legend <- input$eff_legend
+        das.info$eff_legend_pos <- input$eff_legend_pos
+        das.info$eff_legend_lon <- input$eff_legend_lon
+        das.info$eff_legend_lat <- input$eff_legend_lat
+        das.info$eff_legend_boxCol <- input$eff_legend_boxCol
+        das.info$eff_legend_font <- input$eff_legend_font
+        das.info$eff_legend_textSize <- input$eff_legend_textSize
 
-      das.info$das_effort <- input$das_effort
-      das.info$das.effort.closePass <- input$das.effort.closePass
-      das.info$das_effort_snf <- input$das_effort_snf
+        das.info$das_effort <- input$das_effort
+        das.info$das_effort_closePass <- input$das_effort_closePass
+        das.info$das_effort_snf <- input$das_effort_snf
 
-      das.info$das.effort.simp.col <- input$das.effort.simp.col
-      das.info$das.effort.simp.lwd <- input$das.effort.simp.lwd
+        das.info$das_effort_simp_col <- input$das_effort_simp_col
+        das.info$das_effort_simp_lwd <- input$das_effort_simp_lwd
 
-      das.info$das_effort_det_byBft <- input$das_effort_det_byBft
-      das.info$das.effort.det.col.s <- input$das.effort.det.col.s
-      das.info$das.effort.det.lwd.s <- input$das.effort.det.lwd.s
-      das.info$das.effort.det.col.n <- input$das.effort.det.col.n
-      das.info$das.effort.det.lwd.n <- input$das.effort.det.lwd.n
-      das.info$das.effort.det.col.f <- input$das.effort.det.col.f
-      das.info$das.effort.det.lwd.f <- input$das.effort.det.lwd.f
+        das.info$das_effort_det_byBft <- input$das_effort_det_byBft
+        das.info$das_effort_det_col_s <- input$das_effort_det_col_s
+        das.info$das_effort_det_lwd_s <- input$das_effort_det_lwd_s
+        das.info$das_effort_det_col_n <- input$das_effort_det_col_n
+        das.info$das_effort_det_lwd_n <- input$das_effort_det_lwd_n
+        das.info$das_effort_det_col_f <- input$das_effort_det_col_f
+        das.info$das_effort_det_lwd_f <- input$das_effort_det_lwd_f
 
-      das.info$das_effort_filter_same <- input$das_effort_filter_same
-      das.info$das.effort.minBeau <- input$das.effort.minBeau
-      das.info$das.effort.maxBeau <- input$das.effort.maxBeau
-      das.info$das.effort.dateRange <- as.character(input$das.effort.dateRange)
-      das.info$das.effort.cruiseNum <- input$das.effort.cruiseNum
-      das.info$das.effort.trunc.units <- input$das.effort.trunc.units
-      das.info$das.effort.trunc <- input$das.effort.trunc
+        das.info$das_effort_filter_same <- input$das_effort_filter_same
+        das.info$das_effort_minBeau <- input$das_effort_minBeau
+        das.info$das_effort_maxBeau <- input$das_effort_maxBeau
+        das.info$das_effort_dateRange <- as.character(input$das_effort_dateRange)
+        das.info$das_effort_cruiseNum <- input$das_effort_cruiseNum
+        das.info$das_effort_trunc_units <- input$das_effort_trunc_units
+        das.info$das_effort_trunc <- input$das_effort_trunc
 
-      das.info$das_out_effort_units <- input$das_out_effort_units
-      das.info$das.out.sight.closePass <- input$das.out.sight.closePass
-      das.info$das.out.sight.snf <- input$das.out.sight.snf
+        das.info$das_out_effort_units <- input$das_out_effort_units
+        das.info$das_out_sight_cp <- input$das_out_sight_cp
+        das.info$das_out_sight_snf <- input$das_out_sight_snf
+      }
 
       incProgress(0.3)
 

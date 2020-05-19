@@ -5,6 +5,15 @@ plotDownload <- function() {
   plotInteractive()()
 }
 
+output$downloadMap_button <- renderUI({
+  validate(
+    need(!is.na(input$download.res), "Please enter a valid resolution") %then%
+      need(input$download.res > 0, "Please enter a valid resolution")
+  )
+
+  downloadButton("downloadMap", label = "Download map")
+})
+
 output$downloadMap <- downloadHandler(
   filename = function() {
     file.ext <- switch(
@@ -18,11 +27,10 @@ output$downloadMap <- downloadHandler(
       file.ext
     )
   },
-  content = function(file) {
-    file.res <- switch(input$download.res, "1" = 200, "2" = 72)
 
+  content = function(file) {
     if(input$download.format == 1) {
-      jpeg(file, width = 10, height = 10, units = "in", res = file.res)
+      jpeg(file, width = 10, height = 10, units = "in", res = input$download.res)
       plotDownload()
       dev.off()
     }
@@ -32,7 +40,7 @@ output$downloadMap <- downloadHandler(
       dev.off()
     }
     if(input$download.format == 3) {
-      png(file, width = 10, height = 10, units = "in", res = file.res)
+      png(file, width = 10, height = 10, units = "in", res = input$download.res)
       plotDownload()
       dev.off()
     }
