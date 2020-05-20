@@ -10,19 +10,11 @@ lat.range <- cruz.map.range$lat.range
 world2 <- cruz.map.range$world2
 stopifnot("world2 param is not a logical" = inherits(world2, "logical"))
 
-validate(
-  need(!any(lat.range %in% c("", "-", "+", NA)),
-       message = "Please ensure that -180 <= left longitude <= 180"),
-  need(!any(lon.range %in% c("", "-", "+", NA)),
-       message = "Please ensure that -180 <= right longitude <= 180"),
-  need(!any(world2 %in% c("", "-", "+", NA)),
-       message = "Please ensure that map range values are valid")
-)
 validate( #lats
   need(-90 <= lat.range[1] & lat.range[1]<= 90,
-       message = "Please ensure that -90 <= bottom latitude <= 90"),
+       "The bottom latitude must be a number between -90 and 90"),
   need(-90 <= lat.range[2] & lat.range[2]<= 90,
-       message = "Please ensure that -90 <= top latitude <= 90")
+       "The top latitude must be a number between -90 and 90")
 )
 if ((0 <= lon.range[1] & 0 <= lon.range[2]) || (lon.range[1] < 0 & lon.range[2] < 0))
   validate( #lons
@@ -34,16 +26,16 @@ if ((0 <= lon.range[1] & 0 <= lon.range[2]) || (lon.range[1] < 0 & lon.range[2] 
 if (world2) {
   validate(
     need(0 <= lon.range[1] & lon.range[1]<= 360,
-         message = "Please ensure that -180 <= left longitude <= 180"),
+         "The left longtiude must be a number between -180 and 180"),
     need(0 <= lon.range[2] & lon.range[2]<= 360,
-         message = "Please ensure that -180 <= right longitude <= 180")
+         "The right longtiude must be a number between -180 and 180")
   )
 } else { #!cruz.map.range$world2
   validate(
     need(-180 <= lon.range[1] & lon.range[1]<= 180,
-         message = "Please ensure that -180 <= left longitude <= 180"),
+         "The left longtiude must be a number between -180 and 180"),
     need(-180 <= lon.range[2] & lon.range[2]<= 180,
-         message = "Please ensure that -180 <= right longitude <= 180")
+         "The right longtiude must be a number between -180 and 180")
   )
 }
 
@@ -158,6 +150,7 @@ if (input$tick) {
   tick.lat$label <- cruzMapTickLatLab()
   tick.param <- cruzMapTickParam()
 }
+
 if (input$grid) grid.param <- cruzMapGrid()
 
 

@@ -11,7 +11,7 @@ observeEvent(input$coast.file, {
 }, ignoreInit = TRUE)
 
 observeEvent(cruz.list$coastline, {
-  if(!is.null(cruz.list$coastline)) {
+  if (isTruthy(cruz.list$coastline)) {
     map.coastline <- cruz.list$coastline
     x <- map.coastline$lon[!is.na(map.coastline$lon)]
     y <- map.coastline$lat[!is.na(map.coastline$lat)]
