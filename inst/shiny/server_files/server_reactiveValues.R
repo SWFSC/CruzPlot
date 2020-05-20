@@ -211,6 +211,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateNumericInput(session, "das_symbol_linewidth_boat", value = map.info$das_symbol_linewidth_boat)
 
       updateRadioButtons(session, "das_sight_effort", selected = das.info$das_sight_effort)
+      updateCheckboxGroupInput(session, "das_sight_cp", selected = das.info$das_sight_cp)
+      updateCheckboxGroupInput(session, "das_sight_snf", selected = das.info$das_sight_snf)
       updateSelectInput(session, "das_sight_minBft", selected = das.info$das_sight_minBft)
       updateSelectInput(session, "das_sight_maxBft", selected = das.info$das_sight_maxBft)
       updateDateRangeInput(session, "das_sight_dateRange", start = das.info$das_sight_dateRange[1], end = das.info$das_sight_dateRange[2])
