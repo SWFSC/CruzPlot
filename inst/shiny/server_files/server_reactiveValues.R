@@ -13,6 +13,8 @@ cruz.list <- reactiveValues(
   bathy = NULL,             # Bathymetric data
   das.data = NULL,          # DAS dataframe
   das.data.name = NULL,     # Names of loaded DAS files
+  das.sight.filt = NULL,    # Filtered sighting data - used to print NA notice messages
+  das.eff.filt = NULL,      # Filtered effort data - used to print NA notice messages
   ndas.data = list(),       # List of non-DAS line and point data
   ndas.df = NULL,           # Dataframe of ndas information
   ndas.toplot = NULL        # Non-DAS objects currently being plotted
@@ -77,6 +79,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     cruz.list$bathy         <- cruz.list.save[["bathy"]]
     cruz.list$das.data      <- cruz.list.save[["das.data"]]
     cruz.list$das.data.name <- cruz.list.save[["das.data.name"]]
+    # Don't need to save sighting/effort data - will get updated when reloaded
     cruz.list$ndas.data     <- cruz.list.save[["ndas.data"]]
     cruz.list$ndas.df       <- cruz.list.save[["ndas.df"]]
     cruz.list$ndas.toplot   <- cruz.list.save[["ndas.toplot"]]
@@ -209,8 +212,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateNumericInput(session, "das_symbol_linewidth_boat", value = map.info$das_symbol_linewidth_boat)
 
       updateRadioButtons(session, "das_sightings_effort", selected = das.info$das_sightings_effort)
-      updateSelectInput(session, "das_sight_minBeau", selected = das.info$das_sight_minBeau)
-      updateSelectInput(session, "das_sight_maxBeau", selected = das.info$das_sight_maxBeau)
+      updateSelectInput(session, "das_sight_minBft", selected = das.info$das_sight_minBft)
+      updateSelectInput(session, "das_sight_maxBft", selected = das.info$das_sight_maxBft)
       updateDateRangeInput(session, "das_sight_dateRange", start = das.info$das_sight_dateRange[1], end = das.info$das_sight_dateRange[2])
       updateTextInput(session, "das_sight_cruiseNum", value = das.info$das_sight_cruiseNum)
       updateRadioButtons(session, "das_sight_trunc_units", selected = das.info$das_sight_trunc_units)
@@ -239,7 +242,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       #------------------------------------------------------
       ## Effort info
       updateRadioButtons(session, "das_effort", selected = das.info$das_effort)
-      updateCheckboxGroupInput(session, "das_effort_closePass", selected = das.info$das_effort_closePass)
+      updateCheckboxGroupInput(session, "das_effort_cp", selected = das.info$das_effort_cp)
       updateCheckboxGroupInput(session, "das_effort_snf", selected = das.info$das_effort_snf)
 
       updateSelectInput(session, "das_effort_simp_col", selected = das.info$das_effort_simp_col)
@@ -254,8 +257,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateNumericInput(session, "das_effort_det_lwd_f", value = das.info$das_effort_det_lwd_f)
 
       updateCheckboxInput(session, "das_effort_filter_same", value = das.info$das_effort_filter_same)
-      updateSelectInput(session, "das_effort_minBeau", selected = das.info$das_effort_minBeau)
-      updateSelectInput(session, "das_effort_maxBeau", selected = das.info$das_effort_maxBeau)
+      updateSelectInput(session, "das_effort_minBft", selected = das.info$das_effort_minBft)
+      updateSelectInput(session, "das_effort_maxBft", selected = das.info$das_effort_maxBft)
       updateDateRangeInput(session, "das_effort_dateRange",
                            start = das.info$das_effort_dateRange[1], end = das.info$das_effort_dateRange[2])
       updateTextInput(session, "das_effort_cruiseNum", value = das.info$das_effort_cruiseNum)
@@ -391,8 +394,8 @@ output$save_app_envir <- downloadHandler(
         das.info$das_symbol_linewidth_boat <- input$das_symbol_linewidth_boat
 
         das.info$das_sightings_effort <- input$das_sightings_effort
-        das.info$das_sight_minBeau <- input$das_sight_minBeau
-        das.info$das_sight_maxBeau <- input$das_sight_maxBeau
+        das.info$das_sight_minBft <- input$das_sight_minBft
+        das.info$das_sight_maxBft <- input$das_sight_maxBft
         das.info$das_sight_dateRange <- as.character(input$das_sight_dateRange)
         das.info$das_sight_cruiseNum <- input$das_sight_cruiseNum
         das.info$das_sight_trunc_units <- input$das_sight_trunc_units
@@ -418,7 +421,7 @@ output$save_app_envir <- downloadHandler(
         das.info$eff_legend_textSize <- input$eff_legend_textSize
 
         das.info$das_effort <- input$das_effort
-        das.info$das_effort_closePass <- input$das_effort_closePass
+        das.info$das_effort_cp <- input$das_effort_cp
         das.info$das_effort_snf <- input$das_effort_snf
 
         das.info$das_effort_simp_col <- input$das_effort_simp_col
@@ -433,8 +436,8 @@ output$save_app_envir <- downloadHandler(
         das.info$das_effort_det_lwd_f <- input$das_effort_det_lwd_f
 
         das.info$das_effort_filter_same <- input$das_effort_filter_same
-        das.info$das_effort_minBeau <- input$das_effort_minBeau
-        das.info$das_effort_maxBeau <- input$das_effort_maxBeau
+        das.info$das_effort_minBft <- input$das_effort_minBft
+        das.info$das_effort_maxBft <- input$das_effort_maxBft
         das.info$das_effort_dateRange <- as.character(input$das_effort_dateRange)
         das.info$das_effort_cruiseNum <- input$das_effort_cruiseNum
         das.info$das_effort_trunc_units <- input$das_effort_trunc_units

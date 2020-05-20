@@ -7,7 +7,7 @@
 
 ###############################################################################
 observeEvent(input$das_sightings, {
-  if(!input$das_sightings) {
+  if (!input$das_sightings) {
     updateCheckboxInput(session, "das_effort_filter_same", value = FALSE)
   }
 })
@@ -16,99 +16,129 @@ observeEvent(input$das_sightings, {
 ###############################################################################
 # Top-level function for filtering sighting data
 cruzDasEffortFilter <- reactive({
-  data.effort <- cruzDasEffortSimpDet()
+  das.eff.lines <- cruzDasEffortEvent()
 
-  num.keep1 <- cruzDasEffortFilterBeaufort()
-  num.keep2 <- cruzDasEffortFilterDate()
-  num.keep3 <- cruzDasEffortFilterCruise()
+  keep1 <- cruzDasEffortFilterMode()
+  keep2 <- cruzDasEffortFilterEfftype()
+  keep3 <- if (input$das_effort == 3) cruzDasEffortFilterBeaufort() else TRUE
+  keep4 <- cruzDasEffortFilterDate()
+  keep5 <- cruzDasEffortFilterCruise()
 
-  num.keep <- unique(c(num.keep1, num.keep2, num.keep3))
-  num.keep <- num.keep[(num.keep %in% num.keep1) & (num.keep %in% num.keep2) &
-                         (num.keep %in% num.keep3)]
+  num.keep <- which(keep1 & keep2 & keep3 & keep4 & keep5)
+  das.eff.lines.filt <- das.eff.lines %>% slice(num.keep)
 
-  data.effort.filt <- data.effort[num.keep,]
+  validate(
+    need(nrow(das.eff.lines.filt) > 0,
+         "No effort lines match the provided filters")
+  )
 
-  return(data.effort.filt)
+  cruz.list$das.eff.filt <- das.eff.lines.filt
+
+  das.eff.lines.filt
 })
 
 
 ###############################################################################
 # Individual filters filter for indicies of data.effort to keep
 
+#------------------------------------------------------------------------------
+.func_eff_filt_validate <- function(x, x.txt) {
+  validate(
+    need(any(x), paste("No effort lines match the given", x.txt, "filters"))
+  )
+  x
+}
+
+
+#------------------------------------------------------------------------------
+### Closing/passing mode filter
+cruzDasEffortFilterMode <- reactive ({
+  das.eff.lines <- cruzDasEffortEvent()
+
+  keep <- das.eff.lines$Mode %in% input$das_effort_cp
+  .func_eff_filt_validate(keep, "mode (closing/passing)")
+})
+
+
+#------------------------------------------------------------------------------
+### S/N/F effort type filter
+cruzDasEffortFilterEfftype <- reactive ({
+  das.eff.lines <- cruzDasEffortEvent()
+
+  keep <- das.eff.lines$EffType %in% input$das_effort_snf
+  .func_eff_filt_validate(keep, "effort type (standard/non-standard/fine)")
+})
+
+
+#------------------------------------------------------------------------------
 ### Beaufort filter
 cruzDasEffortFilterBeaufort <- reactive ({
-  filter.same <- input$das_effort_filter_same #same as sighting data
-  data.effort <- cruzDasEffortSimpDet()
+  das.eff.lines <- cruzDasEffortEvent()
 
-  eff.bft.min <- ifelse(filter.same,
-                        input$das.sight.minBeau, input$das.effort.minBeau)
-  eff.bft.max <- ifelse(filter.same,
-                        input$das.sight.maxBeau, input$das.effort.maxBeau)
-
-  # End of eff segment has next bft level, so just filter by start bft
-  ndx.start <- seq(1, nrow(data.effort), by = 2)
-
-  ndx.keep <- lapply(data.effort$Bft[ndx.start], function(i) {
-    x <- (i >= eff.bft.min) & (i <= eff.bft.max)
-    c(x, x) # Keep or remove start and end of effort
-  })
-  ndx.keep <- which(unlist(ndx.keep))
-
-  return(ndx.keep)
-})
-
-
-### Date Filter
-cruzDasEffortFilterDate <- reactive({
-  filter.same <- input$das_effort_filter_same #same as sighting data
-  data.effort <- cruzDasEffortSimpDet()
-
-
-  if(filter.same) eff.date.range <- input$das.sight.dateRange
-  else eff.date.range <- input$das.effort.dateRange
-
-  current.date <- substring(data.effort$Date, 1, 10)
-  diff.min <- as.numeric(difftime(current.date, eff.date.range[1],
-                                  units = "days"))
-  diff.max <- as.numeric(difftime(current.date, eff.date.range[2],
-                                  units = "days")) - 1
-  date.keep <- (diff.min >= 0 ) & (diff.max <= 0)
-
-  ndx.keep <- which(date.keep)
-
-  validate(
-    need(length(ndx.keep) != 0,
-         message = "No effort lines match the given date filters")
-  )
-
-  return(ndx.keep)
-})
-
-
-### Cruise number filter
-cruzDasEffortFilterCruise <- reactive ({
-  filter.same <- input$das_effort_filter_same #same as sighting data
-  data.effort <- cruzDasEffortSimpDet()
-
-  if(filter.same) cruise.nums.in <- input$das.sight.cruiseNum
-  else cruise.nums.in <- input$das.effort.cruiseNum
-
-  ndx.keep <- seq(1:length(data.effort[,1]))
-  if(cruise.nums.in != "") {
-    cruise.nums <- as.numeric(unlist(strsplit(cruise.nums.in, split = ", ")))
-    cruise.present <- cruise.nums %in% data.effort$Cruise
-    cruise.absent.num <- cruise.nums[!cruise.present]
-
-    validate(
-      need(all(cruise.present),
-           paste("Based on given filter parameters,",
-                 "no effort lines found for cruise number",
-                 cruise.absent.num))
-    )
-    ndx.keep <- which(data.effort$Cruise %in% cruise.nums)
+  if (input$das_effort_filter_same) {
+    eff.bft.min <- as.numeric(input$das_sight_minBft)
+    eff.bft.max <- as.numeric(input$das_sight_maxBft)
+  } else {
+    eff.bft.min <- as.numeric(input$das_effort_minBft)
+    eff.bft.max <- as.numeric(input$das_effort_maxBft)
   }
 
-  return(ndx.keep)
+  keep <- between(das.eff.lines$Bft, eff.bft.min, eff.bft.max)
+  .func_eff_filt_validate(keep, "Beaufort")
+})
+
+
+#------------------------------------------------------------------------------
+### Date Filter
+cruzDasEffortFilterDate <- reactive({
+  das.eff.lines <- cruzDasEffortEvent()
+
+  eff.date.vals <- if (input$das_effort_filter_same) {
+    input$das_sight_dateRange
+  } else {
+    input$das_effort_dateRange
+  }
+
+  validate(
+    need(eff.date.vals[1] <= eff.date.vals[2],
+         "Minimum date must be less than or equal to maximum date")
+  )
+
+  keep <- between(
+    as.Date(das.eff.lines$DateTime), eff.date.vals[1], eff.date.vals[2]
+  )
+  .func_eff_filt_validate(keep, "date")
+})
+
+
+#------------------------------------------------------------------------------
+### Cruise number filter
+cruzDasEffortFilterCruise <- reactive ({
+  das.eff.lines <- cruzDasEffortEvent()
+
+  if (input$das_effort_filter_same) {
+    eff.cruise.vals <- if (identical(input$das_sight_cruiseNum, "")) {
+      unique(das.eff.lines$Cruise)
+    } else {
+      as.numeric(unlist(strsplit(input$das_sight_cruiseNum, split = ", ")))
+    }
+
+  } else {
+    eff.cruise.vals <- if (identical(input$das_effort_cruiseNum, "")) {
+      unique(das.eff.lines$Cruise)
+    } else {
+      as.numeric(unlist(strsplit(input$das_effort_cruiseNum, split = ", ")))
+    }
+  }
+
+  validate(
+    need(all(eff.cruise.vals %in% das.eff.lines$Cruise),
+         paste("There are no effort lines in the following cruises:",
+               paste(base::setdiff(eff.cruise.vals, das.eff.lines$Cruise), collapse = ", ")))
+  )
+
+  keep <- das.eff.lines$Cruise %in% eff.cruise.vals
+  .func_sight_filt_validate(keep, "cruise number")
 })
 
 

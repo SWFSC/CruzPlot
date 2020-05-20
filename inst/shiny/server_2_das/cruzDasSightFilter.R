@@ -38,6 +38,8 @@ cruzDasSightFilter <- reactive({
     )
   }
 
+  cruz.list$das.sight.filt <- das.sight.filt
+
   list(das.sight = das.sight.filt, sight.type = sight.type, sp.codes = sp.codes,
        sp.selection = sp.selection)
 })

@@ -285,12 +285,12 @@ if (isTruthy(cruz.list$das.data)) {
 
   # Effort
   if (as.numeric(input$das_effort) != 1) {
-    data.effort.list <- cruzDasEffort()
+    das.eff.lines <- cruzDasEffort()
 
-    data.effort <- data.effort.list$data.effort
-    eff.ndx.R <- data.effort.list$ndx.R
-    eff.ndx.E <- data.effort.list$ndx.E
-    eff.bft <- data.effort.list$data.effort$Bft[eff.ndx.R]
+    # data.effort <- data.effort.list$data.effort
+    # eff.ndx.R <- data.effort.list$ndx.R
+    # eff.ndx.E <- data.effort.list$ndx.E
+    # eff.bft <- data.effort.list$data.effort$Bft[eff.ndx.R]
 
     eff.col <- cruzDasEffortLines()$eff.col
     eff.lwd <- cruzDasEffortLines()$eff.lwd
@@ -298,28 +298,39 @@ if (isTruthy(cruz.list$das.data)) {
 
 
     # Adjust data.effort$Lon points as needed for world/world2
-    lon.curr <- data.effort$Lon
     validate(
-      need(!(any(is.na(data.effort$Lon)) | any(is.na(data.effort$Lat))),
+      need(!(any(is.na(das.eff.lines$st_lat) | is.na(das.eff.lines$end_lat) |
+                   is.na(das.eff.lines$st_lon) | is.na(das.eff.lines$end_lon))),
            "Some of the lat/long data for the effort is 'NA'")
     )
 
     if (world2) {
       # If world2 then convert lons to 0 to 360 range
       #   assumes there won't be any weird 0/360 overlap business
-      data.effort$Lon <- ifelse(lon.curr < 0, lon.curr + 360, lon.curr)
+      das.eff.lines$st_lon <- ifelse(
+        das.eff.lines$st_lon < 0, das.eff.lines$st_lon + 360, das.eff.lines$st_lon
+      )
+      das.eff.lines$end_lon <- ifelse(
+        das.eff.lines$end_lon < 0, das.eff.lines$end_lon + 360, das.eff.lines$end_lon
+      )
 
     } else { #!world2
       # If not world2, convert to -180 to 180 range
       #   then see if there's any weird Pacific overlap business
-      lon.fix <- ifelse(lon.curr > 180, lon.curr - 360, lon.curr)
+      lon.fix1 <- ifelse(das.eff.lines$st_lon > 180, das.eff.lines$st_lon - 360, das.eff.lines$st_lon)
+      lon.fix2 <- ifelse(das.eff.lines$end_lon > 180, das.eff.lines$end_lon - 360, das.eff.lines$end_lon)
 
       # Semi-arbitrary cutoffs to determine if effort lines are in the Pacific rather than Atlantic
-      if (!(all(lon.fix < 0) | all(lon.fix > 0)) & any(lon.fix > 130) & any(lon.fix < -100)) {
-        lon.fix <- ifelse(lon.fix > 0, lon.fix - 360, lon.fix)
+      # TODO: ???
+      if (!(all(lon.fix1 < 0) | all(lon.fix1 > 0)) & any(lon.fix1 > 130) & any(lon.fix1 < -100)) {
+        lon.fix1 <- ifelse(lon.fix1 > 0, lon.fix1 - 360, lon.fix1)
+      }
+      if (!(all(lon.fix2 < 0) | all(lon.fix2 > 0)) & any(lon.fix2 > 130) & any(lon.fix2 < -100)) {
+        lon.fix2 <- ifelse(lon.fix2 > 0, lon.fix2 - 360, lon.fix2)
       }
 
-      data.effort$Lon <- lon.fix
+      das.eff.lines$st_lon <- lon.fix1
+      das.eff.lines$end_lon <- lon.fix2
     }
   }
 }

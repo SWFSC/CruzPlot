@@ -57,19 +57,64 @@ output$das_loaded_text <- renderText({
 
 # Text with notice(s) about sightings, e.g. NA lat/lons
 output$das_sight_message_text <- renderText({
-  das.sight <- cruzDasSightPosition()
+  das.sight <- cruz.list$das.sight.filt
 
   count.na <- sum(is.na(das.sight$Lat) | is.na(das.sight$Lon))
-  # validate(
-  #   need(count.na == 0,
-  #        paste("There are", count.na,
-  #              "sightings with NA lat/lon values that will not be plotted"))
-  # )
 
-  if (count.na > 0) {
+  if (count.na == 1) {
+    paste(
+      "There is", count.na,
+      "sighting with NA lat/lon values that will not be plotted"
+    )
+  } else if (count.na > 1) {
     paste(
       "There are", count.na,
       "sightings with NA lat/lon values that will not be plotted"
+    )
+  } else {
+    NULL
+  }
+})
+
+
+# Text with notice about effort with NA lat/lon
+output$das_effort_message1_text <- renderText({
+  das.eff.lines <- cruz.list$das.eff.filt
+
+  ll.na <- sum(is.na(das.eff.lines$st_lat) | is.na(das.eff.lines$end_lat) |
+                   is.na(das.eff.lines$st_lon) | is.na(das.eff.lines$end_lon))
+
+  if (ll.na == 1) {
+    paste(
+      "There is", ll.na,
+      "effort line with an NA lat/lon value that will not be plotted"
+    )
+  } else if (ll.na > 1) {
+    paste(
+      "There are", ll.na,
+      "effort lines with NA lat/lon values that will not be plotted"
+    )
+  } else {
+    NULL
+  }
+})
+
+# Text with notice about effort with NA Bft
+output$das_effort_message2_text <- renderText({
+  das.eff.lines <- cruz.list$das.eff.filt
+  req(input$das_effort == 3)
+
+  bft.na <- sum(is.na(das.eff.lines$Bft))
+
+  if (bft.na == 1) {
+    paste(
+      "There is", bft.na,
+      "effort line with an NA Beaufort value that will not be plotted"
+    )
+  } else if (bft.na > 1) {
+    paste(
+      "There are", bft.na,
+      "effort lines with NA Beaufort values that will not be plotted"
     )
   } else {
     NULL

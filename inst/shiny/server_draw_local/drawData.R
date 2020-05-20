@@ -33,9 +33,12 @@ if (isTruthy(data.ndas)) {
 if (isTruthy(cruz.list$das.data)) {
   ## Plot effort segments
   if (input$das_effort != "1") {
-    segments(x0 = data.effort$Lon[eff.ndx.R], x1 = data.effort$Lon[eff.ndx.E],
-             y0 = data.effort$Lat[eff.ndx.R], y1 = data.effort$Lat[eff.ndx.E],
+    segments(x0 = das.eff.lines$st_lon, x1 = das.eff.lines$end_lon,
+             y0 = das.eff.lines$st_lat, y1 = das.eff.lines$end_lat,
              col = eff.col, lwd = eff.lwd)
+    # segments(x0 = data.effort$Lon[eff.ndx.R], x1 = data.effort$Lon[eff.ndx.E],
+    #          y0 = data.effort$Lat[eff.ndx.R], y1 = data.effort$Lat[eff.ndx.E],
+    #          col = eff.col, lwd = eff.lwd)
   }
 
   ## Plot legend for effort by bft

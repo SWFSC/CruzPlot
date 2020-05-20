@@ -47,7 +47,7 @@ ui.dasPlot <- function() {
               fluidRow(
                 box(
                   title = "Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                  checkboxInput("das_file_extra", "Pass arguments DAS processing functions", value = FALSE),
+                  checkboxInput("das_file_extra", "Pass arguments to DAS processing functions", value = FALSE),
                   conditionalPanel(
                     condition = "input.das_file_extra",
                     helpText("See swfscDAS documentation for details"),
@@ -395,36 +395,20 @@ ui.dasPlot <- function() {
           title = "Effort",
           fluidRow(
             box(
-              title = "Effort to plot", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
-              radioButtons("das_effort", label = NULL,
-                           choices = list("No effort lines" = 1, "Simplified effort" = 2, "Detailed effort" = 3),
-                           selected = 1)
-
-            ),
-            conditionalPanel(
-              condition = "input.das_effort != 1",
-              box(
-                title = "Effort types to plot", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
-                fluidRow(
-                  column(5, checkboxGroupInput("das_effort_closePass", label = NULL,
-                                               choices = list("Closing" = "C", "Passing" = "P"),
-                                               selected = "C")
-                  ),
-                  column(
-                    width = 7,
-                    conditionalPanel(
-                      condition = "input.das_effort == 2",
-                      helpText("Standard/Non-standard/Fine filters are not applicable for Simplified effort")
-                    ),
-                    conditionalPanel(
-                      condition = "input.das_effort == 3",
-                      checkboxGroupInput("das_effort_snf", label = NULL,
-                                         choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
-                                         selected = "S")
-                    )
-                  )
-                )
-              )
+              title = "Effort to plot", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              fluidRow(
+                column(4, radioButtons("das_effort", label = NULL,
+                                       choices = list("No effort lines" = 1, "Simplified effort" = 2, "Detailed effort" = 3),
+                                       selected = 1)),
+                column(4, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), inline = TRUE,
+                                             choices = list("Closing" = "C", "Passing" = "P"),
+                                             selected = "C")),
+                column(4, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), inline = TRUE,
+                                             choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
+                                             selected = "S"))
+              ),
+              tags$span(textOutput("das_effort_message1_text"), style = "color: red;"),
+              tags$span(textOutput("das_effort_message2_text"), style = "color: red;")
             )
           ),
           conditionalPanel(
@@ -445,8 +429,11 @@ ui.dasPlot <- function() {
                     column(12, checkboxInput("das_effort_det_byBft", "Show effort by Beaufort", value = TRUE)),
                     conditionalPanel(
                       condition = "input.das_effort_det_byBft",
-                      column(12, helpText("Plotted effort segments will be color-coded by Beaufort")),
-                      helpText("See 'Legends' tab to control effort legend")
+                      column(
+                        width = 12,
+                        helpText("Plotted effort segments will be color-coded by Beaufort"),
+                        helpText("See 'Legends' tab to control effort legend")
+                      )
                     )
                   ),
                   conditionalPanel(
@@ -498,9 +485,9 @@ ui.dasPlot <- function() {
                   conditionalPanel(
                     condition = "input.das_effort == 3",
                     fluidRow(
-                      column(6, selectInput("das_effort_minBeau", tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)
+                      column(6, selectInput("das_effort_minBft", tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)
                       ),
-                      column(6, selectInput("das_effort_maxBeau", tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
+                      column(6, selectInput("das_effort_maxBft", tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
                       )
                     )
                   ),
