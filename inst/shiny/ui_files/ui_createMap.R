@@ -123,7 +123,7 @@ ui.createMap <- function() {
                       box(
                         width = 12,
                         tags$strong("Plot loaded planned transects"),
-                        checkboxInput("planned_transects_plot", "Plot planned transect lines", value = TRUE),
+                        checkboxInput("planned_transects_plot", "Plot planned transect lines", value = FALSE),
                         conditionalPanel(
                           condition = "input.planned_transects_plot",
                           column(12, helpText("For the color(s) and (if a class 2 column is specified) the line type(s),",

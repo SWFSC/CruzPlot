@@ -50,6 +50,21 @@ options("digits" = 5)   # for proper display of sighting and effort coordinates
 # map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
 
 jscode <- "shinyjs.closeWindow = function() { window.close(); }"
+# shinyjscode <- "
+# shinyjs.closeWindow = function() { window.close(); }
+# shinyjs.init = function() {
+#   $(window).resize(shinyjs.calcHeight);
+# }
+# shinyjs.init2 = function() {
+#   $(window).resize(shinyjs.calcWidth);
+# }
+# shinyjs.calcHeight = function() {
+#   Shiny.onInputChange('plot_height', $(window).height());
+# }
+# shinyjs.calcWidth = function() {
+#   Shiny.onInputChange('plot_width', $(window).width());
+# }
+# "
 
 
 source(file.path("app_vals.R"), local = TRUE, chdir = TRUE)
@@ -101,8 +116,10 @@ ui <- dashboardPage(
 
   dashboardBody(
     useShinyjs(),
+    # See https://stackoverflow.com/questions/35306295/how-to-stop-running-shiny-app-by-closing-the-browser-window
     extendShinyjs(text = jscode, functions = c("closeWindow")),
 
+    # See https://stackoverflow.com/questions/59760316/change-the-color-of-text-in-validate-in-a-shiny-app
     tags$head( #validation text
       tags$style(HTML("
                       .shiny-output-error-validation {
@@ -110,6 +127,22 @@ ui <- dashboardPage(
                       }
                       "))
     ),
+
+    # See https://stackoverflow.com/questions/36995142/get-the-size-of-the-window-in-shiny
+    tags$head(tags$script('
+                                var dimension = [0, 0];
+                                $(document).on("shiny:connected", function(e) {
+                                    dimension[0] = window.innerWidth;
+                                    dimension[1] = window.innerHeight;
+                                    Shiny.onInputChange("dimension", dimension);
+                                });
+                                $(window).resize(function(e) {
+                                    dimension[0] = window.innerWidth;
+                                    dimension[1] = window.innerHeight;
+                                    Shiny.onInputChange("dimension", dimension);
+                                });
+                            ')),
+
     tabItems(
       ui.createMap(),
       ui.dasPlot(),

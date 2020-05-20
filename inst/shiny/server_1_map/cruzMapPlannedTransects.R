@@ -14,7 +14,7 @@ outputOptions(output, "cruzMapPlannedTransects_Conditional", suspendWhenHidden =
 
 ### Turn plot checkbox on if planned transects are added
 observe({
-  if (!is.null(cruz.list$planned.transects))
+  if (isTruthy(cruz.list$planned.transects))
     updateCheckboxInput(session, "planned_transects_plot", value = TRUE)
 })
 

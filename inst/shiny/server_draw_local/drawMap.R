@@ -6,6 +6,7 @@
 # Range and map window triggers for redrawing the map
 input$map.replot
 input$map_size
+input$dimension
 
 
 ###############################################################################
@@ -15,14 +16,11 @@ mar1 <- ifelse(nchar(axes.info$lab.lon) > 0, 7, 3)
 mar2 <- ifelse(nchar(axes.info$lab.lat) > 0, 7, 5)
 mar3 <- ifelse(nchar(title.info$lab)    > 0, 7, 2)
 
-# browser()
 x.try <- try(map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
                  mar = c(mar1, mar2, mar3, 4)),
              silent = TRUE)
-print(x.try)
-validate(
-  need(x.try, "Error - there must be some land in the map area")
-)
+validate(need(x.try, "Error - there must be some land in the map area"))
+
 x.1 <- map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
            mar = c(mar1, mar2, mar3, 4))
 param <- cruzMapParam()$param.unit
