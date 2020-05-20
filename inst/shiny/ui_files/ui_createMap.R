@@ -187,7 +187,7 @@ ui.createMap <- function() {
                     numericInput("tick.interval.major", label = h5("Degrees between each major tick"),
                                  value = start.tick$interval, min = 0, max = 45, step = 5),
                     selectInput("tick.style", label = h5("Tick label style"),
-                                choices = list("120" = 1, "120W" = 2, "120°" = 3, "120°W" = 4),
+                                choices = list("120" = 1, "120W" = 2, "120o" = 3, "120oW" = 4),
                                 selected = 4)
                   ),
                   column(

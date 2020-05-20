@@ -141,7 +141,7 @@ cruzMapTickLonLab <- reactive({
   tick.lab <- parse(text = sapply(tick.lab.loc, function(i) {
     i <- ifelse(i > 180, i - 360, i)
     i <- ifelse(i < -180, 360 - i, i)
-    a <- ifelse(i < 0, -1 * i, i)
+    a <- ifelse(i < 0 & format != 1, -1 * i, i)
     b <- ifelse(i < 0, "~W", "~E")
     b <- ifelse(a %in% c(0, 180), "", b)
     b <- ifelse((format == 2 || format == 4), b, "")
@@ -158,7 +158,7 @@ cruzMapTickLatLab <- reactive({
   format <- input$tick.style
 
   tick.lab <- parse(text = sapply(tick.lab.loc, function(i) {
-    a <- ifelse(i < 0, -1 * i, i)
+    a <- ifelse(i < 0 & format != 1, -1 * i, i)
     b <- ifelse(i < 0, "~S", "~N")
     b <- ifelse(a %in% c(0, 90), "", b)
     b <- ifelse((format == 2 || format == 4), b, "")
