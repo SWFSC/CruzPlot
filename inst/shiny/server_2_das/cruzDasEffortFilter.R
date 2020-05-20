@@ -117,28 +117,21 @@ cruzDasEffortFilterCruise <- reactive ({
   das.eff.lines <- cruzDasEffortEvent()
 
   if (input$das_effort_filter_same) {
-    eff.cruise.vals <- if (identical(input$das_sight_cruiseNum, "")) {
-      unique(das.eff.lines$Cruise)
+    if (is.null(input$das_sight_cruiseNum)) {
+      TRUE
     } else {
-      as.numeric(unlist(strsplit(input$das_sight_cruiseNum, split = ", ")))
-    }
+      eff.cruise.vals <- as.numeric(input$das_sight_cruise)
+      keep <- das.eff.lines$Cruise %in% eff.cruise.vals
+      .func_sight_filt_validate(keep, "cruise number") }
 
   } else {
-    eff.cruise.vals <- if (identical(input$das_effort_cruiseNum, "")) {
-      unique(das.eff.lines$Cruise)
+    if (is.null(input$das_effort_cruise)) {
+      TRUE
     } else {
-      as.numeric(unlist(strsplit(input$das_effort_cruiseNum, split = ", ")))
-    }
+      eff.cruise.vals <- as.numeric(input$das_effort_cruise)
+      keep <- das.eff.lines$Cruise %in% eff.cruise.vals
+      .func_sight_filt_validate(keep, "cruise number")}
   }
-
-  validate(
-    need(all(eff.cruise.vals %in% das.eff.lines$Cruise),
-         paste("There are no effort lines in the following cruises:",
-               paste(base::setdiff(eff.cruise.vals, das.eff.lines$Cruise), collapse = ", ")))
-  )
-
-  keep <- das.eff.lines$Cruise %in% eff.cruise.vals
-  .func_sight_filt_validate(keep, "cruise number")
 })
 
 

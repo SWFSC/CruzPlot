@@ -17,29 +17,20 @@ das_file_load <- eventReactive(input$das_file, {
          "Error: All DAS files must have the file extension '.das'")
   )
 
-  # Get additional parameters
-  if (input$das_file_extra) {
-    skip <- input$das_file_skip
-    reset.event  <- input$das_file_reset_event == 1
-    reset.effort <- input$das_file_reset_effort == 1
-    reset.day    <- input$das_file_reset_day == 1
+  # Get and check additional parameters
+  skip <- input$das_file_skip
+  reset.event  <- input$das_file_reset_event == 1
+  reset.effort <- input$das_file_reset_effort == 1
+  reset.day    <- input$das_file_reset_day == 1
 
-    validate(
-      need(!is.na(skip), "skip must be a valid number") %then%
-        need(isTRUE(all.equal(skip %% 1, 0)), "skip must be a whole number") %then%
-        need(skip >= 0, "skip must be greater than or equal to zero")
-    )
-
-  } else {
-    skip <- 0
-    reset.event <- TRUE
-    reset.effort <- TRUE
-    reset.day <- TRUE
-  }
+  validate(
+    need(!is.na(skip), "skip must be a valid number") %then%
+      need(isTRUE(all.equal(skip %% 1, 0)), "skip must be a whole number") %then%
+      need(skip >= 0, "skip must be greater than or equal to zero")
+  )
 
   # Process DAS file
   withProgress(message = "Processing DAS file", value = 0.6, {
-    # TODO: provide some way for the user to specify das_process arguments
     das.proc <- try(suppressWarnings(
       swfscDAS::das_process(
         input$das_file$datapath, skip = skip, reset.event = reset.event,

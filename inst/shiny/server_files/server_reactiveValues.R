@@ -216,7 +216,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "das_sight_minBft", selected = das.info$das_sight_minBft)
       updateSelectInput(session, "das_sight_maxBft", selected = das.info$das_sight_maxBft)
       updateDateRangeInput(session, "das_sight_dateRange", start = das.info$das_sight_dateRange[1], end = das.info$das_sight_dateRange[2])
-      updateTextInput(session, "das_sight_cruiseNum", value = das.info$das_sight_cruiseNum)
+      updateSelectizeInput(session, "das_sight_cruise", selected = das.info$das_sight_cruise)
       updateRadioButtons(session, "das_sight_trunc_units", selected = das.info$das_sight_trunc_units)
       updateNumericInput(session, "das_sight_trunc", value = das.info$das_sight_trunc)
 
@@ -262,7 +262,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "das_effort_maxBft", selected = das.info$das_effort_maxBft)
       updateDateRangeInput(session, "das_effort_dateRange",
                            start = das.info$das_effort_dateRange[1], end = das.info$das_effort_dateRange[2])
-      updateTextInput(session, "das_effort_cruiseNum", value = das.info$das_effort_cruiseNum)
+      updateSelectizeInput(session, "das_effort_cruise", selected = das.info$das_effort_cruise)
       updateRadioButtons(session, "das_effort_trunc_units", selected = das.info$das_effort_trunc_units)
       updateNumericInput(session, "das_effort_trunc", value = das.info$das_effort_trunc)
 
@@ -399,7 +399,7 @@ output$save_app_envir <- downloadHandler(
         das.info$das_sight_minBft <- input$das_sight_minBft
         das.info$das_sight_maxBft <- input$das_sight_maxBft
         das.info$das_sight_dateRange <- as.character(input$das_sight_dateRange)
-        das.info$das_sight_cruiseNum <- input$das_sight_cruiseNum
+        das.info$das_sight_cruise <- input$das_sight_cruise
         das.info$das_sight_trunc_units <- input$das_sight_trunc_units
         das.info$das_sight_trunc <- input$das_sight_trunc
 
@@ -441,7 +441,7 @@ output$save_app_envir <- downloadHandler(
         das.info$das_effort_minBft <- input$das_effort_minBft
         das.info$das_effort_maxBft <- input$das_effort_maxBft
         das.info$das_effort_dateRange <- as.character(input$das_effort_dateRange)
-        das.info$das_effort_cruiseNum <- input$das_effort_cruiseNum
+        das.info$das_effort_cruise <- input$das_effort_cruise
         das.info$das_effort_trunc_units <- input$das_effort_trunc_units
         das.info$das_effort_trunc <- input$das_effort_trunc
 

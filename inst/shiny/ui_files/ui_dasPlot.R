@@ -221,7 +221,7 @@ ui.dasPlot <- function() {
         ),
         ##############################################################################################################
         tabPanel(
-          title = "Filters",
+          title = "Sighting Filters",
           fluidRow(
             conditionalPanel(
               condition = "input.das_sightings==false",
@@ -265,8 +265,9 @@ ui.dasPlot <- function() {
                 fluidRow(
                   column(
                     width = 6,
-                    textInput("das_sight_cruiseNum", label = tags$h5("Cruise number(s)"), value = ""),
-                    helpText("Only sightings from entered cruise(s) will be plotted. Enter cruise numbers as 'number, number'")
+                    uiOutput("das_sight_cruise_uiOut_selectize"),
+                    helpText("Note that if any cruise numbers are selected,",
+                             "sightings with an NA cruise value will not be plotted")
                   ),
                   column(
                     width = 6,
@@ -409,10 +410,10 @@ ui.dasPlot <- function() {
                   condition = "input.das_effort != 1",
                   column(3, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), #inline = TRUE,
                                                choices = list("Closing" = "C", "Passing" = "P"),
-                                               selected = "C")),
+                                               selected = c("C", "P"))),
                   column(3, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), #inline = TRUE,
                                                choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
-                                               selected = "S"))
+                                               selected = c("S", "N", "F")))
                 )
               ),
               tags$span(textOutput("das_effort_message1_text"), style = "color: red;"),
@@ -501,8 +502,9 @@ ui.dasPlot <- function() {
                   ),
                   conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be plotted by Beaufort")),
                   uiOutput("das_effort_dateRange_uiOut_date"),
-                  textInput("das_effort_cruiseNum", tags$h5("Cruise number(s)"), value = ""),
-                  helpText("Only effort lines from this cruise number will be plotted")
+                  uiOutput("das_effort_cruise_uiOut_selectize"),
+                  helpText("Note that if any cruise numbers are selected,",
+                           "effort with an NA cruise value will not be plotted")
                 )
               )
             ),

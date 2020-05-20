@@ -119,20 +119,15 @@ cruzDasSightFilterDate <- reactive({
 cruzDasSightFilterCruise <- reactive({
   das.sight <- cruzDasSightSpecies()$das.sight
 
-  cruise.vals <- if (identical(input$das_sight_cruiseNum, "")) {
-    unique(das.sight$Cruise)
+  if (is.null(input$das_sight_cruise)) {
+    # Return here to keep records that have 'NA' value
+    TRUE
+
   } else {
-    as.numeric(unlist(strsplit(input$das_sight_cruiseNum, split = ", ")))
+    cruise.vals <- as.numeric(input$das_sight_cruise)
+    keep <- das.sight$Cruise %in% cruise.vals
+    .func_sight_filt_validate(keep, "cruise number")
   }
-
-  validate(
-    need(all(cruise.vals %in% das.sight$Cruise),
-         paste("There are no selected sightings in the following cruises:",
-               paste(base::setdiff(cruise.vals, das.sight$Cruise), collapse = ", ")))
-  )
-
-  keep <- das.sight$Cruise %in% cruise.vals
-  .func_sight_filt_validate(keep, "cruise number")
 })
 
 #------------------------------------------------------------------------------
