@@ -24,8 +24,8 @@ cruzDasEffortFilter <- reactive({
   keep4 <- cruzDasEffortFilterDate()
   keep5 <- cruzDasEffortFilterCruise()
 
-  num.keep <- which(keep1 & keep2 & keep3 & keep4 & keep5)
-  das.eff.lines.filt <- das.eff.lines %>% slice(num.keep)
+  num.keep <- keep1 & keep2 & keep3 & keep4 & keep5
+  das.eff.lines.filt <- das.eff.lines[num.keep, ]
 
   validate(
     need(nrow(das.eff.lines.filt) > 0,

@@ -37,44 +37,69 @@ ui.dasPlot <- function() {
         )
       ),
       tabBox(
-        title = "Plot Sightings and Effort", id = "tabset2", width = 6,
+        title = "Plot DAS Sightings and Effort", id = "tabset2", width = 6,
         ##############################################################################################################
         tabPanel(
-          title = "Data & Sightings",
+          title = "Data",
           fluidRow(
-            column(
-              width = 6,
+            box(
+              title = "Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              helpText("See swfscDAS documentation for details about these parameters"),
               fluidRow(
-                box(
-                  title = "Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                  checkboxInput("das_file_extra", "Pass arguments to DAS processing functions", value = FALSE),
+                column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading data"),
+                                       value = 0, min = 0)),
+                column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
+                                      choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+              ),
+              fluidRow(
+                column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
+                                      choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
+                column(6, selectInput("das_file_reset_day", tags$h5("reset.day argument of das_process()"),
+                                      choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+              ),
+              fileInput("das_file", label = tags$h5("DAS file input"), multiple = TRUE),
+              textOutput("das_file_load_text"),
+              tags$span(textOutput("das_loaded_text"), style = "color: blue;"),
+              helpText("To load DAS data file(s), first set the desired parameters, and then click the \"Browse...\" button and",
+                       "select the file(s) you want to load. Hold the Shift key to select multiple files.",
+                       "If you change the parameters, you will have to Browse and select the file(s) again.",
+                       "To 'remove' a file, browse again and select only the desired DAS file(s)")
+            )
+          )
+        ),
+        ##############################################################################################################
+        tabPanel(
+          title = "Sightings",
+          fluidRow(
+            box(
+              title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              fluidRow(
+                column(6, checkboxInput("das_sightings", label = tags$h5("Plot sightings"), value = FALSE)),
+                column(
+                  width = 6,
                   conditionalPanel(
-                    condition = "input.das_file_extra",
-                    helpText("See swfscDAS documentation for details"),
-                    fluidRow(
-                      column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading data"),
-                                             value = 0, min = 0)),
-                      column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
-                                            choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
-                    ),
-                    fluidRow(
-                      column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
-                                            choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
-                      column(6, selectInput("das_file_reset_day", tags$h5("reset.day argument of das_process()"),
-                                            choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
-                    )
-                  ),
-                  fileInput("das_file", label = tags$h5("DAS file input"), multiple = TRUE),
-                  textOutput("das_file_load_text"),
-                  tags$span(textOutput("das_loaded_text"), style = "color: blue;"),
-                  helpText("To load DAS data file(s), first click the \"Browse...\" button and",
-                           "select the file(s) you want to load. Hold the Shift key to select multiple files.",
-                           "To 'remove' a file, browse again and select only the desired DAS file(s)")
-                ),
-                conditionalPanel(
-                  condition = "input.das_sightings",
+                    condition = "input.das_sightings",
+                    radioButtons("das_sightings_position", NULL,
+                                 choices = list("Plot ship position" = 1, "Plot sighting position" = 2),
+                                 selected = 1)
+                  )
+                )
+              ),
+              conditionalPanel(
+                condition = "input.das_sightings",
+                tags$span(textOutput("das_sight_message_text"), style = "color: red;"),
+                helpText("Sighting position is calculated using the ship position, ship course, sighting bearing (angle),",
+                         "and radial distance to the sighting.",
+                         "If any of these values are NA, then the sighting position will be NA")
+              )
+            ),
+            conditionalPanel(
+              condition = "input.das_sightings",
+              column(
+                width = 12,
+                fluidRow(
                   box(
-                    title = "Sighting type & species", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
+                    title = "Sighting type & species", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
                     selectInput("das_sighting_type", label = tags$h5("Sighting type"),
                                 choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3, "CPODs" = 4),
                                 selected = 1),
@@ -105,44 +130,11 @@ ui.dasPlot <- function() {
                         uiOutput("das_sighting_code_2_uiOut_select")
                       )
                     )
-                  )
-                )
-              )
-            ),
-            column(
-              width = 6,
-              fluidRow(
-                box(
-                  title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                  fluidRow(
-                    column(6, checkboxInput("das_sightings", label = tags$h5("Plot sightings"), value = FALSE)),
-                    column(
-                      width = 6,
-                      conditionalPanel(
-                        condition = "input.das_sightings",
-                        radioButtons("das_sightings_position", NULL,
-                                     choices = list("Plot ship position" = 1, "Plot sighting position" = 2),
-                                     selected = 1)
-                      )
-                    )
                   ),
-                  conditionalPanel(
-                    condition = "input.das_sightings",
-                    tags$span(textOutput("das_sight_message_text"), style = "color: red;"),
-                    helpText("Sighting position is calculated using the ship position, ship course, sighting bearing (angle),",
-                             "and radial distance to the sighting.",
-                             "If any of these values are NA, then the sighting position will be NA")
-                  )
-                )
-              )
-            ),
-            column(
-              width = 6,
-              fluidRow(
-                conditionalPanel(
-                  condition = "input.das_sightings",
+                  # conditionalPanel(
+                  #   condition = "input.das_sightings",
                   box(
-                    title = "Symbol properties", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+                    title = "Symbol properties", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
                     helpText("Not available when 'Plot all...sightings' is selected"),
 
                     # Mammal or turtle symbol properties for selected species
@@ -206,24 +198,23 @@ ui.dasPlot <- function() {
                     #                  textInput("das_symbol_linewidth_cpod", label = tags$h5("Symbol line width"),
                     #                            value = "1")
                     #             )
+                    # )
                   )
                 )
-              )
-            ),
-            conditionalPanel(
-              condition = "input.das_sighting",
-              box(title = "Interactive sighting labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE,
-                  fluidRow(
-                    column(6, radioButtons("das_sight_interactive", label = NULL,
-                                           choices = list("Non-interactive plot" = 1, "Label sightings interactively" = 2),
-                                           #"View sightings interactively" = 3
-                                           selected = 1)),
-                    column(
-                      width = 6,
-                      actionButton("das_sight_interactive_reset_last", "Remove last sighting label"),
-                      actionButton("das_sight_interactive_reset_all", "Remove all sighting labels")
-                    )
+              ),
+              box(
+                title = "Interactive sighting labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE,
+                fluidRow(
+                  column(6, radioButtons("das_sight_interactive", label = NULL,
+                                         choices = list("Non-interactive plot" = 1, "Label sightings interactively" = 2),
+                                         #"View sightings interactively" = 3
+                                         selected = 1)),
+                  column(
+                    width = 6,
+                    actionButton("das_sight_interactive_reset_last", "Remove last sighting label"),
+                    actionButton("das_sight_interactive_reset_all", "Remove all sighting labels")
                   )
+                )
               )
             )
           )
@@ -239,14 +230,28 @@ ui.dasPlot <- function() {
             conditionalPanel(
               condition = "input.das_sightings",
               box(
-                title = "Sightings to plot", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
-                radioButtons("das_sightings_effort", label = NULL,
-                             choices = list("On and off effort" = 1, "On effort only" = 2, "Off effort only" = 3),
-                             selected = 1),
-                helpText("To plot effort lines, use Effort tab")
+                title = "Sightings to plot", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+                fluidRow(
+                  column(
+                    width = 6,
+                    radioButtons("das_sight_effort", label = NULL,
+                                 choices = list("On and off effort" = 1, "On effort only" = 2, "Off effort only" = 3),
+                                 selected = 1),
+                    helpText("To plot effort lines, use Effort tab")
+                  ),
+                  conditionalPanel(
+                    condition = "input.das_sight_effort != 3",
+                    column(3, checkboxGroupInput("das_sight_cp", label = tags$h5("Mode"), #inline = TRUE,
+                                                 choices = list("Closing" = "C", "Passing" = "P"),
+                                                 selected = c("C", "P"))),
+                    column(3, checkboxGroupInput("das_sight_snf", label = tags$h5("Effort type"), #inline = TRUE,
+                                                 choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
+                                                 selected = c("S", "N", "F")))
+                  )
+                )
               ),
               box(
-                title = "Sightings filters", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
+                title = "Sightings filters", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                 fluidRow(
                   column(6, selectInput("das_sight_minBft", label = tags$h5("Min Beaufort"),
                                         choices = cruz.beaufort, selected = 0)),
@@ -397,15 +402,18 @@ ui.dasPlot <- function() {
             box(
               title = "Effort to plot", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               fluidRow(
-                column(4, radioButtons("das_effort", label = NULL,
+                column(6, radioButtons("das_effort", label = NULL,
                                        choices = list("No effort lines" = 1, "Simplified effort" = 2, "Detailed effort" = 3),
                                        selected = 1)),
-                column(4, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), inline = TRUE,
-                                             choices = list("Closing" = "C", "Passing" = "P"),
-                                             selected = "C")),
-                column(4, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), inline = TRUE,
-                                             choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
-                                             selected = "S"))
+                conditionalPanel(
+                  condition = "input.das_effort != 1",
+                  column(3, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), #inline = TRUE,
+                                               choices = list("Closing" = "C", "Passing" = "P"),
+                                               selected = "C")),
+                  column(3, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), #inline = TRUE,
+                                               choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
+                                               selected = "S"))
+                )
               ),
               tags$span(textOutput("das_effort_message1_text"), style = "color: red;"),
               tags$span(textOutput("das_effort_message2_text"), style = "color: red;")

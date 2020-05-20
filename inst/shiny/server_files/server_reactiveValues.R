@@ -193,7 +193,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectizeInput(session, "das_sighting_code_2", selected = das.info$das_sighting_code_2)
       updateCheckboxInput(session, "das_sighting_probable", value = das.info$das_sighting_probable)
       updateCheckboxGroupInput(session, "das_sighting_events", selected = das.info$das_sighting_events)
-      updateCheckboxInput(session, "das_file_extra", value = das.info$das_file_extra)
       updateNumericInput(session, "das_file_skip", value = das.info$das_file_skip)
       updateSelectInput(session, "das_file_reset_effort", selected = das.info$das_file_reset_effort)
       updateSelectInput(session, "das_file_reset_event", selected = das.info$das_file_reset_event)
@@ -211,7 +210,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateNumericInput(session, "das_symbol_size_boat", value = map.info$das.symbol_size_boat)
       updateNumericInput(session, "das_symbol_linewidth_boat", value = map.info$das_symbol_linewidth_boat)
 
-      updateRadioButtons(session, "das_sightings_effort", selected = das.info$das_sightings_effort)
+      updateRadioButtons(session, "das_sight_effort", selected = das.info$das_sight_effort)
       updateSelectInput(session, "das_sight_minBft", selected = das.info$das_sight_minBft)
       updateSelectInput(session, "das_sight_maxBft", selected = das.info$das_sight_maxBft)
       updateDateRangeInput(session, "das_sight_dateRange", start = das.info$das_sight_dateRange[1], end = das.info$das_sight_dateRange[2])
@@ -375,7 +374,6 @@ output$save_app_envir <- downloadHandler(
         das.info$das_sighting_code_2 <- input$das_sighting_code_2
         das.info$das_sighting_probable <- input$das_sighting_probable
         das.info$das_sighting_events <- input$das_sighting_events
-        das.info$das_file_extra <- input$das_file_extra
         das.info$das_file_skip <- input$das_file_skip
         das.info$das_file_reset_effort <- input$das_file_reset_effort
         das.info$das_file_reset_event <- input$das_file_reset_event
@@ -393,7 +391,9 @@ output$save_app_envir <- downloadHandler(
         das.info$das_symbol_size_boat <- input$das_symbol_size_boat
         das.info$das_symbol_linewidth_boat <- input$das_symbol_linewidth_boat
 
-        das.info$das_sightings_effort <- input$das_sightings_effort
+        das.info$das_sight_effort <- input$das_sight_effort
+        das.info$das_sight_cp <- input$das_sight_cp
+        das.info$das_sight_snf <- input$das_sight_snf
         das.info$das_sight_minBft <- input$das_sight_minBft
         das.info$das_sight_maxBft <- input$das_sight_maxBft
         das.info$das_sight_dateRange <- as.character(input$das_sight_dateRange)

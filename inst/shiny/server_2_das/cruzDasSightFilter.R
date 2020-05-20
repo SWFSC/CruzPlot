@@ -18,14 +18,17 @@ cruzDasSightFilter <- reactive({
   sp.codes     <- data.list$sp.codes
   sp.selection <- data.list$sp.selection
 
+  # Collect logical vectors
   keep1 <- cruzDasSightFilterEffort()
-  keep2 <- cruzDasSightFilterBeaufort()
-  keep3 <- cruzDasSightFilterDate()
-  keep4 <- cruzDasSightFilterCruise()
-  keep5 <- cruzDasSightFilterTrunc()
+  keep2 <- if (input$das_sight_effort == 3) TRUE else cruzDasSightFilterMode()
+  keep3 <- if (input$das_sight_effort == 3) TRUE else cruzDasSightFilterEfftype()
+  keep4 <- cruzDasSightFilterBeaufort()
+  keep5 <- cruzDasSightFilterDate()
+  keep6 <- cruzDasSightFilterCruise()
+  keep7 <- cruzDasSightFilterTrunc()
 
-  num.keep <- which(keep1 & keep2 & keep3 & keep4 & keep5)
-  das.sight.filt <- das.sight %>% slice(num.keep)
+  num.keep <- keep1 & keep2 & keep3 & keep4 & keep5 & keep6 & keep7
+  das.sight.filt <- das.sight[num.keep, ]
 
   # If plotting selected mammals, check that all selected still have sightings
   if (sp.selection) {
@@ -59,12 +62,23 @@ cruzDasSightFilter <- reactive({
 # On/off effort
 cruzDasSightFilterEffort <- reactive({
   das.sight <- cruzDasSightSpecies()$das.sight
-  effort.val <- switch(
-    as.numeric(input$das_sightings_effort), c(0, 1), 1, 0
-  )
-
+  effort.val <- switch(as.numeric(input$das_sight_effort), c(0, 1), 1, 0)
   keep <- as.numeric(das.sight$OnEffort) %in% effort.val
   .func_sight_filt_validate(keep, "on/off effort")
+})
+
+# Mode: C/P
+cruzDasSightFilterMode <- reactive({
+  das.sight <- cruzDasSightSpecies()$das.sight
+  keep <- das.sight$Mode %in% input$das_sight_cp
+  .func_sight_filt_validate(keep, "mode (closing/passing)")
+})
+
+# Effort type: S/N/F
+cruzDasSightFilterEfftype <- reactive({
+  das.sight <- cruzDasSightSpecies()$das.sight
+  keep <- das.sight$EffType %in% input$das_sight_snf
+  .func_sight_filt_validate(keep, "effort type (standard/non-standard/fine)")
 })
 
 #------------------------------------------------------------------------------
