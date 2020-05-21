@@ -6,7 +6,7 @@
 
 ### Turn plot non-DAS off if all objects are removed
 observe({
-  if(length(cruz.list$ndas.data) == 0)
+  if (length(cruz.list$ndas.data) == 0)
     updateCheckboxInput(session, "ndas_plot", value = FALSE)
 })
 
@@ -16,8 +16,8 @@ observe({
 
 ### Read in csv file
 cruzNonDasFileLoad <- reactive({
-  if(is.null(input$ndas.file)) return(NULL)
-  read.csv(input$ndas.file$datapath, stringsAsFactors = FALSE)
+  if (is.null(input$ndas_file)) return(NULL)
+  read.csv(input$ndas_file$datapath, stringsAsFactors = FALSE)
 })
 
 ### Get long/lat data
@@ -57,8 +57,8 @@ cruzNonDasFile_LonLat <- reactive({
 
 ### Conditional flag for UI code
 output$cruzNonDasFile_Conditional <- reactive({
-  if(!is.null(cruzNonDasFile_LonLat())) # For error messages about column names
-    return(!is.null(cruzNonDasFileLoad()))
+  # For error messages about column names
+  if (isTruthy(cruzNonDasFile_LonLat())) isTruthy(cruzNonDasFileLoad()) else NULL
 })
 outputOptions(output, "cruzNonDasFile_Conditional", suspendWhenHidden = FALSE)
 
@@ -75,10 +75,10 @@ cruzNonDasAdd_Line <- reactive({
   ndas.x <- cruzNonDasFile_LonLat()[[1]]
   ndas.y <- cruzNonDasFile_LonLat()[[2]]
 
-  line.lty <- as.numeric(input$ndas.line.lty)
-  line.col <- input$ndas.line.col
+  line.lty <- as.numeric(input$ndas_line_lty)
+  line.col <- input$ndas_line_col
   line.col.which <- which(cruz.palette.color == line.col)
-  line.lwd <- input$ndas.line.lwd
+  line.lwd <- input$ndas_line_lwd
 
   list.curr <- list(ind = 1, x = ndas.x, y = ndas.y, type = line.lty,
                     col = line.col, cex = NA, lwd = line.lwd)
@@ -90,7 +90,7 @@ cruzNonDasAdd_Line <- reactive({
 
   cruz.list$ndas.data <- c(cruz.list$ndas.data, list(list.curr))
 
-  return(list.curr.df)
+  list.curr.df
 })
 
 # Points
@@ -100,11 +100,11 @@ cruzNonDasAdd_Point <- reactive({
   ndas.x <- cruzNonDasFile_LonLat()[[1]]
   ndas.y <- cruzNonDasFile_LonLat()[[2]]
 
-  pt.pch <- as.numeric(input$ndas.pt.pch)
-  pt.col <- input$ndas.pt.col
+  pt.pch <- as.numeric(input$ndas_pt_pch)
+  pt.col <- input$ndas_pt_col
   pt.col.which <- which(cruz.palette.color == pt.col)
-  pt.cex <- input$ndas.pt.cex
-  pt.lwd <- input$ndas.pt.lwd
+  pt.cex <- input$ndas_pt_cex
+  pt.lwd <- input$ndas_pt_lwd
 
   list.curr <- list(ind = 2, x = ndas.x, y = ndas.y, type = pt.pch,
                     col = pt.col, cex = pt.cex, lwd = pt.lwd)
@@ -116,8 +116,7 @@ cruzNonDasAdd_Point <- reactive({
 
   cruz.list$ndas.data <- c(cruz.list$ndas.data, list(list.curr))
 
-
-  return(list.curr.df)
+  list.curr.df
 })
 
 
@@ -127,19 +126,17 @@ cruzNonDasAdd <- eventReactive(input$ndas_load_execute, {
   ndas.type <- input$ndas_plot_type
   ndas.type.name <- ifelse(ndas.type == 1, "Line", "Point")
 
-  # Add line data to lines reactiveValue
-  if(ndas.type == 1) {
+  if (ndas.type == 1) {
+    # Add line data to lines reactiveValue
     list.curr.df <- cruzNonDasAdd_Line() # Data added to cruz.list
     text.out <- "Line data added"
-  }
-
-  # Add pts data to pts reactiveValue
-  if(ndas.type == 2) {
+  } else if (ndas.type == 2) {
+    # Add pts data to pts reactiveValue
     list.curr.df <- cruzNonDasAdd_Point() # Data added to cruz.list
     text.out <- "Point data added"
   }
 
-  ndas.df.curr <- cbind(data.frame("File.name" = input$ndas.file$name,
+  ndas.df.curr <- cbind(data.frame("File.name" = input$ndas_file$name,
                                    "Type" = ndas.type.name,
                                    stringsAsFactors = FALSE),
                         list.curr.df)
@@ -148,7 +145,7 @@ cruzNonDasAdd <- eventReactive(input$ndas_load_execute, {
 
   cruz.list$ndas.df <- rbind(cruz.list$ndas.df, ndas.df.curr)
 
-  return(text.out)
+  text.out
 })
 
 
@@ -171,7 +168,7 @@ cruzNonDasRemove <- eventReactive(input$ndas_remove_execute, {
   cruz.list$ndas.data <- cruz.list$ndas.data[-which.toremove]
 
   cruz.list$ndas.df <- cruz.list$ndas.df[-which.toremove,]
-  if(nrow(cruz.list$ndas.df) == 0) cruz.list$ndas.df <- NULL
+  if (nrow(cruz.list$ndas.df) == 0) cruz.list$ndas.df <- NULL
 
   x <- cruz.list$ndas.toplot
   cruz.list$ndas.toplot <- x[!(x %in% which.toremove)]
@@ -182,10 +179,10 @@ cruzNonDasRemove <- eventReactive(input$ndas_remove_execute, {
              ifelse(i.num > which.toremove, as.character(i.num - 1), i)
            })
   )
-  if(length(cruz.list$ndas.toplot) == 0) cruz.list$ndas.toplot <- NULL
+  if (length(cruz.list$ndas.toplot) == 0) cruz.list$ndas.toplot <- NULL
   updateSelectizeInput(session, "ndas_toplot", selected = cruz.list$ndas.toplot)
 
-  return("")
+  ""
 })
 
 
@@ -196,10 +193,10 @@ observe({
   req(input$ndas_toplot)
 
   isolate({
-    if(is.null(cruz.list$ndas.toplot)) {
+    if (is.null(cruz.list$ndas.toplot)) {
       cruz.list$ndas.toplot <- input$ndas_toplot
     } else {
-      if(!all(suppressWarnings(cruz.list$ndas.toplot != input$ndas_toplot)))
+      if (!all(suppressWarnings(cruz.list$ndas.toplot != input$ndas_toplot)))
         cruz.list$ndas.toplot <- input$ndas_toplot
     }
   })
@@ -213,14 +210,13 @@ output$ndas_toplot_uiOut_select <- renderUI({
 
   isolate(curr.sel <- cruz.list$ndas.toplot)
 
-  choices.list.names <- apply(df, 1,
-                              function(i) paste(i[1], i[2], sep = " || "))
+  choices.list.names <- apply(df, 1, function(i) paste(i[1], i[2], sep = " || "))
   choices.list <- seq_along(choices.list.names)
   choices.list.names <- paste0(choices.list, ": ", choices.list.names)
 
   names(choices.list) <- choices.list.names
 
-  selectizeInput("ndas_toplot", h5("Select non-DAS data to be plotted"),
+  selectizeInput("ndas_toplot", tags$h5("Select non-DAS data to be plotted"),
                  choices = choices.list, multiple = TRUE,
                  selected = curr.sel)
 })
@@ -250,5 +246,5 @@ cruzNonDas <- reactive({
   x <- all.data.sel[all.data.sel.ind == 1]
   y <- all.data.sel[all.data.sel.ind == 2]
 
-  return(list(data.line = x, data.point = y))
+  list(data.line = x, data.point = y)
 })

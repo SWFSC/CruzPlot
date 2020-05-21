@@ -77,6 +77,7 @@ cruzMapColorLand <- reactive({
 
 ###############################################################################
 # Update options for greyscale or normal colors
+#   Note includes nDAS and DAS color inputs as well
 observe({
   col.style <- input$color_style
 
