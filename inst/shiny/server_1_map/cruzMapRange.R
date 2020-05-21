@@ -4,7 +4,7 @@
 # Update map range when default study area buttons are clicked
 
 ### CCE
-observeEvent(input$map.replot.cce, {
+observeEvent(input$map_replot_cce, {
   ll.vals <- c(-135, -117, 29, 52)
   updateNumericInput(session, "lon.left", value = ll.vals[1])
   updateNumericInput(session, "lon.right", value = ll.vals[2])
@@ -20,7 +20,7 @@ observeEvent(input$map.replot.cce, {
 }, priority = 11)
 
 ### Hawaii
-observeEvent(input$map.replot.hawaii, {
+observeEvent(input$map_replot_hawaii, {
   ll.vals <- c(170, -150, 10, 35)
   updateNumericInput(session, "lon.left", value = ll.vals[1])
   updateNumericInput(session, "lon.right", value = ll.vals[2])
@@ -37,7 +37,7 @@ observeEvent(input$map.replot.hawaii, {
 }, priority = 11)
 
 ### ETP
-observeEvent(input$map.replot.etp, {
+observeEvent(input$map_replot_etp, {
   ll.vals <- c(-155, -75, -10, 50)
   updateNumericInput(session, "lon.left", value = ll.vals[1])
   updateNumericInput(session, "lon.right", value = ll.vals[2])
@@ -70,11 +70,11 @@ cruzMapParam <- reactive({
 
 #------------------------------------------------------------------------------
 ### Set lon reactiveValues
-observeEvent(input$map.replot, {
-  lon.min <- input$lon.left
-  lon.max <- input$lon.right
-  lat.min <- input$lat.bot
-  lat.max <- input$lat.top
+observeEvent(input$map_replot, {
+  lon.min <- input$lon_left
+  lon.max <- input$lon_right
+  lat.min <- input$lat_bot
+  lat.max <- input$lat_top
 
   # Checks that inputs are numbers
   vals.bad <- c("", "-", "+", NA)

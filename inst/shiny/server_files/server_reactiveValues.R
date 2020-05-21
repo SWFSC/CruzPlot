@@ -99,20 +99,20 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     ## Map info
     updateNumericInput(session, "map_size", value = map.info$map_size)
 
-    updateNumericInput(session, "lon.left", value = map.info$lon.left)
-    updateNumericInput(session, "lon.right", value = map.info$lon.right)
-    updateNumericInput(session, "lat.bot", value = map.info$lat.range[1])
-    updateNumericInput(session, "lat.top", value = map.info$lat.range[2])
+    updateNumericInput(session, "lon_left", value = map.info$lon_left)
+    updateNumericInput(session, "lon_right", value = map.info$lon_right)
+    updateNumericInput(session, "lat_bot", value = map.info$lat.range[1])
+    updateNumericInput(session, "lat_top", value = map.info$lat.range[2])
     updateSelectInput(session, "resolution", selected = map.info$resolution)
 
     updateCheckboxInput(session, "coast", value = map.info$coast)
 
     updateCheckboxInput(session, "bar", value = map.info$bar)
-    updateNumericInput(session, "scale.lon", value = map.info$scale.lon)
-    updateNumericInput(session, "scale.lat", value = map.info$scale.lat)
-    updateRadioButtons(session, "scale.units", selected = map.info$scale.units)
-    updateNumericInput(session, "scale.len", value = map.info$scale.len)
-    updateNumericInput(session, "scale.width", value = map.info$scale.width)
+    updateNumericInput(session, "scale_lon", value = map.info$scale_lon)
+    updateNumericInput(session, "scale_lat", value = map.info$scale_lat)
+    updateRadioButtons(session, "scale_units", selected = map.info$scale_units)
+    updateNumericInput(session, "scale_len", value = map.info$scale_len)
+    updateNumericInput(session, "scale_width", value = map.info$scale_width)
 
     updateCheckboxInput(session, "planned_transects_plot", value = map.info$planned_transects_plot)
     updateSelectizeInput(session, "planned_transects_toplot", selected = map.info$planned_transects_toplot)
@@ -120,63 +120,64 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     updateTextInput(session, "planned_transects_lw", value = map.info$planned_transects_lw)
 
     updateCheckboxInput(session, "tick", value = map.info$tick)
-    updateCheckboxInput(session, "tick.left", value = map.info$tick.left)
-    updateCheckboxInput(session, "tick.right ", value = map.info$tick.right )
-    updateCheckboxInput(session, "tick.bot", value = map.info$tick.bot)
-    updateCheckboxInput(session, "tick.top", value = map.info$tick.top)
-    updateNumericInput(session, "tick.interval.major", value = map.info$tick.interval.major)
-    updateNumericInput(session, "tick.interval.minor", value = map.info$tick.interval.minor)
-    updateSelectInput(session, "tick.style", selected = map.info$tick.style)
-    updateNumericInput(session, "tick.length", value = map.info$tick.length)
-    updateCheckboxInput(session, "tick.left.lab", value = map.info$tick.left.lab)
-    updateCheckboxInput(session, "tick.right.lab", value = map.info$tick.right.lab)
-    updateCheckboxInput(session, "tick.bot.lab", value = map.info$tick.bot.lab)
-    updateCheckboxInput(session, "tick.top.lab", value = map.info$tick.top.lab)
-    updateNumericInput(session, "label.lon.start", value = map.info$label.lon.start)
-    updateNumericInput(session, "label.lat.start", value = map.info$label.lat.start)
-    updateSelectInput(session, "label.tick.font", selected = map.info$label.tick.font)
-    updateNumericInput(session, "label.tick.size", value = map.info$label.tick.size)
+    updateCheckboxInput(session, "tick_left", value = map.info$tick_left)
+    updateCheckboxInput(session, "tick_right ", value = map.info$tick_right )
+    updateCheckboxInput(session, "tick_bot", value = map.info$tick_bot)
+    updateCheckboxInput(session, "tick_top", value = map.info$tick_top)
+    updateNumericInput(session, "tick_interval_major", value = map.info$tick_interval_major)
+    updateNumericInput(session, "tick_interval_minor", value = map.info$tick_interval_minor)
+    updateSelectInput(session, "tick_style", selected = map.info$tick_style)
+    updateNumericInput(session, "tick_length", value = map.info$tick_length)
+    updateCheckboxInput(session, "tick_left_lab", value = map.info$tick_left_lab)
+    updateCheckboxInput(session, "tick_right_lab", value = map.info$tick_right_lab)
+    updateCheckboxInput(session, "tick_bot_lab", value = map.info$tick_bot_lab)
+    updateCheckboxInput(session, "tick_top_lab", value = map.info$tick_top_lab)
+    updateNumericInput(session, "label_lon_start", value = map.info$label_lon_start)
+    updateNumericInput(session, "label_lat_start", value = map.info$label_lat_start)
+    updateSelectInput(session, "label_tick_font", selected = map.info$label_tick_font)
+    updateNumericInput(session, "label_tick_size", value = map.info$label_tick_size)
 
-    updateTextInput(session, "label.title", value = map.info$label.title)
-    updateSelectInput(session, "label.title.font", selected = map.info$label.title.font)
-    updateNumericInput(session, "label.title.size", value = map.info$label.title.size)
-    updateTextInput(session, "label.axis.lon", value = map.info$label.axis.lon)
-    updateTextInput(session, "label.axis.lat", value = map.info$label.axis.lat)
-    updateSelectInput(session, "label.axis.font", selected = map.info$label.axis.font)
-    updateNumericInput(session, "label.axis.size", value = map.info$label.axis.size)
+    updateTextInput(session, "label_title", value = map.info$label_title)
+    updateSelectInput(session, "label_title_font", selected = map.info$label_title_font)
+    updateNumericInput(session, "label_title_size", value = map.info$label_title_size)
+    updateTextInput(session, "label_axis_lon", value = map.info$label_axis_lon)
+    updateTextInput(session, "label_axis_lat", value = map.info$label_axis_lat)
+    updateSelectInput(session, "label_axis_font", selected = map.info$label_axis_font)
+    updateNumericInput(session, "label_axis_size", value = map.info$label_axis_size)
 
     updateRadioButtons(session, "color_style", selected = map.info$color_style)
     # Upadte color palettes here
+    # TODO should these come after 'Then update values'?
     if (map.info$color_style == 1) {
       palette("default")
-      updateSelectInput(session, "color.land", choices = cruz.palette.color, selected = "bisque1")
-      updateSelectInput(session, "color.water", choices = cruz.palette.color, selected = "white")
-      updateSelectInput(session, "grid.line.color", choices = cruz.palette.color, selected = "black")
+      updateSelectInput(session, "color_land", choices = cruz.palette.color, selected = "bisque1")
+      updateSelectInput(session, "color_water", choices = cruz.palette.color, selected = "white")
+      updateSelectInput(session, "grid_line_color", choices = cruz.palette.color, selected = "black")
       updateSelectizeInput(session, "das_symbol_color", choices = cruz.palette.color, selected = "black")
       updateSelectInput(session, "das_effort_lineCol", choices = cruz.palette.color, selected = "black")
-      updateSelectInput(session, "ndas.line.col", choices = cruz.palette.color, selected = "black")
-      updateSelectInput(session, "ndas.pt.col", choices = cruz.palette.color, selected = "black")
+      updateSelectInput(session, "ndas_line_col", choices = cruz.palette.color, selected = "black")
+      updateSelectInput(session, "ndas_pt_col", choices = cruz.palette.color, selected = "black")
     } else {
       palette(gray(0:5/5))
-      updateSelectInput(session, "color.land", choices = cruz.palette.gray, selected = 4)
-      updateSelectInput(session, "color.water", choices = cruz.palette.gray, selected = 0)
-      updateSelectInput(session, "grid.line.color", choices = cruz.palette.gray, selected = 1)
+      updateSelectInput(session, "color_land", choices = cruz.palette.gray, selected = 4)
+      updateSelectInput(session, "color_water", choices = cruz.palette.gray, selected = 0)
+      updateSelectInput(session, "grid_line_color", choices = cruz.palette.gray, selected = 1)
       updateSelectizeInput(session, "das_symbol_color", choices = cruz.palette.gray, selected = 1)
-      updateSelectInput(session, "ndas.line.col", choices = cruz.palette.gray, selected = 1)
-      updateSelectInput(session, "ndas.pt.col", choices = cruz.palette.gray, selected = 1)
+      updateSelectInput(session, "ndas_line_col", choices = cruz.palette.gray, selected = 1)
+      updateSelectInput(session, "ndas_pt_col", choices = cruz.palette.gray, selected = 1)
     }
     # Then update values
     updateCheckboxInput(session, "color_land_all", value = map.info$color_land_all)
-    updateSelectInput(session, "color.land", selected = map.info$color.land)
+    updateSelectInput(session, "color_land", selected = map.info$color_land)
     updateCheckboxInput(session, "color_lakes_rivers", value = map.info$color_lakes_rivers)
     updateRadioButtons(session, "color_water_style", selected = map.info$color_water_style)
-    updateSelectInput(session, "color.water", selected = map.info$color.water)
+    updateSelectInput(session, "color_water", selected = map.info$color_water)
     updateRadioButtons(session, "depth_style", selected = map.info$depth_style)
 
     updateCheckboxInput(session, "grid", value = map.info$grid)
-    updateSelectInput(session, "grid.line.color", selected = map.info$grid.line.color)
-    updateSelectInput(session, "grid.line.type", selected = map.info$grid.line.type)
-    updateNumericInput(session, "grid.line.width", value = map.info$grid.line.width)
+    updateSelectInput(session, "grid_line_color", selected = map.info$grid_line_color)
+    updateSelectInput(session, "grid_line_type", selected = map.info$grid_line_type)
+    updateNumericInput(session, "grid_line_width", value = map.info$grid_line_width)
 
 
     #------------------------------------------------------
@@ -306,16 +307,17 @@ output$save_app_envir <- downloadHandler(
       map.info$lat.range <- cruz.map.range$lat.range
       map.info$world2 <- cruz.map.range$world2
       map.info$map.name <- cruz.map.range$map.name
-      map.info$lon.left <- input$lon.left
-      map.info$lon.right <- input$lon.right
+      map.info$lon_left <- input$lon_left
+      map.info$lon_right <- input$lon_right
+      # latitude gotten from map.info$lat.range
       map.info$resolution <- input$resolution
       map.info$coast <- input$coast
       map.info$bar <- input$bar
-      map.info$scale.lon <- input$scale.lon
-      map.info$scale.lat <- input$scale.lat
-      map.info$scale.units <- input$scale.units
-      map.info$scale.len <- input$scale.len
-      map.info$scale.width <- input$scale.width
+      map.info$scale_lon <- input$scale_lon
+      map.info$scale_lat <- input$scale_lat
+      map.info$scale_units <- input$scale_units
+      map.info$scale_len <- input$scale_len
+      map.info$scale_width <- input$scale_width
 
       map.info$planned_transects_plot <- input$planned_transects_plot
       map.info$planned_transects_toplot <- input$planned_transects_toplot
@@ -323,43 +325,43 @@ output$save_app_envir <- downloadHandler(
       map.info$planned_transects_lw <- input$planned_transects_lw
 
       map.info$tick <- input$tick
-      map.info$tick.left <- input$tick.left
-      map.info$tick.right <- input$tick.right
-      map.info$tick.bot <- input$tick.bot
-      map.info$tick.top <- input$tick.top
-      map.info$tick.interval.major <- input$tick.interval.major
-      map.info$tick.interval.minor <- input$tick.interval.minor
-      map.info$tick.style <- input$tick.style
-      map.info$tick.length <- input$tick.length
-      map.info$tick.left.lab <- input$tick.left.lab
-      map.info$tick.right.lab <- input$tick.right.lab
-      map.info$tick.bot.lab <- input$tick.bot.lab
-      map.info$tick.top.lab <- input$tick.top.lab
-      map.info$label.lon.start <- input$label.lon.start
-      map.info$label.lat.start <- input$label.lat.start
-      map.info$label.tick.font <- input$label.tick.font
-      map.info$label.tick.size <- input$label.tick.size
+      map.info$tick_left <- input$tick_left
+      map.info$tick_right <- input$tick_right
+      map.info$tick_bot <- input$tick_bot
+      map.info$tick_top <- input$tick_top
+      map.info$tick_interval_major <- input$tick_interval_major
+      map.info$tick_interval_minor <- input$tick_interval_minor
+      map.info$tick_style <- input$tick_style
+      map.info$tick_length <- input$tick_length
+      map.info$tick_left_lab <- input$tick_left_lab
+      map.info$tick_right_lab <- input$tick_right_lab
+      map.info$tick_bot_lab <- input$tick_bot_lab
+      map.info$tick_top_lab <- input$tick_top_lab
+      map.info$label_lon_start <- input$label_lon_start
+      map.info$label_lat_start <- input$label_lat_start
+      map.info$label_tick_font <- input$label_tick_font
+      map.info$label_tick_size <- input$label_tick_size
 
-      map.info$label.title <- input$label.title
-      map.info$label.title.font <- input$label.title.font
-      map.info$label.title.size <- input$label.title.size
-      map.info$label.axis.lon <- input$label.axis.lon
-      map.info$label.axis.lat <- input$label.axis.lat
-      map.info$label.axis.font <- input$label.axis.font
-      map.info$label.axis.size <- input$label.axis.size
+      map.info$label_title <- input$label_title
+      map.info$label_title_font <- input$label_title_font
+      map.info$label_title_size <- input$label_title_size
+      map.info$label_axis_lon <- input$label_axis_lon
+      map.info$label_axis_lat <- input$label_axis_lat
+      map.info$label_axis_font <- input$label_axis_font
+      map.info$label_axis_size <- input$label_axis_size
 
       map.info$color_style <- input$color_style
       map.info$color_land_all <- input$color_land_all
-      map.info$color.land <- input$color.land
+      map.info$color_land <- input$color_land
       map.info$color_lakes_rivers <- input$color_lakes_rivers
       map.info$color_water_style <- input$color_water_style
-      map.info$color.water <- input$color.water
+      map.info$color_water <- input$color_water
       map.info$depth_style <- input$depth_style
 
       map.info$grid <- input$grid
-      map.info$grid.line.color <- input$grid.line.color
-      map.info$grid.line.type <- input$grid.line.type
-      map.info$grid.line.width <- input$grid.line.width
+      map.info$grid_line_color <- input$grid_line_color
+      map.info$grid_line_type <- input$grid_line_type
+      map.info$grid_line_width <- input$grid_line_width
 
       incProgress(0.2)
 

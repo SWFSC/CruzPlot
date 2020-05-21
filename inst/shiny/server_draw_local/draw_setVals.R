@@ -67,13 +67,13 @@ if (input$bar) {
 }
 
 validate(
-  need(!is.na(input$label.title.size),
+  need(!is.na(input$label_title_size),
        "Please enter a valid title size value") %then%
-    need(!is.na(input$label.axis.size),
+    need(!is.na(input$label_axis_size),
          "Please enter a valid axis label size value") %then%
-    need(input$label.title.size > 0,
+    need(input$label_title_size > 0,
          "Please enter a title size greater than zero") %then%
-    need(input$label.axis.size > 0,
+    need(input$label_axis_size > 0,
          "Please enter an axis label size greater than zero")
 )
 title.info <- cruzMapLabelTitle()
@@ -87,18 +87,18 @@ if (input$tick || input$grid) {
   validate( #Check that tick intervals are possibly valid
     need(!is.na(cruz.tick$tick.interval.major),
          "Please enter a valid major tick interval value") %then%
-      need(!is.na(input$tick.interval.minor),
+      need(!is.na(input$tick_interval_minor),
            "Please enter a valid minor tick interval value") %then%
       need(cruz.tick$tick.interval.major > 0,
            "Please enter a major tick interval value greater than zero") %then%
-      need(input$tick.interval.minor >= 0,
+      need(input$tick_interval_minor >= 0,
            paste("Please enter a minor tick interval value",
                  "greater than or equal to zero"))
   )
   validate( #Check that tick label size is a valid entry
-    need(!is.na(input$label.tick.size),
+    need(!is.na(input$label_tick_size),
          "Please enter a valid tick label size value") %then%
-      need(input$label.tick.size >= 0,
+      need(input$label_tick_size >= 0,
            paste("Please enter a tick label size value",
                  "greater than or equal to zero"))
   )
@@ -134,7 +134,7 @@ if (input$tick || input$grid) {
          message = "Start of latitude tick labels must be greater than bottom latitude value"),
     need(lat.range[2] >= cruz.tick$label.lat.start,
          message = "Start of latitude tick labels must be less than top latitude value"),
-    need(!is.na(input$tick.length),
+    need(!is.na(input$tick_length),
          message = "Please enter a valid tick length value")
   )
 
@@ -262,14 +262,7 @@ if (isTruthy(cruz.list$das.data)) {
   #### TODO Add validate() checks for lat/long info
   # Sightings
   if (input$das_sightings) {
-    # Error check - other specific checks in cruzDasSight... functions
-    # validate(
-    #   need(input$das_sight_minBft <= input$das_sight_maxBft,
-    #        "Minimum Beaufort must be less than or equal to maximum Beaufort"),
-    #   need(input$das_sight_dateRange[1] <= input$das_sight_dateRange,
-    #        "Minimum date must be less than or equal to maximum date")
-    # )
-
+    # Error checks are in cruzDasSight... functions
     das.sight <- cruzDasSightRange()$das.sight
     sight.type <- cruzDasSightRange()$sight.type
     das.sight.pt <- cruzDasSightSymbol()$pt.df

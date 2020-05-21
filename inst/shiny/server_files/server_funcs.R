@@ -88,7 +88,7 @@ cruzSpeciesRead <- function(file) {
 #   Returns: vector with locations of the minor tick marks
 
 cruzTickMinor <- function (deg.range, maj.ticks, tick.maj.interval, n=2) {
-  sep <- tick.maj.interval/(n+1)
+  sep <- tick.maj.interval / (n+1)
   min.ticks1 <- seq(maj.ticks[1], deg.range[2], by = sep)
   min.ticks2 <- rev(seq(maj.ticks[1], deg.range[1], by = -sep))
   min.ticks <- c(min.ticks2[1:length(min.ticks2)-1], min.ticks1)

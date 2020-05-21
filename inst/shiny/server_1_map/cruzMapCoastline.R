@@ -3,8 +3,9 @@
 #   Updates map limits to coastline file extent
 
 
-observeEvent(input$coast.file, {
- coastline <- read.csv(input$coast.file$datapath)
+observeEvent(input$coast_file, {
+  # TODO: validate checks fo file type
+ coastline <- read.csv(input$coast_file$datapath)
  coastline <- rbind(c(NA, NA, NA), coastline, c(NA, NA, NA))
 
  cruz.list$coastline <- coastline

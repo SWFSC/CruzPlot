@@ -96,7 +96,7 @@ planned_transects_read_csv <- reactive({
                    silent = TRUE)
 
   validate(
-    need(isTruthy(file.data), "Error loading planned transects csv")
+    need(isTruthy(file.data), "Error loading planned transects CSV")
   )
 
   list(file.name, file.data)

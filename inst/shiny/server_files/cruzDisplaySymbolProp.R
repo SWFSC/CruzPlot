@@ -39,11 +39,11 @@ cruzDisplaySymbolProp <- reactive({
   text(0.20, 2.7, "Gray Scale", srt = 90, cex = 1.2)
 
   # Line types
-  for (i in 1:6) {
+  for(i in 1:6) {
     text(0.55, 25 - i, i, cex = 1.1)
     lines(c(0.6, 0.7, 0.85), c(25 - i, 26 - i, 26 - i), lty = i)}
   # line widths
-  for (i in 1:6) {
+  for(i in 1:6) {
     lines(c(0.9, 1), c(26 - i, 26 - i), lwd = i)
   }
 
@@ -51,16 +51,16 @@ cruzDisplaySymbolProp <- reactive({
   text(0.75, 14, "Fonts", cex = 1.4)
   font.family <- c("sans", "serif", "mono")
   font.family.name <- c("Sans", "Serif", "Mono")
-  for (i in 1:3) {
+  for(i in 1:3) {
     text(0.75, 15.5 - 2.3 * (i * 1.5), font.family.name[i], cex = 1.2, adj = 0.5, family = font.family[i])
     text(0.75, 14.6 - 2.3 * (i * 1.5), paste(LETTERS, collapse = ""), cex = 1, adj = 0.5, family = font.family[i])
     text(0.75, 13.7 - 2.3 * (i * 1.5), paste(c(letters, " ", 0:9), collapse = ""), cex = 1, adj = 0.5, family = font.family[i])
   }
 
-#   # Fonts
-#   text(0.75,3.6,"Fonts",cex=1.3)
-#   for (i in 1:4) text(0.4+i/8,2.2,paste("font=",i,sep=""),font=i,adj=0)
-#   text(0.75,1.2,"font=5",cex=1.2,adj=0.5,family="sans")
+  # # Fonts
+  # text(0.75,3.6,"Fonts",cex=1.3)
+  # for (i in 1:4) text(0.4+i/8,2.2,paste("font=",i,sep=""),font=i,adj=0)
+  # text(0.75,1.2,"font=5",cex=1.2,adj=0.5,family="sans")
   palette("default")
   par(oldpar)
 })

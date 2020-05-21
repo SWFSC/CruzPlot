@@ -50,21 +50,6 @@ options("digits" = 5)   # for proper display of sighting and effort coordinates
 # map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
 
 jscode <- "shinyjs.closeWindow = function() { window.close(); }"
-# shinyjscode <- "
-# shinyjs.closeWindow = function() { window.close(); }
-# shinyjs.init = function() {
-#   $(window).resize(shinyjs.calcHeight);
-# }
-# shinyjs.init2 = function() {
-#   $(window).resize(shinyjs.calcWidth);
-# }
-# shinyjs.calcHeight = function() {
-#   Shiny.onInputChange('plot_height', $(window).height());
-# }
-# shinyjs.calcWidth = function() {
-#   Shiny.onInputChange('plot_width', $(window).width());
-# }
-# "
 
 
 source(file.path("app_vals.R"), local = TRUE, chdir = TRUE)
@@ -251,4 +236,3 @@ server <- function(input, output, session) {
 }
 
 shiny::shinyApp(ui = ui, server = server)
-

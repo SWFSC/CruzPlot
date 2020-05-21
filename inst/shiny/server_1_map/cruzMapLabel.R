@@ -2,19 +2,19 @@
 
 # Return title label, font, and size
 cruzMapLabelTitle <- reactive({
-  lab <- input$label.title
-  fam <- font.family.vals[as.numeric(input$label.title.font)]
-  cex <- input$label.title.size
+  lab <- input$label_title
+  fam <- font.family.vals[as.numeric(input$label_title_font)]
+  cex <- input$label_title_size
 
   list(lab = lab, fam = fam, cex = cex)
 })
 
 #	Return axes labels (lon and lat), font, and size
 cruzMapLabelAxes <- reactive({
-  lab.lon <- input$label.axis.lon
-  lab.lat <- input$label.axis.lat
-  fam <- font.family.vals[as.numeric(input$label.axis.font)]
-  cex <- input$label.axis.size
+  lab.lon <- input$label_axis_lon
+  lab.lat <- input$label_axis_lat
+  fam <- font.family.vals[as.numeric(input$label_axis_font)]
+  cex <- input$label_axis_size
 
   list(lab.lon = lab.lon, lab.lat = lab.lat, fam = fam, cex = cex)
 })
