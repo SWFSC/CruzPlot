@@ -28,19 +28,24 @@ if (!all(sapply(list.packages, require, character.only = TRUE)))
 
 
 ###############################################################################
-### Read default values for map - better way to do this..?
-source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
+# ### Read default values for map - better way to do this..?
+# source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
+#
+# if(file.exists("StarterVals.csv")) {
+#   start.ll <- suppressWarnings(read.csv("StarterVals.csv", header = TRUE))
+# } else {
+#   start.ll <- data.frame(X = c(-180, -110, 0, 33, 1))
+# }
+#
+# start.tick <- NULL
+# start.tick$interval <- cruzTickUpdate(c(start.ll$X[2], start.ll$X[1]), c(start.ll$X[4], start.ll$X[3]))
+# start.tick$lon <- cruzTickStart(c(start.ll$X[1], start.ll$X[2]), start.tick$interval)
+# start.tick$lat <- cruzTickStart(c(start.ll$X[3], start.ll$X[4]), start.tick$interval)
 
-if(file.exists("StarterVals.csv")) {
-  start.ll <- suppressWarnings(read.csv("StarterVals.csv", header = TRUE))
-} else {
-  start.ll <- data.frame(X = c(-180, -110, 0, 33, 1))
-}
 
-start.tick <- NULL
-start.tick$interval <- cruzTickUpdate(c(start.ll$X[2], start.ll$X[1]), c(start.ll$X[4], start.ll$X[3]))
-start.tick$lon <- cruzTickStart(c(start.ll$X[1], start.ll$X[2]), start.tick$interval)
-start.tick$lat <- cruzTickStart(c(start.ll$X[3], start.ll$X[4]), start.tick$interval)
+### Set default values for map - keep this format in case they need to be user-provided
+start.ll <- data.frame(X = c(-135, -117, 29, 52, 1))
+start.tick <- list(interval = 5, lon = -135, lat = 30)
 
 
 ###############################################################################
@@ -210,6 +215,7 @@ server <- function(input, output, session) {
   source(file.path("server_files", "cruzWorld2DataRange.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "server_render.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
 
 
   ### Other output - static plot

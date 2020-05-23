@@ -1,17 +1,25 @@
 # CruzPlot 0.2.0 (in development)
-### General
-* Use [swfscDAS](https://smwoodman.github.io/swfscDAS/) for processing DAS data
 
-* Reorganize tabs CruzPlot for a cleaner display
+### General
+
+* Reorganize CruzPlot tabs and sections for a cleaner display
 
 ### Map
+
 * Make map size dynamic and responsive to window size, and give the user dynamic control of the map window height
 
 * Allow user to specify the resolution of saved map
 
 * Fix bug in tick labels where style '120' did not display negative values
 
+* Add buttons for five default map ranges
+
+* Remove StarterVals.csv - this functionality has been replaced by the default range buttons and being able to save multiple workspaces
+
 ### DAS data
+
+* Use [swfscDAS](https://smwoodman.github.io/swfscDAS/) for processing DAS data
+
 * Simplified effort can be filtered by effort type (standard/non-standard/fine)
 
 * Sightings can be plotted by event code (S/K/M/G/p). TODO - add s/g events, and ability to symbol-code by event code

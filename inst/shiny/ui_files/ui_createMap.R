@@ -18,8 +18,8 @@ ui.createMap <- function() {
                        "Thus, for a map of the Pacific, you could enter 130 and -110 for ",
                        "the left and right longitude, respectively.", tags$br(),
                        "Click the 'Replot map' button after changing map range values,",
-                       "or if the map isn't properly sized.", tags$br(),
-                       "Change 'Starter_Vals.csv' to update default lat/long range values."),
+                       "or if the map isn't properly sized in the window."), #tags$br(),
+                       # "Change 'Starter_Vals.csv' to update default lat/long range values."),
               fluidRow(
                 column(3, numericInput("lon_left", tags$h5("Left longitude"), value = start.ll$X[1])),
                 column(3, numericInput("lon_right", tags$h5("Right longitude"), value = start.ll$X[2])),
@@ -79,80 +79,6 @@ ui.createMap <- function() {
             )
           )
         ),
-        # tabPanel(
-        #   title = "Range",
-        #   fluidRow(
-        #     column(
-        #       width = 6,
-        #       fluidRow(
-        #         box(
-        #           title = "Map range", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        #           helpText("For longitude values, please use the range -180 to 180. ",
-        #                    "Thus, for a map of the Pacific, you could enter 130 and -110 for ",
-        #                    "the left and right longitude, respectively.", tags$br(),
-        #                    "Click the 'Replot map' button to replot map after changing map range values,",
-        #                    "or if the map isn't properly sized within the map box.", tags$br(),
-        #                    "Change 'Starter_Vals.csv' to update default lat/long range values."),
-        #           fluidRow(
-        #             column(
-        #               width = 6,
-        #               numericInput("lon_left", tags$h5("Left longitude"), value = start.ll$X[1]),
-        #               numericInput("lat_bot", tags$h5("Bottom latitude"), value = start.ll$X[3]),
-        #               selectInput("resolution", label = tags$h5("Resolution"), choices = list("Low" = 1, "High" = 2),
-        #                           selected = start.ll$X[5])
-        #             ),
-        #             column(
-        #               width = 6,
-        #               numericInput("lon_right", tags$h5("Right longitude"), value = start.ll$X[2]),
-        #               numericInput("lat_top", tags$h5("Top latitude"), value = start.ll$X[4]),
-        #               ui.new.line(),
-        #               actionButton("map_replot", "Replot map")
-        #             )
-        #           )
-        #         )
-        #       )
-        #     ),
-        #     column(
-        #       width = 6,
-        #       fluidRow(
-        #         box(
-        #           title = "Coastline", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        #           checkboxInput("coast", label = "Use coastline file", value = FALSE),
-        #           conditionalPanel(
-        #             condition = "input.coast==true",
-        #             helpText("Map limits will automatically be updated to the extent of the",
-        #                      "coastline file. Note: CruzPlot can only process coastline files",
-        #                      "with points are between -180 and 0"),
-        #             fileInput("coast_file", label = tags$h5("Coastline file"), accept = '.csv')
-        #           )
-        #         ),
-        #         box(
-        #           title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        #           checkboxInput("bar", "Plot scale bar", value = FALSE),
-        #           conditionalPanel(
-        #             condition = "input.bar==true",
-        #             helpText("Provide the coordinates for the left edge of the scale bar"),
-        #             fluidRow(
-        #               column(
-        #                 width = 6,
-        #                 uiOutput("out_scale_lon"),
-        #                 radioButtons("scale_units", tags$h5("Scale bar units"),
-        #                              choices = list("Kilometers" = 1, "Nautical miles" = 2),
-        #                              selected = 2),
-        #                 numericInput("scale_width", tags$h5("Width of bar"), value = 2, min = 1, max = 6, step = 1)
-        #               ),
-        #               column(
-        #                 width = 6,
-        #                 uiOutput("scale_lat_uiOut_numeric"),
-        #                 uiOutput("scale_lon_uiOut_numeric")
-        #               )
-        #             )
-        #           )
-        #         )
-        #       )
-        #     )
-        #   )
-        # ),
 
         ################################### Panel 2
         tabPanel(
@@ -330,7 +256,8 @@ ui.createMap <- function() {
                                selected = 1)
                 ),
                 box(
-                  title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12, height = 340,
+                  title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
+                  height = 340, #this is for 'Land color' dropdown menu
                   fluidRow(
                     column(6, checkboxInput("color_land_all", label = "Color all land", value = TRUE)),
                     column(
