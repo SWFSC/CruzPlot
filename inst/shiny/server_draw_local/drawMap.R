@@ -29,28 +29,29 @@ param <- cruzMapParam()$param.unit
 ### Water
 rect(param[1], param[3], param[2], param[4], col = map.water.col[[1]])
 
+# browser()
 # Depth
-if (map.water.col[[2]][1] != 0)
-  plot(map.water.col[[2]], image = TRUE, land = TRUE,
-       lwd = 0.0, axes = FALSE, xlab = NA, ylab = NA,
-       bpal = list(c(0, max(map.water.col[[2]]), "grey"),
-                   c(min(map.water.col[[2]]), 0, bathy.col)))
+map.depth <- map.water.col[[2]]
+if (isTruthy(map.depth))
+  plot(map.depth, image = TRUE, land = TRUE, add = TRUE,
+       axes = FALSE, xlab = NA, ylab = NA, lwd = 0.0,
+       bpal = list(c(0, max(map.depth), "grey"),
+                   c(min(map.depth), 0, bathy.col)))
 
 #------------------------------------------------------------------------------
 ### Land
-# Coastline
 if (input$coast) {
+  # Coastline
   validate(
-    need(!is.null(map.coastline),
+    need(isTruthy(map.coastline),
          message = "Please input a valid coastline file")
   )
 
   polygon(x = map.coastline$lon, y = map.coastline$lat, col = map.land.col)
   lines(x = map.coastline$lon, y = map.coastline$lat)
-}
 
-# Map from map package
-if (!input$coast) {
+} else {
+  # Default from maps package
   map(map.name[[1]], regions = map.name[[2]],
       xlim = lon.range[1:2], ylim = lat.range[1:2],
       fill = TRUE, col = map.land.col, add = TRUE)

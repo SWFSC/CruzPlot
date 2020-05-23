@@ -10,7 +10,7 @@ cruz.load.color <- reactiveValues(load.flag = FALSE)
 cruz.list <- reactiveValues(
   planned.transects = NULL, # Dataframe of planned transect lines
   coastline = NULL,         # Coastline file
-  bathy = NULL,             # Bathymetric data
+  bathy.xyz = NULL,         # Bathymetric data, converted to CSV file xyz coordinates
   das.data = NULL,          # DAS dataframe
   das.data.name = NULL,     # Names of loaded DAS files
   das.sight.filt = NULL,    # Filtered sighting data - used to print NA notice messages
@@ -76,7 +76,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     ### Update reactiveValues
     cruz.list$planned.transects <- cruz.list.save[["planned.transects"]]
     cruz.list$coastline     <- cruz.list.save[["coastline"]]
-    cruz.list$bathy         <- cruz.list.save[["bathy"]]
+    cruz.list$bathy.xyz     <- cruz.list.save[["bathy.xyz"]]
     cruz.list$das.data      <- cruz.list.save[["das.data"]]
     cruz.list$das.data.name <- cruz.list.save[["das.data.name"]]
     # Don't need to save sighting/effort data - will get updated when reloaded

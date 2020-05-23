@@ -16,6 +16,8 @@
 
 * Remove StarterVals.csv - this functionality has been replaced by the default range buttons and being able to save multiple workspaces
 
+* Allow user to control the download and import of bathymetric files for depth shading
+
 ### DAS data
 
 * Use [swfscDAS](https://smwoodman.github.io/swfscDAS/) for processing DAS data

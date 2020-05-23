@@ -19,7 +19,7 @@ ui.createMap <- function() {
                        "the left and right longitude, respectively.", tags$br(),
                        "Click the 'Replot map' button after changing map range values,",
                        "or if the map isn't properly sized in the window."), #tags$br(),
-                       # "Change 'Starter_Vals.csv' to update default lat/long range values."),
+              # "Change 'Starter_Vals.csv' to update default lat/long range values."),
               fluidRow(
                 column(3, numericInput("lon_left", tags$h5("Left longitude"), value = start.ll$X[1])),
                 column(3, numericInput("lon_right", tags$h5("Right longitude"), value = start.ll$X[2])),
@@ -183,7 +183,7 @@ ui.createMap <- function() {
                     numericInput("tick_interval_major", label = tags$h5("Degrees between each major tick"),
                                  value = start.tick$interval, min = 0, max = 45, step = 5),
                     selectInput("tick_style", label = tags$h5("Tick label style"),
-                                choices = list("120" = 1, "120W" = 2, "120o" = 3, "120oW" = 4),
+                                choices = list("120" = 1, "120W" = 2, "120\u00B0" = 3, "120\u00B0W" = 4),
                                 selected = 4)
                   ),
                   column(
@@ -247,78 +247,136 @@ ui.createMap <- function() {
         tabPanel(
           title = "Color",
           fluidRow(
-            column(
-              width = 6,
-              fluidRow(
-                box(
-                  title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
-                  radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
-                               selected = 1)
-                ),
-                box(
-                  title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
-                  height = 340, #this is for 'Land color' dropdown menu
-                  fluidRow(
-                    column(6, checkboxInput("color_land_all", label = "Color all land", value = TRUE)),
-                    column(
-                      width = 6,
-                      conditionalPanel(
-                        condition = "input.color_land_all",
-                        selectInput("color_land", label = tags$h5("Land color"), choices = cruz.palette.color, selected = "bisque1")
-                      )
-                    )
-                  )
-                )
-              )
+            box(
+              title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+              radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
+                           selected = 1)
             ),
-            column(
-              width = 6,
+            box(
+              title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+              # height = 340, #this is for 'Land color' dropdown menu
               fluidRow(
-                box(
-                  title = "Water", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                  checkboxInput("color_lakes_rivers", label = "Color lakes and rivers", value = FALSE),
-                  radioButtons("color_water_style", label = tags$h5("Ocean color style"),
-                               choices = list("Single color" = 1, "Depth shading" = 2),
-                               selected = 1),
+                column(6, checkboxInput("color_land_all", label = "Color all land", value = TRUE)),
+                column(
+                  width = 6,
                   conditionalPanel(
-                    condition = "input.color_water_style==1",
-                    selectInput("color_water", label = tags$h5("Water color"), choices = cruz.palette.color, selected = "white")
-                  ),
-                  conditionalPanel(
-                    condition = "input.color_water_style==2",
-                    helpText("Options:"),
-                    helpText("1) Load csv file with 3 columns: latitude, longitude, and depth"),
-                    helpText("2) Download bathymetric data from NOAA website based on lat/lon of map.", tags$br(),
-                             "The data will be saved and will be automatically loaded next",
-                             "time for a map with these lat/lon coordinates."),
-                    radioButtons("depth_style", label = tags$h5("Bathymetric data source"),
-                                 choices = list("csv file" = 2, "NOAA server" = 1), selected = 2),
-                    conditionalPanel(
-                      condition = "input.depth_style==2",
-                      # TODO: use accept argument?
-                      fileInput("depth_file", tags$h5("Bathymetric csv file"), accept = '.csv'),
-                      checkboxInput("depth_header", label = tags$h5("Header"), value = TRUE),
-                      fluidRow(
-                        column(6, radioButtons("depth_sep", label = tags$h5("Separator"),
-                                               choices = list(Comma = ", ", Semicolon = ";", Tab = "\t"),
-                                               selected = ", ")
-                        ),
-                        column(6, radioButtons("depth_quote", label = tags$h5("Quote"),
-                                               choices = list("None" = "", "Double quote" = '"', "Single quote" = "'"),
-                                               selected = '"')
-                        )
-                      )
-                    ),
-                    conditionalPanel(
-                      condition = "input.depth_style==1",
-                      textInput("depth_res", tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"), value = "10")
-                    )
+                    condition = "input.color_land_all",
+                    selectInput("color_land", label = tags$h5("Land color"), choices = cruz.palette.color, selected = "bisque1")
                   )
                 )
               )
             )
+          ),
+          fluidRow(
+            box(
+              title = "Water", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+              checkboxInput("color_lakes_rivers", label = "Color lakes and rivers", value = FALSE),
+              selectInput("color_water", label = tags$h5("Water (background) color"),
+                          choices = cruz.palette.color, selected = "white"),
+              radioButtons("color_water_style", label = tags$h5("Ocean color style"),
+                           choices = list("Single color" = 1, "Depth (bathymetric) shading" = 2),
+                           selected = 1),
+              conditionalPanel(
+                condition = "input.color_water_style==2",
+                helpText("Load a CSV file with exactly 3 columns: latitude, longitude, and depth"),
+                fileInput("depth_file", tags$h5("Bathymetric CSV file"), accept = ".csv"),
+                textOutput("bathy_load_text"),
+                tags$span(textOutput("bathy_message_text"), style = "color: blue;")
+              )
+            ),
+            box(
+              title = "Download bathymetric data", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+              helpText("Download bathymetric data from NOAA website (see the documentation for",
+                       tags$a(href = "https://cran.r-project.org/web/packages/marmap/marmap.pdf",
+                              "marmap function 'getNOAA.bathy'"),
+                       "for more details).",
+                       "The coordinates of the downloaded data will be the same as the current map range.",
+                       "After downloading, you must load the CSV file into CruzPlot"),
+              numericInput("depth_res", tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"),
+                           value = 10, min = 0, max = 60, step = 5),
+              uiOutput("depth_download_button")
+            )
           )
         ),
+
+        # #################################### Panel 5
+        # tabPanel(
+        #   title = "Color",
+        #   fluidRow(
+        #     column(
+        #       width = 6,
+        #       fluidRow(
+        #         box(
+        #           title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
+        #           radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
+        #                        selected = 1)
+        #         ),
+        #         box(
+        #           title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
+        #           height = 340, #this is for 'Land color' dropdown menu
+        #           fluidRow(
+        #             column(6, checkboxInput("color_land_all", label = "Color all land", value = TRUE)),
+        #             column(
+        #               width = 6,
+        #               conditionalPanel(
+        #                 condition = "input.color_land_all",
+        #                 selectInput("color_land", label = tags$h5("Land color"), choices = cruz.palette.color, selected = "bisque1")
+        #               )
+        #             )
+        #           )
+        #         )
+        #       )
+        #     ),
+        #     column(
+        #       width = 6,
+        #       fluidRow(
+        #         box(
+        #           title = "Water", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+        #           checkboxInput("color_lakes_rivers", label = "Color lakes and rivers", value = FALSE),
+        #           radioButtons("color_water_style", label = tags$h5("Ocean color style"),
+        #                        choices = list("Single color" = 1, "Depth shading" = 2),
+        #                        selected = 1),
+        #           conditionalPanel(
+        #             condition = "input.color_water_style==1",
+        #             selectInput("color_water", label = tags$h5("Water color"), choices = cruz.palette.color, selected = "white")
+        #           ),
+        #           conditionalPanel(
+        #             condition = "input.color_water_style==2",
+        #             helpText("Options:"),
+        #             helpText("1) Load csv file with 3 columns: latitude, longitude, and depth"),
+        #             helpText("2) Download bathymetric data from NOAA website based on lat/lon of map.", tags$br(),
+        #                      "The data will be saved and will be automatically loaded next",
+        #                      "time for a map with these lat/lon coordinates."),
+        #             radioButtons("depth_style", label = tags$h5("Bathymetric data source"),
+        #                          choices = list("csv file" = 2, "NOAA server" = 1), selected = 2),
+        #             conditionalPanel(
+        #               condition = "input.depth_style==2",
+        #               # TODO: use accept argument?
+        #               fileInput("depth_file", tags$h5("Bathymetric csv file"), accept = '.csv'),
+        #               checkboxInput("depth_header", label = tags$h5("Header"), value = TRUE),
+        #               fluidRow(
+        #                 column(6, radioButtons("depth_sep", label = tags$h5("Separator"),
+        #                                        choices = list(Comma = ", ", Semicolon = ";", Tab = "\t"),
+        #                                        selected = ", ")
+        #                 ),
+        #                 column(6, radioButtons("depth_quote", label = tags$h5("Quote"),
+        #                                        choices = list("None" = "", "Double quote" = '"', "Single quote" = "'"),
+        #                                        selected = '"')
+        #                 )
+        #               )
+        #             ),
+        #             conditionalPanel(
+        #               condition = "input.depth_style==1",
+        #               numericInput("depth_res", tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"),
+        #                            value = 10, min = 0, max = 60, step = 5),
+        #               uiOutput("depth_download_button")
+        #             )
+        #           )
+        #         )
+        #       )
+        #     )
+        #   )
+        # ),
 
         #################################### Panel 6
         tabPanel(

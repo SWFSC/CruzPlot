@@ -1,79 +1,151 @@
 # Processing for Color and Grid tabs of Create and Save Map tab
 #   cruzMapRiver() returns river data, adjusted for world2 map if necessary
-#   cruzMapColorWater() returns water color and depth data
 #   cruzMapColorLand() returns land color
-#   Update various color selections depending on if color or gray scale is selected
 #   cruzMapGrid() returns grid line parameters
+#   cruzMapColorWater() returns water color and depth data
+#   Update various color selections depending on if color or gray scale is selected
 
 
 ###############################################################################
+# River values
 cruzMapRiver <- reactive({
   world2 <- cruz.map.range$world2
-  rivs <- map("rivers", plot = F)
+  rivs <- map("rivers", plot = FALSE)
   if (world2) rivs$x <- ifelse(rivs$x < 0, rivs$x+360, rivs$x)
 
-  return(rivs)
+  rivs
 })
 
-
-###############################################################################
-cruzMapColorWater <- reactive({
-  ## One color
-  if (input$color_water_style == 1) {
-    water.col <- ifelse(input$color_water_style == 1,
-                        input$color_water, 0)
-    water.bathy <- 0
-  }
-
-  ## Depth
-  if (input$color_water_style == 2) {
-    lon.range <- cruz.map.range$lon.range
-    lat.range <- cruz.map.range$lat.range
-    world2 <- cruz.map.range$world2
-    if (is.null(cruz.list$bathy)){
-      if (input$depth_style == 1) {
-        validate(
-          need(1 <= as.numeric(input$depth_res) &&
-                 as.numeric(input$depth_res) <= 60,
-               message = "Please ensure depth resolution is between 0 and 60")
-        )
-
-        # getNOAA.bathy() operates on -180 to 180 scale, thus use user inputs not lonRange() output
-        bathy <- getNOAA.bathy(
-          lon1 = as.numeric(input$lon_left), lon2 = as.numeric(input$lon_right),
-          lat1 = lat.range[1], lat2 = lat.range[2],
-          resolution = as.numeric(input$depth_res), keep = TRUE,
-          antimeridian = world2
-        )
-      }
-      else {
-        validate(
-          need(!is.null(input$depth_file$datapath),
-               message = "Please load csv depth file")
-        )
-        bathy <- read.csv(input$depth_file$datapath, header = input$depth_header,
-                          sep = input$depth_sep, quote = input$depth_quote)
-        bath.keep <- (lon.range[1] <= bathy$V1 & bathy$V1 <= lon.range[2]) &
-          (lat.range[1] <= bathy$V2 & bathy$V2 <= lat.range[2])
-        bathy <- as.bathy(bathy[bath.keep,])
-      }
-
-      cruz.list$bathy <- bathy
-      water.bathy <- bathy
-    } else {
-      water.bathy <- cruz.list$bathy
-    }
-    water.col <- "blue"
-  }
-
-  list(water.col, water.bathy)
-})
-
-## Land
+# Land
 cruzMapColorLand <- reactive({
   ifelse(input$color_land_all == TRUE, input$color_land, "white")
 })
 
+
+###############################################################################
+# Grid values
+cruzMapGrid <- reactive({
+  list(
+    col = input$grid_line_color, lwd = input$grid_line_width,
+    lty = input$grid_line_type
+  )
+})
+
+###############################################################################
+# Water color
+
+# Load bathymetry data
+cruzMapBathyLoad <- eventReactive(input$depth_file, {
+  req(input$depth_file)
+  file.in <- input$depth_file
+
+  validate(
+    need(identical(substr_right(file.in$datapath, 4), ".csv"),
+         "Please load a file with the extension'.csv'")
+  )
+
+  cruz.list$bathy.xyz <- NULL
+  bathy.xyz <- read.csv(file.in$datapath)
+
+  validate(
+    need(ncol(bathy.xyz) >= 3,
+         "The bathymetric CSV file must contain at least 3 columns")
+  )
+
+  cruz.list$bathy.xyz <- bathy.xyz
+
+  NULL
+})
+
+# Get color value and bathymetry data for water color
+cruzMapColorWater <- reactive({
+  if (input$color_water_style == 1) {
+    bathy <- NULL
+
+  } else { #if (input$color_water_style == 2) {
+    bathy.xyz <- cruz.list$bathy.xyz
+    validate(need(bathy.xyz, "Please load a CSV file with bathymetric data"))
+
+    # Make sure lat/lon range matches world2 flag
+    bathy.xyz[[1]] <- if (cruz.map.range$world2) {
+      ifelse(bathy.xyz[[1]] < 0, bathy.xyz[[1]] + 360, bathy.xyz[[1]])
+    } else {
+      ifelse(bathy.xyz[[1]] > 180, bathy.xyz[[1]] - 360, bathy.xyz[[1]])
+    }
+
+    # Trim, and check that depth file lat/lon spans any map range
+    lon.range <- cruz.map.range$lon.range
+    lat.range <- cruz.map.range$lat.range
+    bathy.xyz.keep <- between(bathy.xyz[[1]], lon.range[1], lon.range[2]) &
+      between(bathy.xyz[[2]], lat.range[1], lat.range[2])
+
+    bathy <- try(
+      marmap::as.bathy(bathy.xyz[bathy.xyz.keep, ]),
+      silent = TRUE
+    )
+
+    validate(
+      need(inherits(bathy, "bathy"),
+           paste("Unable to convert the loaded CSV file into a bathy object;",
+                 "see `maramp::as.bathy` for data format requirements")) %then%
+        need(length(bathy) > 0,
+             "The loaded bathymetric data does not cover any of the current map area")
+    )
+  }
+
+  list(input$color_water, bathy)
+})
+
+
+###############################################################################
+# Download bathymetric data
+
+# Download button for downloading bathymetric file
+output$depth_download_button <- renderUI({
+  validate(
+    need(!is.na(input$depth_res),
+         "Bathymetric data resolution must be a number between 0 and 60") %then%
+      need(between(input$depth_res, 0, 60),
+           "Bathymetric data resolution must be a number between 0 and 60")
+  )
+
+  downloadButton("depth_download", "Download bathymetric file")
+})
+
+# Download bathymetric file
+output$depth_download <- downloadHandler(
+  filename = function() {
+    # Defaults maramp file name: "marmap_coord_-135;29;-117;52_res_10.csv"
+    paste0(
+      paste(
+        "marmap_coord",
+        paste(cruz.map.range$lon.range[1], cruz.map.range$lon.range[2],
+              cruz.map.range$lat.range[1], cruz.map.range$lat.range[2], sep = ";"),
+        "res", input$depth_res,
+        sep = "_"),
+      ".csv"
+    )
+  },
+
+  content = function(file) {
+    lon.range <- cruz.map.range$lon.range
+    lat.range <- cruz.map.range$lat.range
+    world2 <- cruz.map.range$world2
+
+    # getNOAA.bathy() operates on -180 to 180 scale; use user inputs not lon.range
+    bathy <- try(marmap::getNOAA.bathy(
+      lon1 = input$lon_left, lon2 = input$lon_right,
+      lat1 = lat.range[1], lat2 = lat.range[2],
+      resolution = input$depth_res, antimeridian = world2,
+      keep = FALSE
+    ), silent = TRUE)
+
+    validate(need(bathy, "Donwload did not work"))
+
+    write.csv(marmap::as.xyz(bathy), file = file, row.names = FALSE)
+
+  }
+)
 
 ###############################################################################
 # Update options for greyscale or normal colors
@@ -108,13 +180,5 @@ observe({
   })
 })
 
-
-###############################################################################
-cruzMapGrid <- reactive({
-  list(
-    col = input$grid_line_color, lwd = input$grid_line_width,
-    lty = input$grid_line_type
-  )
-})
 
 ###############################################################################

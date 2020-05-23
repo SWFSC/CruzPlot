@@ -7,6 +7,18 @@
 
 
 #------------------------------------------------------------------------------
+output$bathy_load_text <- renderText(cruzMapBathyLoad())
+
+output$bathy_message_text <- renderText({
+  if (isTruthy(cruz.list$bathy.xyz)) {
+    "A bathymetry file is loaded"
+  } else {
+    NULL
+  }
+})
+
+
+#------------------------------------------------------------------------------
 ### Planned transects outputs
 output$planned_transects_text <- renderText({
   planned_transects()
