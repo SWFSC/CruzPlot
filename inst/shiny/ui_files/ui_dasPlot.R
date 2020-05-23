@@ -10,30 +10,30 @@ ui.dasPlot <- function() {
           condition = "input.das_sight_interactive==1",
           conditionalPanel(
             condition = "input.das_effort_interactive==1",
-            plotOutput("plot2")
+            plotOutput("plot2", height = "auto")
           )
         ),
         conditionalPanel(
           condition = "input.das_sight_interactive==2",
           conditionalPanel(
             condition = "input.das_effort_interactive==1",
-            plotOutput("plot3", click = "sight_click")
+            plotOutput("plot3", height = "auto", click = "sight_click")
           )
         ),
         conditionalPanel(
           condition = "input.das_sight_interactive==3",
           conditionalPanel(
             condition = "input.das_effort_interactive==1",
-            plotOutput("plot4", hover  = "sight_hover")
+            plotOutput("plot4", height = "auto", hover  = "sight_hover")
           )
         ),
         conditionalPanel(
           condition = "input.das_effort_interactive==2",
-          plotOutput("plot5", click = "effort_click")
+          plotOutput("plot5", height = "auto", click = "effort_click")
         ),
         conditionalPanel(
           condition = "input.das_effort_interactive==3",
-          plotOutput("plot6", hover = "effort_hover")
+          plotOutput("plot6", height = "auto", hover = "effort_hover")
         )
       ),
       tabBox(

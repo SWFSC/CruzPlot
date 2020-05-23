@@ -4,7 +4,7 @@ ui.nonDasPlot <- function() {
   tabItem(
     tabName = "nonDASplot",
     fluidRow(
-      box(status = "primary", width = 6, plotOutput("plot7")),
+      box(status = "primary", width = 6, plotOutput("plot7", height = "auto")),
       tabBox(
         title = "", id = "tabset2", width = 6,
         tabPanel(
@@ -25,7 +25,7 @@ ui.nonDasPlot <- function() {
                        "See the manual for longitude and latitude column naming requirements"),
 
               fluidRow(
-                column(12, fileInput("ndas_file", label = tags$h5("Load non-DAS .csv file")))
+                column(12, fileInput("ndas_file", label = tags$h5("Load non-DAS CSV file")))
               ),
               textOutput("cruzNonDasFile_LonLat_text"),
               conditionalPanel(

@@ -47,9 +47,19 @@ output$out_scale_len <- renderUI({
   numericInput("scale_len", tags$h5(title.new), value = cruz.scale$scale.len)
 })
 
+observeEvent(input$scale_units, {
+  if (input$scale_units == 1) {
+    cruz.scale$scale.len <- cruz.scale$scale.len * 1.852
+  } else {
+    cruz.scale$scale.len <- cruz.scale$scale.len / 1.852
+
+  }
+})
+
 
 ### Calculate scale bar default start position if map range changes
 observe({
+  print(1)
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
 
@@ -68,17 +78,19 @@ observe({
   cruz.scale$scale.lat <- lat.new
 
   NULL
-}, priority = 1) # Must run before length observe()
+}, priority = 1) #Must run before observe() for bar length
 
 ### After getting start position, get the default scale bar length
 ###   Separate observe() so that lat/lon update isn't run if scale units chagne
 observe({
-  # cruzMapScaleUpdateLength <- reactive({
-
+  print(2)
   lon.range <- cruz.map.range$lon.range
-  lon.pos <- cruz.scale$scale.lon
-  lat.pos <- cruz.scale$scale.lat
-  scale.units <- input$scale_units
+  cruz.map.range$lat.range
+  isolate({
+    lon.pos <- cruz.scale$scale.lon
+    lat.pos <- cruz.scale$scale.lat
+    scale.units <- input$scale_units
+  })
 
   # Scale bar length; suppressWarnings() for if world2
   lon.range.m <- suppressWarnings(distVincentyEllipsoid(
@@ -115,16 +127,17 @@ cruzMapScaleBar <- reactive({
   scale.units.str <- ifelse(scale.units == 1, "km", "nmi")
 
   # Determine length of scale bar in meters
-  if (scale.units == 1) scale.len.m <- scale.len * 1000
-  if (scale.units == 2) scale.len.m <- scale.len * 1.852 * 1000
+  scale.len.m <- if (scale.units == 1) {
+    scale.len * 1000
+  } else if (scale.units == 2) {
+    scale.len * 1.852 * 1000
+  }
 
   scale.x1 <- ifelse((world2 && scale.lon < 0), scale.lon + 360, scale.lon)
   scale.x2 <- destPoint(c(scale.lon, scale.lat), 90, scale.len.m)[1]
   scale.x2 <- ifelse((world2 && scale.x2 < 0), scale.x2 + 360, scale.x2)
 
   scale.y <- scale.lat
-
-  # browser()
 
   list(
     x1 = scale.x1, x2 = scale.x2, y = scale.y,
