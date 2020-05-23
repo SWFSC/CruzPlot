@@ -6,10 +6,42 @@
 ### CCE
 observeEvent(input$map_replot_cce, {
   ll.vals <- c(-135, -117, 29, 52)
-  updateNumericInput(session, "lon.left", value = ll.vals[1])
-  updateNumericInput(session, "lon.right", value = ll.vals[2])
-  updateNumericInput(session, "lat.bot", value = ll.vals[3])
-  updateNumericInput(session, "lat.top", value = ll.vals[4])
+  updateNumericInput(session, "lon_left", value = ll.vals[1])
+  updateNumericInput(session, "lon_right", value = ll.vals[2])
+  updateNumericInput(session, "lat_bot", value = ll.vals[3])
+  updateNumericInput(session, "lat_top", value = ll.vals[4])
+
+  cruz.map.range$lon.range <- c(ll.vals[1], ll.vals[2])
+  cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])
+  cruz.map.range$world2 <- FALSE
+  cruz.map.range$map.name <- list(
+    ifelse(input$resolution == 2, "worldHires", "world"), NULL
+  )
+}, priority = 11)
+
+### Expanded CCE
+observeEvent(input$map_replot_cce2, {
+  ll.vals <- c(-135, -110, 27, 52)
+  updateNumericInput(session, "lon_left", value = ll.vals[1])
+  updateNumericInput(session, "lon_right", value = ll.vals[2])
+  updateNumericInput(session, "lat_bot", value = ll.vals[3])
+  updateNumericInput(session, "lat_top", value = ll.vals[4])
+
+  cruz.map.range$lon.range <- c(ll.vals[1], ll.vals[2])
+  cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])
+  cruz.map.range$world2 <- FALSE
+  cruz.map.range$map.name <- list(
+    ifelse(input$resolution == 2, "worldHires", "world"), NULL
+  )
+}, priority = 11)
+
+### ETP
+observeEvent(input$map_replot_etp, {
+  ll.vals <- c(-155, -75, -10, 50)
+  updateNumericInput(session, "lon_left", value = ll.vals[1])
+  updateNumericInput(session, "lon_right", value = ll.vals[2])
+  updateNumericInput(session, "lat_bot", value = ll.vals[3])
+  updateNumericInput(session, "lat_top", value = ll.vals[4])
 
   cruz.map.range$lon.range <- c(ll.vals[1], ll.vals[2])
   cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])
@@ -21,11 +53,11 @@ observeEvent(input$map_replot_cce, {
 
 ### Hawaii
 observeEvent(input$map_replot_hawaii, {
-  ll.vals <- c(170, -150, 10, 35)
-  updateNumericInput(session, "lon.left", value = ll.vals[1])
-  updateNumericInput(session, "lon.right", value = ll.vals[2])
-  updateNumericInput(session, "lat.bot", value = ll.vals[3])
-  updateNumericInput(session, "lat.top", value = ll.vals[4])
+  ll.vals <- c(175, -150, 12, 35)
+  updateNumericInput(session, "lon_left", value = ll.vals[1])
+  updateNumericInput(session, "lon_right", value = ll.vals[2])
+  updateNumericInput(session, "lat_bot", value = ll.vals[3])
+  updateNumericInput(session, "lat_top", value = ll.vals[4])
 
   cruz.map.range$lon.range <- c(ll.vals[1], ll.vals[2] + 360)
   cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])
@@ -36,13 +68,13 @@ observeEvent(input$map_replot_hawaii, {
   )
 }, priority = 11)
 
-### ETP
-observeEvent(input$map_replot_etp, {
-  ll.vals <- c(-155, -75, -10, 50)
-  updateNumericInput(session, "lon.left", value = ll.vals[1])
-  updateNumericInput(session, "lon.right", value = ll.vals[2])
-  updateNumericInput(session, "lat.bot", value = ll.vals[3])
-  updateNumericInput(session, "lat.top", value = ll.vals[4])
+### Marianas
+observeEvent(input$map_replot_marianas, {
+  ll.vals <- c(140, 150, 10, 24)
+  updateNumericInput(session, "lon_left", value = ll.vals[1])
+  updateNumericInput(session, "lon_right", value = ll.vals[2])
+  updateNumericInput(session, "lat_bot", value = ll.vals[3])
+  updateNumericInput(session, "lat_top", value = ll.vals[4])
 
   cruz.map.range$lon.range <- c(ll.vals[1], ll.vals[2])
   cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])

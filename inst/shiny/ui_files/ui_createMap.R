@@ -31,12 +31,21 @@ ui.createMap <- function() {
                                       choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5])),
                 column(3, ui.new.line(), actionButton("map_replot", "Replot map"))
               ),
-              helpText("Set the map range to a default study area and replot:"),
-              fluidRow(
-                column(3, actionButton("map_replot_cce", "CCE map range")),
-                column(3, actionButton("map_replot_hawaii", "Hawaii map range")),
-                column(3, actionButton("map_replot_etp", "ETP map range"))
-              )
+              tags$h5("Set the map range to a default study area and replot:"),
+              # fluidRow(
+              #   column(3, actionButton("map_replot_cce", "CCE")),
+              #   column(3, actionButton("map_replot_etp", "ETP")),
+              #   column(3, actionButton("map_replot_hawaii", "Hawaii")),
+              #   column(3, actionButton("map_replot_marianas", "Marianas")),
+              #   column(3, actionButton("map_replot_cce2", "Extended CCE"))
+              # ),
+              # fluidRow(
+              actionButton("map_replot_cce", "CCE"),
+              actionButton("map_replot_cce2", "Extended CCE"),
+              actionButton("map_replot_etp", "ETP"),
+              actionButton("map_replot_hawaii", "Hawaii"),
+              actionButton("map_replot_marianas", "Marianas")
+              # )
             ),
             box(
               title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
