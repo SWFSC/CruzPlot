@@ -48,11 +48,10 @@ output$out_scale_len <- renderUI({
 })
 
 observeEvent(input$scale_units, {
-  if (input$scale_units == 1) {
-    cruz.scale$scale.len <- cruz.scale$scale.len * 1.852
+  cruz.scale$scale.len <- if (input$scale_units == 1) {
+    cruz.scale$scale.len * 1.852
   } else {
-    cruz.scale$scale.len <- cruz.scale$scale.len / 1.852
-
+    cruz.scale$scale.len / 1.852
   }
 })
 
@@ -109,8 +108,6 @@ observe({
   }
 
   cruz.scale$scale.len <- len.new
-
-  # list(title.new, len.new)
 })
 
 
