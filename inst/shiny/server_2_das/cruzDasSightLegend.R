@@ -16,28 +16,34 @@ cruzDasSightLegend <- reactive({
     if (input$das_legend_num) leg.lab <- paste0(leg.lab, ", n = ", sp.count)
 
   } else {
-    sp.codes.all <- cruzSpecies()
+    sp.codes.all <- cruz.list$sp.codes
     temp.use <- unlist(sapply(1:sp.codes.len, function(i) {
       which(sp.codes.all$Code == sp.codes[i])
     }))
     sp.codes.all.use <- sp.codes.all[temp.use,]
-    sp.codes.all.use$Name.Common <- sapply(sp.codes.all.use$Name.Common, function(i) {
-      unlist(strsplit(i,","))[1]
+    sp.codes.all.use$Name_Common <- sapply(sp.codes.all.use$Name_Common, function(i) {
+      unlist(strsplit(i, ","))[1]
     })
 
     leg.lab <- NULL
     names.lab <- input$das_legend_names
     if ("1" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Code)
     if ("2" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Abbr)
-    if ("3" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name.Scientific)
-    if ("4" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name.Common)
+    if ("3" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name_Scientific)
+    if ("4" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name_Common)
 
-    if (input$das_legend_num) {
-      if ("1" %in% names.lab || "2" %in% names.lab || "3" %in% names.lab || "4" %in% names.lab)
-        leg.lab <- paste0(leg.lab, ", ")
-      leg.lab <- paste0(leg.lab, "n = ", sp.count)
+    if ("5" %in% names.lab) {
+      leg.lab <- if (any(names.lab %in% 1:4)) {
+        paste0(leg.lab, ", n = ", sp.count)
+      } else {
+        paste0("n = ", sp.count)
+      }
     }
+    validate(
+      need(leg.lab, "Please select legend sighting information to display")
+    )
   }
+
   leg.title <- NULL
   if (input$das_legend_title != "") leg.title <- input$das_legend_title
   leg.bty <-     ifelse(input$das_legend_boxCol == 1, "n", "o")

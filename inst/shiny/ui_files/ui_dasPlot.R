@@ -43,27 +43,53 @@ ui.dasPlot <- function() {
           title = "Data",
           fluidRow(
             box(
-              title = "Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-              helpText("See swfscDAS documentation for details about these parameters"),
+              title = "DAS Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               fluidRow(
-                column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading data"),
-                                       value = 0, min = 0)),
-                column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
-                                      choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
-              ),
+                column(
+                  width = 6,
+                  helpText("See", tags$a(href = "https://smwoodman.github.io/swfscDAS/reference/index.html",
+                                         "swfscDAS documentation"),
+                           "for details about these parameters"),
+                  fluidRow(
+                    column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading data"),
+                                           value = 0, min = 0)),
+                    column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
+                                          choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+                  ),
+                  fluidRow(
+                    column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
+                                          choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
+                    column(6, selectInput("das_file_reset_day", tags$h5("reset.day argument of das_process()"),
+                                          choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+                  )
+                ),
+                column(
+                  width = 6,
+                  helpText("To load DAS data file(s), first set the desired parameters, and then click the \"Browse...\" button and",
+                           "select the file(s) you want to load. Hold the Shift key to select multiple files.",
+                           "If you change the parameters, you will have to Browse and select the file(s) again.",
+                           "To 'remove' a file, browse again and select only the desired DAS file(s)"),
+                  fileInput("das_file", label = tags$h5("DAS file input"), multiple = TRUE),
+                  textOutput("das_file_load_text"),
+                  tags$span(textOutput("das_loaded_text"), style = "color: blue;")
+                )
+              )
+            ),
+            box(
+              title = "SpCodes", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              helpText("Processing DAS sightings requires a species codes file, typically named SpCodes.dat,",
+                       "to translate the species codes to scientific or common species names.",
+                       "CruzPlot contains a default SpCodes.dat file (last modified 24 May 2020),",
+                       "but you can also load your own species codes file.",
+                       "This file must follow the same format as the default SpCodes.dat; see the manual for details"),
+              ui.new.line(),
               fluidRow(
-                column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
-                                      choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
-                column(6, selectInput("das_file_reset_day", tags$h5("reset.day argument of das_process()"),
-                                      choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+                column(5, fileInput("das_spcodes_file", tags$h5("Load species code file"), accept = ".dat")),
+                column(6, offset = 1, tags$br(), tags$br(), actionButton("das_spcodes_default", "Load default species codes"))
               ),
-              fileInput("das_file", label = tags$h5("DAS file input"), multiple = TRUE),
-              textOutput("das_file_load_text"),
-              tags$span(textOutput("das_loaded_text"), style = "color: blue;"),
-              helpText("To load DAS data file(s), first set the desired parameters, and then click the \"Browse...\" button and",
-                       "select the file(s) you want to load. Hold the Shift key to select multiple files.",
-                       "If you change the parameters, you will have to Browse and select the file(s) again.",
-                       "To 'remove' a file, browse again and select only the desired DAS file(s)")
+              textOutput("spcodes_user_read_text"),
+              textOutput("spcodes_default_read_text"),
+              tags$span(textOutput("spcodes_message"), style = "color: blue;")
             )
           )
         ),
@@ -87,6 +113,7 @@ ui.dasPlot <- function() {
               ),
               conditionalPanel(
                 condition = "input.das_sightings",
+                textOutput("das_sight_spcodes_message"),
                 tags$span(textOutput("das_sight_message_text"), style = "color: red;"),
                 helpText("Sighting position is calculated using the ship position, ship course, sighting bearing (angle),",
                          "and radial distance to the sighting.",
@@ -352,10 +379,10 @@ ui.dasPlot <- function() {
                       condition = "input.das_sighting_type!=3",
                       checkboxGroupInput("das_legend_names", tags$h5("Legend sighting information"),
                                          choices = list("Species code" = 1, "Species abbreviation" = 2,
-                                                        "Scientific name" = 3, "Common name" = 4),
-                                         selected = c(1, 3))
-                    ),
-                    checkboxInput("das_legend_num", label = "Include number of sightings", value = TRUE)
+                                                        "Scientific name" = 3, "Common name" = 4,
+                                                        "Include number of sightings" = 5),
+                                         selected = c(1, 2, 5))
+                    )
                   )
                 )
               )
@@ -545,8 +572,6 @@ ui.dasPlot <- function() {
                     ui.new.line(),
                     uiOutput("das_out_effort_save_name_uiOut_text"),
                     downloadButton("das_out_effort_save", "Save table of tabular output for effort")
-                    # actionButton("das_out_effort_save_execute", "Save specified effort data"),
-                    # textOutput("cruzDasOutEffort_Save_text")
                   ),
                   column(8, tableOutput("das_out_effort_table"))
                 )
@@ -556,38 +581,41 @@ ui.dasPlot <- function() {
               title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               conditionalPanel(
                 condition = "input.das_sightings != true",
-                helpText("'Plot sightings' must be selected to generate tabular output for sightings")
+                helpText("Sightings must be selected to generate tabular output for sightings")
               ),
               conditionalPanel(
                 condition = "input.das_sightings",
-                helpText("Uses the same species, on or off effort, date, Beaufort, cruise number, and truncation",
-                         "filters as those applied to plotted sightings in the 'Filters' tab"),
-                fluidRow(
-                  column(
-                    width = 4,
-                    conditionalPanel(
-                      condition = "input.das_sightings_effort == 3",
-                      helpText(paste("Effort type filters for sightings are not applicable when",
-                                     "sightings are filtered for off effort sightings"))
-                    ),
-                    conditionalPanel(
-                      condition = "input.das_sightings_effort != 3",
-                      tags$strong("Filter sightings by mode and effort type"),
-                      fluidRow(
-                        column(5, checkboxGroupInput("das_out_sight_cp", label = NULL,
-                                                     choices = list("Closing" = "C", "Passing" = "P"),
-                                                     selected = c("C", "P"))),
-                        column(7, checkboxGroupInput("das_out_sight_snf", label = NULL,
-                                                     choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
-                                                     selected = c("S", "N", "F")))
-                      ),
-                      ui.new.line(),
-                      uiOutput("das_out_sight_save_name_uiOut_text"),
-                      downloadButton("das_out_sight_save", "Save sightings tabls")
-                    )
-                  ),
-                  column(8, tableOutput("das_out_sight_table"))
-                )
+                helpText("Uses the same filters",
+                         "(species, on or off effort, mode, effort type, date, Beaufort, cruise number, and truncation)",
+                         "as those applied to plotted sightings in the 'Filters' tab"),
+                # fluidRow(
+                #   column(
+                #     width = 4,
+                #     conditionalPanel(
+                #       condition = "input.das_sight_effort == 3",
+                #       helpText(paste("Effort type filters for sightings are not applicable when",
+                #                      "sightings are filtered for off effort sightings"))
+                #     ),
+                #     conditionalPanel(
+                #       condition = "input.das_sight_effort != 3",
+                #       tags$strong("Filter sightings by mode and effort type"),
+                #       fluidRow(
+                #         column(5, checkboxGroupInput("das_out_sight_cp", label = NULL,
+                #                                      choices = list("Closing" = "C", "Passing" = "P"),
+                #                                      selected = c("C", "P"))),
+                #         column(7, checkboxGroupInput("das_out_sight_snf", label = NULL,
+                #                                      choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
+                #                                      selected = c("S", "N", "F")))
+                #       ),
+                #       ui.new.line(),
+                #       uiOutput("das_out_sight_save_name_uiOut_text"),
+                #       downloadButton("das_out_sight_save", "Save sightings tabls")
+                #     )
+                #   ),
+                #   column(8, tableOutput("das_out_sight_table"))
+                # )
+                tableOutput("das_out_sight_table"),
+                downloadButton("das_out_sight_save", "Save sightings table")
               )
             )
           )

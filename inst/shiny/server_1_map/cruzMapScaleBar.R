@@ -58,7 +58,6 @@ observeEvent(input$scale_units, {
 
 ### Calculate scale bar default start position if map range changes
 observe({
-  print(1)
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
 
@@ -82,7 +81,6 @@ observe({
 ### After getting start position, get the default scale bar length
 ###   Separate observe() so that lat/lon update isn't run if scale units chagne
 observe({
-  print(2)
   lon.range <- cruz.map.range$lon.range
   cruz.map.range$lat.range
   isolate({

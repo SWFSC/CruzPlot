@@ -18,16 +18,16 @@ cruzDasOutSight_Table <- reactive({
   das.sight <- data.list$das.sight
 
   ### Filter by selected effort type if sightings are on-effort
-  if(input$das_sightings_effort != 3) {
-    das.sight <- das.sight %>%
-      filter(toupper(.data$Mode) %in% input$das_out_sight_cp,
-             toupper(.data$EffType) %in% input$das_out_sight_snf)
-  }
-
-  validate(
-    need(nrow(das.sight) > 0,
-         "No specified sightings occurred during selected mode/effort types")
-  )
+  # if (input$das_sight_effort != 3) {
+  #   das.sight <- das.sight %>%
+  #     filter(toupper(.data$Mode) %in% input$das_out_sight_cp,
+  #            toupper(.data$EffType) %in% input$das_out_sight_snf)
+  # }
+  #
+  #   validate(
+  #     need(nrow(das.sight) > 0,
+  #          "No specified sightings occurred during selected mode/effort types")
+  #   )
 
   das.sight.summ <- das.sight %>%
     group_by(.data$Sp) %>%
@@ -43,7 +43,10 @@ cruzDasOutSight_Table <- reactive({
 })
 
 output$das_out_sight_save <- downloadHandler(
-  filename = function() input$das_out_sight_save_name,
+  filename = function() {
+    gsub("-", "", paste0("CruzPlot_Sight_", Sys.Date(), ".csv"))
+  },
+
   content = function(file) {
     write.csv(cruzDasOutSight_Table(), file = file, row.names = FALSE)
   }

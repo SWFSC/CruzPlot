@@ -29,23 +29,14 @@ ui.createMap <- function() {
               fluidRow(
                 column(3, selectInput("resolution", label = tags$h5("Resolution"),
                                       choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5])),
-                column(3, ui.new.line(), actionButton("map_replot", "Replot map"))
+                column(3, tags$br(), tags$br(), actionButton("map_replot", "Replot map"))
               ),
               tags$h5("Set the map range to a default study area and replot:"),
-              # fluidRow(
-              #   column(3, actionButton("map_replot_cce", "CCE")),
-              #   column(3, actionButton("map_replot_etp", "ETP")),
-              #   column(3, actionButton("map_replot_hawaii", "Hawaii")),
-              #   column(3, actionButton("map_replot_marianas", "Marianas")),
-              #   column(3, actionButton("map_replot_cce2", "Extended CCE"))
-              # ),
-              # fluidRow(
               actionButton("map_replot_cce", "CCE"),
               actionButton("map_replot_cce2", "Extended CCE"),
               actionButton("map_replot_etp", "ETP"),
               actionButton("map_replot_hawaii", "Hawaii"),
               actionButton("map_replot_marianas", "Marianas")
-              # )
             ),
             box(
               title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
@@ -298,85 +289,6 @@ ui.createMap <- function() {
             )
           )
         ),
-
-        # #################################### Panel 5
-        # tabPanel(
-        #   title = "Color",
-        #   fluidRow(
-        #     column(
-        #       width = 6,
-        #       fluidRow(
-        #         box(
-        #           title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
-        #           radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
-        #                        selected = 1)
-        #         ),
-        #         box(
-        #           title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 12,
-        #           height = 340, #this is for 'Land color' dropdown menu
-        #           fluidRow(
-        #             column(6, checkboxInput("color_land_all", label = "Color all land", value = TRUE)),
-        #             column(
-        #               width = 6,
-        #               conditionalPanel(
-        #                 condition = "input.color_land_all",
-        #                 selectInput("color_land", label = tags$h5("Land color"), choices = cruz.palette.color, selected = "bisque1")
-        #               )
-        #             )
-        #           )
-        #         )
-        #       )
-        #     ),
-        #     column(
-        #       width = 6,
-        #       fluidRow(
-        #         box(
-        #           title = "Water", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        #           checkboxInput("color_lakes_rivers", label = "Color lakes and rivers", value = FALSE),
-        #           radioButtons("color_water_style", label = tags$h5("Ocean color style"),
-        #                        choices = list("Single color" = 1, "Depth shading" = 2),
-        #                        selected = 1),
-        #           conditionalPanel(
-        #             condition = "input.color_water_style==1",
-        #             selectInput("color_water", label = tags$h5("Water color"), choices = cruz.palette.color, selected = "white")
-        #           ),
-        #           conditionalPanel(
-        #             condition = "input.color_water_style==2",
-        #             helpText("Options:"),
-        #             helpText("1) Load csv file with 3 columns: latitude, longitude, and depth"),
-        #             helpText("2) Download bathymetric data from NOAA website based on lat/lon of map.", tags$br(),
-        #                      "The data will be saved and will be automatically loaded next",
-        #                      "time for a map with these lat/lon coordinates."),
-        #             radioButtons("depth_style", label = tags$h5("Bathymetric data source"),
-        #                          choices = list("csv file" = 2, "NOAA server" = 1), selected = 2),
-        #             conditionalPanel(
-        #               condition = "input.depth_style==2",
-        #               # TODO: use accept argument?
-        #               fileInput("depth_file", tags$h5("Bathymetric csv file"), accept = '.csv'),
-        #               checkboxInput("depth_header", label = tags$h5("Header"), value = TRUE),
-        #               fluidRow(
-        #                 column(6, radioButtons("depth_sep", label = tags$h5("Separator"),
-        #                                        choices = list(Comma = ", ", Semicolon = ";", Tab = "\t"),
-        #                                        selected = ", ")
-        #                 ),
-        #                 column(6, radioButtons("depth_quote", label = tags$h5("Quote"),
-        #                                        choices = list("None" = "", "Double quote" = '"', "Single quote" = "'"),
-        #                                        selected = '"')
-        #                 )
-        #               )
-        #             ),
-        #             conditionalPanel(
-        #               condition = "input.depth_style==1",
-        #               numericInput("depth_res", tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"),
-        #                            value = 10, min = 0, max = 60, step = 5),
-        #               uiOutput("depth_download_button")
-        #             )
-        #           )
-        #         )
-        #       )
-        #     )
-        #   )
-        # ),
 
         #################################### Panel 6
         tabPanel(

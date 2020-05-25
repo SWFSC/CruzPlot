@@ -11,6 +11,8 @@ cruz.list <- reactiveValues(
   planned.transects = NULL, # Dataframe of planned transect lines
   coastline = NULL,         # Coastline file
   bathy.xyz = NULL,         # Bathymetric data, converted to CSV file xyz coordinates
+  sp.codes = NULL,          # Species code file
+  sp.codes.name = NULL,     # Either "default" or "personal"
   das.data = NULL,          # DAS dataframe
   das.data.name = NULL,     # Names of loaded DAS files
   das.sight.filt = NULL,    # Filtered sighting data - used to print NA notice messages
@@ -77,6 +79,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     cruz.list$planned.transects <- cruz.list.save[["planned.transects"]]
     cruz.list$coastline     <- cruz.list.save[["coastline"]]
     cruz.list$bathy.xyz     <- cruz.list.save[["bathy.xyz"]]
+    cruz.list$sp.codes      <- cruz.list.save[["sp.codes"]]
+    cruz.list$sp.codes.name <- cruz.list.save[["sp.codes.name"]]
     cruz.list$das.data      <- cruz.list.save[["das.data"]]
     cruz.list$das.data.name <- cruz.list.save[["das.data.name"]]
     # Don't need to save sighting/effort data - will get updated when reloaded
@@ -230,7 +234,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateNumericInput(session, "das_legend_textSize", value = das.info$das_legend_textSize)
       updateTextInput(session, "das_legend_title", value = das.info$das_legend_title)
       updateCheckboxGroupInput(session, "das_legend_names", selected = das.info$das_legend_names)
-      updateCheckboxInput(session, "das_legend_num", value = das.info$das_legend_num)
 
       updateCheckboxInput(session, "eff_legend", value = das.info$eff_legend)
       updateSelectInput(session, "eff_legend_pos", selected = das.info$eff_legend_pos)
@@ -414,7 +417,6 @@ output$save_app_envir <- downloadHandler(
         das.info$das_legend_textSize <- input$das_legend_textSize
         das.info$das_legend_title <- input$das_legend_title
         das.info$das_legend_names <- input$das_legend_names
-        das.info$das_legend_num <- input$das_legend_num
 
         das.info$eff_legend <- input$eff_legend
         das.info$eff_legend_pos <- input$eff_legend_pos

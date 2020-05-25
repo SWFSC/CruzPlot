@@ -66,6 +66,32 @@ output$das_loaded_text <- renderText({
   )
 })
 
+# Loading SpCodes file
+output$spcodes_user_read_text <- renderText(spcodes_user_read())
+output$spcodes_default_read_text <- renderText(spcodes_default_read())
+
+output$spcodes_message <- renderText({
+  req(cruz.list$sp.codes.name)
+
+  if (cruz.list$sp.codes.name == "default") {
+    "The default SpCodes.dat file is loaded"
+  } else {
+    paste("The following user-provided species code file is loaded:",
+          cruz.list$sp.codes.name)
+  }
+})
+
+
+# Text in sightings tab about no SpCodes.data file
+output$das_sight_spcodes_message <- renderText({
+  validate(
+    need(cruz.list$sp.codes,
+         "You must load a species code file in the 'Data' window to plot sightings")
+  )
+
+  ""
+})
+
 
 # Text with notice(s) about sightings, e.g. NA lat/lons
 output$das_sight_message_text <- renderText({
@@ -94,7 +120,7 @@ output$das_effort_message1_text <- renderText({
   das.eff.lines <- cruz.list$das.eff.filt
 
   ll.na <- sum(is.na(das.eff.lines$st_lat) | is.na(das.eff.lines$end_lat) |
-                   is.na(das.eff.lines$st_lon) | is.na(das.eff.lines$end_lon))
+                 is.na(das.eff.lines$st_lon) | is.na(das.eff.lines$end_lon))
 
   if (ll.na == 1) {
     paste(

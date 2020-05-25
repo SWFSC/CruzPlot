@@ -107,19 +107,4 @@ output$das_sight_trunc_uiOut_numeric <- renderUI({
 })
 outputOptions(output, "das_sight_trunc_uiOut_numeric", suspendWhenHidden = FALSE, priority = 3)
 
-
-##############################################################################
-# Name of tabular outputs
-
-### Sightings
-output$das_out_sight_save_name_uiOut_text <- renderUI({
-  csv.name <- paste0("Sight_", Sys.time(), ".csv")
-  csv.name <- gsub(" ", "_", csv.name)
-  csv.name <- gsub(":", "-", csv.name)
-  csv.name <- gsub("-", "", csv.name)
-
-  textInput("das_out_sight_save_name", tags$h5("Sightings file name"),
-            value = csv.name)
-})
-
 ##############################################################################
