@@ -22,6 +22,7 @@ ui.dispSp <- function() {
         title = "Species Information", status = "primary", solidHeader = TRUE,  width = 12,
         radioButtons("sp_type", "Select species codes to display",
                      choices = list("Mammals" = 1, "Turtles" = 2, "All" = 3)),
+        textOutput("sp_message"),
         conditionalPanel(condition = "input.sp_type == 1", dataTableOutput("sp1")),
         conditionalPanel(condition = "input.sp_type == 2", dataTableOutput("sp2")),
         conditionalPanel(condition = "input.sp_type == 3", dataTableOutput("sp3"))

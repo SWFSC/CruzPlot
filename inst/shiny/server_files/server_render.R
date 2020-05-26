@@ -213,18 +213,28 @@ output$plotDisplay <- renderPlot({
 
 #------------------------------------------------------------------------------
 # Display mammals, turtles, and all species codes
-output$sp1 <- renderDataTable({
+output$sp_message <- renderText({
+  validate(
+    need(cruz.list$sp.codes,
+         "Please load a species codes file in the 'Plot DAS Data - Data' section")
+  )
+
+})
+
+output$sp1 <- renderDataTable({ #Mammals
+  req(cruz.list$sp.codes)
   sp.mammals <- cruzSpeciesMammals()
   names(sp.mammals) <- c("Species Code", "Abbreviation", "Scientific Name", "Common Name")
   sp.mammals
 })
-output$sp2 <- renderDataTable({ # Turtles
+output$sp2 <- renderDataTable({ #Turtles
+  req(cruz.list$sp.codes)
   sp.turtles <- cruzSpeciesTurtles()
   names(sp.turtles) <- c("Species Code", "Abbreviation", "Scientific Name", "Common Name")
   sp.turtles
 })
-output$sp3 <- renderDataTable({ # All
-  sp.all <- cruzSpecies()
+output$sp3 <- renderDataTable({ #All
+  sp.all <- req(cruz.list$sp.codes)
   names(sp.all) <- c("Species Code", "Abbreviation", "Scientific Name", "Common Name")
   sp.all
 })
