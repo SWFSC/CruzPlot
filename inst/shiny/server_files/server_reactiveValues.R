@@ -271,8 +271,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateNumericInput(session, "das_effort_trunc", value = das.info$das_effort_trunc)
 
       updateRadioButtons(session, "das_out_effort_units", selected = das.info$das_out_effort_units)
-      updateCheckboxGroupInput(session, "das_out_sight_cp", selected = das.info$das_out_sight_cp)
-      updateCheckboxGroupInput(session, "das_out_sight_snf", selected = das.info$das_out_sight_snf)
     }
 
     updateCheckboxInput(session, "ndas_plot", value = ndas.info$ndas_plot)
@@ -449,8 +447,6 @@ output$save_app_envir <- downloadHandler(
         das.info$das_effort_trunc_units <- input$das_effort_trunc_units
         das.info$das_effort_trunc <- input$das_effort_trunc
 
-        das.info$das_out_effort_units <- input$das_out_effort_units
-        das.info$das_out_sight_cp <- input$das_out_sight_cp
         das.info$das_out_sight_snf <- input$das_out_sight_snf
       }
 

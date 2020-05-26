@@ -117,7 +117,7 @@ output$das_sight_message_text <- renderText({
 
 # Text with notice about effort with NA lat/lon
 output$das_effort_message1_text <- renderText({
-  das.eff.lines <- cruz.list$das.eff.filt
+  das.eff.lines <- req(cruz.list$das.eff.filt)
 
   ll.na <- sum(is.na(das.eff.lines$st_lat) | is.na(das.eff.lines$end_lat) |
                  is.na(das.eff.lines$st_lon) | is.na(das.eff.lines$end_lon))
@@ -139,7 +139,7 @@ output$das_effort_message1_text <- renderText({
 
 # Text with notice about effort with NA Bft
 output$das_effort_message2_text <- renderText({
-  das.eff.lines <- cruz.list$das.eff.filt
+  das.eff.lines <- req(cruz.list$das.eff.filt)
   req(input$das_effort == 3)
 
   bft.na <- sum(is.na(das.eff.lines$Bft))

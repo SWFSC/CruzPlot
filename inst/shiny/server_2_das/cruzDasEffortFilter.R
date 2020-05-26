@@ -1,7 +1,4 @@
-# cruzDasEffortFilter for CruzPlot
-#   cruzDasEffortFilterBeaufort() returns effort filtered by beaufort  - not used: filtering by Bft in cruzDasEffortDetailed
-#   cruzDasEffortFilterDate() returns effort filtered by date
-#   cruzDasEffortFilterCruise() returns effort filtered by cruise number
+# cruzDasEffortFilter for CruzPlot - file 2 of effort processing
 #   cruzDasEffortFilter() returns filtered effort data
 
 

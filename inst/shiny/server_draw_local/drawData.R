@@ -32,43 +32,13 @@ if (isTruthy(data.ndas)) {
 ### Plot DAS data
 if (isTruthy(cruz.list$das.data)) {
   ## Plot effort segments
-  if (input$das_effort != "1") {
+  if (input$das_effort != "1")
     segments(x0 = das.eff.lines$st_lon, x1 = das.eff.lines$end_lon,
              y0 = das.eff.lines$st_lat, y1 = das.eff.lines$end_lat,
              col = eff.col, lwd = eff.lwd)
-    # segments(x0 = data.effort$Lon[eff.ndx.R], x1 = data.effort$Lon[eff.ndx.E],
-    #          y0 = data.effort$Lat[eff.ndx.R], y1 = data.effort$Lat[eff.ndx.E],
-    #          col = eff.col, lwd = eff.lwd)
-  }
-
-  ## Plot legend for effort by bft
-  if (input$eff_legend & input$das_effort_det_byBft & input$das_effort == "3") {
-    op <- par(family = data.eff.legend$font.fam)
-    # bft.limit <- as.numeric(min(input$das.effort.maxBeau,
-    #                             input$das.sight.maxBeau,
-    #                             max.bft, na.rm=T))
-    # bft.cut <- min(input$das.effort.maxBeau,
-    #                input$das.sight.maxBeau) < max.bft
-    # legend.text <- as.character(0:bft.limit)
-    # if(bft.cut == FALSE) {
-    #   legend.text[bft.limit+1] <- paste(legend.text[bft.limit+1],"+",sep="")
-    # }
-    legend(x = data.eff.legend$eff.leg.x,
-           y = data.eff.legend$eff.leg.y,
-           title = data.eff.legend$eff.leg.title,
-           legend = data.eff.legend$eff.leg.lab,
-           lwd = data.eff.legend$eff.leg.lwd,
-           col = data.eff.legend$eff.leg.col,
-           bty = data.eff.legend$eff.leg.bty,
-           box.col = data.eff.legend$eff.leg.box.col,
-           box.lwd = data.eff.legend$eff.leg.box.lwd,
-           cex = data.eff.legend$eff.leg.box.cex,
-           bg = "white")
-    par(op)
-  }
 
 
-  ## Plot sightings and legend
+  ## Plot sighting points and legend
   if (input$das_sightings) {
     points(das.sight.pt$Lon, das.sight.pt$Lat,
            pch = das.sight.pt$pch, col = das.sight.pt$col,
@@ -91,6 +61,24 @@ if (isTruthy(cruz.list$das.data)) {
              bg = "white")
       par(op)
     }
+  }
+
+
+  ## Plot legend for effort by bft
+  if (input$eff_legend & input$das_effort_det_byBft & input$das_effort == "3") {
+    op <- par(family = data.eff.legend$font.fam)
+    legend(x = data.eff.legend$eff.leg.x,
+           y = data.eff.legend$eff.leg.y,
+           title = data.eff.legend$eff.leg.title,
+           legend = data.eff.legend$eff.leg.lab,
+           lwd = data.eff.legend$eff.leg.lwd,
+           col = data.eff.legend$eff.leg.col,
+           bty = data.eff.legend$eff.leg.bty,
+           box.col = data.eff.legend$eff.leg.box.col,
+           box.lwd = data.eff.legend$eff.leg.box.lwd,
+           cex = data.eff.legend$eff.leg.box.cex,
+           bg = "white")
+    par(op)
   }
 }
 

@@ -45,6 +45,7 @@ cruzDasSightSpeciesTurtles <- reactive({
 ###############################################################################
 cruzDasSightSpecies <- reactive({
   das.proc <- req(cruz.list$das.data)
+  cruz.list$das.sight.filt <- NULL
 
   ### Sightings to plot
   sight.type <- input$das_sighting_type

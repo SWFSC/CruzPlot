@@ -278,7 +278,7 @@ ui.dasPlot <- function() {
                 )
               ),
               box(
-                title = "Sightings filters", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+                title = "Sighting filters", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                 fluidRow(
                   column(6, selectInput("das_sight_minBft", label = tags$h5("Min Beaufort"),
                                         choices = cruz.beaufort, selected = 0)),
@@ -309,6 +309,139 @@ ui.dasPlot <- function() {
             )
           )
         ),
+
+        ##############################################################################################################
+        tabPanel(
+          title = "Effort",
+          fluidRow(
+            box(
+              title = "Effort to plot", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              fluidRow(
+                column(6, radioButtons("das_effort", label = NULL,
+                                       choices = list("No effort lines" = 1, "Simplified effort" = 2, "Detailed effort" = 3),
+                                       selected = 1)),
+                conditionalPanel(
+                  condition = "input.das_effort != 1",
+                  column(3, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), #inline = TRUE,
+                                               choices = list("Closing" = "C", "Passing" = "P"),
+                                               selected = c("C", "P"))),
+                  column(3, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), #inline = TRUE,
+                                               choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
+                                               selected = c("S", "N", "F")))
+                )
+              ),
+              tags$span(textOutput("das_effort_message1_text"), style = "color: red;"),
+              tags$span(textOutput("das_effort_message2_text"), style = "color: red;")
+            )
+          ),
+          conditionalPanel(
+            condition = "input.das_effort != 1",
+            fluidRow(
+              box(
+                title = "Line properties", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
+                fluidRow(
+                  conditionalPanel(
+                    condition = "input.das_effort == 2",
+                    column(6, selectInput("das_effort_simp_col", tags$h5("Simplified effort line color"),
+                                          choices = cruz.palette.color, selected = "black")),
+                    column(6, numericInput("das_effort_simp_lwd", tags$h5("Simplified effort line width"),
+                                           value = 2, min = 1, max = 6, step = 1))
+                  ),
+                  conditionalPanel(
+                    condition = "input.das_effort == 3",
+                    column(12, checkboxInput("das_effort_det_byBft", "Show effort by Beaufort", value = TRUE)),
+                    conditionalPanel(
+                      condition = "input.das_effort_det_byBft",
+                      column(
+                        width = 12,
+                        helpText("Plotted effort segments will be color-coded by Beaufort"),
+                        helpText("See 'Legends' tab to control effort legend")
+                      )
+                    )
+                  ),
+                  conditionalPanel(
+                    condition = "input.das_effort_det_byBft == false",
+                    column(
+                      width = 6,
+                      conditionalPanel(
+                        condition = "output.das_effort_det_s_flag",
+                        selectInput("das_effort_det_col_s", tags$h5("Standard effort line color"),
+                                    choices = cruz.palette.color, selected = "black")
+                      ),
+                      conditionalPanel(
+                        condition = "output.das_effort_det_n_flag",
+                        selectInput("das_effort_det_col_n", tags$h5("Non-standard effort line color"),
+                                    choices = cruz.palette.color, selected = "black")
+                      ),
+                      conditionalPanel(
+                        condition = "output.das_effort_det_f_flag",
+                        selectInput("das_effort_det_col_f", tags$h5("Fine effort line color"),
+                                    choices = cruz.palette.color, selected = "black")
+                      )
+                    ),
+                    column(
+                      width = 6,
+                      conditionalPanel(
+                        condition = "output.das_effort_det_s_flag",
+                        numericInput("das_effort_det_lwd_s", tags$h5("Standard effort line width"),
+                                     value = 2, min = 1, max = 6, step = 1)
+                      ),
+                      conditionalPanel(
+                        condition = "output.das_effort_det_n_flag",
+                        numericInput("das_effort_det_lwd_n", tags$h5("Non-standard effort line width"),
+                                     value = 2, min = 1, max = 6, step = 1)
+                      ),
+                      conditionalPanel(
+                        condition = "output.das_effort_det_f_flag",
+                        numericInput("das_effort_det_lwd_f", tags$h5("Fine effort line width"),
+                                     value = 2, min = 1, max = 6, step = 1)
+                      )
+                    )
+                  )
+                )
+              ),
+              box(
+                title = "Effort filters", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
+                checkboxInput("das_effort_filter_same", "Same as 'Sighting filters' for Beaufort, dates, and cruise numbers",
+                              value = TRUE),
+                conditionalPanel(
+                  condition = "input.das_effort_filter_same == false",
+                  conditionalPanel(
+                    condition = "input.das_effort == 3",
+                    fluidRow(
+                      column(6, selectInput("das_effort_minBft", tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)
+                      ),
+                      column(6, selectInput("das_effort_maxBft", tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
+                      )
+                    )
+                  ),
+                  conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be plotted by Beaufort")),
+                  uiOutput("das_effort_dateRange_uiOut_date"),
+                  uiOutput("das_effort_cruise_uiOut_selectize"),
+                  helpText("Note that if any cruise numbers are selected,",
+                           "effort with an NA cruise value will not be plotted")
+                )
+              )
+            ),
+            fluidRow(
+              box(
+                title = "Interactive effort labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE,
+                fluidRow(
+                  column(7, radioButtons("das_effort_interactive", label = NULL,
+                                         choices = list("Non-interactive plot" = 1, "Label effort lines interactively" = 2,
+                                                        "View effort line data interactively" = 3),
+                                         selected = 1)),
+                  column(
+                    width = 5,
+                    actionButton("das_effort_interactive_reset_last", "Remove last effort label"),
+                    actionButton("das_effort_interactive_reset_all", "Remove all effort labels")
+                  )
+                )
+              )
+            )
+          )
+        ),
+
         ##############################################################################################################
         tabPanel(
           title = "Legends",
@@ -423,136 +556,7 @@ ui.dasPlot <- function() {
             )
           )
         ),
-        ##############################################################################################################
-        tabPanel(
-          title = "Effort",
-          fluidRow(
-            box(
-              title = "Effort to plot", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-              fluidRow(
-                column(6, radioButtons("das_effort", label = NULL,
-                                       choices = list("No effort lines" = 1, "Simplified effort" = 2, "Detailed effort" = 3),
-                                       selected = 1)),
-                conditionalPanel(
-                  condition = "input.das_effort != 1",
-                  column(3, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), #inline = TRUE,
-                                               choices = list("Closing" = "C", "Passing" = "P"),
-                                               selected = c("C", "P"))),
-                  column(3, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), #inline = TRUE,
-                                               choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
-                                               selected = c("S", "N", "F")))
-                )
-              ),
-              tags$span(textOutput("das_effort_message1_text"), style = "color: red;"),
-              tags$span(textOutput("das_effort_message2_text"), style = "color: red;")
-            )
-          ),
-          conditionalPanel(
-            condition = "input.das_effort != 1",
-            fluidRow(
-              box(
-                title = "Line properties", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
-                fluidRow(
-                  conditionalPanel(
-                    condition = "input.das_effort == 2",
-                    column(6, selectInput("das_effort_simp_col", tags$h5("Simplified effort line color"),
-                                          choices = cruz.palette.color, selected = "black")),
-                    column(6, numericInput("das_effort_simp_lwd", tags$h5("Simplified effort line width"),
-                                           value = 2, min = 1, max = 6, step = 1))
-                  ),
-                  conditionalPanel(
-                    condition = "input.das_effort == 3",
-                    column(12, checkboxInput("das_effort_det_byBft", "Show effort by Beaufort", value = TRUE)),
-                    conditionalPanel(
-                      condition = "input.das_effort_det_byBft",
-                      column(
-                        width = 12,
-                        helpText("Plotted effort segments will be color-coded by Beaufort"),
-                        helpText("See 'Legends' tab to control effort legend")
-                      )
-                    )
-                  ),
-                  conditionalPanel(
-                    condition = "input.das_effort_det_byBft == false",
-                    column(
-                      width = 6,
-                      conditionalPanel(
-                        condition = "output.das_effort_det_s_flag",
-                        selectInput("das_effort_det_col_s", tags$h5("Standard effort line color"),
-                                    choices = cruz.palette.color, selected = "black")
-                      ),
-                      conditionalPanel(
-                        condition = "output.das_effort_det_n_flag",
-                        selectInput("das_effort_det_col_n", tags$h5("Non-standard effort line color"),
-                                    choices = cruz.palette.color, selected = "black")
-                      ),
-                      conditionalPanel(
-                        condition = "output.das_effort_det_f_flag",
-                        selectInput("das_effort_det_col_f", tags$h5("Fine effort line color"),
-                                    choices = cruz.palette.color, selected = "black")
-                      )
-                    ),
-                    column(
-                      width = 6,
-                      conditionalPanel(
-                        condition = "output.das_effort_det_s_flag",
-                        numericInput("das_effort_det_lwd_s", tags$h5("Standard effort line width"),
-                                     value = 2, min = 1, max = 6, step = 1)
-                      ),
-                      conditionalPanel(
-                        condition = "output.das_effort_det_n_flag",
-                        numericInput("das_effort_det_lwd_n", tags$h5("Non-standard effort line width"),
-                                     value = 2, min = 1, max = 6, step = 1)
-                      ),
-                      conditionalPanel(
-                        condition = "output.das_effort_det_f_flag",
-                        numericInput("das_effort_det_lwd_f", tags$h5("Fine effort line width"),
-                                     value = 2, min = 1, max = 6, step = 1)
-                      )
-                    )
-                  )
-                )
-              ),
-              box(
-                title = "Effort filters", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
-                checkboxInput("das_effort_filter_same", label = "Same as 'Sightings filters'", value = TRUE),
-                conditionalPanel(
-                  condition = "input.das_effort_filter_same == false",
-                  conditionalPanel(
-                    condition = "input.das_effort == 3",
-                    fluidRow(
-                      column(6, selectInput("das_effort_minBft", tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)
-                      ),
-                      column(6, selectInput("das_effort_maxBft", tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
-                      )
-                    )
-                  ),
-                  conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be plotted by Beaufort")),
-                  uiOutput("das_effort_dateRange_uiOut_date"),
-                  uiOutput("das_effort_cruise_uiOut_selectize"),
-                  helpText("Note that if any cruise numbers are selected,",
-                           "effort with an NA cruise value will not be plotted")
-                )
-              )
-            ),
-            fluidRow(
-              box(
-                title = "Interactive effort labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE,
-                fluidRow(
-                  column(7, radioButtons("das_effort_interactive", label = NULL,
-                                         choices = list("Non-interactive plot" = 1, "Label effort lines interactively" = 2,
-                                                        "View effort line data interactively" = 3),
-                                         selected = 1)),
-                  column(
-                    width = 5,
-                    actionButton("das_effort_interactive_reset_last", "Remove last effort label"),
-                    actionButton("das_effort_interactive_reset_all", "Remove all effort labels")
-                  )
-                )
-              )
-            )
-          )
-        ),
+
         ##############################################################################################################
         tabPanel(
           title = "Tabular Output",
@@ -562,19 +566,16 @@ ui.dasPlot <- function() {
               conditionalPanel("input.das_effort == 1", helpText("Effort must be plotted to generate tabular output for effort")),
               conditionalPanel(
                 condition = "input.das_effort != 1",
-                fluidRow(
-                  column(
-                    width = 4,
-                    helpText("Uses the same filters as those applied to plotted effort"),
-                    radioButtons("das_out_effort_units", tags$h5("Effort distance units"),
-                                 choices = list("Kilometers" = 1, "Nautical miles" = 2),
-                                 selected = 2),
-                    ui.new.line(),
-                    uiOutput("das_out_effort_save_name_uiOut_text"),
-                    downloadButton("das_out_effort_save", "Save table of tabular output for effort")
-                  ),
-                  column(8, tableOutput("das_out_effort_table"))
-                )
+                helpText("Reports the distance traveled while on effort, summarized by effort type.",
+                         "The effort that is summarized is the same as the effort that is plotted,",
+                         "i.e. it has been filtered using the same filters",
+                         "(mode, effort type, date, Beaufort, and cruise number)",
+                         "specified in the 'Effort' tab"),
+                radioButtons("das_out_effort_units", label = "", #NULL puts the widget too close to the helpText
+                             choices = list("Distance unit: kilometers" = 1, "Distance unit: nautical miles" = 2),
+                             selected = 2),
+                tableOutput("das_out_effort_table"),
+                downloadButton("das_out_effort_save", "Save effort table")
               )
             ),
             box(
@@ -585,35 +586,16 @@ ui.dasPlot <- function() {
               ),
               conditionalPanel(
                 condition = "input.das_sightings",
-                helpText("Uses the same filters",
-                         "(species, on or off effort, mode, effort type, date, Beaufort, cruise number, and truncation)",
-                         "as those applied to plotted sightings in the 'Filters' tab"),
-                # fluidRow(
-                #   column(
-                #     width = 4,
-                #     conditionalPanel(
-                #       condition = "input.das_sight_effort == 3",
-                #       helpText(paste("Effort type filters for sightings are not applicable when",
-                #                      "sightings are filtered for off effort sightings"))
-                #     ),
-                #     conditionalPanel(
-                #       condition = "input.das_sight_effort != 3",
-                #       tags$strong("Filter sightings by mode and effort type"),
-                #       fluidRow(
-                #         column(5, checkboxGroupInput("das_out_sight_cp", label = NULL,
-                #                                      choices = list("Closing" = "C", "Passing" = "P"),
-                #                                      selected = c("C", "P"))),
-                #         column(7, checkboxGroupInput("das_out_sight_snf", label = NULL,
-                #                                      choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
-                #                                      selected = c("S", "N", "F")))
-                #       ),
-                #       ui.new.line(),
-                #       uiOutput("das_out_sight_save_name_uiOut_text"),
-                #       downloadButton("das_out_sight_save", "Save sightings tabls")
-                #     )
-                #   ),
-                #   column(8, tableOutput("das_out_sight_table"))
-                # )
+                helpText("Reports the number of sightings with the selected species, summarized by effort type.",
+                         "The sightings that are summarized are those that are plotted,",
+                         "i.e. they have been filtered using the same filters",
+                         "(species, on or off effort, mode, effort type, date, Beaufort, cruise number, and truncation distance)",
+                         "specified in the 'Filters' tab"),
+                checkboxGroupInput("das_out_sciname",
+                                   tags$h5("Species information to include in table, in addition to species code"),
+                                   choices = list("Species abbreviation" = 2,
+                                                  "Scientific name" = 3, "Common name" = 4),
+                                   selected = NULL, inline = TRUE),
                 tableOutput("das_out_sight_table"),
                 downloadButton("das_out_sight_save", "Save sightings table")
               )

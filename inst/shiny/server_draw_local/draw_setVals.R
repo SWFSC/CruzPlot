@@ -273,13 +273,8 @@ if (isTruthy(cruz.list$das.data)) {
   if (as.numeric(input$das_effort) != 1) {
     das.eff.lines <- cruzDasEffort()
 
-    # data.effort <- data.effort.list$data.effort
-    # eff.ndx.R <- data.effort.list$ndx.R
-    # eff.ndx.E <- data.effort.list$ndx.E
-    # eff.bft <- data.effort.list$data.effort$Bft[eff.ndx.R]
-
-    eff.col <- cruzDasEffortLines()$eff.col
-    eff.lwd <- cruzDasEffortLines()$eff.lwd
+    eff.col <- cruzDasEffortParams()$eff.col
+    eff.lwd <- cruzDasEffortParams()$eff.lwd
     if (input$eff_legend) data.eff.legend <- cruzDasEffortLegend()
 
 
