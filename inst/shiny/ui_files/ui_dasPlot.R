@@ -354,8 +354,15 @@ ui.dasPlot <- function() {
                       condition = "input.das_effort_det_byBft",
                       column(
                         width = 12,
-                        helpText("Plotted effort segments will be color-coded by Beaufort"),
-                        helpText("See 'Legends' tab to control effort legend")
+                        helpText("Each selected color corresponds to a Beaufort value, from low to high.",
+                                 "You must choose exactly 10 colors, no matter the Beaufort filters.",
+                                 "The first color corresponds to Beaufort 0, the second to Beaufort 1, and so on.",
+                                 "See 'Legends' tab to control effort legend"),
+                        selectizeInput("das_effort_det_bft", tags$h5("Beaufort color(s)"),
+                                       choices = cruz.palette.color,
+                                       selected = c("darkblue", "dodgerblue2", "forestgreen", "green", "orange", "lightbrown",
+                                                    "hotpink", "indianred2", "red", "red4"),
+                                       multiple = TRUE)
                       )
                     )
                   ),
@@ -446,75 +453,49 @@ ui.dasPlot <- function() {
         tabPanel(
           title = "Legends",
           fluidRow(
-            column(
-              width = 6,
-              fluidRow(
-                box(
-                  title = "Legends", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                  conditionalPanel(
-                    condition = "input.das_sightings==false",
-                    helpText("*** No legend for sightings unless 'Plot sightings' is selected (Data & Sightings tab)")
-                  ),
-                  conditionalPanel(
-                    condition = "input.das_sightings",
-                    checkboxInput("das_legend", label = "Include legend for sightings", value = TRUE)
-                  ),
-                  conditionalPanel(
-                    condition = "input.das_effort!=3 | input.das_effort_det_byBft==false",
-                    helpText("*** No legend for effort unless both 'Detailed effort' and",
-                             "'Show effort by Beaufort' are selected (Effort tab)")
-                  ),
-                  conditionalPanel(
-                    condition = "input.das_effort==3 & input.das_effort_det_byBft",
-                    checkboxInput("eff_legend", label = "Include legend for effort", value = TRUE)
-                  )
-                ),
+            box(
+              title = "Sighting legend", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              conditionalPanel(
+                condition = "input.das_sightings==false",
+                helpText("*** No legend for sightings unless 'Plot sightings' is selected in the 'Sightings' tab")
+              ),
+              conditionalPanel(
+                condition = "input.das_sightings",
+                checkboxInput("das_legend", label = "Include legend for sightings", value = TRUE),
                 conditionalPanel(
-                  condition = "input.das_legend == true & input.das_sightings",
-                  box(
-                    title = "Sighting legend options", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                    fluidRow(
-                      column(
-                        width = 7,
-                        selectInput("das_legend_pos", label = tags$h5("Position"),
-                                    choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
-                                                   "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
-                                    selected = "topright"),
-                        conditionalPanel(
-                          condition = "input.das_legend_pos == 1",
-                          numericInput("das_legend_lon", label = tags$h5("Longitude"), value = 0),
-                          numericInput("das_legend_lat", label = tags$h5("Latitude"), value = 0)
-                        ),
-                        selectInput("das_legend_boxCol", label = tags$h5("Box style"),
-                                    choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
-                                    selected = 3
-                        )
+                  condition = "input.das_legend",
+                  fluidRow(
+                    column(
+                      width = 4,
+                      selectInput("das_legend_pos", label = tags$h5("Position"),
+                                  choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
+                                                 "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
+                                  selected = "topright"),
+                      conditionalPanel(
+                        condition = "input.das_legend_pos == 1",
+                        numericInput("das_legend_lon", label = tags$h5("Longitude"), value = 0),
+                        numericInput("das_legend_lat", label = tags$h5("Latitude"), value = 0)
                       ),
-                      column(
-                        width = 5,
-                        selectInput("das_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1),
-                        numericInput("das_legend_textSize", label = tags$h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
+                      selectInput("das_legend_boxCol", label = tags$h5("Box style"),
+                                  choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
+                                  selected = 3)
+                    ),
+                    column(
+                      width = 3,
+                      selectInput("das_legend_font", tags$h5("Font"), choices = font.family, selected = 1),
+                      numericInput("das_legend_textSize", tags$h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
+                    ),
+                    column(
+                      width = 5,
+                      textInput("das_legend_title", label = tags$h5("Title (optional)"), value = ""),
+                      conditionalPanel(
+                        condition = "input.das_sighting_type == 1 | input.das_sighting_type == 2",
+                        checkboxGroupInput("das_legend_names", tags$h5("Legend sighting information"),
+                                           choices = list("Species code" = 1, "Species abbreviation" = 2,
+                                                          "Scientific name" = 3, "Common name" = 4,
+                                                          "Include number of sightings" = 5),
+                                           selected = c(1, 2, 5))
                       )
-                    )
-                  )
-                )
-              )
-            ),
-            column(
-              width = 6,
-              fluidRow(
-                conditionalPanel(
-                  condition="input.das_legend & input.das_sightings",
-                  box(
-                    title = "Sighting legend contents", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                    textInput("das_legend_title", label = tags$h5("Title (optional)"), value = ""),
-                    conditionalPanel(
-                      condition = "input.das_sighting_type!=3",
-                      checkboxGroupInput("das_legend_names", tags$h5("Legend sighting information"),
-                                         choices = list("Species code" = 1, "Species abbreviation" = 2,
-                                                        "Scientific name" = 3, "Common name" = 4,
-                                                        "Include number of sightings" = 5),
-                                         selected = c(1, 2, 5))
                     )
                   )
                 )
@@ -522,35 +503,38 @@ ui.dasPlot <- function() {
             )
           ),
           fluidRow(
-            conditionalPanel(
-              condition="input.eff_legend & input.das_effort==3 & input.das_effort_det_byBft",
-              box(
-                title = "Effort legend options", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-                fluidRow(
-                  column(
-                    width = 3,
-                    selectInput("eff_legend_pos", label = tags$h5("Position"),
-                                choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
-                                               "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
-                                selected = "bottomright"),
+            box(
+              title = "Effort legend", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              conditionalPanel(
+                condition = "input.das_effort != 3 | input.das_effort_det_byBft == false",
+                helpText("*** No legend for effort unless both 'Detailed effort' and",
+                         "'Show effort by Beaufort' are selected in the 'Effort' tab")
+              ),
+              conditionalPanel(
+                condition = "input.das_effort == 3 & input.das_effort_det_byBft",
+                checkboxInput("eff_legend", label = "Include legend for effort", value = TRUE),
+                conditionalPanel(
+                  condition = "input.eff_legend",
+                  fluidRow(
+                    column(3,  selectInput("eff_legend_pos", label = tags$h5("Position"),
+                                           choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
+                                                          "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
+                                           selected = "bottomleft")),
+                    column(4, textInput("eff_legend_title", label = tags$h5("Title (optional)"), value = "Effort by Beaufort")),
+                    column(3, selectInput("eff_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1)),
+                    column(2, numericInput("eff_legend_textSize", label = tags$h5("Legend size"),
+                                           value = 1.0, min = 0.1, max = 3, step = 0.1))
+                  ),
+                  fluidRow(
                     conditionalPanel(
                       condition = "input.eff_legend_pos == 1",
-                      numericInput("eff_legend_lon", label = tags$h5("Longitude"), value = 0)
-                    )
-                  ),
-                  column(
-                    width = 4,
-                    selectInput("eff_legend_boxCol", label = tags$h5("Box color"),
-                                choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
-                                selected = 3),
-                    conditionalPanel(
-                      condition = "input.eff_legend_pos == 1",
-                      numericInput("eff_legend_lat", label = tags$h5("Latitude"), value = 0)
-                    )
-                  ),
-                  column(3, selectInput("eff_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1)),
-                  column(2, numericInput("eff_legend_textSize", label = tags$h5("Legend size"),
-                                         value = 1.0, min = 0.1, max = 3, step = 0.1))
+                      column(3, numericInput("eff_legend_lon", label = tags$h5("Longitude"), value = 0)),
+                      column(3, numericInput("eff_legend_lat", label = tags$h5("Latitude"), value = 0))
+                    ),
+                    column(3, selectInput("eff_legend_boxCol", label = tags$h5("Box color"),
+                                          choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
+                                          selected = 3))
+                  )
                 )
               )
             )

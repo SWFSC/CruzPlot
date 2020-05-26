@@ -217,6 +217,7 @@ server <- function(input, output, session) {
   source(file.path("server_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "server_render.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "server_funcs.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_files", "server_color.R"), local = TRUE, chdir = TRUE)
 
 
   ### Other output - static plot

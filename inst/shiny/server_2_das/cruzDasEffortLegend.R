@@ -15,10 +15,12 @@ cruzDasEffortLegend <- reactive({
     eff.leg.y <- NULL
   }
 
-  eff.leg.title <- "Effort by Beaufort"
-  eff.leg.lab <- c(0:5, "6 - 9")
-  eff.leg.col <- c("darkblue", "dodgerblue2", "forestgreen", "greenyellow",
-                   "orange", "darkorange3", "red", "red", "red", "red")
+  bft.range <- cruzDasEffortFilterBeaufortVal()
+  bft.which <- (bft.range[1]:bft.range[2]) + 1
+
+  eff.leg.title <- if (input$eff_legend_title == "") NULL else input$eff_legend_title
+  eff.leg.lab <- (0:9)[bft.which]
+  eff.leg.col <- input$das_effort_det_bft[bft.which]
   eff.leg.lwd <- 2
 
   eff.leg.bty <- ifelse(input$eff_legend_boxCol == 1, "n", "o")

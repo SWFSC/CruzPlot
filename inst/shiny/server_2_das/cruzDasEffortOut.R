@@ -41,8 +41,14 @@ cruzDasEffortParams <- reactive({
 
     # Color code by Bft or SNF
     if (input$das_effort_det_byBft) {
-      bft.cols <- c("darkblue", "dodgerblue2", "forestgreen", "greenyellow",
-                    "orange", "darkorange3", "red", "red", "red", "red")
+      bft.cols <- input$das_effort_det_bft
+      validate(
+        need(length(bft.cols) == 10,
+             paste("Please choose exactly 10 colors, one for each Beaufort value"))
+      )
+
+      # bft.cols <- c("darkblue", "dodgerblue2", "forestgreen", "greenyellow",
+      #               "orange", "darkorange3", "red", "red", "red", "red")
       eff.col <- bft.cols[das.eff.lines$Bft + 1]
       eff.lwd <- 2
 

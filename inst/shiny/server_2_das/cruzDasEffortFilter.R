@@ -69,9 +69,8 @@ cruzDasEffortFilterEfftype <- reactive ({
 
 #------------------------------------------------------------------------------
 ### Beaufort filter
-cruzDasEffortFilterBeaufort <- reactive ({
-  das.eff.lines <- cruzDasEffortEvent()
-
+cruzDasEffortFilterBeaufortVal <- reactive({
+  # Separate function to be used in Legend
   if (input$das_effort_filter_same) {
     eff.bft.min <- as.numeric(input$das_sight_minBft)
     eff.bft.max <- as.numeric(input$das_sight_maxBft)
@@ -80,7 +79,14 @@ cruzDasEffortFilterBeaufort <- reactive ({
     eff.bft.max <- as.numeric(input$das_effort_maxBft)
   }
 
-  keep <- between(das.eff.lines$Bft, eff.bft.min, eff.bft.max)
+  c(eff.bft.min, eff.bft.max)
+})
+
+cruzDasEffortFilterBeaufort <- reactive ({
+  das.eff.lines <- cruzDasEffortEvent()
+  bft.vals <- cruzDasEffortFilterBeaufortVal()
+
+  keep <- between(das.eff.lines$Bft, bft.vals[1], bft.vals[2])
   .func_eff_filt_validate(keep, "Beaufort")
 })
 

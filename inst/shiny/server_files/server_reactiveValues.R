@@ -151,7 +151,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
 
     updateRadioButtons(session, "color_style", selected = map.info$color_style)
     # Upadte color palettes here
-    # TODO should these come after 'Then update values'?
     if (map.info$color_style == 1) {
       palette("default")
       updateSelectInput(session, "color_land", choices = cruz.palette.color, selected = "bisque1")
@@ -159,6 +158,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "grid_line_color", choices = cruz.palette.color, selected = "black")
       updateSelectizeInput(session, "das_symbol_color", choices = cruz.palette.color, selected = "black")
       updateSelectInput(session, "das_effort_lineCol", choices = cruz.palette.color, selected = "black")
+      updateSelectizeInput(session, "das_effort_det_bft", choices = cruz.palette.color, selected = "black")
       updateSelectInput(session, "ndas_line_col", choices = cruz.palette.color, selected = "black")
       updateSelectInput(session, "ndas_pt_col", choices = cruz.palette.color, selected = "black")
     } else {
@@ -167,6 +167,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "color_water", choices = cruz.palette.gray, selected = 0)
       updateSelectInput(session, "grid_line_color", choices = cruz.palette.gray, selected = 1)
       updateSelectizeInput(session, "das_symbol_color", choices = cruz.palette.gray, selected = 1)
+      updateSelectInput(session, "das_effort_lineCol", choices = cruz.palette.gray, selected = 1)
+      updateSelectizeInput(session, "das_effort_det_bft", choices = cruz.palette.gray, selected = 1)
       updateSelectInput(session, "ndas_line_col", choices = cruz.palette.gray, selected = 1)
       updateSelectInput(session, "ndas_pt_col", choices = cruz.palette.gray, selected = 1)
     }
@@ -225,6 +227,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateRadioButtons(session, "das_sight_trunc_units", selected = das.info$das_sight_trunc_units)
       updateNumericInput(session, "das_sight_trunc", value = das.info$das_sight_trunc)
 
+      updateSelectInput(session, "das_effort_lineCol", selected = das.info$das_effort_lineCol)
+
       updateCheckboxInput(session, "das_legend", value = das.info$das_legend)
       updateSelectInput(session, "das_legend_pos", selected = das.info$das_legend_pos)
       updateTextInput(session, "das_legend_lon", value = das.info$das_legend_lon)
@@ -240,6 +244,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateTextInput(session, "eff_legend_lon", value = das.info$eff_legend_lon)
       updateTextInput(session, "eff_legend_lat", value = das.info$eff_legend_lat)
       updateSelectInput(session, "eff_legend_boxCol", selected = das.info$eff_legend_boxCol)
+      updateTextInput(session, "eff_legend_title", value = das.info$eff_legend_title)
       updateSelectInput(session, "eff_legend_font", selected = das.info$eff_legend_font)
       updateNumericInput(session, "eff_legend_textSize", value = das.info$eff_legend_textSize)
 
@@ -254,6 +259,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateNumericInput(session, "das_effort_simp_lwd", value = das.info$das_effort_simp_lwd)
 
       updateCheckboxInput(session, "das_effort_det_byBft", value = das.info$das_effort_det_byBft)
+      updateSelectizeInput(session, "das_effort_det_bft", selected = das.info$das_effort_det_bft)
       updateSelectInput(session, "das_effort_det_col_s", selected = das.info$das_effort_det_col_s)
       updateNumericInput(session, "das_effort_det_lwd_s", value = das.info$das_effort_det_lwd_s)
       updateSelectInput(session, "das_effort_det_col_n", selected = das.info$das_effort_det_col_n)
@@ -421,6 +427,7 @@ output$save_app_envir <- downloadHandler(
         das.info$eff_legend_lon <- input$eff_legend_lon
         das.info$eff_legend_lat <- input$eff_legend_lat
         das.info$eff_legend_boxCol <- input$eff_legend_boxCol
+        das.info$eff_legend_title <- input$eff_legend_title
         das.info$eff_legend_font <- input$eff_legend_font
         das.info$eff_legend_textSize <- input$eff_legend_textSize
 
@@ -432,6 +439,7 @@ output$save_app_envir <- downloadHandler(
         das.info$das_effort_simp_lwd <- input$das_effort_simp_lwd
 
         das.info$das_effort_det_byBft <- input$das_effort_det_byBft
+        das.info$das_effort_det_bft   <- input$das_effort_det_bft
         das.info$das_effort_det_col_s <- input$das_effort_det_col_s
         das.info$das_effort_det_lwd_s <- input$das_effort_det_lwd_s
         das.info$das_effort_det_col_n <- input$das_effort_det_col_n

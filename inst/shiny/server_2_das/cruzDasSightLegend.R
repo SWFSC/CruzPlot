@@ -44,8 +44,7 @@ cruzDasSightLegend <- reactive({
     )
   }
 
-  leg.title <- NULL
-  if (input$das_legend_title != "") leg.title <- input$das_legend_title
+  leg.title <- if (input$das_legend_title == "") NULL else input$das_legend_title
   leg.bty <-     ifelse(input$das_legend_boxCol == 1, "n", "o")
   leg.box.col <- ifelse(input$das_legend_boxCol == 2, NA, "black")
   leg.box.lwd <- ifelse(input$das_legend_boxCol == 2, 0, 1)
