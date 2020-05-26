@@ -11,22 +11,25 @@ cruzDasSightLegend <- reactive({
 
   font.fam <- font.family.vals[as.numeric(input$das_legend_font)]
 
+  names.lab <- input$das_legend_names
+
   if (sight.type %in% c(3, 4)) {
     leg.lab <- leg.df$Sp
-    if (input$das_legend_num) leg.lab <- paste0(leg.lab, ", n = ", sp.count)
+    if ("5" %in% names.lab) leg.lab <- paste0(leg.lab, ", n = ", sp.count)
 
   } else {
     sp.codes.all <- cruz.list$sp.codes
-    temp.use <- unlist(sapply(1:sp.codes.len, function(i) {
-      which(sp.codes.all$Code == sp.codes[i])
-    }))
-    sp.codes.all.use <- sp.codes.all[temp.use,]
-    sp.codes.all.use$Name_Common <- sapply(sp.codes.all.use$Name_Common, function(i) {
-      unlist(strsplit(i, ","))[1]
-    })
+    temp.use <- vapply(
+      sp.codes, function(i) which(sp.codes.all$Code == i), 1,
+      USE.NAMES = FALSE
+    )
+
+    # # This piece cuts the common name at the first comma, which results in incorrect names for some codes
+    # sp.codes.all.use$Name_Common <- vapply(sp.codes.all.use$Name_Common, function(i) {
+    #   unlist(strsplit(i, ","))[1]
+    # }, as.character(1))
 
     leg.lab <- NULL
-    names.lab <- input$das_legend_names
     if ("1" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Code)
     if ("2" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Abbr)
     if ("3" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name_Scientific)

@@ -9,55 +9,67 @@ substr_right <- function(x, n) substr(x, nchar(x) - n + 1, nchar(x))
 
 #------------------------------------------------------------------------------
 # cruzClosestPt for CruzPlot
-#   Inputs: location of point on map, das data frame, type of sighting or effort
-#   Returns label postion and text
-#     type: 1 = effort, 2 = mammal sightings (with sighting number),
-#     3= effort R and E locations, 4  = non-mammal sightings labeled with time
+# Inputs: location of point on map, type of sighting or effort, and data from DAS data
+#   type: 1 = mammal sightings (with sighting number), 2 = non-mammal sightings labeled with time,
+#   3 = effort R and E locations, 4 = effort
+# Returns label postion and text
 
-cruzClosestPt <- function(curr.pt, data.das, type) {
-  if(type == 2 | type == 4) {
-    x1 <- abs(data.das$sight.lon - curr.pt[1])
-    y1 <- abs(data.das$sight.lat - curr.pt[2])
-  }
-  if (type == 1 | type == 3) {
-    x1 <- abs(data.das$Lon - curr.pt[1])
-    y1 <- abs(data.das$Lat - curr.pt[2])
-  }
+# Pieces are passed in separately in case column names, etc, change in the future
+
+cruzClosestPt <- function(curr.pt, type, das.lat, das.lon, das.date,
+                          das.sightno = NULL, das.cruise = NULL) {
+  stopifnot(type %in% 1:4)
+  # browser()
+  x1 <- abs(das.lon - curr.pt[1])
+  y1 <- abs(das.lat - curr.pt[2])
+  # if (type == 2 | type == 4) {
+  #   x1 <- abs(data.das$sight.lon - curr.pt[1])
+  #   y1 <- abs(data.das$sight.lat - curr.pt[2])
+  # } else { #if (type == 1 | type == 3) {
+  #   x1 <- abs(data.das$Lon - curr.pt[1])
+  #   y1 <- abs(data.das$Lat - curr.pt[2])
+  # }
+
   min.index <- which.min(sqrt(x1^2 + y1^2))
+  das.date.val <- das.date[min.index]
   # "Cr:", data.das$Cruise[min.index], "\n",   # no cruise number for vaquita cruise
-  lab <- paste(
-    format(data.das$Date[min.index], format = "%d%b%y"))
-  if(type  > 3) {
+  lab.date <- paste(format(das.date.val, format = "%d%b%Y"))
+  lab.dt <- paste(format(das.date.val, format = "%d%b%Y %H:%M"))
+
+  if (type == 1) {
     lab <- paste0(
-      substr(data.das$Date[min.index],12,13),
-      substr(data.das$Date[min.index],15,16), "\n", lab
+      "Sight# ", as.numeric(das.sightno[min.index]), "\n",
+      lab.dt, "\n",
+      round(das.lat[min.index], 2), ", ",
+      round(das.lon[min.index], 2)
     )
-  }
-  if(type == 2) {
+    #  if(type == 2) lab <- paste("#", as.numeric(data.das$Data1[min.index]), "\n", lab)
+
+  } else if (type == 2) {
     lab <- paste0(
-      "#", as.numeric(data.das$Data1[min.index]), "\n", lab, " ",
-      substr(data.das$Date[min.index],12,13),
-      substr(data.das$Date[min.index],15,16),
-      substr(data.das$Date[min.index],18,19), "\n",
-      round(data.das$Lat[min.index],4), ", ",
-      round(data.das$Lon[min.index],4)
+      lab.dt, "\n",
+      round(das.lat[min.index], 2), ", ", round(das.lon[min.index], 2)
     )
-  }
-  #  if(type == 2) lab <- paste("#", as.numeric(data.das$Data1[min.index]), "\n", lab)
-  if(type == 3) {
+
+  } else if (type == 3) {
+    browser()
     # Identified E event
-    if(min.index %% 2 == 0) {
+    if (min.index %% 2 == 0) {
       min.index.2 <- min.index-1
       r <- round(c(data.das$Lon[min.index.2], data.das$Lat[min.index.2]), 4)
       e <- round(c(data.das$Lon[min.index], data.das$Lat[min.index]), 4)
     }
     # Identified R event
-    if(min.index %% 2 == 1) {
+    if (min.index %% 2 == 1) {
       min.index.2 <- min.index+1
       r <- round(c(data.das$Lon[min.index], data.das$Lat[min.index]), 4)
       e <- round(c(data.das$Lon[min.index.2], data.das$Lat[min.index.2]), 4)
     }
     lab <- paste(lab, "\n", "R:", r[1], ",", r[2], "\n", "E:", e[1], ",", e[2])
+
+  } else if (type == 4) {
+    browser()
+
   }
 
   c(x1[min.index], y1[min.index], lab)

@@ -16,7 +16,7 @@ observeEvent(input$effort_click, {
   y.ratio <- param.inch[2]/param.unit.diff[2]
 
   # Determine closest point
-  close.info <- cruzClosestPt(curr, data.effort, 1)
+  close.info <- cruzClosestPt(curr, data.effort, 4)
   dist.inch <- sqrt((as.numeric(close.info[1])*x.ratio)^2 +
                       (as.numeric(close.info[2])*y.ratio)^2)
   if(dist.inch <= 0.2) {
