@@ -16,24 +16,18 @@ cruzDisplaySymbolProp <- reactive({
   }
 
   # Colors used in CruzPlot
-  col.names <- c("Black", "Dark Blue", "Dark Red", "Green", "Orange", "Blue", "Brown", "Red", "Yellow",
-                 "Aqua", "Tan", "Pink", "Light Green", "Light Brown", "Light Blue", "Light Red", "Gray", "White")
-  col.codes <- c("black", "darkblue", "red4", "forestgreen", "orange", "blue", "tan4", "red", "yellow",
-                 "aquamarine2", "bisque1", "hotpink", "green", "wheat3", "lightblue", "indianred2", "gray", "white")
-  for(i in 1:length(col.names)) {
-    text(0.33, 26.15 - (i + .25), col.names[i], cex = 1, pos = 2)
-    points(.35, 26.25 - (i + .25), pch = 15, cex = 2.1, col = col.codes[i])
+  for(i in 1:length(symbol.col)) {
+    text(0.33, 26.15 - (i + .25), symbol.col[i], cex = 1, pos = 2)
+    points(.35, 26.25 - (i + .25), pch = 15, cex = 2.1, col = symbol.col.code[i])
   }
-  points(0.35, 8.0, pch = 0, cex = 2.0)					# puts box around white
+  points(0.35,  (26.25 - (length(symbol.col) + .25)), pch = 0, cex = 2.0)					# puts box around white
   text(0.20, 17.3, "Color", srt = 90, cex = 1.2)
 
   # Grayscale palette
-  gray.names <- c("Black", "Dark Gray", "Charcoal", "Gray", "Light Gray", "White")
-  gray.codes <- c(1, 2, 3, 4, 5, 0)
-  palette(gray(0:5 / 5))
+   palette(gray(0:5 / 5))
   for(i in 1:6) {
-    text(0.33, 6.2 - (i + .2), gray.names[i], cex = 1, pos = 2)
-    points(.35, 6.3 - (i + .2), pch = 15, cex = 2.1, col = gray.codes[i])
+    text(0.33, 6.2 - (i + .2), symbol.col.gray[i], cex = 1, pos = 2)
+    points(.35, 6.3 - (i + .2), pch = 15, cex = 2.1, col = symbol.col.code.gray[i])
   }
   points(0.35, 0.11, pch = 0, cex = 2.0)					# puts box around white
   text(0.20, 2.7, "Gray Scale", srt = 90, cex = 1.2)
@@ -49,18 +43,12 @@ cruzDisplaySymbolProp <- reactive({
 
   # Typefaces
   text(0.75, 14, "Fonts", cex = 1.4)
-  font.family <- c("sans", "serif", "mono")
-  font.family.name <- c("Sans", "Serif", "Mono")
   for(i in 1:3) {
-    text(0.75, 15.5 - 2.3 * (i * 1.5), font.family.name[i], cex = 1.2, adj = 0.5, family = font.family[i])
-    text(0.75, 14.6 - 2.3 * (i * 1.5), paste(LETTERS, collapse = ""), cex = 1, adj = 0.5, family = font.family[i])
-    text(0.75, 13.7 - 2.3 * (i * 1.5), paste(c(letters, " ", 0:9), collapse = ""), cex = 1, adj = 0.5, family = font.family[i])
+    text(0.75, 15.5 - 2.3 * (i * 1.5), names(font.family)[i], cex = 1.2, adj = 0.5, family = font.family.vals[i])
+    text(0.75, 14.6 - 2.3 * (i * 1.5), paste(LETTERS, collapse = ""), cex = 1, adj = 0.5, family = font.family.vals[i])
+    text(0.75, 13.7 - 2.3 * (i * 1.5), paste(c(letters, " ", 0:9), collapse = ""), cex = 1, adj = 0.5, family = font.family.vals[i])
   }
 
-  # # Fonts
-  # text(0.75,3.6,"Fonts",cex=1.3)
-  # for (i in 1:4) text(0.4+i/8,2.2,paste("font=",i,sep=""),font=i,adj=0)
-  # text(0.75,1.2,"font=5",cex=1.2,adj=0.5,family="sans")
   palette("default")
   par(oldpar)
 })

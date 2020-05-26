@@ -26,12 +26,12 @@ stopifnot("Error in app_vals.R" = length(bft.color) == (max.bft + 1))
 
 #------------------------------------------------------------------------------
 cruz.palette.color <- list(
-  "Black" = "black", "Dark Blue" = "darkblue", "Dark Red" = "red4",
+  "Black" = "black", "Dark blue" = "darkblue", "Dark red" = "red4",
   "Brown" = "tan4", "Green" = "forestgreen", "Orange" = "orange",
-  "Blue" = "blue", "Red" = "red", "Yellow" = "yellow","Aqua" = "aquamarine2",
-  "Tan" = "bisque1", "Pink" = "hotpink", "Light Green" = "green",
-  "Light Brown" = "wheat3", "Light Blue" = "lightblue",
-  "Light Red" = "indianred2", "Gray" = "gray", "White" = "white"
+  "Blue" = "blue", "Sky blue" = "dodgerblue2", "Red" = "red", "Yellow" = "yellow",
+  "Aqua" = "aquamarine2", "Tan" = "bisque1", "Pink" = "hotpink", "Light green" = "green",
+  "Light brown" = "wheat3", "Light blue" = "lightblue",
+  "Light red" = "indianred2", "Gray" = "gray", "White" = "white"
 )
 cruz.palette.gray <- list(
   "Black" = 1, "Dark Gray" = 2, "Charcoal" = 3,
@@ -58,22 +58,12 @@ cruz.beaufort <- list(
 
 font.family <- list("Sans" = 1, "Serif" = 2, "Mono" = 3)
 font.family.vals <- tolower(names(font.family))
-# font.family = c("sans", "serif", "mono")
 
 # DAS data-symbol property text inputs
-symbol.col <- c(
-  "Black", "Dark Blue", "Dark Red", "Green", "Orange",
-  "Blue", "Brown", "Red", "Yellow", "Aqua", "Tan", "Pink",
-  "Light Green", "Light Brown", "Light Blue", "Light Red", "Gray", "White"
-)
-symbol.col.code <- c(
-  "black", "darkblue", "red4", "forestgreen", "orange",
-  "blue", "tan4", "red", "yellow", "aquamarine2", "bisque1", "hotpink",
-  "green", "wheat3", "lightblue", "indianred2", "gray", "white"
-)
-symbol.col.gray <- list(
-  "Black", "Dark Gray", "Charcoal", "Gray", "Light Gray", "White"
-)
-symbol.col.code.gray <- c(1, 2, 3, 4, 5, 0)
+symbol.col <- names(cruz.palette.color)
+symbol.col.code <- unname(unlist(cruz.palette.color))
+symbol.col.gray <- names(cruz.palette.gray)
+symbol.col.code.gray <- unname(unlist(cruz.palette.gray))
+
 
 #------------------------------------------------------------------------------
