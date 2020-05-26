@@ -23,7 +23,13 @@ cruzDasSightSymbol <- reactive({
   sp.codes     <- data.list$sp.codes
   sp.count     <- data.list$sp.count
   sp.selection <- data.list$sp.selection
-  stopifnot(isTRUE(all.equal(length(sp.codes), length(sp.count))))
+
+  #
+  if (sight.type %in% c(1, 2)) {
+    stopifnot(isTRUE(all.equal(length(sp.codes), length(sp.count))))
+  } else {
+    stopifnot(is.null(sp.codes))
+  }
 
   sp.codes.len <- length(sp.codes)
 
@@ -91,6 +97,8 @@ cruzDasSightSymbol <- reactive({
     leg.df = leg.df, pt.df = pt.df
   )
 })
+
+
 
 .func_sight_symbol_pt <- function(pt.x, pt.txt, sp.codes.len) {
   validate(

@@ -136,7 +136,7 @@ ui.dasPlot <- function() {
                   box(
                     title = "Sighting type & species", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
                     selectInput("das_sighting_type", label = tags$h5("Sighting type"),
-                                choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3, "CPODs" = 4),
+                                choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3), #, "CPODs" = 4),
                                 selected = 1),
                     conditionalPanel(
                       condition = "input.das_sighting_type==1",

@@ -147,46 +147,52 @@ cruzDasSightSpecies <- reactive({
 
 
     #--------------------------------------------------------------------------
-  } else if (sight.type == 4) {
-    # 4: C-PODs
-    # C-POD sightings are entered as objects with sighting angle and distance
-    # the string "cpod" in the comment on the next line indicates object is a CPOD
-    sp.codes <- NULL
-
-    validate(
-      need(sum(das.proc$Event == "X") > 0,
-           "There are no C-POD sightings in the loaded DAS file(s)")
-    )
-
-
-    ndx.x <- which(das.proc$Event == "X")
-    comm.x1 <- apply(das.proc[ndx.X + 1, paste0("Data", 1:7)], 1, function(i) {
-      paste(na.omit(i), collapse = "")
-    })
-    comm.x1.cpod <- grepl("cpod", comm.x1, ignore.case = TRUE)
-    stopifnot(length(ndx.x) == length(comm.x1))
-
-    ndx.x <- ndx.x[comm.x1.cpod]
-
-    das.sight <- das.proc %>%
-      slice(ndx.x) %>%
-      mutate(Sp = "CPOD",
-             Bearing = as.numeric(.data$Data2),
-             DistNm = as.numeric(.data$Data4),
-             PerpDistKm = abs(sin(.data$Bearing*pi/180) * .data$DistNm) * 1.852)
-
-    validate(
-      need(nrow(das.sight) > 0,
-           "There are no C-POD sightings in the loaded DAS file(s)")
-    )
-    # comment.str.df <- data.all[,6:13]
-    # comment.str <- apply(comment.str.df,1,paste,collapse="")
-    # ndx.cpod <- grep("cpod",comment.str)
-    # ndx <- ndx.X[(ndx.X+1) %in% ndx.cpod]
-    # data.sight <- data.all[ndx,]
-    # angle <- as.numeric(data.sight$Data2)
-    # dist.nmi <- as.numeric(data.sight$Data4)
+  } else {
+    validate("Invlaid sighting type (input$das_sighting_type) selection")
   }
+
+
+  #   #--------------------------------------------------------------------------
+  # } else if (sight.type == 4) {
+  #   # 4: C-PODs
+  #   # C-POD sightings are entered as objects with sighting angle and distance
+  #   # the string "cpod" in the comment on the next line indicates object is a CPOD
+  #   sp.codes <- NULL
+  #
+  #   validate(
+  #     need(sum(das.proc$Event == "X") > 0,
+  #          "There are no C-POD sightings in the loaded DAS file(s)")
+  #   )
+  #
+  #
+  #   ndx.x <- which(das.proc$Event == "X")
+  #   comm.x1 <- apply(das.proc[ndx.X + 1, paste0("Data", 1:7)], 1, function(i) {
+  #     paste(na.omit(i), collapse = "")
+  #   })
+  #   comm.x1.cpod <- grepl("cpod", comm.x1, ignore.case = TRUE)
+  #   stopifnot(length(ndx.x) == length(comm.x1))
+  #
+  #   ndx.x <- ndx.x[comm.x1.cpod]
+  #
+  #   das.sight <- das.proc %>%
+  #     slice(ndx.x) %>%
+  #     mutate(Sp = "CPOD",
+  #            Bearing = as.numeric(.data$Data2),
+  #            DistNm = as.numeric(.data$Data4),
+  #            PerpDistKm = abs(sin(.data$Bearing*pi/180) * .data$DistNm) * 1.852)
+  #
+  #   validate(
+  #     need(nrow(das.sight) > 0,
+  #          "There are no C-POD sightings in the loaded DAS file(s)")
+  #   )
+  #   # comment.str.df <- data.all[,6:13]
+  #   # comment.str <- apply(comment.str.df,1,paste,collapse="")
+  #   # ndx.cpod <- grep("cpod",comment.str)
+  #   # ndx <- ndx.X[(ndx.X+1) %in% ndx.cpod]
+  #   # data.sight <- data.all[ndx,]
+  #   # angle <- as.numeric(data.sight$Data2)
+  #   # dist.nmi <- as.numeric(data.sight$Data4)
+  # }
 
 
   #----------------------------------------------------------------------------
