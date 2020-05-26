@@ -99,15 +99,22 @@ ui.dasPlot <- function() {
           fluidRow(
             box(
               title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-              fluidRow(
-                column(6, checkboxInput("das_sightings", label = tags$h5("Plot sightings"), value = FALSE)),
-                column(
-                  width = 6,
-                  conditionalPanel(
-                    condition = "input.das_sightings",
-                    radioButtons("das_sightings_position", NULL,
-                                 choices = list("Plot ship position" = 1, "Plot sighting position" = 2),
-                                 selected = 1)
+              conditionalPanel(
+                condition = "output.das_loaded_flag == false",
+                tags$span(tags$h5("Please load at least one DAS file to use this section"), style = "color: red;")
+              ),
+              conditionalPanel(
+                condition = "output.das_loaded_flag",
+                fluidRow(
+                  column(6, checkboxInput("das_sightings", label = tags$h5("Plot sightings"), value = FALSE)),
+                  column(
+                    width = 6,
+                    conditionalPanel(
+                      condition = "input.das_sightings",
+                      radioButtons("das_sightings_position", NULL,
+                                   choices = list("Plot ship position" = 1, "Plot sighting position" = 2),
+                                   selected = 1)
+                    )
                   )
                 )
               ),
@@ -316,22 +323,29 @@ ui.dasPlot <- function() {
           fluidRow(
             box(
               title = "Effort to plot", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-              fluidRow(
-                column(6, radioButtons("das_effort", label = NULL,
-                                       choices = list("No effort lines" = 1, "Simplified effort" = 2, "Detailed effort" = 3),
-                                       selected = 1)),
-                conditionalPanel(
-                  condition = "input.das_effort != 1",
-                  column(3, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), #inline = TRUE,
-                                               choices = list("Closing" = "C", "Passing" = "P"),
-                                               selected = c("C", "P"))),
-                  column(3, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), #inline = TRUE,
-                                               choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
-                                               selected = c("S", "N", "F")))
-                )
+              conditionalPanel(
+                condition = "output.das_loaded_flag == false",
+                tags$span(tags$h5("Please load at least one DAS file to use this section"), style = "color: red;")
               ),
-              tags$span(textOutput("das_effort_message1_text"), style = "color: red;"),
-              tags$span(textOutput("das_effort_message2_text"), style = "color: red;")
+              conditionalPanel(
+                condition = "output.das_loaded_flag",
+                fluidRow(
+                  column(6, radioButtons("das_effort", label = NULL,
+                                         choices = list("No effort lines" = 1, "Simplified effort" = 2, "Detailed effort" = 3),
+                                         selected = 1)),
+                  conditionalPanel(
+                    condition = "input.das_effort != 1",
+                    column(3, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), #inline = TRUE,
+                                                 choices = list("Closing" = "C", "Passing" = "P"),
+                                                 selected = c("C", "P"))),
+                    column(3, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), #inline = TRUE,
+                                                 choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
+                                                 selected = c("S", "N", "F")))
+                  )
+                ),
+                tags$span(textOutput("das_effort_message1_text"), style = "color: red;"),
+                tags$span(textOutput("das_effort_message2_text"), style = "color: red;")
+              )
             )
           ),
           conditionalPanel(

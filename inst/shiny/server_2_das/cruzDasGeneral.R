@@ -4,6 +4,12 @@
 
 
 ###############################################################################
+# Output flag indicating if DAS data has been loaded
+output$das_loaded_flag <- reactive(isTruthy(cruz.list$das.data))
+outputOptions(output, "das_loaded_flag", suspendWhenHidden = FALSE)
+
+
+###############################################################################
 ### Read and process DAS file(s)
 das_file_load <- eventReactive(input$das_file, {
   # Clear reactive vals

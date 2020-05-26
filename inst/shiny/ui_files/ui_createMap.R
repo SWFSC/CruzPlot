@@ -225,6 +225,8 @@ ui.createMap <- function() {
           fluidRow(
             box(
               title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+              helpText("This color style selection will affect the palette options for all color selections in CruzPlot"),
+              tags$br(),
               radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Grey scale" = 2),
                            selected = 1)
             ),
@@ -279,17 +281,15 @@ ui.createMap <- function() {
           title = "Grid",
           fluidRow(
             box(
-              title = "Grid", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 385,
+              title = "Grid", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE, height = 385,
               checkboxInput("grid", label = "Include grid lines at major tick marks", value = FALSE),
               conditionalPanel(
                 condition = "input.grid",
                 fluidRow(
-                  column(
-                    width = 6,
-                    selectInput("grid_line_color", label = tags$h5("Line color"), choices = cruz.palette.color, selected = "black"),
-                    numericInput("grid_line_width", label = tags$h5("Line width"), value = 1, min = 1, max = 6, step = 1)
-                  ),
-                  column(6, selectInput("grid_line_type", label = tags$h5("Line type"), choices = cruz.line.type, selected = 1)))
+                  column(3, selectInput("grid_line_color", label = tags$h5("Line color"), choices = cruz.palette.color, selected = "black")),
+                  column(3, numericInput("grid_line_width", label = tags$h5("Line width"), value = 1, min = 1, max = 6, step = 1)),
+                  column(3, selectInput("grid_line_type", label = tags$h5("Line type"), choices = cruz.line.type, selected = 1))
+                )
               )
             )
           )
