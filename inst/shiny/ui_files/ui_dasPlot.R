@@ -287,30 +287,25 @@ ui.dasPlot <- function() {
               box(
                 title = "Sighting filters", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                 fluidRow(
-                  column(6, selectInput("das_sight_minBft", label = tags$h5("Min Beaufort"),
+                  column(3, selectInput("das_sight_minBft", label = tags$h5("Min Beaufort"),
                                         choices = cruz.beaufort, selected = 0)),
-                  column(6, selectInput("das_sight_maxBft", label = tags$h5("Max Beaufort"),
-                                        choices = cruz.beaufort, selected = 9))
+                  column(3, selectInput("das_sight_maxBft", label = tags$h5("Max Beaufort"),
+                                        choices = cruz.beaufort, selected = 9)),
+                  column(6, uiOutput("das_sight_dateRange_uiOut_date"))
                 ),
-                uiOutput("das_sight_dateRange_uiOut_date"),
-                br(),
+                tags$br(),
                 helpText("To stop applying the cruise number(s) and truncation (perpendicular distance) filters,",
                          "delete all text from their boxes"),
                 fluidRow(
-                  column(
-                    width = 6,
-                    uiOutput("das_sight_cruise_uiOut_selectize"),
-                    helpText("Note that if any cruise numbers are selected,",
-                             "sightings with an NA cruise value will not be plotted")
-                  ),
-                  column(
-                    width = 6,
-                    uiOutput("das_sight_trunc_uiOut_numeric"),
-                    radioButtons("das_sight_trunc_units", tags$h5("Truncation distance units"),
-                                 choices = list("Kilometers" = 1, "Nautical miles" = 2),
-                                 selected = 2),
-                    helpText("Only sightings less than or equal to this perpendicular distance from the trackline will be plotted")
-                  )
+                  column(4, uiOutput("das_sight_cruise_uiOut_selectize")),
+                  column(4, uiOutput("das_sight_trunc_uiOut_numeric")),
+                  column(4, radioButtons("das_sight_trunc_units", tags$h5("Truncation distance units"),
+                                         choices = list("Kilometers" = 1, "Nautical miles" = 2),
+                                         selected = 2)),
+                  column(4, helpText("Note that if any cruise numbers are selected,",
+                                     "sightings with an NA cruise value will not be plotted")),
+                  column(8, helpText("Only sightings less than or equal to this perpendicular distance from the trackline will be plotted.",
+                                     "Sightings with NA perpendicular distance values will not be plotted"))
                 )
               )
             )
@@ -353,73 +348,58 @@ ui.dasPlot <- function() {
             fluidRow(
               box(
                 title = "Line properties", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
-                fluidRow(
+                conditionalPanel(
+                  condition = "input.das_effort == 2",
+                  tags$h5("Simplified effort line color and width"),
+                  fluidRow(
+                    column(6, selectInput("das_effort_simp_col", NULL, choices = cruz.palette.color, selected = "black")),
+                    column(6, numericInput("das_effort_simp_lwd", NULL, value = 2, min = 1, max = 6, step = 1))
+                  )
+                ),
+                conditionalPanel(
+                  condition = "input.das_effort == 3",
+                  checkboxInput("das_effort_det_byBft", "Show effort by Beaufort", value = TRUE),
                   conditionalPanel(
-                    condition = "input.das_effort == 2",
-                    column(6, selectInput("das_effort_simp_col", tags$h5("Simplified effort line color"),
-                                          choices = cruz.palette.color, selected = "black")),
-                    column(6, numericInput("das_effort_simp_lwd", tags$h5("Simplified effort line width"),
-                                           value = 2, min = 1, max = 6, step = 1))
-                  ),
-                  conditionalPanel(
-                    condition = "input.das_effort == 3",
-                    column(12, checkboxInput("das_effort_det_byBft", "Show effort by Beaufort", value = TRUE)),
+                    condition = "input.das_effort_det_byBft",
+                    helpText("Each selected color corresponds to a Beaufort value, from low to high.",
+                             "You must choose exactly 10 colors, no matter the Beaufort filters.",
+                             "The first color corresponds to Beaufort 0, the second to Beaufort 1, and so on.",
+                             "See 'Legends' tab to control effort legend"),
                     conditionalPanel(
-                      condition = "input.das_effort_det_byBft",
-                      column(
-                        width = 12,
-                        helpText("Each selected color corresponds to a Beaufort value, from low to high.",
-                                 "You must choose exactly 10 colors, no matter the Beaufort filters.",
-                                 "The first color corresponds to Beaufort 0, the second to Beaufort 1, and so on.",
-                                 "See 'Legends' tab to control effort legend"),
-                        conditionalPanel(
-                          condition = "input.color_style == 2",
-                          tags$span(tags$h5("You cannot plot effort color-coded by Beaufort when using grey scale"),
-                                    style = "color: red;")
-                        ),
-                        selectizeInput("das_effort_det_bft", tags$h5("Beaufort color(s)"),
-                                       choices = cruz.palette.color, selected = eff.bft.default,
-                                       multiple = TRUE)
-                      )
+                      condition = "input.color_style == 2",
+                      tags$span(tags$h5("You cannot plot effort color-coded by Beaufort when using grey scale"),
+                                style = "color: red;")
+                    ),
+                    selectizeInput("das_effort_det_bft_col", tags$h5("Beaufort color(s)"),
+                                   choices = cruz.palette.color, selected = eff.bft.default,
+                                   multiple = TRUE),
+                    numericInput("das_effort_det_bft_lwd", tags$h5("Line width"), value = 2, min = 1, max = 6, step = 1)
+                  )
+                ),
+                conditionalPanel(
+                  condition = "input.das_effort_det_byBft == false",
+                  conditionalPanel(
+                    condition = "output.das_effort_det_s_flag",
+                    tags$h5("Standard effort line color and width"),
+                    fluidRow(
+                      column(6, selectInput("das_effort_det_col_s", NULL, choices = cruz.palette.color, selected = "black")),
+                      column(6, numericInput("das_effort_det_lwd_s", NULL, value = 2, min = 1, max = 6, step = 1))
                     )
                   ),
                   conditionalPanel(
-                    condition = "input.das_effort_det_byBft == false",
-                    column(
-                      width = 6,
-                      conditionalPanel(
-                        condition = "output.das_effort_det_s_flag",
-                        selectInput("das_effort_det_col_s", tags$h5("Standard effort line color"),
-                                    choices = cruz.palette.color, selected = "black")
-                      ),
-                      conditionalPanel(
-                        condition = "output.das_effort_det_n_flag",
-                        selectInput("das_effort_det_col_n", tags$h5("Non-standard effort line color"),
-                                    choices = cruz.palette.color, selected = "black")
-                      ),
-                      conditionalPanel(
-                        condition = "output.das_effort_det_f_flag",
-                        selectInput("das_effort_det_col_f", tags$h5("Fine effort line color"),
-                                    choices = cruz.palette.color, selected = "black")
-                      )
-                    ),
-                    column(
-                      width = 6,
-                      conditionalPanel(
-                        condition = "output.das_effort_det_s_flag",
-                        numericInput("das_effort_det_lwd_s", tags$h5("Standard effort line width"),
-                                     value = 2, min = 1, max = 6, step = 1)
-                      ),
-                      conditionalPanel(
-                        condition = "output.das_effort_det_n_flag",
-                        numericInput("das_effort_det_lwd_n", tags$h5("Non-standard effort line width"),
-                                     value = 2, min = 1, max = 6, step = 1)
-                      ),
-                      conditionalPanel(
-                        condition = "output.das_effort_det_f_flag",
-                        numericInput("das_effort_det_lwd_f", tags$h5("Fine effort line width"),
-                                     value = 2, min = 1, max = 6, step = 1)
-                      )
+                    condition = "output.das_effort_det_n_flag",
+                    tags$h5("Non-standard effort line color and width"),
+                    fluidRow(
+                      column(6, selectInput("das_effort_det_col_n", NULL, choices = cruz.palette.color, selected = "black")),
+                      column(6, numericInput("das_effort_det_lwd_n", NULL, value = 2, min = 1, max = 6, step = 1))
+                    )
+                  ),
+                  conditionalPanel(
+                    condition = "output.das_effort_det_f_flag",
+                    tags$h5("Fine scale effort line color and width"),
+                    fluidRow(
+                      column(6, selectInput("das_effort_det_col_f", NULL, choices = cruz.palette.color, selected = "black")),
+                      column(6, numericInput("das_effort_det_lwd_f", NULL, value = 2, min = 1, max = 6, step = 1))
                     )
                   )
                 )
@@ -523,12 +503,11 @@ ui.dasPlot <- function() {
             box(
               title = "Effort legend", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               conditionalPanel(
-                condition = "input.das_effort != 3 | input.das_effort_det_byBft == false",
-                helpText("*** No legend for effort unless both 'Detailed effort' and",
-                         "'Show effort by Beaufort' are selected in the 'Effort' tab")
+                condition = "input.das_effort == 1",
+                helpText("*** No legend for effort unless effort is plotted in the 'Effort' tab")
               ),
               conditionalPanel(
-                condition = "input.das_effort == 3 & input.das_effort_det_byBft",
+                condition = "input.das_effort != 1",
                 checkboxInput("eff_legend", label = "Include legend for effort", value = TRUE),
                 conditionalPanel(
                   condition = "input.eff_legend",
@@ -537,7 +516,7 @@ ui.dasPlot <- function() {
                                            choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
                                                           "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
                                            selected = "bottomleft")),
-                    column(4, textInput("eff_legend_title", label = tags$h5("Title (optional)"), value = "Effort by Beaufort")),
+                    column(4, textInput("eff_legend_title", label = tags$h5("Title (optional)"), value = "Effort")),
                     column(2, selectInput("eff_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1)),
                     column(2, numericInput("eff_legend_textSize", label = tags$h5("Legend size"),
                                            value = 1.0, min = 0.1, max = 3, step = 0.1))

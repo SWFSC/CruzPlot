@@ -1,6 +1,8 @@
-# eturns parameters for effort legend
+# Get and return parameters for effort legend
 cruzDasEffortLegend <- reactive({
+  req(input$das_effort != 1)
 
+  ### General parameters, set in Legends section
   eff.leg.pos <- input$eff_legend_pos
   if (eff.leg.pos == 1) {
     validate(
@@ -15,13 +17,9 @@ cruzDasEffortLegend <- reactive({
     eff.leg.y <- NULL
   }
 
-  bft.range <- cruzDasEffortFilterBeaufortVal()
-  bft.which <- (bft.range[1]:bft.range[2]) + 1
+  font.fam <- font.family.vals[as.numeric(input$eff_legend_font)]
 
   eff.leg.title <- if (input$eff_legend_title == "") NULL else input$eff_legend_title
-  eff.leg.lab <- (0:9)[bft.which]
-  eff.leg.col <- input$das_effort_det_bft[bft.which]
-  eff.leg.lwd <- 2
 
   eff.leg.bty <- ifelse(input$eff_legend_boxCol == 1, "n", "o")
   eff.leg.box.col <- ifelse(input$eff_legend_boxCol == 2, NA, "black")
@@ -29,9 +27,35 @@ cruzDasEffortLegend <- reactive({
   eff.leg.box.cex <- input$eff_legend_textSize
 
 
-  font.fam <- font.family.vals[as.numeric(input$eff_legend_font)]
+  ### Parameters that are effort-type specific
+  if (input$das_effort == 2) {
+    # Simplified effort
+    eff.leg.lab <- "Simplified effort"
+    eff.leg.col <- input$das_effort_simp_col
+    eff.leg.lwd <- input$das_effort_simp_lwd
+
+  } else if (input$das_effort == 3) {
+    # Detailed effort
+    if (input$das_effort_det_byBft) {
+      # Detailed effort - plot by Bft
+      bft.range <- cruzDasEffortFilterBeaufortVal()
+      bft.which <- (bft.range[1]:bft.range[2]) + 1
+
+      eff.leg.lab <- (0:9)[bft.which]
+      eff.leg.col <- input$das_effort_det_bft_col[bft.which]
+      eff.leg.lwd <- input$das_effort_det_bft_lwd
+
+    } else {
+      # Detailed effort - plot by S/N/F
+      snf.idx <- which(c("S", "N", "F") %in% req(input$das_effort_snf))
+      eff.leg.lab <- c("Standard", "Non-standard", "Fine")[snf.idx]
+      eff.leg.col <- c(input$das_effort_det_col_s, input$das_effort_det_col_n, input$das_effort_det_col_f)[snf.idx]
+      eff.leg.lwd <- c(input$das_effort_det_lwd_s, input$das_effort_det_lwd_n, input$das_effort_det_lwd_f)[snf.idx]
+    }
+  }
 
 
+  ### Return list
   list(
     eff.leg.x = eff.leg.x, eff.leg.y = eff.leg.y,
     eff.leg.title = eff.leg.title, eff.leg.lab = eff.leg.lab,

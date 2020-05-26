@@ -114,7 +114,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "grid_line_color", choices = c.pal, selected = "black")
       updateSelectizeInput(session, "das_symbol_color", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = "black")
-      updateSelectizeInput(session, "das_effort_det_bft", choices = c.pal, selected = eff.bft.default)
+      updateSelectizeInput(session, "das_effort_det_bft_col", choices = c.pal, selected = eff.bft.default)
       updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
@@ -130,7 +130,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "grid_line_color", choices = c.pal, selected = 1)
       updateSelectizeInput(session, "das_symbol_color", choices = c.pal, selected = 1)
       updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = 1)
-      updateSelectizeInput(session, "das_effort_det_bft", choices = c.pal, selected = 1)
+      updateSelectizeInput(session, "das_effort_det_bft_col", choices = c.pal, selected = 1)
       updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
       updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = 1)
       updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = 1)
@@ -190,8 +190,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     updateSelectInput(session, "label_axis_font", selected = map.info$label_axis_font)
     updateNumericInput(session, "label_axis_size", value = map.info$label_axis_size)
 
-
-    # Then update values
     updateCheckboxInput(session, "color_land_all", value = map.info$color_land_all)
     updateSelectInput(session, "color_land", selected = map.info$color_land)
     updateCheckboxInput(session, "color_lakes_rivers", value = map.info$color_lakes_rivers)
@@ -278,7 +276,8 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateNumericInput(session, "das_effort_simp_lwd", value = das.info$das_effort_simp_lwd)
 
       updateCheckboxInput(session, "das_effort_det_byBft", value = das.info$das_effort_det_byBft)
-      updateSelectizeInput(session, "das_effort_det_bft", selected = das.info$das_effort_det_bft)
+      updateSelectizeInput(session, "das_effort_det_bft_col", selected = das.info$das_effort_det_bft_col)
+      updateNumericInput(session, "das_effort_det_bft_lwd", value = das.info$das_effort_det_bft_lwd)
       updateSelectInput(session, "das_effort_det_col_s", selected = das.info$das_effort_det_col_s)
       updateNumericInput(session, "das_effort_det_lwd_s", value = das.info$das_effort_det_lwd_s)
       updateSelectInput(session, "das_effort_det_col_n", selected = das.info$das_effort_det_col_n)
@@ -458,7 +457,8 @@ output$save_app_envir <- downloadHandler(
         das.info$das_effort_simp_lwd <- input$das_effort_simp_lwd
 
         das.info$das_effort_det_byBft <- input$das_effort_det_byBft
-        das.info$das_effort_det_bft   <- input$das_effort_det_bft
+        das.info$das_effort_det_bft_col <- input$das_effort_det_bft_col
+        das.info$das_effort_det_bft_lwd <- input$das_effort_det_bft_lwd
         das.info$das_effort_det_col_s <- input$das_effort_det_col_s
         das.info$das_effort_det_lwd_s <- input$das_effort_det_lwd_s
         das.info$das_effort_det_col_n <- input$das_effort_det_col_n

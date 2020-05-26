@@ -8,7 +8,7 @@
 # Grid line color:  grid_line_color (black)
 # Sighting symbol:            das_symbol_color (black)+
 # Effort - simplified effort: das_effort_simp_col (black)
-# Effort - by Beaufort:       das_effort_det_bft (10 cols)+
+# Effort - by Beaufort:       das_effort_det_bft_col (10 cols)+
 # Effort - standard:          das_effort_det_col_s (black)
 # Effort - non-standard:      das_effort_det_col_n (black)
 # Effort - fine:              das_effort_det_col_f (black)
@@ -27,7 +27,7 @@ observeEvent(input$color_style, {
       updateSelectInput(session, "grid_line_color", choices = c.pal, selected = "black")
       updateSelectizeInput(session, "das_symbol_color", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = "black")
-      updateSelectizeInput(session, "das_effort_det_bft", choices = c.pal, selected = eff.bft.default)
+      updateSelectizeInput(session, "das_effort_det_bft_col", choices = c.pal, selected = eff.bft.default)
       updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
@@ -43,7 +43,7 @@ observeEvent(input$color_style, {
       updateSelectInput(session, "grid_line_color", choices = c.pal, selected = 1)
       updateSelectizeInput(session, "das_symbol_color", choices = c.pal, selected = 1)
       updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = 1)
-      updateSelectizeInput(session, "das_effort_det_bft", choices = c.pal, selected = 1)
+      updateSelectizeInput(session, "das_effort_det_bft_col", choices = c.pal, selected = 1)
       updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
       updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = 1)
       updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = 1)

@@ -12,16 +12,11 @@ outputOptions(output, "das_loaded_flag", suspendWhenHidden = FALSE)
 ###############################################################################
 ### Read and process DAS file(s)
 das_file_load <- eventReactive(input$das_file, {
-  # Clear reactive vals
+  # Clear reactive vals, and reset plot sightings and effort selections
   cruz.list$das.data <- NULL
   cruz.list$das.data.name <- NULL
-
-  # Check file name
-  file.name <- input$das_file$name
-  validate(
-    need(all(tolower(substr_right(file.name, 4)) ==".das"),
-         "Error: All DAS files must have the file extension '.das'")
-  )
+  updateCheckboxInput(session, "das_sightings", value = FALSE)
+  updateRadioButtons(session, "das_effort", selected = 1)
 
   # Get and check additional parameters
   skip <- input$das_file_skip

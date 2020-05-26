@@ -64,8 +64,8 @@ if (isTruthy(cruz.list$das.data)) {
   }
 
 
-  ## Plot legend for effort by bft
-  if (input$eff_legend & input$das_effort_det_byBft & input$das_effort == "3") {
+  ## Plot effort legend
+  if (input$eff_legend & input$das_effort != 1) { #input$das_effort_det_byBft & input$das_effort == "3") {
     op <- par(family = data.eff.legend$font.fam)
     legend(x = data.eff.legend$eff.leg.x,
            y = data.eff.legend$eff.leg.y,

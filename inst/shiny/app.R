@@ -98,7 +98,7 @@ ui <- dashboardPage(
       ),
       ui.new.line(),
       ui.new.line(),
-      numericInput("map_size", tags$h5("Map height (pixels)"), value = 600, min = 0, step = 100),
+      numericInput("map_size", "Map height (pixels)", value = 600, min = 0, step = 100),
       ui.new.line(),
       actionButton("stop", "Close CruzPlot")
     ), width = "200"
