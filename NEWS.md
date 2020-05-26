@@ -1,8 +1,10 @@
-# CruzPlot 0.2.0 (in development)
+# CruzPlot 1.0 (in development)
 
 ### General
 
 * Reorganize CruzPlot tabs and sections for a cleaner display
+
+* Make saved workspace more robust - workspaces saved with past versions of CruzPlot are no longer compatible
 
 ### Map
 
