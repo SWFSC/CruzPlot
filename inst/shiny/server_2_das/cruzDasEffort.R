@@ -37,9 +37,6 @@ cruzDasEffortEvent <- reactive({
            end_lon = c(.data$Lon[-1], NA)) %>%
     filter(.data$Event != "E") # effort data will end with an E event
 
-  # event.na <- das.eff.lines$Event[is.na(das.eff.lines$Bft)]
-  # list(das.eff.lines, setdiff(event.na, "R"))
-
   das.eff.lines
 })
 

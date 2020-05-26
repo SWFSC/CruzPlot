@@ -23,14 +23,14 @@ cruzDisplaySymbolProp <- reactive({
   points(0.35,  (26.25 - (length(symbol.col) + .25)), pch = 0, cex = 2.0)					# puts box around white
   text(0.20, 17.3, "Color", srt = 90, cex = 1.2)
 
-  # Grayscale palette
+  # Greyscale palette
    palette(gray(0:5 / 5))
   for(i in 1:6) {
     text(0.33, 6.2 - (i + .2), symbol.col.gray[i], cex = 1, pos = 2)
     points(.35, 6.3 - (i + .2), pch = 15, cex = 2.1, col = symbol.col.code.gray[i])
   }
   points(0.35, 0.11, pch = 0, cex = 2.0)					# puts box around white
-  text(0.20, 2.7, "Gray Scale", srt = 90, cex = 1.2)
+  text(0.20, 2.7, "Grey Scale", srt = 90, cex = 1.2)
 
   # Line types
   for(i in 1:6) {
