@@ -3,7 +3,7 @@
 #   cruzMapColorLand() returns land color
 #   cruzMapGrid() returns grid line parameters
 #   cruzMapColorWater() returns water color and depth data
-#   Update various color selections depending on if color or gray scale is selected
+#   Color style updating is done in server_color
 
 
 ###############################################################################

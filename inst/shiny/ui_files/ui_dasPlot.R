@@ -358,6 +358,11 @@ ui.dasPlot <- function() {
                                  "You must choose exactly 10 colors, no matter the Beaufort filters.",
                                  "The first color corresponds to Beaufort 0, the second to Beaufort 1, and so on.",
                                  "See 'Legends' tab to control effort legend"),
+                        conditionalPanel(
+                          condition = "input.color_style == 2",
+                          tags$span(tags$h5("You cannot plot effort color-coded by Beaufort when using grey scale"),
+                                    style = "color: red;")
+                        ),
                         selectizeInput("das_effort_det_bft", tags$h5("Beaufort color(s)"),
                                        choices = cruz.palette.color,
                                        selected = c("darkblue", "dodgerblue2", "forestgreen", "green", "orange", "lightbrown",

@@ -100,6 +100,50 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     if (isTruthy(cruz.list$ndas.toplot)) updateCheckboxInput(session, "ndas_plot", value = TRUE)
 
     #------------------------------------------------------
+    # Update options based on color palette. Update actual values below
+    updateRadioButtons(session, "color_style", selected = map.info$color_style)
+
+    # Upadte color palettes here
+    #   This code is the same as in server_color
+    if (map.info$color_style == 1) {
+      palette("default")
+      c.pal <- cruz.palette.color
+      updateSelectInput(session, "planned_transects_color", choices = c.pal, selected = "grey")
+      updateSelectInput(session, "color_land", choices = c.pal, selected = "bisque1")
+      updateSelectInput(session, "color_water", choices = c.pal, selected = "white")
+      updateSelectInput(session, "grid_line_color", choices = c.pal, selected = "black")
+      updateSelectizeInput(session, "das_symbol_color", choices = c.pal, selected = "black")
+      updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = "black")
+      updateSelectizeInput(session, "das_effort_det_bft", choices = c.pal,
+                           selected = c("darkblue", "dodgerblue2", "forestgreen",
+                                        "green", "orange", "lightbrown",
+                                        "hotpink", "indianred2", "red", "red4"))
+      updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
+      updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
+      updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
+      updateSelectInput(session, "ndas_line_col", choices = c.pal, selected = "black")
+      updateSelectInput(session, "ndas_pt_col", choices = c.pal, selected = "black")
+      rm(c.pal)
+    } else {
+      palette(gray(0:5/5))
+      c.pal <- cruz.palette.gray
+      updateSelectInput(session, "planned_transects_color", choices = c.pal, selected = "grey")
+      updateSelectInput(session, "color_land", choices = c.pal, selected = 4)
+      updateSelectInput(session, "color_water", choices = c.pal, selected = 0)
+      updateSelectInput(session, "grid_line_color", choices = c.pal, selected = 1)
+      updateSelectizeInput(session, "das_symbol_color", choices = c.pal, selected = 1)
+      updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = 1)
+      updateSelectizeInput(session, "das_effort_det_bft", choices = c.pal, selected = 1)
+      updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
+      updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = 1)
+      updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = 1)
+      updateSelectInput(session, "ndas_line_col", choices = c.pal, selected = 1)
+      updateSelectInput(session, "ndas_pt_col", choices = c.pal, selected = 1)
+      rm(c.pal)
+    }
+
+
+    #------------------------------------------------------
     ## Map info
     updateNumericInput(session, "map_size", value = map.info$map_size)
 
@@ -149,29 +193,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     updateSelectInput(session, "label_axis_font", selected = map.info$label_axis_font)
     updateNumericInput(session, "label_axis_size", value = map.info$label_axis_size)
 
-    updateRadioButtons(session, "color_style", selected = map.info$color_style)
-    # Upadte color palettes here
-    if (map.info$color_style == 1) {
-      palette("default")
-      updateSelectInput(session, "color_land", choices = cruz.palette.color, selected = "bisque1")
-      updateSelectInput(session, "color_water", choices = cruz.palette.color, selected = "white")
-      updateSelectInput(session, "grid_line_color", choices = cruz.palette.color, selected = "black")
-      updateSelectizeInput(session, "das_symbol_color", choices = cruz.palette.color, selected = "black")
-      updateSelectInput(session, "das_effort_lineCol", choices = cruz.palette.color, selected = "black")
-      updateSelectizeInput(session, "das_effort_det_bft", choices = cruz.palette.color, selected = "black")
-      updateSelectInput(session, "ndas_line_col", choices = cruz.palette.color, selected = "black")
-      updateSelectInput(session, "ndas_pt_col", choices = cruz.palette.color, selected = "black")
-    } else {
-      palette(gray(0:5/5))
-      updateSelectInput(session, "color_land", choices = cruz.palette.gray, selected = 4)
-      updateSelectInput(session, "color_water", choices = cruz.palette.gray, selected = 0)
-      updateSelectInput(session, "grid_line_color", choices = cruz.palette.gray, selected = 1)
-      updateSelectizeInput(session, "das_symbol_color", choices = cruz.palette.gray, selected = 1)
-      updateSelectInput(session, "das_effort_lineCol", choices = cruz.palette.gray, selected = 1)
-      updateSelectizeInput(session, "das_effort_det_bft", choices = cruz.palette.gray, selected = 1)
-      updateSelectInput(session, "ndas_line_col", choices = cruz.palette.gray, selected = 1)
-      updateSelectInput(session, "ndas_pt_col", choices = cruz.palette.gray, selected = 1)
-    }
+
     # Then update values
     updateCheckboxInput(session, "color_land_all", value = map.info$color_land_all)
     updateSelectInput(session, "color_land", selected = map.info$color_land)

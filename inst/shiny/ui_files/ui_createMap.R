@@ -240,12 +240,11 @@ ui.createMap <- function() {
           fluidRow(
             box(
               title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
-              radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
+              radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Grey scale" = 2),
                            selected = 1)
             ),
             box(
               title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
-              # height = 340, #this is for 'Land color' dropdown menu
               fluidRow(
                 column(6, checkboxInput("color_land_all", label = "Color all land", value = TRUE)),
                 column(
