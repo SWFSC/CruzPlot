@@ -24,15 +24,15 @@
 
 * Use [swfscDAS](https://smwoodman.github.io/swfscDAS/) for processing DAS data
 
-* Users can load their own species code file or use default SpCodes.dat
+* Users can load their own species codes file or use default SpCodes.dat
 
-* Sightings can be plotted by event code (S/K/M/G/p). TODO - add s/g events, and ability to symbol-code by event code
+* Sightings can be plotted by event code (S/K/M/G/p)
 
 * Sightings can be filtered by mode and effort type
 
 * Simplified effort can be filtered by effort type (standard/non-standard/fine)
 
-* Users can now provide colors for color-coding detailed effort by Beaufort
+* Users have more control over effort line properties and legend parameters
 
 * Cruise number filters now are a dynamic dropdown with the cruise numbers from the DAS data
 
