@@ -96,7 +96,7 @@ planned_transects_read_csv <- reactive({
                    silent = TRUE)
 
   validate(
-    need(isTruthy(file.data), "Error loading planned transects CSV")
+    need(file.data, "Error loading planned transects CSV")
   )
 
   list(file.name, file.data)
@@ -142,7 +142,7 @@ planned_transects <- eventReactive(input$planned_transects_execute, {
 
   cruz.list$planned.transects <- x
 
-  "Transect data added to CruzPlot"
+  ""
 })
 
 
@@ -224,7 +224,7 @@ output$planned_transects_lty_uiOut_selectize <- renderUI({
 
   input.lab <- ifelse(
     anyNA(planned_transects_class2()), "Line type", "Line type(s)"
-    )
+  )
 
   selectizeInput("planned_transects_lty", label = tags$h5(input.lab),
                  choices = cruz.line.type, selected = 1,
@@ -234,48 +234,49 @@ output$planned_transects_lty_uiOut_selectize <- renderUI({
 
 ###############################################################################
 # Removing loaded transects
+#   Currently only allows one transect file to be loaded
 
-### Widget for selecting planned transect(s) to remove
-output$planned_transects_toremove_uiOut_select <- renderUI({
-  req(cruz.list$planned.transects)
-
-  choices.list.names <- planned_transects_class1()
-  choices.list <- seq_along(choices.list.names)
-  names(choices.list) <- choices.list.names
-
-  selectizeInput("planned_transects_toremove",
-                 tags$h5("Select planned transect class(es) to remove"),
-                 choices = choices.list, multiple = TRUE)
-})
-
-output$planned_transects_toremove_execute_uiOut_button <- renderUI({
-  req(cruz.list$planned.transects)
-
-  actionButton("planned_transects_toremove_execute", "Remove")
-})
-
-
-### Remove selected transects
-planned_transects_remove <- eventReactive(input$planned_transects_toremove_execute, {
-  req(cruz.list$planned.transects)
-  y <- as.numeric(input$planned_transects_toremove)
-
-  validate(
-    need(length(y) != 0,
-         "Please select at least one set of transects to remove")
-  )
-
-  x <- cruz.list$planned.transects %>%
-    filter(!(class1 %in% planned_transects_class1()[y]))
-
-  if (nrow(x) == 0) {
-    cruz.list$planned.transects <- NULL
-  } else {
-    cruz.list$planned.transects <- x
-  }
-
-  "Planned transects removed"
-})
+# ### Widget for selecting planned transect(s) to remove
+# output$planned_transects_toremove_uiOut_select <- renderUI({
+#   req(cruz.list$planned.transects)
+#
+#   choices.list.names <- planned_transects_class1()
+#   choices.list <- seq_along(choices.list.names)
+#   names(choices.list) <- choices.list.names
+#
+#   selectizeInput("planned_transects_toremove",
+#                  tags$h5("Select planned transect class(es) to remove"),
+#                  choices = choices.list, multiple = TRUE)
+# })
+#
+# output$planned_transects_toremove_execute_uiOut_button <- renderUI({
+#   req(cruz.list$planned.transects)
+#
+#   actionButton("planned_transects_toremove_execute", "Remove")
+# })
+#
+#
+# ### Remove selected transects
+# planned_transects_remove <- eventReactive(input$planned_transects_toremove_execute, {
+#   req(cruz.list$planned.transects)
+#   y <- as.numeric(input$planned_transects_toremove)
+#
+#   validate(
+#     need(length(y) != 0,
+#          "Please select at least one set of transects to remove")
+#   )
+#
+#   x <- cruz.list$planned.transects %>%
+#     filter(!(class1 %in% planned_transects_class1()[y]))
+#
+#   if (nrow(x) == 0) {
+#     cruz.list$planned.transects <- NULL
+#   } else {
+#     cruz.list$planned.transects <- x
+#   }
+#
+#   "Planned transects removed"
+# })
 
 ###############################################################################
 ###############################################################################

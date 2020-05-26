@@ -20,12 +20,13 @@ output$bathy_message_text <- renderText({
 
 #------------------------------------------------------------------------------
 ### Planned transects outputs
-output$planned_transects_text <- renderText({
-  planned_transects()
-})
+output$planned_transects_text <- renderText(planned_transects())
 
-output$planned_transects_remove_text <- renderText({
-  planned_transects_remove()
+# output$planned_transects_remove_text <- renderText(planned_transects_remove())
+
+output$planned_transects_message <- renderText({
+  req(cruz.list$planned.transects)
+  "A planned transects file is loaded"
 })
 
 

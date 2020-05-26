@@ -79,7 +79,7 @@ ui.dasPlot <- function() {
               title = "SpCodes", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               helpText("Processing DAS sightings requires a species codes file, typically named SpCodes.dat,",
                        "to translate the species codes to scientific or common species names.",
-                       "CruzPlot contains a default SpCodes.dat file (last modified 24 May 2020),",
+                       "CruzPlot contains a default SpCodes.dat file (last modified 26 May 2020),",
                        "but you can also load your own species codes file.",
                        "This file must follow the same format as the default SpCodes.dat; see the manual for details"),
               ui.new.line(),
@@ -135,16 +135,16 @@ ui.dasPlot <- function() {
                       radioButtons("das_sighting_code_1_all", label = NULL,
                                    choices = list("Plot all mammal sightings" = 1, "Plot selected mammal sightings" = 2),
                                    selected = 2),
-                      checkboxInput("das_sighting_probable", label = "Use probable species code", value = FALSE),
-                      checkboxGroupInput("das_sighting_events", label = tags$h5("Plot sightings from"), inline = TRUE,
-                                         choices = list("S events" = "S", "K events" = "K", "M events" = "M",
-                                                        "G events" = "G", "p events" = "p"),
-                                         selected = c("S", "G")),
                       conditionalPanel(
                         condition = "input.das_sighting_code_1_all==2",
                         ui.selectize.instructions(),
                         uiOutput("das_sighting_code_1_uiOut_select")
-                      )
+                      ),
+                      checkboxInput("das_sighting_probable", label = "Use probable species code", value = FALSE),
+                      checkboxGroupInput("das_sighting_events", label = tags$h5("Plot sightings from"), inline = TRUE,
+                                         choices = list("S events" = "S", "K events" = "K", "M events" = "M",
+                                                        "G events" = "G", "p events" = "p"),
+                                         selected = c("S", "G"))
                     ),
                     conditionalPanel(
                       condition = "input.das_sighting_type==2",

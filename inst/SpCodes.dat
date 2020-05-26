@@ -13,7 +13,7 @@
  013 STRIPED     Stenella coeruleoalba                   Striped dolphin, streaker porpoise, euphrosyne dolphin                                                    
  014 A_WHT_SIDE  Lagenorhynchus acutus                   Atlantic white-sided dolphin                                                    
  015 STENO       Steno bredanensis                       Rough-toothed dolphin, Steno                                                    
- 016 LONGB_COMM  Delphinus delphis bairdii               Eastern North Pacific long-beaked common dolphin                                                   
+ 016 LONGB_COMM  Delphinus capensis                      Long-beaked common dolphin, Baja neritic common dolphin                                                    
  017 SHRTB_COMM  Delphinus delphis                       Short-beaked common dolphin, offshore common dolphin                                                    
  018 TURSIOPS    Tursiops truncatus                      Bottlenose dolphin, black porpoise, common porpoise                                                    
  019 HEAVISIDES  Cephalorhynchus heavisidii              Heaviside's dolphin                                                    
@@ -122,9 +122,9 @@
  177 UNID_S_DEL  unid. small delphinid                   Unidentified small delphinid (Delphinus, Lagenorhynchus, Lissodelphis or Stenella)                                                    
  189             Mesoplodon hotaula
  197                                                     Unidentified marine mammal (since 4/2007)                                                    
- 199             Balaenoptera physalus/borealis/edeni    Rorqualidentified as Fin, Sei, or Bryde's
+ 199             Balaenoptera physalus/borealis/edeni    Rorqual identified as Fin, Sei, or Bryde's
  277 UNID_M_DEL  unid. medium delphinid                  Unidentified medium delphinid (Feresa, Grampus, Steno or Tursiops)                                                    
- 377 UNID_L_DEL  unid. large delphinid                   nidentified large delphinid (Pseudorca, Orca or Globicephala)                           U                        
+ 377 UNID_L_DEL  unid. large delphinid                   Unidentified large delphinid (Pseudorca, Orca or Globicephala)                           U                        
  477 UNID_PORP   unid. porpoise                          Unidentified porpoise (Phocoena or Phocoenoides)                                                    
  800                                                     Wooly mammoth (in temporary use only, 9/20/2004)                                                    
  801                                                     Bison species (in temporary use only, 9/20/2004)                                                    

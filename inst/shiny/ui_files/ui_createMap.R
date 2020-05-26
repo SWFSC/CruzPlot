@@ -19,7 +19,6 @@ ui.createMap <- function() {
                        "the left and right longitude, respectively.", tags$br(),
                        "Click the 'Replot map' button after changing map range values,",
                        "or if the map isn't properly sized in the window."), #tags$br(),
-              # "Change 'Starter_Vals.csv' to update default lat/long range values."),
               fluidRow(
                 column(3, numericInput("lon_left", tags$h5("Left longitude"), value = start.ll$X[1])),
                 column(3, numericInput("lon_right", tags$h5("Right longitude"), value = start.ll$X[2])),
@@ -79,73 +78,59 @@ ui.createMap <- function() {
               title = "Planned transects", status = "warning", solidHeader = FALSE, width = 12, collapsible = FALSE,
               fluidRow(
                 box(
-                  width = 6,
+                  width = 12,
                   tags$strong("Load planned transects"),
                   helpText(paste("Longitudes must be in -180 to 180 range. See the manual for the required CSV file format")),
-                  fileInput("planned_transects_file", tags$h5("Load planned transects CSV file")),
+                  fileInput("planned_transects_file", tags$h5("Load planned transects CSV file"), accept = ".csv"),
                   fluidRow(
-                    column(
-                      width = 6,
-                      uiOutput("planned_transects_lon_uiOut_select"),
-                      uiOutput("planned_transects_num_uiOut_select"),
-                      uiOutput("planned_transects_class2_uiOut_select")
-                    ),
-                    column(
-                      width = 6,
-                      uiOutput("planned_transects_lat_uiOut_select"),
-                      uiOutput("planned_transects_class1_uiOut_select")
-                    )
+                    column(3, uiOutput("planned_transects_lon_uiOut_select")),
+                    column(3, uiOutput("planned_transects_lat_uiOut_select")),
+                    column(3, uiOutput("planned_transects_num_uiOut_select")),
+                    column(3, uiOutput("planned_transects_class1_uiOut_select"))
                   ),
                   fluidRow(
-                    ui.new.line(),
-                    column(6, uiOutput("planned_transects_execute_uiOut_button")),
-                    column(6, textOutput("planned_transects_text"))
-                  )
+                    column(3, uiOutput("planned_transects_class2_uiOut_select")),
+                    column(3, offset = 1, tags$br(), tags$br(), uiOutput("planned_transects_execute_uiOut_button")),
+                    column(5, tags$br(), tags$br(), textOutput("planned_transects_text"))
+                  ),
+                  tags$span(textOutput("planned_transects_message"), style = "color: blue;")
                 ),
-                column(
-                  width = 6,
-                  conditionalPanel(
-                    condition = "output.cruzMapPlannedTransects_Conditional",
-                    fluidRow(
+                conditionalPanel(
+                  condition = "output.cruzMapPlannedTransects_Conditional",
+                  box(
+                    width = 12,
+                    tags$strong("Plot loaded planned transects"),
+                    checkboxInput("planned_transects_plot", "Plot planned transect lines", value = FALSE),
+                    conditionalPanel(
+                      condition = "input.planned_transects_plot",
+                      column(12, helpText("For the color(s) and (if a class 2 column is specified) the line type(s),",
+                                          "select either one or the same number as transect classes or class 2s, respectively.",
+                                          "When multiple colors or line types are selected,",
+                                          "the order in which transect classes and class 2s are selected to be plotted",
+                                          "corresponds to order of specified colors and line types, respectively.")),
                       box(
                         width = 12,
-                        tags$strong("Plot loaded planned transects"),
-                        checkboxInput("planned_transects_plot", "Plot planned transect lines", value = FALSE),
-                        conditionalPanel(
-                          condition = "input.planned_transects_plot",
-                          column(12, helpText("For the color(s) and (if a class 2 column is specified) the line type(s),",
-                                              "select either one or the same number as transect classes or class 2s, respectively.",
-                                              "When multiple colors or line types are selected,",
-                                              "the order in which transect classes and class 2s are selected to be plotted",
-                                              "corresponds to order of specified colors and line types, respectively.")),
-                          box(
-                            width = 12,
-                            ui.selectize.instructions(),
-                            uiOutput("planned_transects_toplot_uiOut_selectize"),
-                            # helpText("Select either one color the same number of colors as transect classes.",
-                            #          "When multiple colors are selected, the order in which transect class(es)",
-                            #          "are selected to be plotted corresponds to order of specified color(s)."),
-                            uiOutput("planned_transects_color_uiOut_selectize")
-                          ),
-                          box(
-                            width = 12,
-                            uiOutput("planned_transects_toplot2_uiOut_selectize"),
-                            # uiOutput("planned_transects_lty_uiOut_message"),
-                            uiOutput("planned_transects_lty_uiOut_selectize")
-                          ),
-                          box(width = 12, numericInput("planned_transects_lwd", tags$h5("Line width"),
-                                                       value = 1, min = 0, step = 1))
+                        ui.selectize.instructions(),
+                        fluidRow(
+                          column(6, uiOutput("planned_transects_toplot_uiOut_selectize")),
+                          column(6, uiOutput("planned_transects_color_uiOut_selectize"))
+                        ),
+                        fluidRow(
+                          column(4, uiOutput("planned_transects_toplot2_uiOut_selectize")),
+                          column(4, uiOutput("planned_transects_lty_uiOut_selectize")),
+                          column(4, numericInput("planned_transects_lwd", tags$h5("Line width"),
+                                                 value = 1, min = 0, step = 1))
                         )
-                      )#,
-                      # box(
-                      #   width = 12,
-                      #   tags$strong("Remove loaded planned transects"),
-                      #   uiOutput("planned_transects_toremove_uiOut_select"),
-                      #   uiOutput("planned_transects_toremove_execute_uiOut_button"),
-                      #   textOutput("planned_transects_remove_text")
-                      # )
+                      )
                     )
                   )
+                  # box(
+                  #   width = 12,
+                  #   tags$strong("Remove loaded planned transects"),
+                  #   uiOutput("planned_transects_toremove_uiOut_select"),
+                  #   uiOutput("planned_transects_toremove_execute_uiOut_button"),
+                  #   textOutput("planned_transects_remove_text")
+                  # )
                 )
               )
             )
