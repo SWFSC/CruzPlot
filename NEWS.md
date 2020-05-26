@@ -30,6 +30,8 @@
 
 * Simplified effort can be filtered by effort type (standard/non-standard/fine)
 
+* Users can now provide colors for color-coding detailed effort by Beaufort
+
 * Cruise number filters now are a dynamic dropdown with the cruise numbers from the DAS data
 
 
