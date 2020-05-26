@@ -24,6 +24,8 @@ cruzDasSightLegend <- reactive({
       USE.NAMES = FALSE
     )
 
+    sp.codes.all.use <- sp.codes.all[temp.use, ]
+
     # # This piece cuts the common name at the first comma, which results in incorrect names for some codes
     # sp.codes.all.use$Name_Common <- vapply(sp.codes.all.use$Name_Common, function(i) {
     #   unlist(strsplit(i, ","))[1]
