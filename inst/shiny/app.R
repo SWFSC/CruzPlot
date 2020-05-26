@@ -89,17 +89,16 @@ ui <- dashboardPage(
       menuItem(HTML(paste0("Color and Formatting", "<br/>", "Options")), tabName = "dispColor", icon = icon("th")),
       menuItem("Species Information", tabName = "dispSp", icon = icon("th")),
       menuItem("CruzPlot Manual", tabName = "dispManual", icon = icon("th")),
-      ui.new.line(),
+      tags$br(),
       fileInput("load_app_envir_file", "Load workspace"),
       column(
         width = 12,
         textOutput("load_app_text"),
         downloadButton("save_app_envir", "Save workspace", style = "color: black")
       ),
-      ui.new.line(),
-      ui.new.line(),
+      tags$br(), tags$br(), tags$br(),
       numericInput("map_size", "Map height (pixels)", value = 600, min = 0, step = 100),
-      ui.new.line(),
+      tags$br(),
       actionButton("stop", "Close CruzPlot")
     ), width = "200"
   ),
@@ -178,7 +177,7 @@ server <- function(input, output, session) {
   #----------------------------------------------------------------------------
   ### DAS data tab
   # Read Species codes and renderUI for mammal and turtle codes
-  source(file.path("server_files", "cruzSpecies.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_files", "cruzSpeciesCodes.R"), local = TRUE, chdir = TRUE)
 
   # Load DAS file and update symbol properties
   # using fileInput, the output dataframe das.file has name,size,type and datapath

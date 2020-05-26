@@ -8,6 +8,10 @@
 output$das_loaded_flag <- reactive(isTruthy(cruz.list$das.data))
 outputOptions(output, "das_loaded_flag", suspendWhenHidden = FALSE)
 
+# Output flag indicating if SpCodes has been loaded
+output$das_spcodes_loaded_flag <- reactive(isTruthy(cruz.list$sp.codes))
+outputOptions(output, "das_spcodes_loaded_flag", suspendWhenHidden = FALSE)
+
 
 ###############################################################################
 ### Read and process DAS file(s)
@@ -47,7 +51,7 @@ das_file_load <- eventReactive(input$das_file, {
 
   # Savein reactive values
   cruz.list$das.data <- das.proc
-  cruz.list$das.data.name <- file.name
+  cruz.list$das.data.name <- input$das_file$name
 
   ""
 }, ignoreInit = TRUE)

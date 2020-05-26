@@ -60,11 +60,16 @@ output$cruzNonDasRemove_text <- renderText({
 output$das_file_load_text <- renderText(das_file_load())
 
 output$das_loaded_text <- renderText({
-  req(cruz.list$das.data)
-  paste(
-    "The following DAS files are loaded:",
-    paste(cruz.list$das.data.name, collapse = ", ")
-  )
+  req(cruz.list$das.data, cruz.list$das.data.name)
+  if (length(cruz.list$das.data.name) == 1) {
+    paste("The following DAS file is loaded:", cruz.list$das.data.name)
+
+  } else {
+    paste(
+      "The following DAS files are loaded:",
+      paste(cruz.list$das.data.name, collapse = ", ")
+    )
+  }
 })
 
 # Loading SpCodes file

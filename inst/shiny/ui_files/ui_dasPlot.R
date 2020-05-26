@@ -76,7 +76,7 @@ ui.dasPlot <- function() {
               )
             ),
             box(
-              title = "SpCodes", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              title = "Species codes", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               helpText("Processing DAS sightings requires a species codes file, typically named SpCodes.dat,",
                        "to translate the species codes to scientific or common species names.",
                        "CruzPlot contains a default SpCodes.dat file (last modified 26 May 2020),",
@@ -100,11 +100,12 @@ ui.dasPlot <- function() {
             box(
               title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               conditionalPanel(
-                condition = "output.das_loaded_flag == false",
-                tags$span(tags$h5("Please load at least one DAS file to use this section"), style = "color: red;")
+                condition = "output.das_loaded_flag == false | output.das_spcodes_loaded_flag == false",
+                tags$span(tags$h5("Please load at least one DAS file and a species codes file to use this section"),
+                          style = "color: red;")
               ),
               conditionalPanel(
-                condition = "output.das_loaded_flag",
+                condition = "output.das_loaded_flag & output.das_spcodes_loaded_flag",
                 fluidRow(
                   column(6, checkboxInput("das_sightings", label = tags$h5("Plot sightings"), value = FALSE)),
                   column(

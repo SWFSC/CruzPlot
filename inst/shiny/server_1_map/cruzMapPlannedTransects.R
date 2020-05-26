@@ -200,8 +200,7 @@ output$planned_transects_toplot2_uiOut_selectize <- renderUI({
     choices.list <- seq_along(choices.list.names)
     names(choices.list) <- choices.list.names
 
-    selectizeInput("planned_transects_toplot2",
-                   tags$h5("Class 2(s) to plot"),
+    selectizeInput("planned_transects_toplot2", tags$h5("Class 2(s) to plot"),
                    choices = choices.list, selected = choices.list,
                    multiple = TRUE)
   }
