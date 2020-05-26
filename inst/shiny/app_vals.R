@@ -17,22 +17,19 @@ bathy.col <- c("lightsteelblue4", "lightsteelblue3", "lightsteelblue2", "lightst
 #   so turtle codes are hardcoded so that app can split up codes into mammal and turtle categories
 turtle.codes <- c("CC", "CM", "DC", "EI", "HT", "LK", "LV", "ND", "UH", "UT")
 
-# colors for displaying effort by Beaufort
-# effort lines will be shown from 0 to => max.bft
-max.bft <- 3
-bft.color <- c("darkblue", "blue", "green3", "red")
-stopifnot("Error in app_vals.R" = length(bft.color) == (max.bft + 1))
-
 
 #------------------------------------------------------------------------------
+# Ordered 1) by like color and 2) so that detailed eff default is as desired
 cruz.palette.color <- list(
-  "Black" = "black", "Dark blue" = "darkblue", "Dark red" = "red4",
-  "Brown" = "tan4", "Green" = "forestgreen", "Orange" = "orange",
-  "Blue" = "blue", "Sky blue" = "dodgerblue2", "Red" = "red", "Yellow" = "yellow",
-  "Aqua" = "aquamarine2", "Tan" = "bisque1", "Pink" = "hotpink", "Light green" = "green",
-  "Light brown" = "wheat3", "Light blue" = "lightblue",
-  "Light red" = "indianred2", "Gray" = "gray", "White" = "white"
+  "Black" = "black", "Dark blue" = "darkblue", "Blue" = "blue",
+  "Sky blue" = "dodgerblue2", "Light blue" = "lightblue",
+  "Green" = "forestgreen", "Light green" = "green", "Aqua" = "aquamarine2", "Yellow" = "yellow",
+  "Orange" = "orange",
+  "Brown" = "tan4", "Light brown" = "wheat3", "Tan" = "bisque1",
+  "Pink" = "hotpink", "Light red" = "indianred2", "Red" = "red", "Dark red" = "red4",
+  "Gray" = "gray", "White" = "white"
 )
+
 cruz.palette.gray <- list(
   "Black" = 1, "Dark Gray" = 2, "Charcoal" = 3,
   "Gray" = 4, "Light Gray" = 5, "White" = 0
@@ -47,10 +44,12 @@ cruz.symbol.type <- list(
   "16: Filled Circle" = 16, "17: Filled Up Triangle" = 17, "18: Filled Diamond" = 18,
   "19: Filled Large Circle" = 19, "20: Filled Small Circle" = 20
 )
+
 cruz.line.type <- list(
   "Solid" = 1, "Dash" = 2, "Dot" = 3, "Dot-dash" = 4,
   "Long dash" = 5, "Dot-long dash" = 6
 )
+
 cruz.beaufort <- list(
   "0" = 0, "1" = 1, "2" = 2, "3" = 3, "4" = 4,
   "5" = 5, "6" = 6, "7" = 7, "8" = 8, "9" = 9
@@ -64,6 +63,12 @@ symbol.col <- names(cruz.palette.color)
 symbol.col.code <- unname(unlist(cruz.palette.color))
 symbol.col.gray <- names(cruz.palette.gray)
 symbol.col.code.gray <- unname(unlist(cruz.palette.gray))
+
+# Effort by Beaufrot default
+eff.bft.default <- c(
+  "darkblue", "dodgerblue2", "forestgreen", "green", "orange", "wheat3",
+  "hotpink", "indianred2", "red", "red4"
+)
 
 
 #------------------------------------------------------------------------------

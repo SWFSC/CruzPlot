@@ -364,9 +364,7 @@ ui.dasPlot <- function() {
                                     style = "color: red;")
                         ),
                         selectizeInput("das_effort_det_bft", tags$h5("Beaufort color(s)"),
-                                       choices = cruz.palette.color,
-                                       selected = c("darkblue", "dodgerblue2", "forestgreen", "green", "orange", "lightbrown",
-                                                    "hotpink", "indianred2", "red", "red4"),
+                                       choices = cruz.palette.color, selected = eff.bft.default,
                                        multiple = TRUE)
                       )
                     )
@@ -521,22 +519,22 @@ ui.dasPlot <- function() {
                 conditionalPanel(
                   condition = "input.eff_legend",
                   fluidRow(
-                    column(3,  selectInput("eff_legend_pos", label = tags$h5("Position"),
+                    column(4,  selectInput("eff_legend_pos", label = tags$h5("Position"),
                                            choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
                                                           "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
                                            selected = "bottomleft")),
                     column(4, textInput("eff_legend_title", label = tags$h5("Title (optional)"), value = "Effort by Beaufort")),
-                    column(3, selectInput("eff_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1)),
+                    column(2, selectInput("eff_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1)),
                     column(2, numericInput("eff_legend_textSize", label = tags$h5("Legend size"),
                                            value = 1.0, min = 0.1, max = 3, step = 0.1))
                   ),
                   fluidRow(
                     conditionalPanel(
                       condition = "input.eff_legend_pos == 1",
-                      column(3, numericInput("eff_legend_lon", label = tags$h5("Longitude"), value = 0)),
-                      column(3, numericInput("eff_legend_lat", label = tags$h5("Latitude"), value = 0))
+                      column(4, numericInput("eff_legend_lon", label = tags$h5("Longitude"), value = 0)),
+                      column(4, numericInput("eff_legend_lat", label = tags$h5("Latitude"), value = 0))
                     ),
-                    column(3, selectInput("eff_legend_boxCol", label = tags$h5("Box color"),
+                    column(4, selectInput("eff_legend_boxCol", label = tags$h5("Box color"),
                                           choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
                                           selected = 3))
                   )

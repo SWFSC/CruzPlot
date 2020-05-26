@@ -114,10 +114,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
       updateSelectInput(session, "grid_line_color", choices = c.pal, selected = "black")
       updateSelectizeInput(session, "das_symbol_color", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = "black")
-      updateSelectizeInput(session, "das_effort_det_bft", choices = c.pal,
-                           selected = c("darkblue", "dodgerblue2", "forestgreen",
-                                        "green", "orange", "lightbrown",
-                                        "hotpink", "indianred2", "red", "red4"))
+      updateSelectizeInput(session, "das_effort_det_bft", choices = c.pal, selected = eff.bft.default)
       updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
       updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
