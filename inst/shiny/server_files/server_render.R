@@ -198,14 +198,6 @@ output$plot5 <- renderPlot({
   plotMap()()
   plotInteractive()()
 }, height = map.height, units = "px")
-output$plot6 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
-}, height = map.height, units = "px")
-output$plot7 <- renderPlot({
-  plotMap()()
-  plotInteractive()()
-}, height = map.height, units = "px")
 
 
 #------------------------------------------------------------------------------

@@ -1,14 +1,13 @@
-# cruzDasInteractive for CruzPlot
-#   Handles events realted to labelling sightings interactively
-#   cruzInteractiveSight handles interactive labels for sightings
-#   cruzInteractiveEffort handles interactive labels for effort
+# Initialize interactive reactive values, and reset them when appropriate
 
-
+###############################################################################
 sight <- reactiveValues(
   click = NULL,
   hover = NULL,
+  hover.lab = NULL,
   lab = NULL,
-  miss = FALSE
+  miss = FALSE,
+  hover.miss = FALSE
 )
 
 effort <- reactiveValues(
@@ -20,13 +19,33 @@ effort <- reactiveValues(
   hover.miss = FALSE
 )
 
-# If DAS file changes, reset interactive everything
-observeEvent(cruz.list$das.data, {
-  # Remove all points
+
+###############################################################################
+### Turn plot to not-interactive when changed to a new tab
+observe({
+  input$tabs
+  input$tabset2
+
+  updateRadioButtons(session, "das_sight_interactive", selected = 1)
+  updateRadioButtons(session, "das_effort_interactive", selected = 1)
+})
+
+
+###############################################################################
+### If DAS file or map range changes, reset interactive everything
+observe({
+  cruz.list$das.data
+  cruz.map.range$lon.range
+  cruz.map.range$lat.range
+  cruz.map.range$world2
+
+  # Reset all things
   sight$click <- NULL
   sight$hover <- NULL
+  sight$hover.lab <- NULL
   sight$lab <- NULL
   sight$miss <- FALSE
+  sight$hover.miss <- FALSE
 
   effort$click <- NULL
   effort$hover <- NULL
@@ -36,9 +55,9 @@ observeEvent(cruz.list$das.data, {
   effort$hover.miss <- FALSE
 })
 
-# If sightings selections change, reset interactive sighting things
+### If sightings selections change, reset interactive sighting things
 observe({
-  # Sightings to plot
+  # Sightings to plot and filters
   input$das_sighting_type
   input$das_sighting_code_1_all
   input$das_sighting_code_2_all
@@ -46,7 +65,6 @@ observe({
   input$das_sighting_code_1
   input$das_sighting_code_2
 
-  # Filters
   input$das_sight_effort
   input$das_sight_cp
   input$das_sight_snf
@@ -56,26 +74,34 @@ observe({
   input$das_sight_cruise
   input$das_sight_trunc
 
+  # Reset sighting things
   sight$click <- NULL
   sight$hover <- NULL
+  sight$hover.lab <- NULL
   sight$lab <- NULL
   sight$miss <- FALSE
+  sight$hover.miss <- FALSE
 })
 
-# If effort selections change, reset interactive effort things
+observeEvent(input$das_sight_interactive, {
+  if (input$das_sight_interactive != 3) sight$hover <- NULL
+})
+
+
+### If effort selections change, reset interactive effort things
 observe({
-  # Effort to plot
+  # Effort to plot and filters
   input$das_effort
   input$das_effort_cp
   input$das_effort_snf
 
-  # Filters
   input$das_effort_filter_same
   input$das_effort_minBft
   input$das_effort_maxBft
   input$das_effort_dateRange
   input$das_effort_cruise
 
+  # Reset effort things
   effort$click <- NULL
   effort$hover <- NULL
   effort$lab <- NULL
@@ -83,3 +109,9 @@ observe({
   effort$miss <- FALSE
   effort$hover.miss <- FALSE
 })
+
+observeEvent(input$das_effort_interactive, {
+  if (input$das_effort_interactive != 3) effort$hover <- NULL
+})
+
+###############################################################################

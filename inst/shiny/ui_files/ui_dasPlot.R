@@ -17,24 +17,13 @@ ui.dasPlot <- function() {
           condition = "input.das_sight_interactive==2",
           conditionalPanel(
             condition = "input.das_effort_interactive==1",
-            plotOutput("plot3", height = "auto", click = "sight_click")
-          )
-        ),
-        conditionalPanel(
-          condition = "input.das_sight_interactive==3",
-          conditionalPanel(
-            condition = "input.das_effort_interactive==1",
-            plotOutput("plot4", height = "auto", hover  = "sight_hover")
+            plotOutput("plot3", height = "auto", click = "sight_click", hover = "sight_hover")
           )
         ),
         conditionalPanel(
           condition = "input.das_effort_interactive==2",
-          plotOutput("plot5", height = "auto", click = "effort_click")
+          plotOutput("plot4", height = "auto", click = "effort_click", hover = "effort_hover")
         ),
-        conditionalPanel(
-          condition = "input.das_effort_interactive==3",
-          plotOutput("plot6", height = "auto", hover = "effort_hover")
-        )
       ),
       tabBox(
         title = "Plot DAS Sightings and Effort", id = "tabset2", width = 6,
@@ -166,8 +155,6 @@ ui.dasPlot <- function() {
                       )
                     )
                   ),
-                  # conditionalPanel(
-                  #   condition = "input.das_sightings",
                   box(
                     title = "Symbol properties", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
                     helpText("Not available when 'Plot all...sightings' is selected"),
@@ -197,7 +184,7 @@ ui.dasPlot <- function() {
                       checkboxInput("das_symbol_mult", label = "Input symbol properties as text", value = FALSE)
                     ),
 
-                    # Boat or CPOD symbol properties
+                    # Boat (or CPOD) symbol properties
                     conditionalPanel(
                       condition = "input.das_sighting_type==3 | input.das_sighting_type==4",
                       helpText("To remove selected species, click the input(s) to remove and then click backspace or delete"),
@@ -240,12 +227,12 @@ ui.dasPlot <- function() {
               box(
                 title = "Interactive sighting labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE,
                 fluidRow(
-                  column(6, radioButtons("das_sight_interactive", label = NULL,
-                                         choices = list("Non-interactive plot" = 1, "Label sightings interactively" = 2),
-                                         #"View sightings interactively" = 3
+                  column(4, radioButtons("das_sight_interactive", label = NULL,
+                                         choices = list("Non-interactive plot" = 1,
+                                                        "View and label sightings interactively" = 2),
                                          selected = 1)),
                   column(
-                    width = 6,
+                    width = 8,
                     actionButton("das_sight_interactive_reset_last", "Remove last sighting label"),
                     actionButton("das_sight_interactive_reset_all", "Remove all sighting labels")
                   )
@@ -431,15 +418,23 @@ ui.dasPlot <- function() {
             fluidRow(
               box(
                 title = "Interactive effort labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE,
-                fluidRow(
-                  column(7, radioButtons("das_effort_interactive", label = NULL,
-                                         choices = list("Non-interactive plot" = 1, "Label effort lines interactively" = 2,
-                                                        "View effort line data interactively" = 3),
-                                         selected = 1)),
-                  column(
-                    width = 5,
-                    actionButton("das_effort_interactive_reset_last", "Remove last effort label"),
-                    actionButton("das_effort_interactive_reset_all", "Remove all effort labels")
+                conditionalPanel(
+                  condition = "input.das_effort != 2",
+                  tags$h5("Interactive effort labels can only be used with simplified effort")
+                ),
+                conditionalPanel(
+                  condition = "input.das_effort == 2",
+                  helpText(""),
+                  fluidRow(
+                    column(4, radioButtons("das_effort_interactive", label = NULL,
+                                           choices = list("Non-interactive plot" = 1,
+                                                          "View and label effort lines interactively" = 2),
+                                           selected = 1)),
+                    column(
+                      width = 8,
+                      actionButton("das_effort_interactive_reset_last", "Remove last effort label"),
+                      actionButton("das_effort_interactive_reset_all", "Remove all effort labels")
+                    )
                   )
                 )
               )

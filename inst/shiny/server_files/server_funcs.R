@@ -17,58 +17,59 @@ substr_right <- function(x, n) substr(x, nchar(x) - n + 1, nchar(x))
 # Pieces are passed in separately in case column names, etc, change in the future
 
 cruzClosestPt <- function(curr.pt, type, das.lat, das.lon, das.date,
-                          das.sightno = NULL, das.cruise = NULL) {
-  stopifnot(type %in% 1:4)
-  # browser()
+                          das.sightno = NULL, das.cruise = NULL,
+                          das.lat2 = NULL, das.lon2 = NULL) {
+  stopifnot(type %in% (1:3))
+
+  # Determine the DAS point closest to the map point
   x1 <- abs(das.lon - curr.pt[1])
   y1 <- abs(das.lat - curr.pt[2])
-  # if (type == 2 | type == 4) {
-  #   x1 <- abs(data.das$sight.lon - curr.pt[1])
-  #   y1 <- abs(data.das$sight.lat - curr.pt[2])
-  # } else { #if (type == 1 | type == 3) {
-  #   x1 <- abs(data.das$Lon - curr.pt[1])
-  #   y1 <- abs(data.das$Lat - curr.pt[2])
-  # }
 
-  min.index <- which.min(sqrt(x1^2 + y1^2))
+  if (type %in% c(1, 2)) { #sightings
+    min.index <- which.min(sqrt(x1^2 + y1^2))
+
+  } else { #effort
+    x2 <- abs(das.lon2 - curr.pt[1])
+    y2 <- abs(das.lat2 - curr.pt[2])
+
+    d.df <- data.frame(d1 = sqrt(x1^2 + y1^2), d2 = sqrt(x2^2 + y2^2))
+    d.min <- apply(d.df, 1, min)
+    min.index <- which.min(d.min)
+  }
+
+  # Extract DAS information
   das.date.val <- das.date[min.index]
   # "Cr:", data.das$Cruise[min.index], "\n",   # no cruise number for vaquita cruise
   lab.date <- paste(format(das.date.val, format = "%d%b%Y"))
   lab.dt <- paste(format(das.date.val, format = "%d%b%Y %H:%M"))
 
+  # Make label to print on map
   if (type == 1) {
+    # Marine mammal sighting
     lab <- paste0(
       "Sight# ", as.numeric(das.sightno[min.index]), "\n",
       lab.dt, "\n",
       round(das.lat[min.index], 2), ", ",
       round(das.lon[min.index], 2)
     )
-    #  if(type == 2) lab <- paste("#", as.numeric(data.das$Data1[min.index]), "\n", lab)
 
   } else if (type == 2) {
+    # Other sighting
     lab <- paste0(
       lab.dt, "\n",
       round(das.lat[min.index], 2), ", ", round(das.lon[min.index], 2)
     )
 
   } else if (type == 3) {
-    browser()
-    # Identified E event
-    if (min.index %% 2 == 0) {
-      min.index.2 <- min.index-1
-      r <- round(c(data.das$Lon[min.index.2], data.das$Lat[min.index.2]), 4)
-      e <- round(c(data.das$Lon[min.index], data.das$Lat[min.index]), 4)
-    }
-    # Identified R event
-    if (min.index %% 2 == 1) {
-      min.index.2 <- min.index+1
-      r <- round(c(data.das$Lon[min.index], data.das$Lat[min.index]), 4)
-      e <- round(c(data.das$Lon[min.index.2], data.das$Lat[min.index.2]), 4)
-    }
-    lab <- paste(lab, "\n", "R:", r[1], ",", r[2], "\n", "E:", e[1], ",", e[2])
+    # Simplified effort
+    pt.st <- round(c(das.lon[min.index], das.lat[min.index]), 2)
+    pt.end <- round(c(das.lon2[min.index], das.lat2[min.index]), 2)
 
-  } else if (type == 4) {
-    browser()
+    lab <- paste0(
+      lab.dt, "\n",
+      "R: ", paste(pt.st, collapse = ", "), "\n",
+      "E: ", paste(pt.end, collapse = ", ")
+    )
 
   }
 

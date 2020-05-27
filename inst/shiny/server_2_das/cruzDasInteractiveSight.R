@@ -1,11 +1,6 @@
 # cruzDasInteractiveSight for CruzPlot
 
 
-observeEvent(input$sight_hover, {
-  sight$hover <- c(input$sight_hover$x, input$sight_hover$y)
-})
-
-
 ### Interactive sighting click
 observeEvent(input$sight_click, {
   sight$click <- c(sight$click, input$sight_click$x, input$sight_click$y)
@@ -16,7 +11,8 @@ observeEvent(input$sight_click, {
   das.sight <- cruzDasSightRange()$das.sight
 
   param.unit <- cruzMapParam()$param.unit
-  param.unit.diff <- c(param.unit[2]-param.unit[1], param.unit[4]-param.unit[3]) # Works because for world2 map, x range is 0, 360
+  param.unit.diff <- c(param.unit[2]-param.unit[1], param.unit[4]-param.unit[3])
+  # ^ Works because for world2 map, x range is 0, 360
   param.inch <- cruzMapParam()$param.inch
   x.ratio <- param.inch[1]/param.unit.diff[1]
   y.ratio <- param.inch[2]/param.unit.diff[2]
@@ -25,10 +21,12 @@ observeEvent(input$sight_click, {
   sight.type <- cruzDasSightRange()$sight.type
   close.info <- if (sight.type == 1) {
     # type = 1 means mammal sighting for function cruzClosestPt
-    cruzClosestPt(curr, type = 1, das.sight$Lat, das.sight$Lon, das.sight$DateTime, das.sight$SightNo)
+    cruzClosestPt(curr, type = 1, das.sight$Lat, das.sight$Lon,
+                  das.sight$DateTime, das.sight$SightNo)
   } else {
     # type = 2 means non-mammal sighting for function cruzClosestPt
-    cruzClosestPt(curr, type = 2, das.sight$Lat, das.sight$Lon, das.sight$DateTime)
+    cruzClosestPt(curr, type = 2, das.sight$Lat, das.sight$Lon,
+                  das.sight$DateTime)
   }
 
   dist.inch <- sqrt((as.numeric(close.info[1])*x.ratio)^2 + (as.numeric(close.info[2])*y.ratio)^2)
@@ -38,6 +36,42 @@ observeEvent(input$sight_click, {
   } else{
     sight$click <- sight$click[1:(length(sight$click)-2)]
     sight$miss <- TRUE
+  }
+})
+
+
+### Hover to display sighitng information
+observeEvent(input$sight_hover, {
+  sight$hover <- c(input$sight_hover$x, input$sight_hover$y)
+  sight$hover.miss <- FALSE
+  das.sight <- cruzDasSightRange()$das.sight
+
+  param.unit <- cruzMapParam()$param.unit
+  param.unit.diff <- c(param.unit[2]-param.unit[1], param.unit[4]-param.unit[3])
+  # ^ Works because for world2 map, x range is 0, 360
+  param.inch <- cruzMapParam()$param.inch
+  x.ratio <- param.inch[1]/param.unit.diff[1]
+  y.ratio <- param.inch[2]/param.unit.diff[2]
+
+  # Determine closest point and return information to print
+  sight.type <- cruzDasSightRange()$sight.type
+  close.info <- if (sight.type == 1) {
+    # type = 1 means mammal sighting for function cruzClosestPt
+    cruzClosestPt(sight$hover, type = 1, das.sight$Lat, das.sight$Lon,
+                  das.sight$DateTime, das.sight$SightNo)
+  } else {
+    # type = 2 means non-mammal sighting for function cruzClosestPt
+    cruzClosestPt(sight$hover, type = 2, das.sight$Lat, das.sight$Lon,
+                  das.sight$DateTime)
+  }
+
+  dist.inch <- sqrt(
+    (as.numeric(close.info[1])*x.ratio)^2 + (as.numeric(close.info[2])*y.ratio)^2
+  )
+  if (dist.inch <= 0.3) {
+    isolate(sight$hover.lab <- close.info[3])
+  } else {
+    sight$hover.miss <- TRUE
   }
 })
 
@@ -57,24 +91,25 @@ observeEvent(input$das_sight_interactive_reset_all, {
   sight$miss <- FALSE
 })
 
-# Make sure interactively labeled sightings are still present
-# ***Has some bug in it
-cruzDasInteractiveSightCheck <- reactive({
-  data.sight <- cruzDasSightRange()$data.sight
-  sight.type <- cruzDasSightRange()$sight.type
 
-  # Only need to do checks when data.sight changes
-  isolate(sight.lab <- sight$lab)
-  browser()
-  if(!is.null(sight.lab)) {
-    sight.num <- gsub(" ", "", substr(sight.lab, 3, 6))
-    if(sight.type == 1) keep.pt <- which(sight.num %in% data.sight$Data1)
-    if(sight.type > 1) keep.pt <- which(sight.num %in% data.sight$Data2)
-    if(length(keep.pt) == 0) isolate(sight$click <- sight$lab <- NULL)
-    else {
-      keep.click <- sort(c(2*keep.pt, (2*keep.pt)-1))
-      isolate(sight$click <- sight$click[keep.click])
-      isolate(sight$lab <- sight$lab[keep.pt])
-    }
-  }
-})
+# # Make sure interactively labeled sightings are still present
+# # ***Has some bug in it
+# cruzDasInteractiveSightCheck <- reactive({
+#   data.sight <- cruzDasSightRange()$data.sight
+#   sight.type <- cruzDasSightRange()$sight.type
+#
+#   # Only need to do checks when data.sight changes
+#   isolate(sight.lab <- sight$lab)
+#   browser()
+#   if(!is.null(sight.lab)) {
+#     sight.num <- gsub(" ", "", substr(sight.lab, 3, 6))
+#     if(sight.type == 1) keep.pt <- which(sight.num %in% data.sight$Data1)
+#     if(sight.type > 1) keep.pt <- which(sight.num %in% data.sight$Data2)
+#     if(length(keep.pt) == 0) isolate(sight$click <- sight$lab <- NULL)
+#     else {
+#       keep.click <- sort(c(2*keep.pt, (2*keep.pt)-1))
+#       isolate(sight$click <- sight$click[keep.click])
+#       isolate(sight$lab <- sight$lab[keep.pt])
+#     }
+#   }
+# })

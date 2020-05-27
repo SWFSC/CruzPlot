@@ -4,7 +4,7 @@ ui.nonDasPlot <- function() {
   tabItem(
     tabName = "nonDASplot",
     fluidRow(
-      box(status = "primary", width = 6, plotOutput("plot7", height = "auto")),
+      box(status = "primary", width = 6, plotOutput("plot5", height = "auto")),
       tabBox(
         title = "", id = "tabset2", width = 6,
         tabPanel(
