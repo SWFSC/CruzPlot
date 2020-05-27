@@ -6,21 +6,22 @@
 # renderUIs for mammal and turtle species
 output$das_sighting_code_1_uiOut_select <- renderUI({
   sp.mammals <- cruzSpeciesMammals()
-  sp.mammals.lab <- paste(sp.mammals$Code, sp.mammals$Name.Scientific)
+  sp.codes.list <- as.list(sp.mammals$Code)
+  names(sp.codes.list) <- paste(sp.mammals$Code, sp.mammals$Abbr, sep = " - ")
 
-  selectizeInput("das_sighting_code_1", tags$h5("Select species"),
-                 choices = sp.mammals.lab, multiple = TRUE,
+  selectizeInput("das_sighting_code_1", tags$h5("Select mammal species"),
+                 choices = sp.codes.list, multiple = TRUE,
                  selected = NULL)
 })
-outputOptions(output, "das_sighting_code_1_uiOut_select",
-              suspendWhenHidden = FALSE)
+outputOptions(output, "das_sighting_code_1_uiOut_select", suspendWhenHidden = FALSE)
 
 output$das_sighting_code_2_uiOut_select <- renderUI({
   sp.turtles <- cruzSpeciesTurtles()
-  sp.turtles.lab <- paste(sp.turtles$Code, sp.turtles$Name.Scientific)
+  sp.codes.list <- as.list(sp.turtles$Code)
+  names(sp.codes.list) <- paste(sp.turtles$Code, sp.turtles$Name_Scientific, sep = " - ")
 
-  selectizeInput("das_sighting_code_2", tags$h5("Select species"),
-                 choices = sp.turtles.lab, multiple = TRUE, selected = NULL)
+  selectizeInput("das_sighting_code_2", tags$h5("Select turtle species"),
+                 choices = sp.codes.list, multiple = TRUE, selected = NULL)
 })
 outputOptions(output, "das_sighting_code_2_uiOut_select", suspendWhenHidden = FALSE)
 
@@ -46,8 +47,7 @@ output$das_sight_dateRange_uiOut_date <- renderUI({
 
   dates <- dateRange_min_max()
 
-  dateRangeInput("das_sight_dateRange",
-                 label = tags$h5("Range of dates for which sightings are plotted"),
+  dateRangeInput("das_sight_dateRange", label = tags$h5("Date range"),
                  start = dates[1], end = dates[2])
 })
 outputOptions(output, "das_sight_dateRange_uiOut_date", suspendWhenHidden = FALSE, priority = 3)
@@ -56,8 +56,7 @@ output$das_effort_dateRange_uiOut_date <- renderUI({
   req(cruz.list$das.data)
   dates <- dateRange_min_max()
 
-  dateRangeInput("das_effort_dateRange",
-                 label = tags$h5("Range of dates for which effort is plotted"),
+  dateRangeInput("das_effort_dateRange", label = tags$h5("Date range"),
                  start = dates[1], end = dates[2])
 })
 outputOptions(output, "das_effort_dateRange_uiOut_date", suspendWhenHidden = FALSE, priority = 3)

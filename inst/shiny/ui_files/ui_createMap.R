@@ -302,10 +302,10 @@ ui.createMap <- function() {
             box(
               title = "Save map", status = "warning", solidHeader = FALSE, width = 12,
               fluidRow(
-                column(6, radioButtons("download_format", label = tags$h5("Download map as"),
+                column(4, radioButtons("download_format", label = tags$h5("Download map as"),
                                        choices = list("jpeg" = 1, "pdf" = 2, "png" = 3),
                                        selected = 3)),
-                column(6, numericInput("download_res", tags$h5("Resolution"), value = 300, step = 50, min = 0))
+                column(4, numericInput("download_res", tags$h5("Resolution"), value = 300, step = 50, min = 0))
               ),
               uiOutput("downloadMap_button")
             )

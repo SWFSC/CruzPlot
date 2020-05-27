@@ -42,13 +42,13 @@ ui.dasPlot <- function() {
                   fluidRow(
                     column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading data"),
                                            value = 0, min = 0)),
-                    column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
-                                          choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+                    column(6, numericInput("das_file_days_gap", tags$h5("days.gap argument of das_process()"),
+                                           value = 10, min = 0, step = 1))
                   ),
                   fluidRow(
-                    column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
+                    column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
                                           choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
-                    column(6, selectInput("das_file_reset_day", tags$h5("reset.day argument of das_process()"),
+                    column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
                                           choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
                   )
                 ),
@@ -73,7 +73,7 @@ ui.dasPlot <- function() {
                        "This file must follow the same format as the default SpCodes.dat; see the manual for details"),
               ui.new.line(),
               fluidRow(
-                column(5, fileInput("das_spcodes_file", tags$h5("Load species code file"), accept = ".dat")),
+                column(5, fileInput("das_spcodes_file", tags$h5("Load species codes file"), accept = ".dat")),
                 column(6, offset = 1, tags$br(), tags$br(), actionButton("das_spcodes_default", "Load default species codes"))
               ),
               textOutput("spcodes_user_read_text"),
@@ -139,8 +139,9 @@ ui.dasPlot <- function() {
                       ),
                       checkboxInput("das_sighting_probable", label = "Use probable species code", value = FALSE),
                       checkboxGroupInput("das_sighting_events", label = tags$h5("Plot sightings from"), inline = TRUE,
-                                         choices = list("S events" = "S", "K events" = "K", "M events" = "M",
-                                                        "G events" = "G", "p events" = "p"),
+                                         choices = list("S events" = "S", "G events" = "G",
+                                                        "K events" = "K", "M events" = "M", "p events" = "p"),
+                                                        # "s events" = "s", "g events" = "g"),
                                          selected = c("S", "G"))
                     ),
                     conditionalPanel(
@@ -167,6 +168,7 @@ ui.dasPlot <- function() {
                                "corresponds to the order of specified symbol properties"),
                       conditionalPanel(
                         condition = "input.das_symbol_mult==false",
+                        # checkboxInput("das_symbol_event", "Make symbol colors correspond to event code", value = FALSE),
                         selectizeInput("das_symbol_type", label = tags$h5("Symbol type(s)"),
                                        choices = cruz.symbol.type, selected = 1, multiple = TRUE),
                         selectizeInput("das_symbol_color", label = tags$h5("Symbol color(s)"),
@@ -275,9 +277,9 @@ ui.dasPlot <- function() {
               box(
                 title = "Sighting filters", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                 fluidRow(
-                  column(3, selectInput("das_sight_minBft", label = tags$h5("Min Beaufort"),
+                  column(3, selectInput("das_sight_minBft", label = tags$h5("Minimum Beaufort"),
                                         choices = cruz.beaufort, selected = 0)),
-                  column(3, selectInput("das_sight_maxBft", label = tags$h5("Max Beaufort"),
+                  column(3, selectInput("das_sight_maxBft", label = tags$h5("Maximum Beaufort"),
                                         choices = cruz.beaufort, selected = 9)),
                   column(6, uiOutput("das_sight_dateRange_uiOut_date"))
                 ),
@@ -358,7 +360,7 @@ ui.dasPlot <- function() {
                       tags$span(tags$h5("You cannot plot effort color-coded by Beaufort when using grey scale"),
                                 style = "color: red;")
                     ),
-                    selectizeInput("das_effort_det_bft_col", tags$h5("Beaufort color(s)"),
+                    selectizeInput("das_effort_det_bft_col", tags$h5("Beaufort colors"),
                                    choices = cruz.palette.color, selected = eff.bft.default,
                                    multiple = TRUE),
                     numericInput("das_effort_det_bft_lwd", tags$h5("Line width"), value = 2, min = 1, max = 6, step = 1)
@@ -567,11 +569,11 @@ ui.dasPlot <- function() {
                          "i.e. they have been filtered using the same filters",
                          "(species, on or off effort, mode, effort type, date, Beaufort, cruise number, and truncation distance)",
                          "specified in the 'Filters' tab"),
-                checkboxGroupInput("das_out_sciname",
-                                   tags$h5("Species information to include in table, in addition to species code"),
+                checkboxGroupInput("das_out_sciname", tags$h5("Additional species information to include"),
                                    choices = list("Species abbreviation" = 2,
                                                   "Scientific name" = 3, "Common name" = 4),
                                    selected = NULL, inline = TRUE),
+                checkboxInput("das_out_allcheck", "Include an 'All' summary row", value = FALSE),
                 tableOutput("das_out_sight_table"),
                 downloadButton("das_out_sight_save", "Save sightings table")
               )

@@ -24,7 +24,7 @@ cruzDasSightSymbol <- reactive({
   sp.count     <- data.list$sp.count
   sp.selection <- data.list$sp.selection
 
-  #
+  # Species code sanity check
   if (sight.type %in% c(1, 2)) {
     stopifnot(isTRUE(all.equal(length(sp.codes), length(sp.count))))
   } else {
@@ -92,6 +92,11 @@ cruzDasSightSymbol <- reactive({
     select(.data$Sp, .data$Lon, .data$Lat,
            .data$pch, .data$col, .data$cex, .data$lwd)
 
+  # # If specified, make the symbol color correspond to event code
+  # if (sight.type %in% c(1, 2) & input$das_symbol_event) {
+  #   pt.df
+  # }
+
   list(
     sight.type = sight.type, sp.count = sp.count, sp.codes = sp.codes,
     leg.df = leg.df, pt.df = pt.df
@@ -100,16 +105,20 @@ cruzDasSightSymbol <- reactive({
 
 
 
-.func_sight_symbol_pt <- function(pt.x, pt.txt, sp.codes.len) {
-  validate(
-    need(sp.codes.len >= length(pt.x),
-         paste("There are more symbol", pt.txt, "entries than species"))
-  )
+.func_sight_symbol_pt <- function(pt.x, pt.txt, sp.codes.len, valid.check = TRUE) {
+  if (valid.check)
+    validate(
+      need(sp.codes.len >= length(pt.x),
+           paste("There are more symbol", pt.txt, "entries than species"))
+    )
 
   if (sp.codes.len > length(pt.x)) {
     pt.x <- rep(pt.x, ceiling(sp.codes.len / length(pt.x)))
     pt.x <- pt.x[1:sp.codes.len]
   }
+  # else {
+  #   pt.x <- pt.x[1:sp.codes.len]
+  # }
 
   pt.x
 }

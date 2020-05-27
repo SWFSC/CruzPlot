@@ -18,7 +18,7 @@ cruz.list <- reactiveValues(
   das.sight.filt = NULL,    # Filtered sighting data - used to print NA notice messages
   das.eff.filt = NULL,      # Filtered effort data - used to print NA notice messages
   ndas.data = list(),       # List of non-DAS line and point data
-  ndas.df = NULL,           # Dataframe of ndas information
+  ndas.df = NULL,           # Data frame of ndas information
   ndas.toplot = NULL        # Non-DAS objects currently being plotted
 )
 
@@ -233,6 +233,10 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     #------------------------------------------------------
     ## DAS data
     if (isTruthy(cruz.list$das.data)) {
+      updateNumericInput(session, "das_file_skip", value = input.save$das_file_skip)
+      updateNumericInput(session, "das_file_days_gap", value = input.save$das_file_days_gap)
+      updateSelectInput(session, "das_file_reset_effort", selected = input.save$das_file_reset_effort)
+      updateSelectInput(session, "das_file_reset_event", selected = input.save$das_file_reset_event)
 
       #------------------------------------------------------
       ## Sighting info
@@ -246,10 +250,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
         updateSelectizeInput(session, "das_sighting_code_2", selected = input.save$das_sighting_code_2)
         updateCheckboxInput(session, "das_sighting_probable", value = input.save$das_sighting_probable)
         updateCheckboxGroupInput(session, "das_sighting_events", selected = input.save$das_sighting_events)
-        updateNumericInput(session, "das_file_skip", value = input.save$das_file_skip)
-        updateSelectInput(session, "das_file_reset_effort", selected = input.save$das_file_reset_effort)
-        updateSelectInput(session, "das_file_reset_event", selected = input.save$das_file_reset_event)
-        updateSelectInput(session, "das_file_reset_day", selected = input.save$das_file_reset_day)
 
         updateSelectizeInput(session, "das_symbol_type", selected = input.save$das_symbol_type)
         updateSelectizeInput(session, "das_symbol_color", selected = input.save$das_symbol_color)
@@ -273,8 +273,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
         updateRadioButtons(session, "das_sight_trunc_units", selected = input.save$das_sight_trunc_units)
         updateNumericInput(session, "das_sight_trunc", value = input.save$das_sight_trunc)
 
-        updateSelectInput(session, "das_effort_lineCol", selected = input.save$das_effort_lineCol)
-
         updateCheckboxInput(session, "das_legend", value = input.save$das_legend)
         updateSelectInput(session, "das_legend_pos", selected = input.save$das_legend_pos)
         updateNumericInput(session, "das_legend_lon", value = input.save$das_legend_lon)
@@ -284,6 +282,9 @@ load_envir <- eventReactive(input$load_app_envir_file, {
         updateNumericInput(session, "das_legend_textSize", value = input.save$das_legend_textSize)
         updateTextInput(session, "das_legend_title", value = input.save$das_legend_title)
         updateCheckboxGroupInput(session, "das_legend_names", selected = input.save$das_legend_names)
+
+        updateCheckboxGroupInput(session, "das_out_sciname", selected = input.save$das_out_sciname)
+        updateCheckboxInput(session, "das_out_allcheck", selected = input.save$das_out_allcheck)
       }
 
 

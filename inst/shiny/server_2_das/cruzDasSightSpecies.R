@@ -56,6 +56,7 @@ cruzDasSightSpecies <- reactive({
   )
 
   das.sight <- swfscDAS::das_sight(das.proc, returnformat = "default")
+  # browser()
 
   #----------------------------------------------------------------------------
   if (sight.type == 1) {
@@ -67,8 +68,29 @@ cruzDasSightSpecies <- reactive({
       need(sp.events, "Please select at least one event code to plot")
     )
 
-    das.sight <- das.sight %>%
-      filter(.data$Event %in% sp.events) #c("S", "K", "M", "G", "p"))
+    validate(need(!any(c("s", "g") %in% sp.events), "Cannot plot s/g events"))
+    das.sight <- das.sight %>% filter(.data$Event %in% sp.events)
+
+    # # Get species, etc., for s events
+    # if (any(c("s") %in% sp.events)) {
+    #   das.sight.main <- das.sight %>% filter(!(.data$Event %in% c("s", "g")))
+    #   das.sight.res <- das.sight %>% filter(.data$Event %in% c("s", "g"))
+    #   validate(
+    #     need(all(das.sight.res$SightNo %in% das.sight.main$SightNo),
+    #          paste("Not all of the s events have corresponding primary sightings;",
+    #                "try widening the sighting filters?"))
+    #   )
+    #
+    #   d <- das.sight.main %>%
+    #     select(SightNo, Sp, ProbSp, GsSp) %>%
+    #     filter(SightNo %in% das.sight.res$SightNo) %>%
+    #     full_join(select(das.sight.res, -Sp), by = "SightNo") %>%
+    #     select(!!names(das.sight.main))
+    # }
+    #
+    # if (any("g" %in% sp.events)) {
+    #   browser()
+    # }
 
     validate(
       need(nrow(das.sight) > 0,

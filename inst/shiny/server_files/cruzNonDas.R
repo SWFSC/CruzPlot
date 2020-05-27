@@ -25,34 +25,31 @@ cruzNonDasFile_LonLat <- reactive({
   req(cruzNonDasFileLoad())
   ndas.file <- cruzNonDasFileLoad()
 
-  ndx.lon <- which(names(ndas.file) %in% c("Longitude", "longitude",
-                                           "LONGITUDE", "Lon","lon","LON"))
-  ndx.lat <- which(names(ndas.file) %in% c("Latitude", "latitude",
-                                           "LATITUDE", "Lat","lat","LAT"))
+  lon.names <- c("Longitude", "longitude", "LONGITUDE", "Lon","lon","LON")
+  ndx.lon <- which(names(ndas.file) %in% lon.names)
+
+  lat.names <- c("Latitude", "latitude", "LATITUDE", "Lat","lat","LAT")
+  ndx.lat <- which(names(ndas.file) %in% lat.names)
 
   validate(
     need(length(ndx.lon) < 2,
          paste("Multiple columns of loaded non-DAS data have one of the",
-               "following headings: 'Longitude', 'longitude', 'LONGITUDE',",
-               "'Lon', 'lon', or 'LON'")),
+               "following headings:", paste(lon.names, collapse = ", "))),
     need(length(ndx.lon) > 0,
          paste("None columns of loaded non-DAS data have one of the",
-               "following headings: 'Longitude', 'longitude', 'LONGITUDE',",
-               "'Lon', 'lon', or 'LON'")),
+               "following headings:", paste(lon.names, collapse = ", "))),
     need(length(ndx.lat) < 2,
          paste("Multiple columns of loaded non-DAS data have one of the",
-               "following headings: 'Latitude', 'latitude', 'LATITUDE',",
-               "'Lat', 'lat', or 'LAT'")),
+               "following headings:", paste(lat.names, collapse = ", "))),
     need(length(ndx.lon) > 0,
          paste("None of loaded non-DAS data have one of the",
-               "following headings: 'Latitude', 'latitude', 'LATITUDE',",
-               "'Lat', 'lat', or 'LAT'"))
+               "following headings:", paste(lat.names, collapse = ", ")))
   )
 
-  ndas.x <- ndas.file[,ndx.lon]
-  ndas.y <- ndas.file[,ndx.lat]
+  ndas.x <- ndas.file[, ndx.lon]
+  ndas.y <- ndas.file[, ndx.lat]
 
-  return(list(ndas.x = ndas.x, ndas.y = ndas.y))
+  list(ndas.x = ndas.x, ndas.y = ndas.y)
 })
 
 ### Conditional flag for UI code
@@ -126,17 +123,10 @@ cruzNonDasAdd <- eventReactive(input$ndas_load_execute, {
   ndas.type <- input$ndas_plot_type
   ndas.type.name <- ifelse(ndas.type == 1, "Line", "Point")
 
-  if (ndas.type == 1) {
-    # Add line data to lines reactiveValue
-    list.curr.df <- cruzNonDasAdd_Line() # Data added to cruz.list
-    text.out <- "Line data added"
-  } else if (ndas.type == 2) {
-    # Add pts data to pts reactiveValue
-    list.curr.df <- cruzNonDasAdd_Point() # Data added to cruz.list
-    text.out <- "Point data added"
-  }
+  # Data added to cruz.list below
+  list.curr.df <- if (ndas.type == 1) cruzNonDasAdd_Line() else cruzNonDasAdd_Point()
 
-  ndas.df.curr <- cbind(data.frame("File.name" = input$ndas_file$name,
+  ndas.df.curr <- cbind(data.frame("File_name" = input$ndas_file$name,
                                    "Type" = ndas.type.name,
                                    stringsAsFactors = FALSE),
                         list.curr.df)
@@ -145,7 +135,7 @@ cruzNonDasAdd <- eventReactive(input$ndas_load_execute, {
 
   cruz.list$ndas.df <- rbind(cruz.list$ndas.df, ndas.df.curr)
 
-  text.out
+  ""
 })
 
 
@@ -204,9 +194,7 @@ observe({
 
 output$ndas_toplot_uiOut_select <- renderUI({
   df <- cruz.list$ndas.df
-  validate(
-    need(!is.null(df), "Please load non-DAS data")
-  )
+  validate(need(df, "Please load non-DAS data"))
 
   isolate(curr.sel <- cruz.list$ndas.toplot)
 

@@ -36,6 +36,8 @@
 
 * Cruise number filters now are a dynamic dropdown with the cruise numbers from the DAS data
 
+* Interactive sighting and effort maps both have combined view and label (hover and click) functionality
+
 
 # CruzPlot 0.1
 * Initial version - CruzPlot converted from a collection of scripts to an R package

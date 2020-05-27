@@ -24,9 +24,10 @@ das_file_load <- eventReactive(input$das_file, {
 
   # Get and check additional parameters
   skip <- input$das_file_skip
+  days.gap <- input$das_file_days_gap
   reset.event  <- input$das_file_reset_event == 1
   reset.effort <- input$das_file_reset_effort == 1
-  reset.day    <- input$das_file_reset_day == 1
+  # reset.day    <- input$das_file_reset_day == 1
 
   validate(
     need(!is.na(skip), "skip must be a valid number") %then%
@@ -34,19 +35,26 @@ das_file_load <- eventReactive(input$das_file, {
       need(skip >= 0, "skip must be greater than or equal to zero")
   )
 
+  validate(
+    need(!is.na(days.gap), "days.gap must be a valid number") %then%
+      need(isTRUE(all.equal(days.gap %% 1, 0)), "days.gap must be a whole number") %then%
+      need(days.gap >= 0, "days.gap must be greater than or equal to zero")
+  )
+
   # Process DAS file
   withProgress(message = "Processing DAS file", value = 0.6, {
     das.proc <- try(suppressWarnings(
       swfscDAS::das_process(
-        input$das_file$datapath, skip = skip, reset.event = reset.event,
-        reset.effort = reset.effort, reset.day = reset.day
+        input$das_file$datapath, skip = skip, days.gap = days.gap,
+        reset.event = reset.event, reset.effort = reset.effort,
+        reset.days = TRUE
       )
     ), silent = TRUE)
   })
 
   validate(
     need(isTruthy(das.proc),
-         "Error: unable to read and process the provided DAS files")
+         "Error: unable to read and process the provided DAS file(s)")
   )
 
   # Savein reactive values
@@ -57,7 +65,7 @@ das_file_load <- eventReactive(input$das_file, {
 }, ignoreInit = TRUE)
 
 
-### Conditional flag for UI code for non-null cruz.list$das.data
+### Conditional flag for UI code for truthy cruz.list$das.data
 output$cruzDasFile_Conditional <- reactive({
   isTruthy(cruz.list$das.data)
 })
