@@ -90,13 +90,17 @@ cruzDasOutEffort_Table <- reactive({
                 Fine = sum(dist[EffType == "F"]),
                 Total = sum(dist))
 
-    eff.summ.all <- rbind(eff.summ, vapply(eff.summ, sum, 1)) %>%
+    rbind(eff.summ, vapply(eff.summ, sum, 1)) %>%
       mutate(Bft = c(head(Bft, -1), "All")) %>%
       rename(`Non-standard` = Non_standard)
 
   } else {
     validate("Error: invalid 'Effort to plot' (das_effort) selection")
   }
+
+  # name.total <- paste("Total", ifelse(input$das_out_effort_units == 1, "(km)", "(nmi)"))
+  # names(eff.out) <- c(head(names(eff.out), -1), name.total)
+  # eff.out
 })
 
 
