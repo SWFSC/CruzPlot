@@ -77,11 +77,11 @@ output$das_out_sight_save <- downloadHandler(
 ###############################################################################
 # Effort
 cruzDasOutEffort_Table <- reactive({
-  das.eff.lines <- cruzDasEffort()
+  das.eff.lines <- cruzDasEffortRange()
 
   # Calculate distance
-  # TODO - what distance calculation method to use?
-  dist.effort.m <-  geosphere::distVincentyEllipsoid(
+  # TODO - provide flexible distance calculation method?
+  dist.effort.m <- geosphere::distVincentyEllipsoid(
     cbind(das.eff.lines$st_lon, das.eff.lines$st_lat),
     cbind(das.eff.lines$end_lon, das.eff.lines$end_lat)
   )

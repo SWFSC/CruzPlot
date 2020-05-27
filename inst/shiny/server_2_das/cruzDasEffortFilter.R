@@ -40,6 +40,8 @@ cruzDasEffortFilter <- reactive({
 
 #------------------------------------------------------------------------------
 .func_eff_filt_validate <- function(x, x.txt) {
+  if (anyNA(x)) warning(paste("some", x.txt, "filter values were NA"))
+
   validate(
     need(any(x), paste("No effort lines match the given", x.txt, "filters"))
   )
@@ -87,6 +89,7 @@ cruzDasEffortFilterBeaufort <- reactive ({
   bft.vals <- cruzDasEffortFilterBeaufortVal()
 
   keep <- between(das.eff.lines$Bft, bft.vals[1], bft.vals[2])
+  keep[is.na(keep)] <- FALSE
   .func_eff_filt_validate(keep, "Beaufort")
 })
 

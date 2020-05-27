@@ -284,7 +284,7 @@ load_envir <- eventReactive(input$load_app_envir_file, {
         updateCheckboxGroupInput(session, "das_legend_names", selected = input.save$das_legend_names)
 
         updateCheckboxGroupInput(session, "das_out_sciname", selected = input.save$das_out_sciname)
-        updateCheckboxInput(session, "das_out_allcheck", selected = input.save$das_out_allcheck)
+        updateCheckboxInput(session, "das_out_allcheck", value = input.save$das_out_allcheck)
       }
 
 

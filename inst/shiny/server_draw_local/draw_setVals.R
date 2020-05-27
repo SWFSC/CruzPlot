@@ -271,7 +271,7 @@ if (isTruthy(cruz.list$das.data)) {
 
   # Effort
   if (as.numeric(input$das_effort) != 1) {
-    das.eff.lines <- cruzDasEffort()
+    das.eff.lines <- cruzDasEffortRange()
 
     eff.col <- cruzDasEffortParams()$eff.col
     eff.lwd <- cruzDasEffortParams()$eff.lwd

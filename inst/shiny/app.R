@@ -185,13 +185,13 @@ server <- function(input, output, session) {
   source(file.path("server_2_das", "cruzDasGeneral.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasRenderUI.R"), local = TRUE, chdir = TRUE)
 
-  source(file.path("server_2_das", "cruzDasSightFilter.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasSightLegend.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasSightRange.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasSightSpecies.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSightFilter.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSightRange.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasSightSymbol.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSightLegend.R"), local = TRUE, chdir = TRUE)
 
-  source(file.path("server_2_das", "cruzDasEffort.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasEffortEvent.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasEffortFilter.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasEffortOut.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasEffortLegend.R"), local = TRUE, chdir = TRUE)
