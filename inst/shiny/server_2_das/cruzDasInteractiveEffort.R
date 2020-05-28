@@ -2,11 +2,7 @@
 
 ### Click to add labels to map
 observeEvent(input$effort_click, {
-  effort$click <- c(effort$click, input$effort_click$x, input$effort_click$y)
-  effort$miss <- FALSE
-
-  len <- length(effort$click)
-  curr <- c(effort$click[len-1], effort$click[len])
+  click.curr <- c(input$effort_click$x, input$effort_click$y)
   das.effort <- cruzDasEffortFilter()
 
   param.unit <- cruzMapParam()$param.unit
@@ -18,17 +14,20 @@ observeEvent(input$effort_click, {
 
   # Determine closest point and if applicable get label information
   close.info <- cruzClosestPt(
-    effort$hover, 3, das.effort$st_lat, das.effort$st_lon, das.effort$DateTime,
+    click.curr, 3, das.effort$st_lat, das.effort$st_lon, das.effort$DateTime,
     das.lat2 = das.effort$end_lat, das.lon2 = das.effort$end_lon
   )
 
   dist.inch <- sqrt(
     (as.numeric(close.info[1])*x.ratio)^2 + (as.numeric(close.info[2])*y.ratio)^2
   )
-  if(dist.inch <= 0.2) {
-    isolate(effort$lab <- c(effort$lab, close.info[3]))
+  if (dist.inch <= 0.2) {
+    isolate({
+      effort$click <- c(effort$click, list(click.curr))
+      effort$lab <- c(effort$lab, close.info[3])
+    })
+    effort$miss <- FALSE
   } else {
-    effort$click <- effort$click[1:(length(effort$click)-2)]
     effort$miss <- TRUE
   }
 })
@@ -37,7 +36,6 @@ observeEvent(input$effort_click, {
 ### Hover to see R and E lat/lon coordinates
 observeEvent(input$effort_hover, {
   effort$hover <- c(input$effort_hover$x, input$effort_hover$y)
-  effort$hover.miss <- FALSE
   das.effort <- cruzDasEffortFilter()
 
   param.unit <- cruzMapParam()$param.unit
@@ -58,6 +56,7 @@ observeEvent(input$effort_hover, {
   )
   if (dist.inch <= 0.3) {
     isolate(effort$hover.lab <- close.info[3])
+    effort$hover.miss <- FALSE
   } else {
     effort$hover.miss <- TRUE
   }

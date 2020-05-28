@@ -5,6 +5,14 @@
 lon.range <- cruz.map.range$lon.range
 lat.range <- cruz.map.range$lat.range
 
+lon.diff <- abs(lon.range[2]-lon.range[1])
+lat.diff <- abs(lat.range[2]-lat.range[1])
+
+lon.mult <- 0.02
+lat.mult1 <- 0.05
+lat.mult2 <- 0.1
+
+
 validate(
   need((input$das_effort_interactive == 1) || (input$das_sight_interactive == 1),
        message = "Cannot have both sighting and effort interactive plots selected")
@@ -19,45 +27,41 @@ if ((input$das_effort_interactive != 1) || (input$das_sight_interactive != 1)) {
 
 ### Sighting labels
 if (isTruthy(sight$click)) {
-  for(i in 1:(length(sight$click)/2)) {
-    text(x = sight$click[(2*i)-1], sight$click[(2*i)], sight$lab[i], pos = 1)
+  for(i in seq_along(sight$click)) {
+    text(x = sight$click[[i]][1], y = sight$click[[i]][2], labels = sight$lab[i], pos = 1)
   }
-
-  if (sight$miss)
-    text(x = (lon.range[1] + 1), y = (lat.range[1] + 3),
-         labels = "Click was not close enough to a sighting", pos = 4)
 }
 
+if (sight$miss)
+  text(x = (lon.diff*lon.mult) + lon.range[1], y = (lat.diff*lat.mult1) + lat.range[1],
+       labels = "Click was too far from a sighting", pos = 4)
+
 if (isTruthy(sight$hover)) {
-  if (input$das_sight_interactive != 3) effort$hover <- NULL
   if (sight$hover.miss) {
-    text(x = (abs(lon.range[2]-lon.range[1])*.1) + lon.range[1],
-         y = (abs(lat.range[2]-lat.range[1])*.1) + lat.range[1],
-         labels = "Cursor is not close enough to a sighting", pos = 4)
+    text(x = (lon.diff*lon.mult) + lon.range[1], y = (lat.diff*lat.mult2) + lat.range[1],
+         labels = "Cursor is too far from a sighting", pos = 4)
   } else {
-    text(x = sight$hover[1], sight$hover[2], labels = sight$hover.lab, pos = 1)
+    text(x = sight$hover[1], y = sight$hover[2], labels = sight$hover.lab, pos = 1)
   }
 }
 
 
 ### Effort labels
 if (isTruthy(effort$click)) {
-  for(i in 1:(length(effort$click)/2)) {
-    text(x = effort$click[(2*i)-1], effort$click[(2*i)], effort$lab[i], pos = 1)
+  for(i in seq_along(effort$click)) {
+    text(x = effort$click[[i]][1], y = effort$click[[i]][2], labels = effort$lab[i], pos = 1)
   }
-
-  if (effort$miss)
-    text(x=(abs(lon.range[2]-lon.range[1])*.1)+lon.range[1],
-         y = (abs(lat.range[2]-lat.range[1])*.1)+lat.range[1],
-         labels = "Click was not close enough to an\neffort start or end point", pos = 4)
 }
+
+if (effort$miss)
+  text(x = (lon.diff*lon.mult) + lon.range[1], y = (lat.diff*lat.mult1) + lat.range[1],
+       labels = "Click was too far from an effort start or end point", pos = 4)
 
 if (isTruthy(effort$hover)) {
   if (effort$hover.miss) {
-    text(x = (abs(lon.range[2]-lon.range[1])*.1) + lon.range[1],
-         y = (abs(lat.range[2]-lat.range[1])*.1) + lat.range[1],
-         labels = "Cursor is not close enough to an\neffort start or end point", pos = 4)
+    text(x = (lon.diff*lon.mult) + lon.range[1], y = (lat.diff*lat.mult2) + lat.range[1],
+         labels = "Cursor is too far from an effort start or end point", pos = 4)
   } else {
-    text(x = effort$hover[1], effort$hover[2], labels = effort$hover.lab, pos = 1)
+    text(x = effort$hover[1], y = effort$hover[2], labels = effort$hover.lab, pos = 1)
   }
 }

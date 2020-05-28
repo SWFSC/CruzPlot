@@ -21,17 +21,30 @@ effort <- reactiveValues(
 
 
 ###############################################################################
-### Turn plot to not-interactive when changed to a new tab
+### When changed to a new page or tab: 1) Turn plot to not-interactive,
+###   2) reset hover info, and 3) remove miss labels
 observe({
   input$tabs
   input$tabset2
 
   updateRadioButtons(session, "das_sight_interactive", selected = 1)
   updateRadioButtons(session, "das_effort_interactive", selected = 1)
+
+  sight$hover <- NULL
+  sight$hover.lab <- NULL
+  sight$miss <- FALSE
+  sight$hover.miss <- FALSE
+
+  effort$hover <- NULL
+  effort$hover.lab <- NULL
+  effort$miss <- FALSE
+  effort$hover.miss <- FALSE
 })
 
 
 ###############################################################################
+# Reset as needed
+
 ### If DAS file or map range changes, reset interactive everything
 observe({
   cruz.list$das.data
@@ -50,6 +63,20 @@ observe({
   effort$click <- NULL
   effort$hover <- NULL
   effort$lab <- NULL
+  effort$hover.lab <- NULL
+  effort$miss <- FALSE
+  effort$hover.miss <- FALSE
+})
+
+### If interactive selection changes, remove hover and miss
+observeEvent(input$das_sight_interactive, {
+  sight$hover <- NULL
+  sight$hover.lab <- NULL
+  sight$miss <- FALSE
+  sight$hover.miss <- FALSE
+})
+observeEvent(input$das_effort_interactive, {
+  effort$hover <- NULL
   effort$hover.lab <- NULL
   effort$miss <- FALSE
   effort$hover.miss <- FALSE
@@ -83,10 +110,6 @@ observe({
   sight$hover.miss <- FALSE
 })
 
-observeEvent(input$das_sight_interactive, {
-  if (input$das_sight_interactive != 3) sight$hover <- NULL
-})
-
 
 ### If effort selections change, reset interactive effort things
 observe({
@@ -108,10 +131,6 @@ observe({
   effort$hover.lab <- NULL
   effort$miss <- FALSE
   effort$hover.miss <- FALSE
-})
-
-observeEvent(input$das_effort_interactive, {
-  if (input$das_effort_interactive != 3) effort$hover <- NULL
 })
 
 ###############################################################################

@@ -1,13 +1,8 @@
 # cruzDasInteractiveSight for CruzPlot
 
-
 ### Interactive sighting click
 observeEvent(input$sight_click, {
-  sight$click <- c(sight$click, input$sight_click$x, input$sight_click$y)
-  sight$miss <- FALSE
-
-  len <- length(sight$click)
-  curr <- c(sight$click[len-1], sight$click[len])
+  click.curr <- c(input$sight_click$x, input$sight_click$y)
   das.sight <- cruzDasSightRange()$das.sight
 
   param.unit <- cruzMapParam()$param.unit
@@ -21,20 +16,24 @@ observeEvent(input$sight_click, {
   sight.type <- cruzDasSightRange()$sight.type
   close.info <- if (sight.type == 1) {
     # type = 1 means mammal sighting for function cruzClosestPt
-    cruzClosestPt(curr, type = 1, das.sight$Lat, das.sight$Lon,
+    cruzClosestPt(click.curr, type = 1, das.sight$Lat, das.sight$Lon,
                   das.sight$DateTime, das.sight$SightNo)
   } else {
     # type = 2 means non-mammal sighting for function cruzClosestPt
-    cruzClosestPt(curr, type = 2, das.sight$Lat, das.sight$Lon,
+    cruzClosestPt(click.curr, type = 2, das.sight$Lat, das.sight$Lon,
                   das.sight$DateTime)
   }
 
-  dist.inch <- sqrt((as.numeric(close.info[1])*x.ratio)^2 + (as.numeric(close.info[2])*y.ratio)^2)
-  if(dist.inch <= 0.2) {
-    isolate(sight$lab <- c(sight$lab, close.info[3]))
-
+  dist.inch <- sqrt(
+    (as.numeric(close.info[1])*x.ratio)^2 + (as.numeric(close.info[2])*y.ratio)^2
+  )
+  if (dist.inch <= 0.2) {
+    isolate({
+      sight$click <- c(sight$click, list(click.curr))
+      sight$lab <- c(sight$lab, close.info[3])
+    })
+    sight$miss <- FALSE
   } else{
-    sight$click <- sight$click[1:(length(sight$click)-2)]
     sight$miss <- TRUE
   }
 })
@@ -43,7 +42,6 @@ observeEvent(input$sight_click, {
 ### Hover to display sighitng information
 observeEvent(input$sight_hover, {
   sight$hover <- c(input$sight_hover$x, input$sight_hover$y)
-  sight$hover.miss <- FALSE
   das.sight <- cruzDasSightRange()$das.sight
 
   param.unit <- cruzMapParam()$param.unit
@@ -70,6 +68,7 @@ observeEvent(input$sight_hover, {
   )
   if (dist.inch <= 0.3) {
     isolate(sight$hover.lab <- close.info[3])
+    sight$hover.miss <- FALSE
   } else {
     sight$hover.miss <- TRUE
   }
