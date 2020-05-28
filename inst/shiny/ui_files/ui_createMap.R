@@ -110,14 +110,14 @@ ui.createMap <- function() {
                                           "corresponds to order of specified colors and line types, respectively.")),
                       box(
                         width = 12,
-                        ui.selectize.instructions(),
+                        ui.select.instructions(),
                         fluidRow(
-                          column(6, uiOutput("planned_transects_toplot_uiOut_selectize")),
-                          column(6, uiOutput("planned_transects_color_uiOut_selectize"))
+                          column(6, uiOutput("planned_transects_toplot_uiOut_select")),
+                          column(6, uiOutput("planned_transects_color_uiOut_select"))
                         ),
                         fluidRow(
-                          column(4, uiOutput("planned_transects_toplot2_uiOut_selectize")),
-                          column(4, uiOutput("planned_transects_lty_uiOut_selectize")),
+                          column(4, uiOutput("planned_transects_toplot2_uiOut_select")),
+                          column(4, uiOutput("planned_transects_lty_uiOut_select")),
                           column(4, numericInput("planned_transects_lwd", tags$h5("Line width"),
                                                  value = 1, min = 0, step = 1))
                         )

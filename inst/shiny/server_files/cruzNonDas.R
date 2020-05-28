@@ -170,7 +170,7 @@ cruzNonDasRemove <- eventReactive(input$ndas_remove_execute, {
            })
   )
   if (length(cruz.list$ndas.toplot) == 0) cruz.list$ndas.toplot <- NULL
-  updateSelectizeInput(session, "ndas_toplot", selected = cruz.list$ndas.toplot)
+  updateSelectInput(session, "ndas_toplot", selected = cruz.list$ndas.toplot)
 
   ""
 })
@@ -204,9 +204,9 @@ output$ndas_toplot_uiOut_select <- renderUI({
 
   names(choices.list) <- choices.list.names
 
-  selectizeInput("ndas_toplot", tags$h5("Select non-DAS data to be plotted"),
-                 choices = choices.list, multiple = TRUE,
-                 selected = curr.sel)
+  selectInput("ndas_toplot", tags$h5("Select non-DAS data to be plotted"),
+              choices = choices.list, multiple = TRUE,
+              selected = curr.sel)
 })
 outputOptions(output, "ndas_toplot_uiOut_select", suspendWhenHidden = FALSE)
 

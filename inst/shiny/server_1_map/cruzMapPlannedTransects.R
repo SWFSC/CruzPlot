@@ -161,32 +161,32 @@ planned_transects_class2 <- reactive({
 
 ###############################################################################
 ### Widgets for selecting planned transect class(es) to plot and their color
-output$planned_transects_toplot_uiOut_selectize <- renderUI({
+output$planned_transects_toplot_uiOut_select <- renderUI({
   req(cruz.list$planned.transects)
 
   choices.list.names <- planned_transects_class1()
   choices.list <- seq_along(choices.list.names)
   names(choices.list) <- choices.list.names
 
-  selectizeInput("planned_transects_toplot",
-                 tags$h5("Class(es) to plot"),
-                 choices = choices.list, selected = choices.list,
-                 multiple = TRUE)
+  selectInput("planned_transects_toplot",
+              tags$h5("Class(es) to plot"),
+              choices = choices.list, selected = choices.list,
+              multiple = TRUE)
 })
 
 
-output$planned_transects_color_uiOut_selectize <- renderUI({
+output$planned_transects_color_uiOut_select <- renderUI({
   req(cruz.list$planned.transects, input$planned_transects_plot)
 
-  selectizeInput("planned_transects_color", label = tags$h5("Color(s)"),
-                 choices = cruz.palette.color, selected = "gray",
-                 multiple = TRUE)
+  selectInput("planned_transects_color", label = tags$h5("Color(s)"),
+              choices = cruz.palette.color, selected = "gray",
+              multiple = TRUE)
 })
 
 
 #----------------------------------------------------------
 ### Widgets for selecting planned transect class 2(s) to plot and their lty
-output$planned_transects_toplot2_uiOut_selectize <- renderUI({
+output$planned_transects_toplot2_uiOut_select <- renderUI({
   req(cruz.list$planned.transects)
 
   y <- planned_transects_class2()
@@ -200,9 +200,9 @@ output$planned_transects_toplot2_uiOut_selectize <- renderUI({
     choices.list <- seq_along(choices.list.names)
     names(choices.list) <- choices.list.names
 
-    selectizeInput("planned_transects_toplot2", tags$h5("Class 2(s) to plot"),
-                   choices = choices.list, selected = choices.list,
-                   multiple = TRUE)
+    selectInput("planned_transects_toplot2", tags$h5("Class 2(s) to plot"),
+                choices = choices.list, selected = choices.list,
+                multiple = TRUE)
   }
 })
 
@@ -218,16 +218,16 @@ output$planned_transects_toplot2_uiOut_selectize <- renderUI({
 #   }
 # })
 
-output$planned_transects_lty_uiOut_selectize <- renderUI({
+output$planned_transects_lty_uiOut_select <- renderUI({
   req(cruz.list$planned.transects, input$planned_transects_plot)
 
   input.lab <- ifelse(
     anyNA(planned_transects_class2()), "Line type", "Line type(s)"
   )
 
-  selectizeInput("planned_transects_lty", label = tags$h5(input.lab),
-                 choices = cruz.line.type, selected = 1,
-                 multiple = !anyNA(planned_transects_class2()))
+  selectInput("planned_transects_lty", label = tags$h5(input.lab),
+              choices = cruz.line.type, selected = 1,
+              multiple = !anyNA(planned_transects_class2()))
 
 })
 
@@ -243,7 +243,7 @@ output$planned_transects_lty_uiOut_selectize <- renderUI({
 #   choices.list <- seq_along(choices.list.names)
 #   names(choices.list) <- choices.list.names
 #
-#   selectizeInput("planned_transects_toremove",
+#   selectInput("planned_transects_toremove",
 #                  tags$h5("Select planned transect class(es) to remove"),
 #                  choices = choices.list, multiple = TRUE)
 # })

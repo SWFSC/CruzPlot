@@ -63,7 +63,7 @@ source(file.path("app_vals.R"), local = TRUE, chdir = TRUE)
 ###############################################################################
 ##### UI
 ui.new.line <- function() helpText(HTML("<br/>"))
-ui.selectize.instructions <- function() {
+ui.select.instructions <- function() {
   helpText("To remove selected input(s): click the input(s) to remove, ",
            "and then click backspace or delete")
 }

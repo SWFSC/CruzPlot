@@ -67,7 +67,7 @@ ui.nonDasPlot <- function() {
               checkboxInput("ndas_plot", label = tags$h5("Plot loaded non-DAS data"), value = FALSE),
               conditionalPanel(
                 condition = "input.ndas_plot",
-                ui.selectize.instructions(),
+                ui.select.instructions(),
                 uiOutput("ndas_toplot_uiOut_select")
               )
             )

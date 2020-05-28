@@ -134,14 +134,14 @@ ui.dasPlot <- function() {
                                    selected = 2),
                       conditionalPanel(
                         condition = "input.das_sighting_code_1_all==2",
-                        ui.selectize.instructions(),
+                        ui.select.instructions(),
                         uiOutput("das_sighting_code_1_uiOut_select")
                       ),
                       checkboxInput("das_sighting_probable", label = "Use probable species code", value = FALSE),
                       checkboxGroupInput("das_sighting_events", label = tags$h5("Plot sightings from"), inline = TRUE,
                                          choices = list("S events" = "S", "G events" = "G",
                                                         "K events" = "K", "M events" = "M", "p events" = "p"),
-                                                        # "s events" = "s", "g events" = "g"),
+                                         # "s events" = "s", "g events" = "g"),
                                          selected = c("S", "G"))
                     ),
                     conditionalPanel(
@@ -151,7 +151,7 @@ ui.dasPlot <- function() {
                                    selected = 2),
                       conditionalPanel(
                         condition = "input.das_sighting_code_2_all==2",
-                        ui.selectize.instructions(),
+                        ui.select.instructions(),
                         uiOutput("das_sighting_code_2_uiOut_select")
                       )
                     )
@@ -169,10 +169,10 @@ ui.dasPlot <- function() {
                       conditionalPanel(
                         condition = "input.das_symbol_mult==false",
                         # checkboxInput("das_symbol_event", "Make symbol colors correspond to event code", value = FALSE),
-                        selectizeInput("das_symbol_type", label = tags$h5("Symbol type(s)"),
-                                       choices = cruz.symbol.type, selected = 1, multiple = TRUE),
-                        selectizeInput("das_symbol_color", label = tags$h5("Symbol color(s)"),
-                                       choices = cruz.palette.color, selected = "black", multiple = TRUE)
+                        selectInput("das_symbol_type", label = tags$h5("Symbol type(s)"),
+                                    choices = cruz.symbol.type, selected = 1, multiple = TRUE),
+                        selectInput("das_symbol_color", label = tags$h5("Symbol color(s)"),
+                                    choices = cruz.palette.color, selected = "black", multiple = TRUE)
                       ),
                       conditionalPanel(
                         condition = "input.das_symbol_mult",
@@ -287,7 +287,7 @@ ui.dasPlot <- function() {
                 helpText("To stop applying the cruise number(s) and truncation (perpendicular distance) filters,",
                          "delete all text from their boxes"),
                 fluidRow(
-                  column(4, uiOutput("das_sight_cruise_uiOut_selectize")),
+                  column(4, uiOutput("das_sight_cruise_uiOut_select")),
                   column(4, uiOutput("das_sight_trunc_uiOut_numeric")),
                   column(4, radioButtons("das_sight_trunc_units", tags$h5("Truncation distance units"),
                                          choices = list("Kilometers" = 1, "Nautical miles" = 2),
@@ -360,7 +360,7 @@ ui.dasPlot <- function() {
                       tags$span(tags$h5("You cannot plot effort color-coded by Beaufort when using grey scale"),
                                 style = "color: red;")
                     ),
-                    selectizeInput("das_effort_det_bft_col", tags$h5("Beaufort colors"),
+                    selectInput("das_effort_det_bft_col", tags$h5("Beaufort colors"),
                                    choices = cruz.palette.color, selected = eff.bft.default,
                                    multiple = TRUE),
                     numericInput("das_effort_det_bft_lwd", tags$h5("Line width"), value = 2, min = 1, max = 6, step = 1)
@@ -411,7 +411,7 @@ ui.dasPlot <- function() {
                   ),
                   conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be plotted by Beaufort")),
                   uiOutput("das_effort_dateRange_uiOut_date"),
-                  uiOutput("das_effort_cruise_uiOut_selectize"),
+                  uiOutput("das_effort_cruise_uiOut_select"),
                   helpText("Note that if any cruise numbers are selected,",
                            "effort with an NA cruise number will not be plotted")
                 )

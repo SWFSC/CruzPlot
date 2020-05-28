@@ -9,9 +9,9 @@ output$das_sighting_code_1_uiOut_select <- renderUI({
   sp.codes.list <- as.list(sp.mammals$Code)
   names(sp.codes.list) <- paste(sp.mammals$Code, sp.mammals$Abbr, sep = " - ")
 
-  selectizeInput("das_sighting_code_1", tags$h5("Select mammal species"),
-                 choices = sp.codes.list, multiple = TRUE,
-                 selected = NULL)
+  selectInput("das_sighting_code_1", tags$h5("Select mammal species"),
+              choices = sp.codes.list, multiple = TRUE,
+              selected = NULL)
 })
 outputOptions(output, "das_sighting_code_1_uiOut_select", suspendWhenHidden = FALSE)
 
@@ -20,8 +20,8 @@ output$das_sighting_code_2_uiOut_select <- renderUI({
   sp.codes.list <- as.list(sp.turtles$Code)
   names(sp.codes.list) <- paste(sp.turtles$Code, sp.turtles$Name_Scientific, sep = " - ")
 
-  selectizeInput("das_sighting_code_2", tags$h5("Select turtle species"),
-                 choices = sp.codes.list, multiple = TRUE, selected = NULL)
+  selectInput("das_sighting_code_2", tags$h5("Select turtle species"),
+              choices = sp.codes.list, multiple = TRUE, selected = NULL)
 })
 outputOptions(output, "das_sighting_code_2_uiOut_select", suspendWhenHidden = FALSE)
 
@@ -74,24 +74,24 @@ das_cruise_nums <- reactive({
 })
 
 ### Cruise number - sight
-output$das_sight_cruise_uiOut_selectize <- renderUI({
+output$das_sight_cruise_uiOut_select <- renderUI({
   req(cruz.list$das.data)
   cruises <- das_cruise_nums()
 
-  selectizeInput("das_sight_cruise", tags$h5("Cruise number(s)"),
-                 choices = cruises, multiple = TRUE, selected = NULL)
+  selectInput("das_sight_cruise", tags$h5("Cruise number(s)"),
+              choices = cruises, multiple = TRUE, selected = NULL)
 })
-outputOptions(output, "das_sight_cruise_uiOut_selectize", suspendWhenHidden = FALSE, priority = 3)
+outputOptions(output, "das_sight_cruise_uiOut_select", suspendWhenHidden = FALSE, priority = 3)
 
 ### Cruise number - effort
-output$das_effort_cruise_uiOut_selectize <- renderUI({
+output$das_effort_cruise_uiOut_select <- renderUI({
   req(cruz.list$das.data)
   cruises <- das_cruise_nums()
 
-  selectizeInput("das_effort_cruise", tags$h5("Cruise number(s)"),
-                 choices = cruises, multiple = TRUE, selected = NULL)
+  selectInput("das_effort_cruise", tags$h5("Cruise number(s)"),
+              choices = cruises, multiple = TRUE, selected = NULL)
 })
-outputOptions(output, "das_effort_cruise_uiOut_selectize", suspendWhenHidden = FALSE, priority = 3)
+outputOptions(output, "das_effort_cruise_uiOut_select", suspendWhenHidden = FALSE, priority = 3)
 
 ###############################################################################
 ### Truncation input

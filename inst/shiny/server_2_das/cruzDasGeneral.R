@@ -112,7 +112,7 @@ observeEvent(input$das_symbol_mult, {
     } else {
       if (!all(curr.pch %in% unname(cruz.symbol.type))) curr.pch <- 1
     }
-    updateSelectizeInput(session, "das_symbol_type", selected = curr.pch)
+    updateSelectInput(session, "das_symbol_type", selected = curr.pch)
 
 
     # Covert color names to color codes
@@ -136,7 +136,7 @@ observeEvent(input$das_symbol_mult, {
         }
       }
     }
-    updateSelectizeInput(session, "das_symbol_color", selected = curr.col)
+    updateSelectInput(session, "das_symbol_color", selected = curr.col)
   }
 })
 
