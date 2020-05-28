@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CruzPlot</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0.0.9000</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0</span>
       </span>
     </div>
 
@@ -75,26 +75,31 @@
 <a href="#cruzplot" class="anchor"></a>CruzPlot</h1></div>
 <!-- badges: start -->
 
-<p>WARNING - CruzPlot is currently under active development. Please contact the author (<a href="mailto:sam.woodman@noaa.gov">sam.woodman@noaa.gov</a>) before installing and using.</p>
-<p>CruzPlot is an R package for creating maps, plotting data, and performing basic data summaries from data files in the “DAS” format produced by WinCruz.</p>
+<p>CruzPlot is an R package that contains a GUI for creating maps, plotting data, and performing basic data summaries from data files in the “DAS” format produced by WinCruz.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install CruzPlot from <a href="https://github.com/">GitHub</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("devtools")</span>
+<div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("devtools") # Install devtools package if needed</span>
+<span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/swfscDAS"</span>)
 <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/CruzPlot"</span>)</pre></div>
+<p>Before installing, you must have <a href="https://www.r-project.org/">R</a>, <a href="https://rstudio.com/products/rstudio/download/#download">RStudio</a>, and and the appropriate version of <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> installed. To instll CruzPlot, best practice is to close all instances of R and RStudio, and then run the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.</p>
 </div>
 <div id="run-cruzplot" class="section level2">
 <h2 class="hasAnchor">
 <a href="#run-cruzplot" class="anchor"></a>Run CruzPlot</h2>
-<p>To open and run the CruzPlot GUI, run the following code in RStudio:</p>
+<p>To open and run CruzPlot, run the following code in RStudio:</p>
 <div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">CruzPlot</span><span class="kw ns">::</span><span class="fu"><a href="reference/cruzplot_gui.html">cruzplot_gui</a></span>()</pre></div>
+</div>
+<div id="cruzplot-manual" class="section level2">
+<h2 class="hasAnchor">
+<a href="#cruzplot-manual" class="anchor"></a>CruzPlot manual</h2>
+<p>The CruzPlot manual can be downloaded <a href="https://github.com/smwoodman/CruzPlot/blob/master/inst/shiny/www/CruzPlot_Manual_app.pdf">at this link</a>, or accessed when running CruzPlot by opening the “CruzPlot Manual” page. It is recommended for new users to read the first two pages of the manual for orientation purposes; the rest of the manual contains section-specific information (formatting requirements, etc.) and can be read on an as-needed basis.</p>
 </div>
 <div id="additional-details" class="section level2">
 <h2 class="hasAnchor">
 <a href="#additional-details" class="anchor"></a>Additional details</h2>
-<p>The CruzPlot manual can be accessed within CruzPlot (i.e., when running CruzPlot) by clicking the “CruzPlot Manual” tab. It is recommended for new users to read the first two pages of the manual for orientation purposes; the rest of the manual contains section-specific information (formatting requirements, etc.) and can be read on an as-needed basis.</p>
-<p>If text or images overlap within the CruzPlot window, please make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus (‘-’) on Windows systems)</p>
+<p>If text or images overlap within the CruzPlot window, you can make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus (‘-’) on Windows systems)</p>
 </div>
 </div>
   </div>
