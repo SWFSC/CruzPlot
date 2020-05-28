@@ -1,4 +1,4 @@
-# CruzPlot 1.0 (in development)
+# CruzPlot 1.0
 
 ### General
 
@@ -26,11 +26,15 @@
 
 * Users can load their own species codes file or use default SpCodes.dat
 
+* Removed CPOD plotting functionality
+
 * Sightings can be plotted by event code (S/K/M/G/p)
 
 * Sightings can be filtered by mode and effort type
 
 * Simplified effort can be filtered by effort type (standard/non-standard/fine)
+
+* Effort lines are explicitly filtered by those within the map range
 
 * Users have more control over effort line properties and legend parameters
 
