@@ -226,12 +226,13 @@ cruzDasSightSpecies <- reactive({
 
   # Calculate sighting location
   bearing2 <- (das.sight$Course + das.sight$Bearing) %% 360
-  ll.sight <- destPoint(matrix(c(das.sight$Lon, das.sight$Lat), ncol = 2),
-                        bearing2, das.sight$DistNm * 1852)
+  ll.sight <- geosphere::destPoint(
+    matrix(c(das.sight$Lon, das.sight$Lat), ncol = 2),
+    bearing2, das.sight$DistNm * 1852
+  )
 
   das.sight <- das.sight %>%
-    mutate(Lat_ship = .data$Lat,
-           Lon_ship = .data$Lon,
+    mutate(Lat_ship = .data$Lat, Lon_ship = .data$Lon,
            Lat_sight = ll.sight[, "lat"],
            Lon_sight = ll.sight[, "lon"])
 

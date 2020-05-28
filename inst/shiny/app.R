@@ -193,7 +193,7 @@ server <- function(input, output, session) {
 
   source(file.path("server_2_das", "cruzDasEffortEvent.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasEffortFilter.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasEffortOut.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasEffortRange.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasEffortLegend.R"), local = TRUE, chdir = TRUE)
 
   source(file.path("server_2_das", "cruzDasInteractive.R"), local = TRUE, chdir = TRUE)

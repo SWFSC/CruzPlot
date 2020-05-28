@@ -5,15 +5,41 @@ plotDownload <- function() {
   plotInteractive()()
 }
 
+### Render download button, with checks
 output$downloadMap_button <- renderUI({
+  # Resolution
+  v.val <- input$download_res
+  v.message <- "Resolution must be a whole number greater than zero"
   validate(
-    need(!is.na(input$download_res), "Please enter a valid resolution") %then%
-      need(input$download_res > 0, "Please enter a valid resolution")
+    need(!is.na(v.val), v.message) %then%
+      need(isTRUE(all.equal(v.val %% 1, 0)), v.message) %then%
+      need(v.val > 0, v.message)
   )
 
+  # Plot width
+  v.val <- input$download_width
+  v.message <- "Plot width must be greater than zero"
+  validate(
+    need(!is.na(v.val), v.message) %then%
+      # need(isTRUE(all.equal(v.val %% 1, 0)), v.message) %then%
+      need(v.val > 0, v.message)
+  )
+
+  # Plot height
+  v.val <- input$download_height
+  v.message <- "Plot height must be greater than zero"
+  validate(
+    need(!is.na(v.val), v.message) %then%
+      # need(isTRUE(all.equal(v.val %% 1, 0)), v.message) %then%
+      need(v.val > 0, v.message)
+  )
+
+  # Button
   downloadButton("downloadMap", label = "Download map")
 })
 
+
+### Download map
 output$downloadMap <- downloadHandler(
   filename = function() {
     file.ext <- switch(
@@ -29,16 +55,19 @@ output$downloadMap <- downloadHandler(
   },
 
   content = function(file) {
+    file.width <- input$download_width
+    file.height <- input$download_height
+
     if (input$download_format == 1) {
-      jpeg(file, width = 10, height = 10, units = "in", res = input$download_res)
+      jpeg(file, width = file.width, height = file.height, units = "in", res = input$download_res)
       plotDownload()
       dev.off()
     } else if (input$download_format == 2) {
-      pdf(file, width = 10, height = 10)
+      pdf(file, width = file.width, height = file.height, onefile = FALSE)
       plotDownload()
       dev.off()
     } else if (input$download_format == 3) {
-      png(file, width = 10, height = 10, units = "in", res = input$download_res)
+      png(file, width = file.width, height = file.height, units = "in", res = input$download_res)
       plotDownload()
       dev.off()
     }

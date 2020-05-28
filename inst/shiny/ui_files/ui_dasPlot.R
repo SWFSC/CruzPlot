@@ -40,7 +40,7 @@ ui.dasPlot <- function() {
                                          "swfscDAS documentation"),
                            "for details about these parameters"),
                   fluidRow(
-                    column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading data"),
+                    column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading each file"),
                                            value = 0, min = 0)),
                     column(6, numericInput("das_file_days_gap", tags$h5("days.gap argument of das_process()"),
                                            value = 10, min = 0, step = 1))
@@ -293,7 +293,7 @@ ui.dasPlot <- function() {
                                          choices = list("Kilometers" = 1, "Nautical miles" = 2),
                                          selected = 2)),
                   column(4, helpText("Note that if any cruise numbers are selected,",
-                                     "sightings with an NA cruise value will not be plotted")),
+                                     "sightings with an NA cruise number will not be plotted")),
                   column(8, helpText("Only sightings less than or equal to this perpendicular distance from the trackline will be plotted.",
                                      "Sightings with NA perpendicular distance values will not be plotted"))
                 )
@@ -413,7 +413,7 @@ ui.dasPlot <- function() {
                   uiOutput("das_effort_dateRange_uiOut_date"),
                   uiOutput("das_effort_cruise_uiOut_selectize"),
                   helpText("Note that if any cruise numbers are selected,",
-                           "effort with an NA cruise value will not be plotted")
+                           "effort with an NA cruise number will not be plotted")
                 )
               )
             ),
@@ -449,7 +449,7 @@ ui.dasPlot <- function() {
           title = "Legends",
           fluidRow(
             box(
-              title = "Sighting legend", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              title = "Sightings legend", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               conditionalPanel(
                 condition = "input.das_sightings==false",
                 helpText("*** No legend for sightings unless 'Plot sightings' is selected in the 'Sightings' tab")

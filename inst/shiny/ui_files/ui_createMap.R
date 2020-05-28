@@ -303,9 +303,14 @@ ui.createMap <- function() {
               title = "Save map", status = "warning", solidHeader = FALSE, width = 12,
               fluidRow(
                 column(4, radioButtons("download_format", label = tags$h5("Download map as"),
-                                       choices = list("jpeg" = 1, "pdf" = 2, "png" = 3),
+                                       choices = list("JPEG" = 1, "PDF" = 2, "PNG" = 3),
                                        selected = 3)),
-                column(4, numericInput("download_res", tags$h5("Resolution"), value = 300, step = 50, min = 0))
+                column(
+                  width = 4,
+                  numericInput("download_width", tags$h5("File width (inches)"), value = 10, step = 1, min = 0),
+                  numericInput("download_res", tags$h5("Resolution (ppi)"), value = 300, step = 50, min = 0)
+                ),
+                column(4, numericInput("download_height", tags$h5("File height (inches)"), value = 10, step = 1, min = 0))
               ),
               uiOutput("downloadMap_button")
             )

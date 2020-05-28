@@ -39,11 +39,6 @@ cruzMapBathyLoad <- eventReactive(input$depth_file, {
   req(input$depth_file)
   file.in <- input$depth_file
 
-  validate(
-    need(identical(substr_right(file.in$datapath, 4), ".csv"),
-         "Please load a file with the extension'.csv'")
-  )
-
   cruz.list$bathy.xyz <- NULL
   bathy.xyz <- read.csv(file.in$datapath)
 
@@ -102,11 +97,12 @@ cruzMapColorWater <- reactive({
 
 # Download button for downloading bathymetric file
 output$depth_download_button <- renderUI({
+  v.val <- input$depth_res
+  v.mess <- "Bathymetric data resolution must be a whole number between 0 and 60"
   validate(
-    need(!is.na(input$depth_res),
-         "Bathymetric data resolution must be a number between 0 and 60") %then%
-      need(between(input$depth_res, 0, 60),
-           "Bathymetric data resolution must be a number between 0 and 60")
+    need(!is.na(v.val), v.mess) %then%
+      need(isTRUE(all.equal(v.val %% 1, 0)), v.mess) %then%
+      need(between(v.val, 0, 60), v.mess)
   )
 
   downloadButton("depth_download", "Download bathymetric file")

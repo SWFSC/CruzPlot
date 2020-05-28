@@ -78,7 +78,7 @@ output$das_sight_cruise_uiOut_selectize <- renderUI({
   req(cruz.list$das.data)
   cruises <- das_cruise_nums()
 
-  selectizeInput("das_sight_cruise", tags$h5("Select cruise number(s)"),
+  selectizeInput("das_sight_cruise", tags$h5("Cruise number(s)"),
                  choices = cruises, multiple = TRUE, selected = NULL)
 })
 outputOptions(output, "das_sight_cruise_uiOut_selectize", suspendWhenHidden = FALSE, priority = 3)
@@ -88,7 +88,7 @@ output$das_effort_cruise_uiOut_selectize <- renderUI({
   req(cruz.list$das.data)
   cruises <- das_cruise_nums()
 
-  selectizeInput("das_effort_cruise", tags$h5("Select cruise number(s)"),
+  selectizeInput("das_effort_cruise", tags$h5("Cruise number(s)"),
                  choices = cruises, multiple = TRUE, selected = NULL)
 })
 outputOptions(output, "das_effort_cruise_uiOut_selectize", suspendWhenHidden = FALSE, priority = 3)

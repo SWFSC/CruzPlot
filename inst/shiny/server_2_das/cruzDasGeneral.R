@@ -75,69 +75,70 @@ outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 ###############################################################################
 # Code for keeping current inputs the same when switching
 #    from or to text symbol properties input
-
 observeEvent(input$das_symbol_mult, {
-  curr.pch <- as.numeric(input$das_symbol_type)
-  curr.col <- input$das_symbol_color
+  if (input$das_symbol_mult) {
+    # Covert numerics to symbols
+    curr.pch <- as.numeric(input$das_symbol_type)
+    if (length(curr.pch) == 0) curr.pch <- "1"
 
-  if (length(curr.pch) == 0) curr.pch <- "1"
-  if (is.null(curr.col)) curr.col <- "Black"
+    # Covert color codes to color names
+    curr.col <- input$das_symbol_color
+    if (is.null(curr.col)) {
+      curr.col <- "Black"
 
-  # Covert color codes to color names
-  if (curr.col[1] != "Black") {
-    if (input$color_style == 1) {
-      curr.col <- sapply(1:length(curr.col), function(i) {
-        which(symbol.col.code %in% curr.col[i])
-      }) # keeps numbers in order
-      curr.col <- symbol.col[curr.col]
-    } else if (input$color_style == 2) {
-      curr.col <- sapply(1:length(curr.col), function(i) {
-        which(symbol.col.code.gray %in% curr.col[i])
-      }) # keeps numbers in order
-      curr.col <- symbol.col.gray[curr.col]
+    } else {
+      # This keeps numbers in order
+      if (input$color_style == 1) {
+        curr.col.idx <- vapply(curr.col, function(i) which(symbol.col.code %in% i), 1)
+        curr.col <- symbol.col[curr.col.idx]
+
+      } else if (input$color_style == 2) {
+        curr.col.idx <- vapply(curr.col, function(i) which(symbol.col.code.gray %in% i), 1)
+        curr.col <- symbol.col[curr.col.idx]
+      }
     }
-  }
 
-  updateTextInput(session, "das_symbol_type_mult", value = paste(curr.pch, collapse = ", "))
-  updateTextInput(session, "das_symbol_color_mult", value = paste(curr.col, collapse = ", "))
-})
+    updateTextInput(session, "das_symbol_type_mult", value = paste(curr.pch, collapse = ", "))
+    updateTextInput(session, "das_symbol_color_mult", value = paste(curr.col, collapse = ", "))
 
-observeEvent(!input$das_symbol_mult, {
-  curr.pch <- as.numeric(unlist(strsplit(input$das_symbol_type_mult, ", ")))
-  curr.col <- unlist(strsplit(input$das_symbol_color_mult, ", "))
 
-  if (length(curr.pch) == 0) curr.pch <- 1
-  if (is.null(curr.col)) curr.col <- "black"
-
-  # Covert color names to color codes
-  if (curr.col[1] != "black") {
-    if (input$color_style == 1) {
-      curr.col <- sapply(1:length(curr.col), function(i) {
-        which(symbol.col %in% curr.col[i])
-      }) # keeps numbers in order
-      curr.col <- symbol.col.code[curr.col]
-    } else if (input$color_style == 2) {
-      curr.col <- sapply(1:length(curr.col), function(i) {
-        which(symbol.col.gray %in% curr.col[i])
-      }) # keeps numbers in order
-      curr.col <- symbol.col.code.gray[curr.col]
+  } else {
+    # Convert symbol codes to symbols
+    curr.pch <- suppressWarnings(
+      as.numeric(unlist(strsplit(input$das_symbol_type_mult, ", ")))
+    )
+    if (length(curr.pch) == 0) {
+      curr.pch <- 1
+    } else {
+      if (!all(curr.pch %in% unname(cruz.symbol.type))) curr.pch <- 1
     }
+    updateSelectizeInput(session, "das_symbol_type", selected = curr.pch)
+
+
+    # Covert color names to color codes
+    curr.col <- unlist(strsplit(input$das_symbol_color_mult, ", "))
+
+    if (is.null(curr.col)) {
+      curr.col <- "black"
+
+    } else {
+      if (!all(curr.col %in% symbol.col)) {
+        curr.col <- "black"
+      } else {
+        # This keeps numbers in order
+        if (input$color_style == 1) {
+          curr.col.idx <- vapply(curr.col, function(i) which(symbol.col %in% i), 1)
+          curr.col <- symbol.col.code[curr.col.idx]
+
+        } else if (input$color_style == 2) {
+          curr.col.idx <- vapply(curr.col, function(i) which(symbol.col.gray %in% i), 1)
+          curr.col <- symbol.col.code.gray[curr.col.idx]
+        }
+      }
+    }
+    updateSelectizeInput(session, "das_symbol_color", selected = curr.col)
   }
-
-  updateSelectizeInput(session, "das_symbol_type", selected = curr.pch)
-  updateSelectizeInput(session, "das_symbol_color", selected = curr.col)
 })
-
-# observe({
-#   mult <- input$das_symbol_mult
-#   isolate({
-#     sight <- input$das_sighting_type
-#     if(sight == 1) sp.len <- length(input$das.sighting.code.1)
-#     if(sight == 2) sp.len <- length(input$das.sighting.code.2)
-#     if(sight == 3) sp.len <- NULL
-#   })
-#
-# })
 
 
 ###############################################################################

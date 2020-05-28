@@ -5,7 +5,6 @@
 
 ### Final effort function - gets filtered data from cruzDasEffortFilter()
 cruzDasEffortRange <- reactive({
-  # effort.type <- as.numeric(input$das_effort)
   das.eff.lines <- cruzDasEffortFilter()
 
   # Verbosely remove any effort lines with NA lat/lon
@@ -31,7 +30,6 @@ cruzDasEffortRange <- reactive({
            between(.data$end_lat, lat.range[1], lat.range[2]),
            between(.data$end_lon, lon.range[1], lon.range[2]))
 
-  browser()
   # Save and return
   cruz.list$das.eff.filt <- das.eff.lines.range
 
