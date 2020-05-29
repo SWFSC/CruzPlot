@@ -43,6 +43,12 @@ cruzDasSightSpeciesTurtles <- reactive({
 
 
 ###############################################################################
+# So that das_sight is only run a single time
+cruzDasSighSpeciesProcess <- reactive({
+  swfscDAS::das_sight(req(cruz.list$das.data), returnformat = "default")
+})
+
+# Extract specfied species/events
 cruzDasSightSpecies <- reactive({
   das.proc <- req(cruz.list$das.data)
   cruz.list$das.sight.filt <- NULL
@@ -55,8 +61,7 @@ cruzDasSightSpecies <- reactive({
       (sight.type == 2 && input$das_sighting_code_2_all == 2)
   )
 
-  das.sight <- swfscDAS::das_sight(das.proc, returnformat = "default")
-  # browser()
+  das.sight <- cruzDasSighSpeciesProcess()
 
   #----------------------------------------------------------------------------
   if (sight.type == 1) {
