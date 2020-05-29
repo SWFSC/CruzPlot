@@ -2,9 +2,13 @@
 ## Code for 'initializing' and for saving/loading reactiveValues
 
 ###############################################################################
-# 'Initialize' reactiveValues
+# 'Initialize' reactiveVals. These values do not need to be saved
 
 cruz.load.color.flag <- reactiveVal(FALSE)
+# cruz.das.symbol.type <- reactiveVal(NULL)
+# cruz.das.symbol.color <- reactiveVal(NULL)
+
+# 'Initialize' reactiveValues
 
 ### For data storage and loading again in new session
 cruz.list <- reactiveValues(

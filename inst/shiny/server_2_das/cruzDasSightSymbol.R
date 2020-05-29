@@ -135,22 +135,31 @@ cruzDasSightSymbolAnimalSelected <- reactive({
   } else {
     pt.pch <- as.numeric(unlist(strsplit(input$das_symbol_type_mult, ",")))
     pt.col <- str_trim(unlist(strsplit(input$das_symbol_color_mult, ",")))
+    # pt.pch <- as.numeric(unlist(strsplit(cruz.das.symbol.type(), ",")))
+    # pt.col <- str_trim(unlist(strsplit(cruz.das.symbol.color(), ",")))
     validate(
+      need(length(pt.pch) > 0, # duplicate of check in main function
+           "Please enter at least one value for symbol type"),
       need(all(pt.pch %in% 0:20),
-           "Not all symbol type entries are valid. Please be sure all entries are a number from 0 to 20"),
-      need(length(pt.col) != 0,
-           "Please enter at least one value for symbol color"),
-      need(all(pt.col %in% symbol.col),
-           paste("Not all symbol color entries are valid. Please be sure each entry matches",
-                 "a color in the Display Color/Formatt Options tab"))
+           paste("Not all symbol type entries are valid." ,
+                 "Please be sure all entries are a whole number from 0 to 20")),
+      need(length(pt.col) > 0,
+           "Please enter at least one value for symbol color")
     )
 
     # Covert color names to color codes-codes established in server file,
     #   keeping them in order
+    valid.message <- paste(
+      "Not all symbol color entries are valid. Please be sure each entry",
+      "matches a color in the Color and Formatting Options page"
+    )
     if (input$color_style == 1) {
+      validate(need(all(pt.col %in% symbol.col), valid.message))
       pt.col <- vapply(pt.col, function(i) which(symbol.col %in% i), 1)
       pt.col <- symbol.col.code[pt.col]
+
     } else if (input$color_style == 2) {
+      validate(need(all(pt.col %in% symbol.col.gray), valid.message))
       pt.col <- vapply(pt.col, function(i) which(symbol.col.gray %in% i), 1)
       pt.col <- symbol.col.code.gray[pt.col]
     }

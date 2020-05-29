@@ -73,10 +73,22 @@ outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 
 
 ###############################################################################
+# # Trying to stop plot glitch
+# observe({
+#   if (input$das_symbol_mult) {
+#     cruz.das.symbol.type(input$das_symbol_type_mult)
+#     cruz.das.symbol.color(input$das_symbol_color_mult)
+#   } else {
+#     cruz.das.symbol.type(input$das_symbol_type)
+#     cruz.das.symbol.color(input$das_symbol_color)
+#   }
+# })
+
 # Code for keeping current inputs the same when switching
 #    from or to text symbol properties input
 observeEvent(input$das_symbol_mult, {
   if (input$das_symbol_mult) {
+    ### Convert codes to text
     # Covert numerics to symbols
     curr.pch <- as.numeric(input$das_symbol_type)
     if (length(curr.pch) == 0) curr.pch <- "1"
@@ -94,7 +106,7 @@ observeEvent(input$das_symbol_mult, {
 
       } else if (input$color_style == 2) {
         curr.col.idx <- vapply(curr.col, function(i) which(symbol.col.code.gray %in% i), 1)
-        curr.col <- symbol.col[curr.col.idx]
+        curr.col <- symbol.col.gray[curr.col.idx]
       }
     }
 
@@ -103,6 +115,7 @@ observeEvent(input$das_symbol_mult, {
 
 
   } else {
+    ### Convert from text to codes
     # Convert symbol codes to symbols
     curr.pch <- suppressWarnings(
       as.numeric(unlist(strsplit(input$das_symbol_type_mult, ", ")))
@@ -138,7 +151,7 @@ observeEvent(input$das_symbol_mult, {
     }
     updateSelectInput(session, "das_symbol_color", selected = curr.col)
   }
-})
+}, ignoreInit = TRUE)
 
 
 ###############################################################################
