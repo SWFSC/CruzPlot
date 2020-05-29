@@ -4,7 +4,7 @@
 ###############################################################################
 # 'Initialize' reactiveValues
 
-cruz.load.color <- reactiveValues(load.flag = FALSE)
+cruz.load.color.flag <- reactiveVal(FALSE)
 
 ### For data storage and loading again in new session
 cruz.list <- reactiveValues(
@@ -85,7 +85,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
          "Error: Please load a file with the extension '.RDATA'")
   )
 
-  cruz.load.color$load.flag <- TRUE
 
   withProgress(message = "Loading saved data", value = 0.5, {
     load(file.load$datapath)
@@ -116,6 +115,10 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     cruz.map.range$world2    <- cruz.map.range.save$world2
     cruz.map.range$map.name  <- cruz.map.range.save$map.name
     incProgress(0.05)
+
+
+    # If color style will be updated, set flag
+    cruz.load.color.flag(input$color_style != input.save$color_style)
 
 
     #--------------------------------------------------------------------------

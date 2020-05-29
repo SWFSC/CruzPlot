@@ -1,3 +1,8 @@
+# CruzPlot 1.1 (in development)
+
+* Fixed bug when changing color scheme to grey scale after loading a saved workspace
+
+
 # CruzPlot 1.0
 
 ### General

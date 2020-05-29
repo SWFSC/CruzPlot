@@ -145,12 +145,13 @@ cruzDasSightSymbolAnimalSelected <- reactive({
                  "a color in the Display Color/Formatt Options tab"))
     )
 
-    # Covert color names to color codes-codes established in server file
+    # Covert color names to color codes-codes established in server file,
+    #   keeping them in order
     if (input$color_style == 1) {
-      pt.col <- sapply(1:length(pt.col), function(i) which(symbol.col %in% pt.col[i])) # keeps numbers in order
+      pt.col <- vapply(pt.col, function(i) which(symbol.col %in% i), 1)
       pt.col <- symbol.col.code[pt.col]
     } else if (input$color_style == 2) {
-      pt.col <- sapply(1:length(pt.col), function(i) which(symbol.col.gray %in% pt.col[i])) # keeps numbers in order
+      pt.col <- vapply(pt.col, function(i) which(symbol.col.gray %in% i), 1)
       pt.col <- symbol.col.code.gray[pt.col]
     }
   }

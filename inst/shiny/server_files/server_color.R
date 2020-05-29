@@ -17,7 +17,7 @@
 
 
 observeEvent(input$color_style, {
-  if (!cruz.load.color$load.flag) {
+  if (!cruz.load.color.flag()) {
     if (input$color_style == 1) {
       palette("default")
       c.pal <- cruz.palette.color
@@ -52,5 +52,5 @@ observeEvent(input$color_style, {
     }
   }
 
-  cruz.load.color$load.flag <- FALSE
+  cruz.load.color.flag(FALSE)
 }, ignoreInit = TRUE)
