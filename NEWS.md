@@ -1,6 +1,12 @@
 # CruzPlot 1.1 (in development)
 
-* Fixed two bugs that caused errors when the changing color scheme
+* Fixed two bugs that caused errors when changing the color scheme
+
+* Mode and effort type filters are only available as sighting filters when strictly on effort sightings are plotted
+
+* Fixed a bug when filter information for a sighting or effort line was NA. 
+
+* CruzPlot now verbosely removes, i.e. displays a pop-up window, when a sighting or effort line is removed because of one or more 1) NA position coordinates or 2) NA filter values
 
 
 # CruzPlot 1.0

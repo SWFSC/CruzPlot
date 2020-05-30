@@ -44,7 +44,7 @@ if (isTruthy(cruz.list$das.data)) {
            pch = das.sight.pt$pch, col = das.sight.pt$col,
            cex = das.sight.pt$cex, lwd = das.sight.pt$lwd)
 
-    if (input$das_legend & sight.type < 3) {
+    if (input$das_legend) {
       op <- par(family = das.sight.legend$font.fam)
       legend(x = das.sight.legend$leg.x,
              y = das.sight.legend$leg.y,

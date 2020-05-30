@@ -18,9 +18,6 @@ cruz.list <- reactiveValues(
   sp.codes = NULL,          # Species code file
   sp.codes.name = NULL,     # Either "default" or "personal"
   das.data = NULL,          # DAS dataframe
-  # das.data.name = NULL,     # Names of loaded DAS files
-  das.sight.filt = NULL,    # Filtered sighting data - used to print NA notice messages
-  das.eff.filt = NULL,      # Filtered effort data - used to print NA notice messages
   ndas.data = list(),       # List of non-DAS line and point data
   ndas.df = NULL,           # Data frame of ndas information
   ndas.toplot = NULL        # Non-DAS objects currently being plotted
@@ -108,7 +105,6 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     cruz.list$sp.codes      <- cruz.list.save[["sp.codes"]]
     cruz.list$sp.codes.name <- cruz.list.save[["sp.codes.name"]]
     cruz.list$das.data      <- cruz.list.save[["das.data"]]
-    # cruz.list$das.data.name <- cruz.list.save[["das.data.name"]]
     # Don't need to save sighting/effort data - will get updated when reloaded
     cruz.list$ndas.data     <- cruz.list.save[["ndas.data"]]
     cruz.list$ndas.df       <- cruz.list.save[["ndas.df"]]

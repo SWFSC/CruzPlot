@@ -7,34 +7,34 @@
 cruzDasEffortRange <- reactive({
   das.eff.lines <- cruzDasEffortFilter()
 
-  # Verbosely remove any effort lines with NA lat/lon
-  das.eff.lines.nona <- das.eff.lines %>%
-    filter(!is.na(das.eff.lines$st_lat), !is.na(das.eff.lines$end_lat),
-           !is.na(das.eff.lines$st_lon), !is.na(das.eff.lines$end_lon))
-
-  if (nrow(das.eff.lines.nona) != nrow(das.eff.lines))
-    warning("Some effort lines had NA start or end lat/lon coordinates")
-
+  # Check for any effort lines with NA coordinates
+  ll.na <- sum(is.na(das.eff.lines$st_lat) | is.na(das.eff.lines$st_lon) |
+                 is.na(das.eff.lines$end_lat) | is.na(das.eff.lines$end_lon))
   validate(
-    need(nrow(das.eff.lines.nona) > 0,
-         "No effort lines that match the filters have non-NA values")
+    need(ll.na == 0,
+         "Error processing effort line positions - please report this as an issue")
   )
 
   # Remove any effort lines with both st and end points outside map range
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
 
-  das.eff.lines.range <- das.eff.lines.nona %>%
+  das.eff.lines.range <- das.eff.lines %>%
     filter(between(.data$st_lat, lat.range[1], lat.range[2]),
            between(.data$st_lon, lon.range[1], lon.range[2]),
            between(.data$end_lat, lat.range[1], lat.range[2]),
            between(.data$end_lon, lon.range[1], lon.range[2]))
 
-  # Save and return
-  cruz.list$das.eff.filt <- das.eff.lines.range
+  validate(
+    need(nrow(das.eff.lines.range) > 0,
+         "No effort lines are completely within the map boundaries")
+  )
 
+  # Return
   das.eff.lines.range
 })
+
+
 
 ### Get effort plotting colors and line widths
 cruzDasEffortParams <- reactive({

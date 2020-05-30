@@ -18,17 +18,51 @@ cruzDasSightFilter <- reactive({
   sp.codes     <- data.list$sp.codes
   sp.selection <- data.list$sp.selection
 
-  # Collect logical vectors
+  ### Collect logical vectors
   keep1 <- cruzDasSightFilterEffort()
-  keep2 <- if (input$das_sight_effort == 3) TRUE else cruzDasSightFilterMode()
-  keep3 <- if (input$das_sight_effort == 3) TRUE else cruzDasSightFilterEfftype()
+  keep2 <- if (input$das_sight_effort == 2) cruzDasSightFilterMode() else TRUE
+  keep3 <- if (input$das_sight_effort == 2) cruzDasSightFilterEfftype() else TRUE
   keep4 <- cruzDasSightFilterBeaufort()
   keep5 <- cruzDasSightFilterDate()
   keep6 <- cruzDasSightFilterCruise()
   keep7 <- cruzDasSightFilterTrunc()
 
-  num.keep <- keep1 & keep2 & keep3 & keep4 & keep5 & keep6 & keep7
-  das.sight.filt <- das.sight[num.keep, ]
+  keep.all <- keep1 & keep2 & keep3 & keep4 & keep5 & keep6 & keep7
+  keep.all.na <- which(is.na(keep.all)) #works b/c (NA & F) output is (F)
+
+  ### Verbosely change NA filter values to FALSE
+  if (length(keep.all.na) > 0) {
+    table.out <- das.sight %>%
+      slice(keep.all.na) %>%
+      select(Event, DateTime, Lat, Lon, OnEffort,
+             Cruise, SightNo, file_das, line_num) %>%
+      mutate(DateTime = as.character(DateTime),
+             Cruise = as.character(Cruise)) %>%
+      distinct()
+    txt.out <- ifelse(nrow(table.out) == 1, "sighting", "sightings")
+    txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
+
+    showModal(modalDialog(
+      title = "CruzPlot notice",
+      tags$h5("The following", txt.out, "had at least one NA filter value.",
+              txt.out2, "will be removed (filtered) and thus not plotted",
+              "or included in tabular output:"),
+      tags$br(), tags$br(),
+      renderTable(table.out),
+      easyClose = TRUE,
+      footer = "Click anywhere or press any button to close this notice",
+      size = "l"
+    ))
+  }
+
+  keep.all[is.na(keep.all)] <- FALSE
+  das.sight.filt <- das.sight[keep.all, ]
+
+  ### Final checks and return
+  validate(
+    need(sum(is.na(das.sight.filt$Event)) == 0,
+         "Error in CruzPlot sighting filtering - please report this as an issue")
+  )
 
   # If plotting selected mammals, check that all selected still have sightings
   if (sp.selection) {
@@ -41,10 +75,8 @@ cruzDasSightFilter <- reactive({
     )
   }
 
-  cruz.list$das.sight.filt <- das.sight.filt
-
-  list(das.sight = das.sight.filt, sight.type = sight.type, sp.codes = sp.codes,
-       sp.selection = sp.selection)
+  list(das.sight = das.sight.filt, sight.type = sight.type,
+       sp.codes = sp.codes, sp.selection = sp.selection)
 })
 
 
@@ -90,7 +122,7 @@ cruzDasSightFilterBeaufort <- reactive({
 
   validate(
     need(input$das_sight_minBft <= input$das_sight_maxBft,
-         "Minimum Beaufort must be less than or equal to maximum Beaufort")
+         "Sightings filter: minimum Beaufort must be less than or equal to maximum Beaufort")
   )
 
   keep <- between(das.sight$Bft, bft.min, bft.max)
@@ -105,7 +137,7 @@ cruzDasSightFilterDate <- reactive({
 
   validate(
     need(input$das_sight_dateRange[1] <= input$das_sight_dateRange[2],
-         "Minimum date must be less than or equal to maximum date")
+         "Sightings filter: minimum date must be less than or equal to maximum date")
   )
 
   keep <- between(
@@ -141,7 +173,7 @@ cruzDasSightFilterTrunc <- reactive({
   )
 
   if (is.na(pdist.val)) {
-    1:nrow(das.sight)
+    TRUE
 
   } else {
     keep <- das.sight$PerpDistKm <= pdist.val

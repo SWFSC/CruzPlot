@@ -1,12 +1,15 @@
 # cruzDasSight for CruzPlot - step 1 of processing species data
 #   cruzDasSightSpeciesMammals() returns mammal species codes selected by user
 #   cruzDasSightSpeciesTurtles() returns turtle species codes selected by user
+#   cruzDasSightProcess() - run das_sight only once
+#   cruzDasSightPosition - handle ship vs sighting position, verbosely remove NA positions
 #   cruzDasSightSpecies() returns list of data frames containing data for selected species sightings,
 #	    sighting type, and species codes; also computes sighting location based on angle and distance;
 #     adds sight.lat, sight.lon, angle, distance (nmi) to data.sight dataframe
 
 
 ###############################################################################
+# Extract and process species codes
 cruzDasSightSpeciesMammals <- reactive({
   sp.codes <- if (input$das_sighting_code_1_all == 1) {
     cruzSpeciesMammals()$Code
@@ -43,12 +46,111 @@ cruzDasSightSpeciesTurtles <- reactive({
 
 
 ###############################################################################
-# So that das_sight is only run a single time
-cruzDasSighSpeciesProcess <- reactive({
+# So that das_sight is run once
+cruzDasSightSpeciesProcess <- reactive({
   swfscDAS::das_sight(req(cruz.list$das.data), returnformat = "default")
 })
 
-# Extract specfied species/events
+
+
+###############################################################################
+# Series of sighting-processing reactive functions
+#   1) NA position filter, 2) Species/event filter
+
+### Checks on NA positions to print modal, and 'select' selected position
+cruzDasSightSpeciesPosition <- reactive({
+  das.sight <- cruzDasSightSpeciesProcess()
+
+  #----------------------------------------------------------------------------
+  # Verbosely remove sightings with NA positions
+  ll.na <- if (input$das_sightings_position == 1) {
+    which(is.na(das.sight$Lat) | is.na(das.sight$Lon))
+  } else (
+    which(
+      is.na(das.sight$Lat) | is.na(das.sight$Lon) | is.na(das.sight$Course) |
+        is.na(das.sight$Bearing) | is.na(das.sight$DistNm)
+    )
+  )
+
+  if (length(ll.na) > 0) {
+    table.out <- das.sight %>%
+      slice(ll.na) %>%
+      mutate(DateTime = as.character(DateTime),
+             Cruise = as.character(Cruise),
+             Resight = Event %in% c("s", "g")) %>%
+      select(Event, DateTime, Lat, Lon, OnEffort, Cruise,
+             SightNo, Resight, File = file_das, `Line number` = line_num) %>%
+      distinct()
+    txt.out1 <- ifelse(nrow(table.out) == 1, "sighting has", "sightings have")
+    txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
+
+    showModal(modalDialog(
+      title = "CruzPlot notice",
+      tags$h5("The following", txt.out1, "an NA value that causes the",
+              "specified plotted position to be NA.",
+              txt.out2, "will be automatically removed (filtered) and thus",
+              "not plotted or included in tabular output:"),
+      tags$br(), tags$br(),
+      renderTable(table.out),
+      tags$br(),
+      tags$h5("This notice will not be shown again unless a new DAS file is loaded, ",
+              "'Position to plot' is changed, or 'Plot sightings from' (if applicable) is changed.",
+              "See the manual for more details"),
+      easyClose = FALSE,
+      size = "l"
+    ))
+  }
+
+  das.sight <- if (input$das_sightings_position == 1) {
+    das.sight %>% filter(!is.na(.data$Lat), !is.na(.data$Lon))
+  } else {
+    das.sight %>%
+      filter(!is.na(.data$Lat), !is.na(.data$Lon),
+             !is.na(.data$Course), !is.na(.data$Bearing), !is.na(.data$DistNm))
+  }
+
+  #----------------------------------------------------------------------------
+  # Calculate sighting location,, select selected position, and return
+  bearing2 <- (das.sight$Course + das.sight$Bearing) %% 360
+  ll.sight <- geosphere::destPoint(
+    matrix(c(das.sight$Lon, das.sight$Lat), ncol = 2),
+    bearing2, das.sight$DistNm * 1852
+  )
+
+  # # Calculate sighting location using swfscMisc
+  # ll.sight.dest <- apply(das.sight, 1, function(i) {
+  # i <- as.numeric(i[c("Lat", "Lon", "bearing2", "DistNm")])
+  #   swfscMisc::destination(i["Lat"], i["Lon"], i["bearing2"], i["DistNm"],
+  #                          units = "nm", type = "ellipsoid")
+  # })
+
+  das.sight <- das.sight %>%
+    mutate(Lat_ship = .data$Lat, Lon_ship = .data$Lon,
+           Lat_sight = ll.sight[, "lat"],
+           Lon_sight = ll.sight[, "lon"])
+
+
+  # 'Select' ship or sighting position.
+  #   Might as well do this here since position input is already being used
+  if (input$das_sightings_position == 1) {
+    das.sight$Lat <- das.sight$Lat_ship
+    das.sight$Lon <- das.sight$Lon_ship
+
+  } else if (input$das_sightings_position == 2) {
+    das.sight$Lat <- das.sight$Lat_sight
+    das.sight$Lon <- das.sight$Lon_sight
+  }
+
+  # Adjust longitudes if world2 map is being used
+  if (cruz.map.range$world2)
+    das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
+
+  das.sight
+})
+
+
+###############################################################################
+# Filter for specfied species and (if applicable) events
 cruzDasSightSpecies <- reactive({
   das.proc <- req(cruz.list$das.data)
   cruz.list$das.sight.filt <- NULL
@@ -61,7 +163,7 @@ cruzDasSightSpecies <- reactive({
       (sight.type == 2 && input$das_sighting_code_2_all == 2)
   )
 
-  das.sight <- cruzDasSighSpeciesProcess()
+  das.sight <- cruzDasSightSpeciesPosition()
 
   #----------------------------------------------------------------------------
   if (sight.type == 1) {
@@ -180,6 +282,7 @@ cruzDasSightSpecies <- reactive({
 
 
   #   #--------------------------------------------------------------------------
+  # # SMW: Added for vaquita-specifc cruise. Does not seem applicable anymore
   # } else if (sight.type == 4) {
   #   # 4: C-PODs
   #   # C-POD sightings are entered as objects with sighting angle and distance
@@ -229,24 +332,7 @@ cruzDasSightSpecies <- reactive({
          "No sightings exist for the selected type and code(s)")
   )
 
-  # Calculate sighting location
-  bearing2 <- (das.sight$Course + das.sight$Bearing) %% 360
-  ll.sight <- geosphere::destPoint(
-    matrix(c(das.sight$Lon, das.sight$Lat), ncol = 2),
-    bearing2, das.sight$DistNm * 1852
-  )
 
-  das.sight <- das.sight %>%
-    mutate(Lat_ship = .data$Lat, Lon_ship = .data$Lon,
-           Lat_sight = ll.sight[, "lat"],
-           Lon_sight = ll.sight[, "lon"])
-
-  # # Calculate sighting location using swfscMisc
-  # ll.sight.dest <- apply(das.sight, 1, function(i) {
-  # i <- as.numeric(i[c("Lat", "Lon", "bearing2", "DistNm")])
-  #   swfscMisc::destination(i["Lat"], i["Lon"], i["bearing2"], i["DistNm"],
-  #                          units = "nm", type = "ellipsoid")
-  # })
 
   # If "Plot all..." was selected, only return codes in sighting data
   if ((sight.type == 1 && input$das_sighting_code_1_all == 1) |

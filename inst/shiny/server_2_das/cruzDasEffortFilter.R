@@ -11,25 +11,62 @@ observeEvent(input$das_sightings, {
 
 
 ###############################################################################
-# Top-level function for filtering sighting data
+# Top-level function for filtering effort line data
 cruzDasEffortFilter <- reactive({
   das.eff.lines <- cruzDasEffortEvent()
 
+  if (input$das_effort_filter_same) {
+    validate(
+      need(input$das_sightings,
+           "Sightings must be plotted to use the sighting filters for effort lines")
+    )
+  }
+
+  ### Collect logical vectors
   keep1 <- cruzDasEffortFilterMode()
   keep2 <- cruzDasEffortFilterEfftype()
   keep3 <- if (input$das_effort == 3) cruzDasEffortFilterBeaufort() else TRUE
   keep4 <- cruzDasEffortFilterDate()
   keep5 <- cruzDasEffortFilterCruise()
 
-  num.keep <- keep1 & keep2 & keep3 & keep4 & keep5
-  das.eff.lines.filt <- das.eff.lines[num.keep, ]
+  keep.all <- keep1 & keep2 & keep3 & keep4 & keep5
+  keep.all.na <- which(is.na(keep.all))
 
+  ### Show modal if any filter values are NA
+  # Can be this simple b/c (NA & F) output is (F)
+  if (length(keep.all.na) > 0) {
+    table.out <- das.eff.lines %>%
+      slice(keep.all.na) %>%
+      select(Event, DateTime, Lat, Lon, OnEffort,
+             Cruise, file_das, line_num) %>%
+      mutate(DateTime = as.character(DateTime),
+             Cruise = as.character(Cruise))
+    txt.out <- ifelse(nrow(table.out) == 1, "line had", "lines have")
+    txt.out2 <- ifelse(nrow(table.out) == 1, "This line", "These lines")
+
+    showModal(modalDialog(
+      title = "CruzPlot notice",
+      tags$h5("The following effort", txt.out, "at least one NA filter value.",
+              txt.out2, "will be removed (filtered) and thus not plotted",
+              "or included in tabular output:"),
+      tags$br(), tags$br(),
+      renderTable(table.out),
+      easyClose = TRUE,
+      footer = "Click anywhere or press any button to close this notice",
+      size = "l"
+    ))
+  }
+
+  keep.all[is.na(keep.all)] <- FALSE
+  das.eff.lines.filt <- das.eff.lines[keep.all, ]
+
+  ### Final checks and return
   validate(
-    need(nrow(das.eff.lines.filt) > 0,
-         "No effort lines match the provided filters")
+    need(sum(is.na(das.eff.lines.filt$Event)) == 0,
+         "Error in CruzPlot effort filtering - please report this as an issue") %then%
+      need(nrow(das.eff.lines.filt) > 0,
+           "No effort lines match the provided filters")
   )
-
-  cruz.list$das.eff.filt <- das.eff.lines.filt
 
   das.eff.lines.filt
 })
@@ -81,6 +118,11 @@ cruzDasEffortFilterBeaufortVal <- reactive({
     eff.bft.max <- as.numeric(input$das_effort_maxBft)
   }
 
+  validate(
+    need(eff.bft.min <= eff.bft.max,
+         "Effort filter: minimum Beaufort must be less than or equal to maximum Beaufort")
+  )
+
   c(eff.bft.min, eff.bft.max)
 })
 
@@ -89,7 +131,6 @@ cruzDasEffortFilterBeaufort <- reactive ({
   bft.vals <- cruzDasEffortFilterBeaufortVal()
 
   keep <- between(das.eff.lines$Bft, bft.vals[1], bft.vals[2])
-  keep[is.na(keep)] <- FALSE
   .func_eff_filt_validate(keep, "Beaufort")
 })
 
@@ -107,7 +148,7 @@ cruzDasEffortFilterDate <- reactive({
 
   validate(
     need(eff.date.vals[1] <= eff.date.vals[2],
-         "Minimum date must be less than or equal to maximum date")
+         "Effort filter: minimum date must be less than or equal to maximum date")
   )
 
   keep <- between(

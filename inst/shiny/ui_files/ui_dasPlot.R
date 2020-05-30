@@ -43,7 +43,7 @@ ui.dasPlot <- function() {
                     column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading each file"),
                                            value = 0, min = 0)),
                     column(6, numericInput("das_file_days_gap", tags$h5("days.gap argument of das_process()"),
-                                           value = 10, min = 0, step = 1))
+                                           value = 20, min = 0, step = 1))
                   ),
                   fluidRow(
                     column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
@@ -101,7 +101,7 @@ ui.dasPlot <- function() {
                     width = 6,
                     conditionalPanel(
                       condition = "input.das_sightings",
-                      radioButtons("das_sightings_position", NULL,
+                      radioButtons("das_sightings_position", tags$h5("Position to plot"),
                                    choices = list("Plot ship position" = 1, "Plot sighting position" = 2),
                                    selected = 1)
                     )
@@ -111,7 +111,6 @@ ui.dasPlot <- function() {
               conditionalPanel(
                 condition = "input.das_sightings",
                 textOutput("das_sight_spcodes_message"),
-                tags$span(textOutput("das_sight_message_text"), style = "color: red;"),
                 helpText("Sighting position is calculated using the ship position, ship course, sighting bearing (angle),",
                          "and radial distance to the sighting.",
                          "If any of these values are NA, then the sighting position will be NA")
@@ -256,15 +255,16 @@ ui.dasPlot <- function() {
               box(
                 title = "Sightings to plot", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
                 fluidRow(
-                  column(
-                    width = 6,
-                    radioButtons("das_sight_effort", label = NULL,
-                                 choices = list("On and off effort" = 1, "On effort only" = 2, "Off effort only" = 3),
-                                 selected = 1),
-                    helpText("To plot effort lines, use Effort tab")
+                  column(6, radioButtons("das_sight_effort", label = NULL,
+                                         choices = list("On and off effort" = 1, "On effort only" = 2, "Off effort only" = 3),
+                                         selected = 2)
                   ),
                   conditionalPanel(
-                    condition = "input.das_sight_effort != 3",
+                    condition = "input.das_sight_effort != 2",
+                    column(5, helpText("Mode and effort type filters are only available when plotting strictly on effort sightings"))
+                  ),
+                  conditionalPanel(
+                    condition = "input.das_sight_effort == 2",
                     column(3, checkboxGroupInput("das_sight_cp", label = tags$h5("Mode"), #inline = TRUE,
                                                  choices = list("Closing" = "C", "Passing" = "P"),
                                                  selected = c("C", "P"))),
@@ -327,9 +327,7 @@ ui.dasPlot <- function() {
                                                  choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
                                                  selected = c("S", "N", "F")))
                   )
-                ),
-                tags$span(textOutput("das_effort_message1_text"), style = "color: red;"),
-                tags$span(textOutput("das_effort_message2_text"), style = "color: red;")
+                )
               )
             )
           ),
@@ -361,8 +359,8 @@ ui.dasPlot <- function() {
                                 style = "color: red;")
                     ),
                     selectInput("das_effort_det_bft_col", tags$h5("Beaufort colors"),
-                                   choices = cruz.palette.color, selected = eff.bft.default,
-                                   multiple = TRUE),
+                                choices = cruz.palette.color, selected = eff.bft.default,
+                                multiple = TRUE),
                     numericInput("das_effort_det_bft_lwd", tags$h5("Line width"), value = 2, min = 1, max = 6, step = 1)
                   )
                 ),
@@ -396,7 +394,7 @@ ui.dasPlot <- function() {
               ),
               box(
                 title = "Effort filters", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
-                checkboxInput("das_effort_filter_same", "Same as 'Sighting filters' for Beaufort, dates, and cruise numbers",
+                checkboxInput("das_effort_filter_same", "Same as 'Sighting filters' for Beaufort, date range, and cruise numbers",
                               value = TRUE),
                 conditionalPanel(
                   condition = "input.das_effort_filter_same == false",

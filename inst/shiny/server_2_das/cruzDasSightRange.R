@@ -1,31 +1,32 @@
 # cruzDasSightRange for CruzPlot - step 3 of processing species data
 #   cruzDasSightPosition returns das_sight with Lat/Lon columns adjusted for
-#     world2 and ship/sighting position
+#     world2 and ship/sighting position.
+#     NOTE: Now done when removing records with NA positions
 #   cruzDasSightRange() returns list, which includes sightings within map range,
 #     selected sighting type, species codes, and counts for each species
 
 
 ###############################################################################
-cruzDasSightPosition <- reactive({
-  req(cruz.list$das.data)
-  das.sight <- cruzDasSightFilter()$das.sight
-
-  # 'Select' ship or sighting position
-  if (input$das_sightings_position == 1) {
-    das.sight$Lat <- das.sight$Lat_ship
-    das.sight$Lon <- das.sight$Lon_ship
-
-  } else { #input$das_sightings_position == 2
-    das.sight$Lat <- das.sight$Lat_sight
-    das.sight$Lon <- das.sight$Lon_sight
-  }
-
-  # Adjust longitudes if world2 map is being used
-  if (cruz.map.range$world2)
-    das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
-
-  das.sight
-})
+# cruzDasSightPosition <- reactive({
+#   req(cruz.list$das.data)
+#   das.sight <- cruzDasSightFilter()$das.sight
+#
+#   # 'Select' ship or sighting position
+#   if (input$das_sightings_position == 1) {
+#     das.sight$Lat <- das.sight$Lat_ship
+#     das.sight$Lon <- das.sight$Lon_ship
+#
+#   } else { #input$das_sightings_position == 2
+#     das.sight$Lat <- das.sight$Lat_sight
+#     das.sight$Lon <- das.sight$Lon_sight
+#   }
+#
+#   # Adjust longitudes if world2 map is being used
+#   if (cruz.map.range$world2)
+#     das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
+#
+#   das.sight
+# })
 
 
 ###############################################################################
@@ -33,7 +34,8 @@ cruzDasSightRange <- reactive({
   #----------------------------------------------------------------------------
   req(cruz.list$das.data)
 
-  das.sight <- cruzDasSightPosition()
+  # das.sight <- cruzDasSightPosition()
+  das.sight <- cruzDasSightFilter()$das.sight
 
   data.list <- cruzDasSightFilter()
   sight.type   <- data.list$sight.type
@@ -43,14 +45,19 @@ cruzDasSightRange <- reactive({
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
 
-  das.sight.filt <- das.sight %>%
-    filter(!is.na(.data$Lat), !is.na(.data$Lon),
-           between(.data$Lat, lat.range[1], lat.range[2]),
-           between(.data$Lon, lon.range[1], lon.range[2]))
+  # NA values removed back in cruzDasSightSpeciesProcess()
+  ll.na <- sum(is.na(das.sight$Lat) | is.na(das.sight$Lon))
+  validate(
+    need(ll.na == 0,
+         "Error processing sighting positions - please report this as an issue")
+  )
 
 
   #----------------------------------------------------------------------------
-  # General sightings check
+  # Filter to map range
+  das.sight.filt <- das.sight %>%
+    filter(between(.data$Lat, lat.range[1], lat.range[2]),
+           between(.data$Lon, lon.range[1], lon.range[2]))
   validate(
     need(nrow(das.sight.filt) > 0,
          "No sightings are within the map boundaries")
