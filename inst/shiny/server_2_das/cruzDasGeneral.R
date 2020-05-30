@@ -57,9 +57,21 @@ das_file_load <- eventReactive(input$das_file, {
          "Error: unable to read and process the provided DAS file(s)")
   )
 
-  # Savein reactive values
+  # Correct filename
+  filename.key <- data.frame(
+    tmp = basename(input$das_file$datapath),
+    actual = input$das_file$name,
+    stringsAsFactors = FALSE
+  )
+
+  das.proc <- das.proc %>%
+    left_join(filename.key, by = c("file_das" = "tmp")) %>%
+    mutate(file_das = .data$actual) %>%
+    select(-.data$actual)
+
+  # Save reactive values
   cruz.list$das.data <- das.proc
-  cruz.list$das.data.name <- input$das_file$name
+  # cruz.list$das.data.name <- input$das_file$name
 
   ""
 }, ignoreInit = TRUE)

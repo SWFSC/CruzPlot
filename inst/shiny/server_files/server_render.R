@@ -60,15 +60,12 @@ output$cruzNonDasRemove_text <- renderText({
 output$das_file_load_text <- renderText(das_file_load())
 
 output$das_loaded_text <- renderText({
-  req(cruz.list$das.data, cruz.list$das.data.name)
-  if (length(cruz.list$das.data.name) == 1) {
-    paste("The following DAS file is loaded:", cruz.list$das.data.name)
-
+  req(cruz.list$das.data)
+  data.name <- unique(cruz.list$das.data$file_das)
+  if (length(data.name) == 1) {
+    paste("The following DAS file is loaded:", data.name)
   } else {
-    paste(
-      "The following DAS files are loaded:",
-      paste(cruz.list$das.data.name, collapse = ", ")
-    )
+    paste("The following DAS files are loaded:", paste(data.name, collapse = ", "))
   }
 })
 
@@ -101,7 +98,7 @@ output$das_sight_spcodes_message <- renderText({
 
 # Text with notice(s) about sightings, e.g. NA lat/lons
 output$das_sight_message_text <- renderText({
-  das.sight <- cruz.list$das.sight.filt
+  das.sight <- cruzDasSightFilter()[[1]]
 
   count.na <- sum(is.na(das.sight$Lat) | is.na(das.sight$Lon))
 
