@@ -4,6 +4,8 @@
 
 * Mode and effort type filters are only available as sighting filters when strictly on effort sightings are plotted
 
+* Both sighting and effort Beaufort filters are not applied when the minimum and maximum values are 0 and 9, respectively. Functionally, this means that records with NA Beaufort values can be plotted 
+
 * Fixed a bug when filter information for a sighting or effort line was NA. 
 
 * CruzPlot now verbosely removes, i.e. displays a pop-up window, when a sighting or effort line is removed because of one or more 1) NA position coordinates or 2) NA filter values

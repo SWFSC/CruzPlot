@@ -34,11 +34,16 @@ cruzDasSightFilter <- reactive({
   if (length(keep.all.na) > 0) {
     table.out <- das.sight %>%
       slice(keep.all.na) %>%
-      select(Event, DateTime, Lat, Lon, OnEffort,
-             Cruise, SightNo, file_das, line_num) %>%
       mutate(DateTime = as.character(DateTime),
              Cruise = as.character(Cruise)) %>%
+      select(Event, DateTime, OnEffort, Cruise, Mode, EffType, Bft,
+             SightNo, PerpDistKm,
+             # File = file_das, #Can take up too much space
+             `Line number` = line_num) %>%
       distinct()
+    if (input$das_sight_effort == 2)
+      table.out <- table.out %>% select(-Mode, -EffType)
+
     txt.out <- ifelse(nrow(table.out) == 1, "sighting", "sightings")
     txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
 
@@ -125,7 +130,11 @@ cruzDasSightFilterBeaufort <- reactive({
          "Sightings filter: minimum Beaufort must be less than or equal to maximum Beaufort")
   )
 
-  keep <- between(das.sight$Bft, bft.min, bft.max)
+  keep <- if (identical(c(bft.min, bft.max), c(0, 9))) {
+    TRUE
+  } else {
+    between(das.sight$Bft, bft.min, bft.max)
+  }
   .func_sight_filt_validate(keep, "Beaufort")
 })
 

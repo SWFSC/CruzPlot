@@ -281,7 +281,9 @@ ui.dasPlot <- function() {
                                         choices = cruz.beaufort, selected = 0)),
                   column(3, selectInput("das_sight_maxBft", label = tags$h5("Maximum Beaufort"),
                                         choices = cruz.beaufort, selected = 9)),
-                  column(6, uiOutput("das_sight_dateRange_uiOut_date"))
+                  column(6, uiOutput("das_sight_dateRange_uiOut_date")),
+                  column(12, helpText("Note that if the min and max Beaufort values are 0 and 9, respectively,",
+                                      "then sightings with NA Beaufort values will be plotted"))
                 ),
                 tags$br(),
                 helpText("To stop applying the cruise number(s) and truncation (perpendicular distance) filters,",
@@ -401,17 +403,17 @@ ui.dasPlot <- function() {
                   conditionalPanel(
                     condition = "input.das_effort == 3",
                     fluidRow(
-                      column(6, selectInput("das_effort_minBft", tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)
-                      ),
-                      column(6, selectInput("das_effort_maxBft", tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)
-                      )
+                      column(6, selectInput("das_effort_minBft", tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)),
+                      column(6, selectInput("das_effort_maxBft", tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)),
+                      column(12, helpText("Note that if the min and max Beaufort values are 0 and 9, respectively,",
+                                          "then effort lines with NA Beaufort values will be plotted"))
                     )
                   ),
                   conditionalPanel("input.das_effort == 2", helpText("Only detailed effort lines can be plotted by Beaufort")),
                   uiOutput("das_effort_dateRange_uiOut_date"),
                   uiOutput("das_effort_cruise_uiOut_select"),
-                  helpText("Note that if any cruise numbers are selected,",
-                           "effort with an NA cruise number will not be plotted")
+                  helpText("Note that if no cruise numbers are selected,",
+                           "effort with NA cruise number values will be plotted")
                 )
               )
             ),

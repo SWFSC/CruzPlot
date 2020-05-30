@@ -37,10 +37,13 @@ cruzDasEffortFilter <- reactive({
   if (length(keep.all.na) > 0) {
     table.out <- das.eff.lines %>%
       slice(keep.all.na) %>%
-      select(Event, DateTime, Lat, Lon, OnEffort,
-             Cruise, file_das, line_num) %>%
       mutate(DateTime = as.character(DateTime),
-             Cruise = as.character(Cruise))
+             Cruise = as.character(Cruise)) %>%
+      select(Event, DateTime, OnEffort, Cruise, Mode, EffType, Bft,
+             # File = file_das, #Can take up too much space
+             `Line number` = line_num)
+    if (input$das_effort != 3) table.out <- table.out %>% select(Bft)
+
     txt.out <- ifelse(nrow(table.out) == 1, "line had", "lines have")
     txt.out2 <- ifelse(nrow(table.out) == 1, "This line", "These lines")
 
@@ -130,7 +133,11 @@ cruzDasEffortFilterBeaufort <- reactive ({
   das.eff.lines <- cruzDasEffortEvent()
   bft.vals <- cruzDasEffortFilterBeaufortVal()
 
-  keep <- between(das.eff.lines$Bft, bft.vals[1], bft.vals[2])
+  keep <- if (identical(bft.vals, c(0, 9))) {
+    TRUE
+  } else {
+    between(das.eff.lines$Bft, bft.vals[1], bft.vals[2])
+  }
   .func_eff_filt_validate(keep, "Beaufort")
 })
 
