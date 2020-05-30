@@ -32,7 +32,15 @@ devtools::install_github("smwoodman/swfscDAS")
 devtools::install_github("smwoodman/CruzPlot")
 ```
 
-Before installing, you must have [R](https://www.r-project.org/), [RStudio](https://rstudio.com/products/rstudio/download/#download), and and the appropriate version of [Rtools](https://cran.r-project.org/bin/windows/Rtools/) installed. To instll CruzPlot, best practice is to close all instances of R and RStudio, and then run the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.
+If your version of CruzPlot is outdated, running the above command will install the new version. However, if you want to reinstall the same version of CruzPlot, you can run:
+
+```{r, eval=FALSE}
+devtools::install_github("smwoodman/CruzPlot", force = TRUE)
+```
+
+Before installing CruzPlot, you must have [R](https://www.r-project.org/), [RStudio](https://rstudio.com/products/rstudio/download/#download), and the appropriate version of [Rtools](https://cran.r-project.org/bin/windows/Rtools/) installed. It is best practice to install after closing all instances of R and RStudio, and then running the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.
+
+After updating, it is recommended to create and save new workspaces, rather than using workspaces saved with a previous version of CruzPlot.
 
 ## Run CruzPlot
 
