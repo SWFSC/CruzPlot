@@ -85,17 +85,40 @@ outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 
 
 ###############################################################################
-# # Trying to stop plot glitch
-# observe({
-#   if (input$das_symbol_mult) {
-#     cruz.das.symbol.type(input$das_symbol_type_mult)
-#     cruz.das.symbol.color(input$das_symbol_color_mult)
-#   } else {
-#     cruz.das.symbol.type(input$das_symbol_type)
-#     cruz.das.symbol.color(input$das_symbol_color)
-#   }
-# })
+# Help page for das file load
+observeEvent(input$das_file_help, {
+  showModal(modalDialog(
+    tags$h5(tags$strong("Lines to skip:"),
+            "The number of lines that are ignored before starting to read data in the provided file."),
+    tags$h5(tags$strong("days.gap argument:"),
+            "This argument helps the user keep information from spilling from",
+            "one cruise into the next in concatenated DAS files.",
+            "For instance, if days.gap is 20, then all of the DAS state/condition information",
+            "(Cruise, Mode, Beaufort, Visibility, etc.)",
+            "are reset when there are 20 or more days between records in the file."),
+    tags$h5(tags$strong("reset.event argument:"),
+            "This argument specifies what happens if a state/condition is not entered in the DAS data.",
+            "For example, say the Beaufort value is left blank in a V event.",
+            "If reset.event is TRUE, then the Beaufort value is set to NA",
+            "in the processed data until the next V event.",
+            "If reset.event is FALSE, then the previous Beaufort value will be carried through,",
+            "meaning the NA value will be ignored.",
+            "This argument should be FALSE only if state/condition information (e.g. Beaufort value)",
+            "was purposefully not entered if it did not change."),
+    tags$h5(tags$strong("reset.effort argument:"),
+            "When using WinCruz, an R event or BR event series signifying the start of a new continuous effort section",
+            "is generally immediately followed by a PVNW event sequence in which all state/condition values are updated.",
+            "If reset.effort is TRUE, then the state/condition arguments are all reset to NA at the R event,",
+            "or at the B event is it immediately precedes said R event.",
+            "This argument should be FALSE only if 1) R events are not always followed by a PVNW event sequence or",
+            "2) state/condition information was purposefully not entered if it did not change (similar to reset.event)."),
+    easyClose = FALSE
+  ))
+})
 
+
+
+###############################################################################
 # Code for keeping current inputs the same when switching
 #    from or to text symbol properties input
 observeEvent(input$das_symbol_mult, {

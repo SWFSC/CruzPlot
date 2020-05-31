@@ -36,8 +36,9 @@ ui.dasPlot <- function() {
               fluidRow(
                 column(
                   width = 6,
-                  helpText("See", tags$a(href = "https://smwoodman.github.io/swfscDAS/reference/index.html",
-                                         "swfscDAS documentation"),
+                  helpText("See", actionLink("das_file_help", "this local help page"), "or the official",
+                           tags$a(href = "https://smwoodman.github.io/swfscDAS/reference/index.html",
+                                  "swfscDAS documentation"),
                            "for details about these parameters"),
                   fluidRow(
                     column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading each file"),
