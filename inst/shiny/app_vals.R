@@ -19,6 +19,8 @@ turtle.codes <- c("CC", "CM", "DC", "EI", "HT", "LK", "LV", "ND", "UH", "UT")
 
 
 #------------------------------------------------------------------------------
+# Formatting options used in CruzPlot
+
 # Ordered 1) by like color and 2) so that detailed eff default is as desired
 cruz.palette.color <- list(
   "Black" = "black", "Dark blue" = "darkblue", "Blue" = "blue",

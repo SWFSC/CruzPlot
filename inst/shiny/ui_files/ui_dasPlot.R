@@ -138,11 +138,13 @@ ui.dasPlot <- function() {
                         uiOutput("das_sighting_code_1_uiOut_select")
                       ),
                       checkboxInput("das_sighting_probable", label = "Use probable species code", value = FALSE),
-                      checkboxGroupInput("das_sighting_events", label = tags$h5("Plot sightings from"), inline = TRUE,
+                      checkboxGroupInput("das_sighting_events",
+                                         label = tags$h5("Plot sightings from",
+                                                         actionLink("das_sighting_events_help", "(see here for details)")),
                                          choices = list("S events" = "S", "G events" = "G",
-                                                        "K events" = "K", "M events" = "M", "p events" = "p"),
-                                         # "s events" = "s", "g events" = "g"),
-                                         selected = c("S", "G"))
+                                                        "K events" = "K", "M events" = "M", "p events" = "p",
+                                                        "s events" = "s", "g events" = "g", "k events" = "k"),
+                                         selected = c("S"), inline = TRUE)
                     ),
                     conditionalPanel(
                       condition = "input.das_sighting_type==2",

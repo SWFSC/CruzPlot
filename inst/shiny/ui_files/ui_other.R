@@ -8,7 +8,8 @@ ui.dispColor <- function() {
       box(
         title = "Color/Format Options", status = "primary", solidHeader = TRUE,  width = 12,
         plotOutput("plotDisplay")
-      )
+      ),
+      column(12, actionButton("display_redraw", "Redraw display"))
     )
   )
 }
@@ -35,8 +36,8 @@ ui.dispSp <- function() {
 ui.dispManual <- function() {
   tabItem(
     tabName = "dispManual",
-    helpText("Click 'Open in Browser' at top of the app in order to display manual in-app"),
-    tags$iframe(style="height:850px; width:100%; scrolling=yes", src="CruzPlot_Manual_app.pdf")
-    # uiOutput("manual_pdf") #output$manual_pdf is in 'server.R'
+    tags$h5("The height of the manual window is controlled by the 'Map height' input in the sidebar. ",
+            "If the manual opens in a separate window, you can click 'Open in Browser' to display manual in-app"),
+    uiOutput("manual_out")
   )
 }

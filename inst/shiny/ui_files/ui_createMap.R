@@ -18,8 +18,8 @@ ui.createMap <- function() {
                        "Thus, for a map of the Pacific, you could enter 130 and -110 for ",
                        "the left and right longitude, respectively.", tags$br(),
                        "Click the 'Replot map' button after changing map range values,",
-                       "or if the map isn't properly sized in the window."), #tags$br(),
-              fluidRow(
+                       "or if the map isn't properly sized in the window."),
+              fluidRow( #To keep input boxes in line even if labels spill over
                 column(3, tags$h5("Left longitude")),
                 column(3, tags$h5("Right longitude")),
                 column(3, tags$h5("Bottom latitude")),
@@ -31,12 +31,6 @@ ui.createMap <- function() {
                 column(3, numericInput("lat_bot", NULL, value = start.ll$X[3])),
                 column(3, numericInput("lat_top", NULL, value = start.ll$X[4]))
               ),
-              # fluidRow(
-              #   column(3, numericInput("lon_left", tags$h5("Left longitude"), value = start.ll$X[1])),
-              #   column(3, numericInput("lon_right", tags$h5("Right longitude"), value = start.ll$X[2])),
-              #   column(3, numericInput("lat_bot", tags$h5("Bottom latitude"), value = start.ll$X[3])),
-              #   column(3, numericInput("lat_top", tags$h5("Top latitude"), value = start.ll$X[4]))
-              # ),
               fluidRow(
                 column(3, selectInput("resolution", label = tags$h5("Resolution"),
                                       choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5])),
@@ -314,15 +308,42 @@ ui.createMap <- function() {
             box(
               title = "Save map", status = "warning", solidHeader = FALSE, width = 12,
               fluidRow(
-                column(4, radioButtons("download_format", label = tags$h5("Download map as"),
+                column(3, radioButtons("download_format", label = tags$h5("File format"),
                                        choices = list("JPEG" = 1, "PDF" = 2, "PNG" = 3),
                                        selected = 3)),
                 column(
-                  width = 4,
-                  numericInput("download_width", tags$h5("File width (inches)"), value = 10, step = 1, min = 0),
-                  numericInput("download_res", tags$h5("Resolution (ppi)"), value = 300, step = 50, min = 0)
-                ),
-                column(4, numericInput("download_height", tags$h5("File height (inches)"), value = 10, step = 1, min = 0))
+                  width = 8,
+                  fluidRow(
+                    column(6, radioButtons("download_dim", tags$h5("File dimensions"),
+                                           choices = list("Use dimensions of plot window" = 1, "Specify dimensions" = 2),
+                                           selected = 1)),
+                    column(6, numericInput("download_res", tags$h5("Resolution (ppi)"), value = 300, step = 50, min = 0))
+                  ),
+                  conditionalPanel("input.download_dim == 1", helpText("Downloaded map should look exactly like displayed map")),
+                  conditionalPanel(
+                    condition = "input.download_dim == 2",
+                    fluidRow(
+                      column(6, numericInput("download_width", tags$h5("File width (inches)"), value = 10, step = 1, min = 0)),
+                      column(6, numericInput("download_height", tags$h5("File height (inches)"), value = 10, step = 1, min = 0))
+                    )
+                  )
+                )
+                # column(
+                #   width = 4,
+                #   radioButtons("download_dim", tags$h5("File dimensions"),
+                #                choices = list("Use dimensions of plot window" = 1, "Specify dimensions" = 2),
+                #                selected = 1),
+                #   numericInput("download_res", tags$h5("Resolution (ppi)"), value = 300, step = 50, min = 0)
+                # ),
+                # column(
+                #   width = 4,
+                #   conditionalPanel("input.download_dim == 1", helpText("Downloaded map should look exactly like displayed map")),
+                #   conditionalPanel(
+                #     condition = "input.download_dim == 2",
+                #     numericInput("download_width", tags$h5("File width (inches)"), value = 10, step = 1, min = 0),
+                #     numericInput("download_height", tags$h5("File height (inches)"), value = 10, step = 1, min = 0)
+                #   )
+                # )
               ),
               uiOutput("downloadMap_button")
             )

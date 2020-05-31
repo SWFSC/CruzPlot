@@ -85,7 +85,9 @@ outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 
 
 ###############################################################################
-# Help page for das file load
+# Help pages
+
+### Help page for das file load
 observeEvent(input$das_file_help, {
   showModal(modalDialog(
     tags$h5(tags$strong("Lines to skip:"),
@@ -115,6 +117,23 @@ observeEvent(input$das_file_help, {
     easyClose = FALSE
   ))
 })
+
+
+### Help page for sighting events
+observeEvent(input$das_sighting_events_help, {
+  showModal(modalDialog(
+    tags$h5(tags$strong("S event:"), "Cetacean sighting - standard"),
+    tags$h5(tags$strong("G event:"), "Cetacean subgroup sighting"),
+    tags$h5(tags$strong("K event:"), "Cetacean sighting - tracker. Historically only used during cruise number 1611 in 1998"),
+    tags$h5(tags$strong("M event:"), "Cetacean sighting - matched. Historically only used during cruise number 1608 in 1997"),
+    tags$h5(tags$strong("p event:"), "Pinniped sighting. Used beginning in 2018"),
+    tags$h5(tags$strong("s event:"), "Standard cetacean resight. Corresponds to a previous S event"),
+    tags$h5(tags$strong("g event:"), "Cetacean subgroup resight. Corresponds to a previous G event"),
+    tags$h5(tags$strong("k event:"), "Tracker cetacean resight. Corresponds to a previous K event"),
+    easyClose = FALSE
+  ))
+})
+
 
 
 

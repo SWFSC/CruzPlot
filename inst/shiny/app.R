@@ -49,10 +49,11 @@ start.tick <- list(interval = 5, lon = -135, lat = 30)
 
 
 ###############################################################################
-##### Assorted other stuf...
+##### Assorted other stuff...
 options(shiny.maxRequestSize = 50 * 1024^2) # Max file size is 50MB
 options("digits" = 5)   # for proper display of sighting and effort coordinates
-# map.height <- 950     # set to 630 for laptops, 950 for standard monitor, 5% larger than in server.R
+
+plot.res <- 72 #Resolution of displayed plots; passed torenderPlot() calls
 
 jscode <- "shinyjs.closeWindow = function() { window.close(); }"
 
@@ -211,6 +212,10 @@ server <- function(input, output, session) {
 
   #----------------------------------------------------------------------------
   ### Other
+  output$manual_out <- renderUI({
+    style.txt <- paste0("height:", map.height(), "px; width:100%; scrolling=yes")
+    tags$iframe(style = style.txt, src = "CruzPlot_Manual_app.pdf")
+  })
   source(file.path("server_files", "cruzDisplaySymbolProp.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "cruzWorld2DataRange.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_files", "server_reactiveValues.R"), local = TRUE, chdir = TRUE)

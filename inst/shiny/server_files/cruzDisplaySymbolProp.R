@@ -2,6 +2,8 @@
 #   Creates a display of options for symbols, colors, line types, typefaces, and fonts
 
 cruzDisplaySymbolProp <- reactive({
+  input$display_redraw
+
   oldpar <- par(mar = rep(1, 4), family = "sans")
   plot(c(0, 1), c(0, 28), type = "n", axes = FALSE, bty = "n")
 
