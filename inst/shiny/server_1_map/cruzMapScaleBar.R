@@ -60,52 +60,58 @@ observeEvent(input$scale_units, {
 observe({
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
+  bar.out <- !(between(cruz.scale$scale.lon, lon.range[1], lon.range[2]) |
+                   between(cruz.scale$scale.lat, lat.range[1], lat.range[2]))
+  if (!isTruthy(bar.out)) bar.out <- TRUE
 
-  lon.diff <- abs(lon.range[2] - lon.range[1])
-  lat.diff <- abs(lat.range[2] - lat.range[1])
+  if (!input$bar | bar.out) {
+    lon.diff <- abs(lon.range[2] - lon.range[1])
+    lat.diff <- abs(lat.range[2] - lat.range[1])
 
-  # Scale bar longitude start
-  lon.new <- 0.1 * lon.diff + lon.range[1]
-  lon.new <- ifelse(lon.new > 180, lon.new - 360, lon.new)
+    # Scale bar longitude start
+    lon.new <- 0.1 * lon.diff + lon.range[1]
+    lon.new <- ifelse(lon.new > 180, lon.new - 360, lon.new)
 
-  # Scale bar latitude start
-  lat.new <- 0.1 * lat.diff + lat.range[1]
+    # Scale bar latitude start
+    lat.new <- 0.1 * lat.diff + lat.range[1]
 
-  # Set reactiveValues
-  cruz.scale$scale.lon <- lon.new
-  cruz.scale$scale.lat <- lat.new
-
-  NULL
+    # Set reactiveValues
+    cruz.scale$scale.lon <- lon.new
+    cruz.scale$scale.lat <- lat.new
+  }
 }, priority = 1) #Must run before observe() for bar length
 
 ### After getting start position, get the default scale bar length
-###   Separate observe() so that lat/lon update isn't run if scale units chagne
+###   Separate observe() so that lat/lon update isn't run if scale units change
+###   Only update length if scale bar is not alrady on
 observe({
-  lon.range <- cruz.map.range$lon.range
-  cruz.map.range$lat.range
-  isolate({
-    lon.pos <- cruz.scale$scale.lon
-    lat.pos <- cruz.scale$scale.lat
-    scale.units <- input$scale_units
-  })
+  if (!input$bar) {
+    lon.range <- cruz.map.range$lon.range
+    cruz.map.range$lat.range
+    isolate({
+      lon.pos <- cruz.scale$scale.lon
+      lat.pos <- cruz.scale$scale.lat
+      scale.units <- input$scale_units
+    })
 
-  # Scale bar length; suppressWarnings() for if world2
-  lon.range.m <- suppressWarnings(distVincentyEllipsoid(
-    c(lon.range[1], lat.pos), c(lon.range[2], lat.pos)
-  ))
-  len.new.km <- lon.range.m * 0.2 / 1000
+    # Scale bar length; suppressWarnings() for if world2
+    lon.range.m <- suppressWarnings(distVincentyEllipsoid(
+      c(lon.range[1], lat.pos), c(lon.range[2], lat.pos)
+    ))
+    len.new.km <- lon.range.m * 0.2 / 1000
 
-  # Scale units
-  if (scale.units == 1) {
-    len.new <- base::signif(len.new.km, 2)
-    title.new <- "Length in km"
-  } else if (scale.units == 2) {
-    # nmi, 1nmi = 1.852km
-    len.new <- base::signif((len.new.km / 1.852), 2)
-    title.new <- "Length in nmi"
+    # Scale units
+    if (scale.units == 1) {
+      len.new <- base::signif(len.new.km, 2)
+      title.new <- "Length in km"
+    } else if (scale.units == 2) {
+      # nmi, 1nmi = 1.852km
+      len.new <- base::signif((len.new.km / 1.852), 2)
+      title.new <- "Length in nmi"
+    }
+
+    cruz.scale$scale.len <- len.new
   }
-
-  cruz.scale$scale.len <- len.new
 })
 
 

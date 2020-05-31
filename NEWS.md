@@ -6,9 +6,15 @@
 
 * Both sighting and effort Beaufort filters are not applied when the minimum and maximum values are 0 and 9, respectively. Functionally, this means that records with NA Beaufort values can be plotted 
 
-* Fixed a bug when filter information for a sighting or effort line was NA. 
+* Fixed a bug that caused extraneous NA values when filter information for a sighting or effort line was NA. 
 
 * CruzPlot now verbosely removes, i.e. displays a pop-up window, when a sighting or effort line is removed because of one or more 1) NA position coordinates or 2) NA filter values
+
+* By default, an effort legend is not included when plotting simplified effort
+
+* The scale bar length now does not automatically update when the map range is changed
+
+* The scale bar position only automatically updates when the map range is changed if the position is outside of the new map range
 
 
 # CruzPlot 1.0
@@ -25,7 +31,7 @@
 
 * Allow user to specify the resolution of saved map
 
-* Fix bug in tick labels where style '120' did not display negative values
+* Fixed bug in tick labels where style '120' did not display negative values
 
 * Add buttons for five default map ranges
 

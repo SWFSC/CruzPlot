@@ -20,11 +20,23 @@ ui.createMap <- function() {
                        "Click the 'Replot map' button after changing map range values,",
                        "or if the map isn't properly sized in the window."), #tags$br(),
               fluidRow(
-                column(3, numericInput("lon_left", tags$h5("Left longitude"), value = start.ll$X[1])),
-                column(3, numericInput("lon_right", tags$h5("Right longitude"), value = start.ll$X[2])),
-                column(3, numericInput("lat_bot", tags$h5("Bottom latitude"), value = start.ll$X[3])),
-                column(3, numericInput("lat_top", tags$h5("Top latitude"), value = start.ll$X[4]))
+                column(3, tags$h5("Left longitude")),
+                column(3, tags$h5("Right longitude")),
+                column(3, tags$h5("Bottom latitude")),
+                column(3, tags$h5("Top latitude"))
               ),
+              fluidRow(
+                column(3, numericInput("lon_left", NULL, value = start.ll$X[1])),
+                column(3, numericInput("lon_right", NULL, value = start.ll$X[2])),
+                column(3, numericInput("lat_bot", NULL, value = start.ll$X[3])),
+                column(3, numericInput("lat_top", NULL, value = start.ll$X[4]))
+              ),
+              # fluidRow(
+              #   column(3, numericInput("lon_left", tags$h5("Left longitude"), value = start.ll$X[1])),
+              #   column(3, numericInput("lon_right", tags$h5("Right longitude"), value = start.ll$X[2])),
+              #   column(3, numericInput("lat_bot", tags$h5("Bottom latitude"), value = start.ll$X[3])),
+              #   column(3, numericInput("lat_top", tags$h5("Top latitude"), value = start.ll$X[4]))
+              # ),
               fluidRow(
                 column(3, selectInput("resolution", label = tags$h5("Resolution"),
                                       choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5])),

@@ -514,7 +514,7 @@ ui.dasPlot <- function() {
                                            choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
                                                           "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
                                            selected = "bottomleft")),
-                    column(4, textInput("eff_legend_title", label = tags$h5("Title (optional)"), value = "Effort")),
+                    column(4, textInput("eff_legend_title", label = tags$h5("Title (optional)"), value = "")),
                     column(2, selectInput("eff_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1)),
                     column(2, numericInput("eff_legend_textSize", label = tags$h5("Legend size"),
                                            value = 1.0, min = 0.1, max = 3, step = 0.1))

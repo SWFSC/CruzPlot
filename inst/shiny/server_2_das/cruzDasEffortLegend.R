@@ -1,3 +1,17 @@
+# Turn off effort legend when switching to Simplified Effort
+observeEvent(input$das_effort, {
+  if (input$das_effort == 2)
+    updateCheckboxInput(session, "eff_legend", value = FALSE)
+
+  if (input$das_effort == 3) {
+    updateCheckboxInput(session, "eff_legend", value = TRUE)
+
+    if (input$eff_legend_title == "")
+      updateTextInput(session, "eff_legend_title", value = "Effort by Beaufort")
+  }
+})
+
+
 # Get and return parameters for effort legend
 cruzDasEffortLegend <- reactive({
   req(input$das_effort != 1)
