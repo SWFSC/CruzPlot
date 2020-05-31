@@ -233,7 +233,7 @@ ui.createMap <- function() {
               title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
               helpText("This color style selection will affect the palette options for all color selections in CruzPlot"),
               tags$br(),
-              radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Grey scale" = 2),
+              radioButtons("color_style", label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
                            selected = 1)
             ),
             box(

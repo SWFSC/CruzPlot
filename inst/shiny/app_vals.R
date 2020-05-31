@@ -23,7 +23,8 @@ turtle.codes <- c("CC", "CM", "DC", "EI", "HT", "LK", "LV", "ND", "UH", "UT")
 
 # Ordered 1) by like color and 2) so that detailed eff default is as desired
 cruz.palette.color <- list(
-  "Black" = "black", "Dark blue" = "darkblue", "Blue" = "blue",
+  "Black" = "black", "Purple" = "purple", "Light purple" = "darkorchid1",
+  "Dark blue" = "darkblue", "Blue" = "blue",
   "Sky blue" = "dodgerblue2", "Light blue" = "lightblue",
   "Green" = "forestgreen", "Light green" = "green", "Aqua" = "aquamarine2", "Yellow" = "yellow",
   "Orange" = "orange",
