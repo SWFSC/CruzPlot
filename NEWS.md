@@ -1,6 +1,14 @@
 # CruzPlot 1.1 (in development)
 
+* User can now change the map range (zoom in) by drawing a box with their mouse cursor
+
+* When the map range is changed, a) the scale bar length now does not automatically update and b) the scale bar position only automatically updates if the position is outside of the new map range
+
 * Fixed two bugs that caused errors message to appear in the plot window when changing the color scheme
+
+* Added local documentation for the various arguments used when reading and processing DAS data
+
+* CruzPlot now verbosely removes, i.e. displays a pop-up window, when a sighting or effort line is removed because of one or more 1) NA position coordinates or 2) NA filter values
 
 * Mode and effort type filters are only available as sighting filters when strictly 'on effort' sightings are plotted
 
@@ -8,13 +16,9 @@
 
 * Fixed a bug that caused extraneous NA values when filter information for a sighting or effort line was NA in the DAS data. 
 
-* CruzPlot now verbosely removes, i.e. displays a pop-up window, when a sighting or effort line is removed because of one or more 1) NA position coordinates or 2) NA filter values
-
 * By default, an effort legend is not included when plotting simplified effort
 
-* When the map range is changed, a) the scale bar length now does not automatically update and b) the scale bar position only automatically updates if the position is outside of the new map range
-
-* Added local documentation for the various arguments used when reading and processing DAS data
+* When plotting detailed effort by Beaufort, users only have to enter as many Beaufort colors as the maximum Beaufort filter value plus one
 
 
 # CruzPlot 1.0

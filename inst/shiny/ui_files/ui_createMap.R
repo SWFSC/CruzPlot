@@ -19,10 +19,13 @@ ui.createMap <- function() {
             box(
               title = "Map range", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
               helpText("For longitude values, please use the range -180 to 180.",
-                       "For instance, left and right longitudes of 130 and -110, respectively,",
-                       "will give you a map of the Pacific.", tags$br(),
+                       "For instance, use left and right longitudes of 130 and -110, respectively,",
+                       "for a map of the northern Pacific.", tags$br(),
                        "Click the 'Replot map' button after changing map range values,",
-                       "or if the map isn't properly sized in the window."),
+                       "or if the map isn't properly sized in the window.", tags$br(),
+                       "In addition, users can automatically change the map range input values",
+                       "by clicking and holding to draw a box on map, although users still must click 'Replot map'.",
+                       "To clear the box, click within the plot outside of the box."),
               fluidRow( #To keep input boxes in line even if labels spill over
                 column(3, tags$h5("Left longitude")),
                 column(3, tags$h5("Right longitude")),
