@@ -114,6 +114,12 @@ observeEvent(input$das_file_help, {
             "or at the B event is it immediately precedes said R event.",
             "This argument should be FALSE only if 1) R events are not always followed by a PVNW event sequence or",
             "2) state/condition information was purposefully not entered if it did not change (similar to reset.event)."),
+    tags$br(), tags$br(),
+    tags$h5("When plotting resights (s, k, or g events): 1) you can only plot a single sighting type (e.g. S and s event)",
+            "and a single species at one time,",
+            "and 2) The 'Symbol color...' entry corresponds the the order of the selected events.",
+            "In addition, for resight plotting please ensure that the loaded DAS file is not a concatenated file,
+            i.e. each sighting number in the file corresponds to a single sighting/resighting group."),
     easyClose = FALSE
   ))
 })

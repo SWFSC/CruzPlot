@@ -36,10 +36,10 @@ ui.dasPlot <- function() {
               fluidRow(
                 column(
                   width = 6,
-                  helpText("See", actionLink("das_file_help", "this local help page"), "or the official",
+                  helpText("For details about these parameters,",
+                           actionLink("das_file_help", "click here"), "or see the official",
                            tags$a(href = "https://smwoodman.github.io/swfscDAS/reference/index.html",
-                                  "swfscDAS documentation"),
-                           "for details about these parameters"),
+                                  "swfscDAS documentation")),
                   fluidRow(
                     column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading each file"),
                                            value = 0, min = 0)),
@@ -140,11 +140,12 @@ ui.dasPlot <- function() {
                       checkboxInput("das_sighting_probable", label = "Use probable species code", value = FALSE),
                       checkboxGroupInput("das_sighting_events",
                                          label = tags$h5("Plot sightings from",
-                                                         actionLink("das_sighting_events_help", "(see here for details)")),
+                                                         actionLink("das_sighting_events_help", "(click here for details)")),
                                          choices = list("S events" = "S", "G events" = "G",
                                                         "K events" = "K", "M events" = "M", "p events" = "p",
                                                         "s events" = "s", "g events" = "g", "k events" = "k"),
-                                         selected = c("S"), inline = TRUE)
+                                         selected = c("S"), inline = TRUE),
+                      tags$span(uiOutput("cruzDasSightEventResight_uiOut_message"), style = "color: blue;")
                     ),
                     conditionalPanel(
                       condition = "input.das_sighting_type==2",
@@ -384,7 +385,7 @@ ui.dasPlot <- function() {
                     condition = "output.das_effort_det_n_flag",
                     tags$h5("Non-standard effort line color and width"),
                     fluidRow(
-                      column(6, selectInput("das_effort_det_col_n", NULL, choices = cruz.palette.color, selected = "black")),
+                      column(6, selectInput("das_effort_det_col_n", NULL, choices = cruz.palette.color, selected = "dodgerblue2")),
                       column(6, numericInput("das_effort_det_lwd_n", NULL, value = 2, min = 1, max = 6, step = 1))
                     )
                   ),
@@ -392,7 +393,7 @@ ui.dasPlot <- function() {
                     condition = "output.das_effort_det_f_flag",
                     tags$h5("Fine scale effort line color and width"),
                     fluidRow(
-                      column(6, selectInput("das_effort_det_col_f", NULL, choices = cruz.palette.color, selected = "black")),
+                      column(6, selectInput("das_effort_det_col_f", NULL, choices = cruz.palette.color, selected = "green")),
                       column(6, numericInput("das_effort_det_lwd_f", NULL, value = 2, min = 1, max = 6, step = 1))
                     )
                   )
@@ -489,7 +490,7 @@ ui.dasPlot <- function() {
                       textInput("das_legend_title", label = tags$h5("Title (optional)"), value = ""),
                       conditionalPanel(
                         condition = "input.das_sighting_type == 1 | input.das_sighting_type == 2",
-                        checkboxGroupInput("das_legend_names", tags$h5("Legend sighting information"),
+                        checkboxGroupInput("das_legend_names", tags$h5("Legend information"),
                                            choices = list("Species code" = 1, "Species abbreviation" = 2,
                                                           "Scientific name" = 3, "Common name" = 4,
                                                           "Include number of sightings" = 5),

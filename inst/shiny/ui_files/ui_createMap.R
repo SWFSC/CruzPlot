@@ -42,11 +42,6 @@ ui.createMap <- function() {
                 column(3, selectInput("resolution", label = tags$h5("Resolution"),
                                       choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5])),
                 column(3, tags$br(), tags$br(), actionButton("map_replot", "Replot map"))
-                # column(
-                #   width = 6, tags$br(), tags$br(),
-                #   uiOutput("map_replot_brush_uiOut_button"),
-                #   uiOutput("map_replot_brush_uiOut_message")
-                # )
               ),
               tags$h5("Set the map range to a default study area and replot:"),
               actionButton("map_replot_cce", "CCE"),
@@ -340,22 +335,6 @@ ui.createMap <- function() {
                     )
                   )
                 )
-                # column(
-                #   width = 4,
-                #   radioButtons("download_dim", tags$h5("File dimensions"),
-                #                choices = list("Use dimensions of plot window" = 1, "Specify dimensions" = 2),
-                #                selected = 1),
-                #   numericInput("download_res", tags$h5("Resolution (ppi)"), value = 300, step = 50, min = 0)
-                # ),
-                # column(
-                #   width = 4,
-                #   conditionalPanel("input.download_dim == 1", helpText("Downloaded map should look exactly like displayed map")),
-                #   conditionalPanel(
-                #     condition = "input.download_dim == 2",
-                #     numericInput("download_width", tags$h5("File width (inches)"), value = 10, step = 1, min = 0),
-                #     numericInput("download_height", tags$h5("File height (inches)"), value = 10, step = 1, min = 0)
-                #   )
-                # )
               ),
               uiOutput("downloadMap_button")
             )

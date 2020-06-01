@@ -7,7 +7,6 @@ cruzDasEffortEvent <- reactive({
   #----------------------------------------------------------------------------
   req(input$das_effort != 0)
   das.proc <- req(cruz.list$das.data)
-  cruz.list$das.eff.filt <- NULL
 
   eff.events <- if (input$das_effort == 2) c("R", "E") else c("R", "V", "E")
 

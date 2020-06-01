@@ -31,8 +31,6 @@ cruzDasSightSymbol <- reactive({
     stopifnot(is.null(sp.codes))
   }
 
-  sp.codes.len <- length(sp.codes)
-
   if (sight.type %in% c(3, 4)) {
     # Boats and C-Pods
     symbol.prop <- cruzDasSightSymbolBoat()
@@ -79,18 +77,43 @@ cruzDasSightSymbol <- reactive({
 
     # For each parameter, rep() until it's length == sp.codes.len,
     #   and check that there aren't more selected than species
-    leg.df <- data.frame(
-      Sp = sp.codes,
-      pch = .func_sight_symbol_pt(leg.pch, "type", sp.codes.len),
-      col = .func_sight_symbol_pt(leg.col, "color", sp.codes.len),
-      cex = .func_sight_symbol_pt(leg.cex, "size", sp.codes.len),
-      lwd = .func_sight_symbol_pt(leg.lwd, "line width", sp.codes.len)
-    )
+    # browser()
+    if (cruzDasSightEventResight()) {
+      # Requires that only one species is selected
+      validate(
+        need(length(leg.cex) == 1,
+             "Please provide only one symbol size when plotting resights")
+      )
+      leg.df <- data.frame(
+        Sp = sp.codes,
+        Event = sort(input$das_sighting_events, decreasing = TRUE),#Ensures S, s, or equivalent
+        pch = .func_sight_symbol_pt(leg.pch, "type", 1),
+        col = .func_sight_symbol_pt(leg.col, "color", 2),
+        cex = .func_sight_symbol_pt(c(leg.cex, 0.75 * leg.cex), "size", 2),
+        lwd = .func_sight_symbol_pt(leg.lwd, "line width", 1)
+      )
+
+    } else {
+      sp.codes.len <- length(sp.codes)
+      leg.df <- data.frame(
+        Sp = sp.codes,
+        pch = .func_sight_symbol_pt(leg.pch, "type", sp.codes.len),
+        col = .func_sight_symbol_pt(leg.col, "color", sp.codes.len),
+        cex = .func_sight_symbol_pt(leg.cex, "size", sp.codes.len),
+        lwd = .func_sight_symbol_pt(leg.lwd, "line width", sp.codes.len)
+      )
+    }
   }
 
-  pt.df <- left_join(das.sight, leg.df, by = "Sp") %>%
-    select(.data$Sp, .data$Lon, .data$Lat,
-           .data$pch, .data$col, .data$cex, .data$lwd)
+  if (cruzDasSightEventResight()) {
+    pt.df <- left_join(das.sight, leg.df, by = c("Sp", "Event")) %>%
+      select(.data$Sp, .data$Lon, .data$Lat,
+             .data$pch, .data$col, .data$cex, .data$lwd)
+  } else {
+    pt.df <- left_join(das.sight, leg.df, by = "Sp") %>%
+      select(.data$Sp, .data$Lon, .data$Lat,
+             .data$pch, .data$col, .data$cex, .data$lwd)
+  }
 
   # # If specified, make the symbol color correspond to event code
   # if (sight.type %in% c(1, 2) & input$das_symbol_event) {
@@ -99,7 +122,7 @@ cruzDasSightSymbol <- reactive({
 
   list(
     sight.type = sight.type, sp.count = sp.count, sp.codes = sp.codes,
-    leg.df = leg.df, pt.df = pt.df
+    leg.df = leg.df, pt.df = pt.df, das.sight = das.sight
   )
 })
 

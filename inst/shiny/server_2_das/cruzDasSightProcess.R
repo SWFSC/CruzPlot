@@ -58,7 +58,7 @@ cruzDasSightSpeciesProcess <- reactive({
 #   1) NA position filter, 2) Species/event filter
 
 ### Checks on NA positions to print modal, and 'select' selected position
-cruzDasSightSpeciesPosition <- reactive({
+cruzDasSightPosition <- reactive({
   das.sight <- cruzDasSightSpeciesProcess()
 
   #----------------------------------------------------------------------------
@@ -78,8 +78,9 @@ cruzDasSightSpeciesPosition <- reactive({
       mutate(DateTime = as.character(DateTime),
              Cruise = as.character(Cruise),
              Resight = Event %in% c("s", "g")) %>%
-      select(Event, DateTime, Lat, Lon, OnEffort, Cruise,
-             SightNo, Resight, File = file_das, `Line number` = line_num) %>%
+      select(Event, DateTime, Lat, Lon, OnEffort, Cruise, SightNo, Resight,
+             # File = file_das,
+             `Line number` = line_num) %>%
       distinct()
     txt.out1 <- ifelse(nrow(table.out) == 1, "sighting has", "sightings have")
     txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
@@ -93,8 +94,8 @@ cruzDasSightSpeciesPosition <- reactive({
       tags$br(), tags$br(),
       renderTable(table.out),
       tags$br(),
-      tags$h5("This notice will not be shown again unless a new DAS file is loaded, ",
-              "'Position to plot' is changed, or 'Plot sightings from' (if applicable) is changed.",
+      tags$h5("This notice will not be shown again unless a new DAS file is loaded or",
+              "'Position to plot' is changed.",
               "See the manual for more details"),
       easyClose = FALSE,
       size = "l"
@@ -150,10 +151,137 @@ cruzDasSightSpeciesPosition <- reactive({
 
 
 ###############################################################################
+# Filter for events specified either directly or by sighting type
+#   And associated things that depend on the selected event
+cruzDasSightEventResight <- reactive({
+  (input$das_sighting_type == 1) &
+    any(c("s", "k", "g") %in% input$das_sighting_events)
+})
+
+output$cruzDasSightEventResight_uiOut_message <- renderUI({
+  req(cruzDasSightEventResight())
+  tags$h5("When plotting resights, symbol color entries correspond to selected events")
+})
+
+
+cruzDasSightEvent <- reactive({
+  das.sight <- cruzDasSightPosition()
+  sight.type <- input$das_sighting_type
+
+  if (sight.type == 2) {
+    ### Turtle sightings
+    das.sight <- das.sight %>% filter(.data$Event == "t")
+    validate(
+      need(nrow(das.sight) > 0,
+           "There are no turtle sightings (t events) in the loaded DAS file(s)")
+    )
+
+  } else if (sight.type == 3) {
+    ### Boat sightings
+    das.sight <- das.sight %>% filter(.data$Event == "F")
+    validate(
+      need(nrow(das.sight) > 0,
+           "There are no boat sightings (F events) in the loaded DAS file(s)")
+    )
+
+  } else if (sight.type == 1) {
+    ### Marine mammal sightings
+    sp.events <- input$das_sighting_events
+    validate(need(sp.events, "Please select at least one event code to plot"))
+
+    das.sight <- das.sight %>%
+      filter(.data$Event %in% sp.events) %>%
+      mutate(idx = seq_along(.data$Event))
+
+    # Resights
+    if (cruzDasSightEventResight()) {
+      # Checks - other
+      validate(
+        need(length(unique(na.omit(cruz.list$das.data$file_das))) == 1,
+             "You can only process resights when plotting data from a single DAS file") %then%
+          # ^b/c different files could have same SightNo, etc.
+          # Doesn't solve concatenated files..
+        need(sum(c("s", "k", "g") %in% sp.events) == 1,
+             "You can only plot one type of resight at a time") %then%
+          if ("s" %in% sp.events) need("S" %in% sp.events, "To plot s events, S events must also be plotted"),
+        if ("k" %in% sp.events) need("K" %in% sp.events, "To plot k events, K events must also be plotted"),
+        if ("g" %in% sp.events) need("G" %in% sp.events, "To plot g events, G events must also be plotted"),
+        need(length(sp.events) == 2,
+             "When plotting resights, you can only plot the resight and the corresponding primary sighting event")
+      )
+
+      # Get species, etc., for s and k events
+      if (any(c("s", "k") %in% sp.events)) {
+        das.sight.main <- das.sight %>% filter(!(.data$Event %in% c("s", "k")))
+        das.sight.res <- das.sight %>% filter(.data$Event %in% c("s", "k"))
+        validate(
+          need(all(das.sight.res$SightNo %in% das.sight.main$SightNo),
+               paste("Not all of the selected s/k resight event(s) have primary sightings with",
+                     "the same sighting numbers -",
+                     "this is a DAS error that needs to be fixed to plot s/k events"))
+        )
+
+        col.names <- c("Prob", "Sp", "ProbSp")
+        d.toadd <- das.sight.main %>%
+          select(SightNo, !!col.names) %>%
+          filter(SightNo %in% das.sight.res$SightNo) %>%
+          full_join(select(das.sight.res, -!!col.names), by = "SightNo") %>%
+          select(!!names(das.sight.main))
+
+        das.sight <- bind_rows(das.sight.main, d.toadd) %>% arrange(idx)
+        rm(das.sight.main, das.sight.res, col.names, d.toadd)
+      }
+
+      # Get species, etc., for g events
+      if (any("g" %in% sp.events)) {
+        das.sight.main <- das.sight %>%
+          filter(!(.data$Event %in% c("g"))) %>%
+          mutate(ss_id = paste(SightNo, Subgroup, sep = "_"))
+        das.sight.res <- das.sight %>%
+          filter(.data$Event %in% c("g")) %>%
+          mutate(ss_id = paste(SightNo, Subgroup, sep = "_"))
+        validate(
+          need(all(das.sight.res$ss_id %in% das.sight.main$ss_id),
+               paste("Not all of the selected g resight event(s) have primary sightings with",
+                     "the same sighting numbers/subgroup identified",
+                     "- this is a DAS error that needs to be fixed to plot g events"))
+        )
+
+        col.names <- c("Prob", "Sp", "ProbSp")
+        d.toadd <- das.sight.main %>%
+          select(.data$ss_id, !!col.names) %>%
+          filter(.data$ss_id %in% das.sight.res$ss_id) %>%
+          full_join(select(das.sight.res, -!!col.names), by = c("ss_id")) %>%
+          select(!!names(das.sight.main))
+
+        das.sight <- bind_rows(das.sight.main, d.toadd) %>%
+          select(-ss_id) %>%
+          arrange(idx)
+        rm(das.sight.main, das.sight.res, col.names, d.toadd)
+      }
+    }
+
+    validate(
+      need(nrow(das.sight) > 0,
+           paste("There are no mammal sightings for the selected event(s)",
+                 "in the loaded DAS file(s)"))
+    )
+
+    das.sight <- das.sight %>% select(-idx)
+
+  } else  {
+    ### Error
+    validate("Invalid input$das_sighting_type value")
+  }
+
+  das.sight
+})
+
+
+###############################################################################
 # Filter for specfied species and (if applicable) events
 cruzDasSightSpecies <- reactive({
   das.proc <- req(cruz.list$das.data)
-  cruz.list$das.sight.filt <- NULL
 
   ### Sightings to plot
   sight.type <- input$das_sighting_type
@@ -163,53 +291,25 @@ cruzDasSightSpecies <- reactive({
       (sight.type == 2 && input$das_sighting_code_2_all == 2)
   )
 
-  das.sight <- cruzDasSightSpeciesPosition()
+  das.sight <- cruzDasSightEvent()
 
   #----------------------------------------------------------------------------
   if (sight.type == 1) {
     # 1: Mammals
     # Get species codes - also does validate() check for valid species
     sp.codes <- cruzDasSightSpeciesMammals()
-    sp.events <- input$das_sighting_events
-    validate(
-      need(sp.events, "Please select at least one event code to plot")
-    )
-
-    validate(need(!any(c("s", "g") %in% sp.events), "Cannot plot s/g events"))
-    das.sight <- das.sight %>% filter(.data$Event %in% sp.events)
-
-    # # Get species, etc., for s events
-    # if (any(c("s") %in% sp.events)) {
-    #   das.sight.main <- das.sight %>% filter(!(.data$Event %in% c("s", "g")))
-    #   das.sight.res <- das.sight %>% filter(.data$Event %in% c("s", "g"))
-    #   validate(
-    #     need(all(das.sight.res$SightNo %in% das.sight.main$SightNo),
-    #          paste("Not all of the s events have corresponding primary sightings;",
-    #                "try widening the sighting filters?"))
-    #   )
-    #
-    #   d <- das.sight.main %>%
-    #     select(SightNo, Sp, ProbSp, GsSp) %>%
-    #     filter(SightNo %in% das.sight.res$SightNo) %>%
-    #     full_join(select(das.sight.res, -Sp), by = "SightNo") %>%
-    #     select(!!names(das.sight.main))
-    # }
-    #
-    # if (any("g" %in% sp.events)) {
-    #   browser()
-    # }
-
-    validate(
-      need(nrow(das.sight) > 0,
-           paste("There are no mammal sightings for the selected event(s)",
-                 "in the loaded DAS file(s)"))
-    )
+    if (cruzDasSightEventResight()) {
+      validate(
+        need(length(sp.codes) == 1,
+             "You currently can only plot resights for one species at a time")
+      )
+    }
 
     # Update probable sightings species if necessary
     if (input$das_sighting_probable) {
-      das.sight$Prob[das.sight$Event == "p"] <- FALSE
+      das.sight$Prob[das.sight$Event %in% c("p", "s", "k", "g")] <- FALSE
       if (any(is.na(das.sight$Prob)))
-        warning("A marine mammal sighting has an NA Prob value")
+        warning("A marine mammal sighting has an unexpected NA 'Prob' value")
 
       validate(
         need(sum(das.sight$Prob) > 0,
@@ -239,16 +339,10 @@ cruzDasSightSpecies <- reactive({
     #--------------------------------------------------------------------------
   } else if (sight.type == 2) {
     # 2: Turtles
-    validate(
-      need(sum(das.sight$Event == "t") > 0,
-           "There are no turtle sightings (t events) in the loaded DAS file(s)")
-    )
-
     sp.codes <- cruzDasSightSpeciesTurtles()
 
     das.sight <- das.sight %>%
-      filter(.data$Event %in% c("t"),
-             .data$Sp %in% sp.codes)
+      filter(.data$Sp %in% sp.codes)
 
     if (input$das_sighting_code_2_all == 2) {
       sp.codes.none <- base::setdiff(sp.codes, das.sight$Sp)
@@ -264,15 +358,8 @@ cruzDasSightSpecies <- reactive({
     #--------------------------------------------------------------------------
   } else if (sight.type == 3) {
     # 3: Boats
-    das.sight <- das.sight %>%
-      filter(.data$Event == "F") %>%
-      mutate(Sp = "Boat")
+    das.sight <- das.sight %>% mutate(Sp = "Boat")
     sp.codes <- NULL
-
-    validate(
-      need(nrow(das.sight) > 0,
-           "There are no boat sightings (F events) in the loaded DAS file(s)")
-    )
 
 
     #--------------------------------------------------------------------------
@@ -341,8 +428,8 @@ cruzDasSightSpecies <- reactive({
   }
 
   # Return list
-  list(das.sight = das.sight, sight.type = sight.type, sp.codes = sp.codes,
-       sp.selection = sp.selection)
+  list(das.sight = das.sight, sight.type = sight.type,
+       sp.codes = sp.codes, sp.selection = sp.selection)
 })
 
 ###############################################################################

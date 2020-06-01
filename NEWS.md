@@ -20,6 +20,8 @@
 
 * When plotting detailed effort by Beaufort, users only have to enter as many Beaufort colors as the maximum Beaufort filter value plus one
 
+* Can now plot resights for one species at a time
+
 
 # CruzPlot 1.0
 

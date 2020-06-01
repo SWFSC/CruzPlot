@@ -8,6 +8,7 @@ cruzDasSightLegend <- reactive({
   sp.codes     <- symbol.list$sp.codes
   sp.codes.len <- length(sp.codes)
   sp.count     <- symbol.list$sp.count
+  das.sight    <- symbol.list$das.sight
 
   font.fam <- font.family.vals[as.numeric(input$das_legend_font)]
 
@@ -25,6 +26,7 @@ cruzDasSightLegend <- reactive({
     )
 
     sp.codes.all.use <- sp.codes.all[temp.use, ]
+    # browser()
 
     # # This piece cuts the common name at the first comma, which results in incorrect names for some codes
     # sp.codes.all.use$Name_Common <- vapply(sp.codes.all.use$Name_Common, function(i) {
@@ -36,17 +38,31 @@ cruzDasSightLegend <- reactive({
     if ("2" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Abbr)
     if ("3" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name_Scientific)
     if ("4" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name_Common)
+    validate(
+      need(leg.lab, "Please select sighting legend species information to display")
+    )
+
+    if (cruzDasSightEventResight()) leg.lab <- paste0(leg.lab, ", Event: ", input$das_sighting_events)
 
     if ("5" %in% names.lab) {
-      leg.lab <- if (any(names.lab %in% 1:4)) {
-        paste0(leg.lab, ", n = ", sp.count)
+      if (cruzDasSightEventResight()) {
+        validate(need(length(unique(das.sight$Event)) <= 2, "Error processing sighting legend"))
+        # Primary sighting will always come before resight
+        sp.count.res <- c(table(das.sight$Event)[input$das_sighting_events[1]],
+                          table(das.sight$Event)[input$das_sighting_events[2]])
+        sp.count.res[is.na(sp.count.res)] <- 0
+        leg.lab <- paste0(leg.lab, ", n = ", sp.count.res)
+        rm(sp.count.res)
+
       } else {
-        paste0("n = ", sp.count)
+        leg.lab <- paste0(leg.lab, ", n = ", sp.count)
+        # leg.lab <- if (any(names.lab %in% 1:4)) {
+        #   paste0(leg.lab, ", n = ", sp.count)
+        # } else {
+        #   paste0("n = ", sp.count)
+        # }
       }
     }
-    validate(
-      need(leg.lab, "Please select legend sighting information to display")
-    )
   }
 
   leg.title <- if (input$das_legend_title == "") NULL else input$das_legend_title
