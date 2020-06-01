@@ -71,7 +71,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="../index.html">CruzPlot</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1</span>
       </span>
     </div>
 
@@ -114,6 +114,23 @@
       <small>Source: <a href='https://github.com/smwoodman/CruzPlot/blob/master/NEWS.md'><code>NEWS.md</code></a></small>
     </div>
 
+    <div id="cruzplot-1-1" class="section level1">
+<h1 class="page-header" data-toc-text="1.1">
+<a href="#cruzplot-1-1" class="anchor"></a>CruzPlot 1.1</h1>
+<ul>
+<li><p>User can now change the map range (zoom in) by drawing a box with their mouse cursor</p></li>
+<li><p>When the map range is changed, a) the scale bar length now does not automatically update and b) the scale bar position only automatically updates if the position is outside of the new map range</p></li>
+<li><p>Fixed two bugs that caused errors message to appear in the plot window when changing the color scheme</p></li>
+<li><p>Added local documentation for the various arguments used when reading and processing DAS data</p></li>
+<li><p>CruzPlot now verbosely removes, i.e. displays a pop-up window, when a sighting or effort line is removed because of one or more 1) NA position coordinates or 2) NA filter values</p></li>
+<li><p>Mode and effort type filters are only available as sighting filters when strictly ‘on effort’ sightings are plotted</p></li>
+<li><p>Both sighting and effort Beaufort filters are not applied when the minimum and maximum values are 0 and 9, respectively. Practically speaking, this means that records with NA Beaufort values can be plotted if desired, which is most relevant for off effort sightings</p></li>
+<li><p>Fixed a bug that caused extraneous NA values when filter information for a sighting or effort line was NA in the DAS data.</p></li>
+<li><p>By default, an effort legend is not included when plotting simplified effort</p></li>
+<li><p>When plotting detailed effort by Beaufort, users only have to enter as many Beaufort colors as the maximum Beaufort filter value plus one</p></li>
+<li><p>Added the ability to plot resight events when one species code is selected</p></li>
+</ul>
+</div>
     <div id="cruzplot-1-0" class="section level1">
 <h1 class="page-header" data-toc-text="1.0">
 <a href="#cruzplot-1-0" class="anchor"></a>CruzPlot 1.0</h1>
@@ -121,35 +138,34 @@
 <h3 class="hasAnchor">
 <a href="#general" class="anchor"></a>General</h3>
 <ul>
-<li><p>Reorganize CruzPlot tabs and sections for a cleaner display</p></li>
-<li><p>Make saved workspace more robust - workspaces saved with past versions of CruzPlot are no longer compatible</p></li>
+<li><p>Reorganized CruzPlot tabs and sections for a cleaner display</p></li>
+<li><p>Made saved workspace more robust - note that this means that workspaces saved with past versions of CruzPlot are no longer compatible</p></li>
 </ul>
 </div>
 <div id="map" class="section level3">
 <h3 class="hasAnchor">
 <a href="#map" class="anchor"></a>Map</h3>
 <ul>
-<li><p>Make map size dynamic and responsive to window size, and give the user dynamic control of the map window height</p></li>
-<li><p>Allow user to specify the resolution of saved map</p></li>
-<li><p>Fix bug in tick labels where style ‘120’ did not display negative values</p></li>
-<li><p>Add buttons for five default map ranges</p></li>
-<li><p>Remove StarterVals.csv - this functionality has been replaced by the default range buttons and being able to save multiple workspaces</p></li>
-<li><p>Allow user to control the download and import of bathymetric files for depth shading</p></li>
+<li><p>Made map size dynamic and responsive to window size, and give the user dynamic control of the map window height</p></li>
+<li><p>Users can specify the resolution of saved map</p></li>
+<li><p>Fixed bug in tick labels where style ‘120’ did not display negative values</p></li>
+<li><p>Added buttons for five default map ranges</p></li>
+<li><p>Removed StarterVals.csv - this functionality has been replaced by the default range buttons and being able to save multiple workspaces</p></li>
+<li><p>Users have more direct control the download and import of bathymetric files for depth shading</p></li>
 </ul>
 </div>
 <div id="das-data" class="section level3">
 <h3 class="hasAnchor">
 <a href="#das-data" class="anchor"></a>DAS data</h3>
 <ul>
-<li><p>Use <a href="https://smwoodman.github.io/swfscDAS/">swfscDAS</a> for processing DAS data</p></li>
-<li><p>Users can load their own species codes file or use default SpCodes.dat</p></li>
+<li><p>CruzPlot now uses <a href="https://smwoodman.github.io/swfscDAS/">swfscDAS</a> for processing DAS data</p></li>
+<li><p>Users can load their own species codes file if they do not wish to use the default SpCodes.dat</p></li>
 <li><p>Removed CPOD plotting functionality</p></li>
-<li><p>Sightings can be plotted by event code (S/K/M/G/p)</p></li>
-<li><p>Sightings can be filtered by mode and effort type</p></li>
-<li><p>Simplified effort can be filtered by effort type (standard/non-standard/fine)</p></li>
+<li><p>Sightings can be plotted by event code (S/K/M/G/p) and filtered by mode (C/P) and effort type (S/N/F)</p></li>
+<li><p>Simplified effort can be filtered by effort type</p></li>
 <li><p>Effort lines are explicitly filtered by those within the map range</p></li>
 <li><p>Users have more control over effort line properties and legend parameters</p></li>
-<li><p>Cruise number filters now are a dynamic dropdown with the cruise numbers from the DAS data</p></li>
+<li><p>Cruise number filters are a dynamic dropdown with only the cruise numbers from the DAS data</p></li>
 <li><p>Interactive sighting and effort maps both have combined view and label (hover and click) functionality</p></li>
 </ul>
 </div>

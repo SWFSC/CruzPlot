@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CruzPlot</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.0</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.1</span>
       </span>
     </div>
 
@@ -83,13 +83,16 @@
 <div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("devtools") # Install devtools package if needed</span>
 <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/swfscDAS"</span>)
 <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/CruzPlot"</span>)</pre></div>
-<p>Before installing, you must have <a href="https://www.r-project.org/">R</a>, <a href="https://rstudio.com/products/rstudio/download/#download">RStudio</a>, and and the appropriate version of <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> installed. To instll CruzPlot, best practice is to close all instances of R and RStudio, and then run the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.</p>
+<p>If your version of CruzPlot is outdated, running the above command will install the new version. However, if you want to reinstall the same version of CruzPlot, you can run:</p>
+<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/CruzPlot"</span>, <span class="kw">force</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
+<p>Before installing CruzPlot, you must have <a href="https://www.r-project.org/">R</a>, <a href="https://rstudio.com/products/rstudio/download/#download">RStudio</a>, and the appropriate version of <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> installed. It is best practice to install after closing all instances of R and RStudio, and then running the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.</p>
+<p>After updating, it is recommended to create and save new workspaces, rather than using workspaces saved with a previous version of CruzPlot.</p>
 </div>
 <div id="run-cruzplot" class="section level2">
 <h2 class="hasAnchor">
 <a href="#run-cruzplot" class="anchor"></a>Run CruzPlot</h2>
 <p>To open and run CruzPlot, run the following code in RStudio:</p>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">CruzPlot</span><span class="kw ns">::</span><span class="fu"><a href="reference/cruzplot_gui.html">cruzplot_gui</a></span>()</pre></div>
+<div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">CruzPlot</span><span class="kw ns">::</span><span class="fu"><a href="reference/cruzplot_gui.html">cruzplot_gui</a></span>()</pre></div>
 </div>
 <div id="cruzplot-manual" class="section level2">
 <h2 class="hasAnchor">
