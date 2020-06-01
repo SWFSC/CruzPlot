@@ -1,4 +1,4 @@
-# cruzDasSight for CruzPlot - step 1 of processing species data
+# Step 1 of processing species data
 #   cruzDasSightSpeciesMammals() returns mammal species codes selected by user
 #   cruzDasSightSpeciesTurtles() returns turtle species codes selected by user
 #   cruzDasSightProcess() - run das_sight only once

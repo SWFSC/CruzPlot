@@ -54,6 +54,11 @@ cruzDasEffortLegend <- reactive({
       # Detailed effort - plot by Bft
       bft.range <- cruzDasEffortFilterBeaufortVal()
       bft.which <- (bft.range[1]:bft.range[2]) + 1
+      validate(
+        need(length(bft.which) <= 10, "Beaufort legend error 1"),
+        need(length(bft.which) <= length(input$das_effort_det_bft_col),
+             "Beaufort legend error 2")
+      )
 
       eff.leg.lab <- (0:9)[bft.which]
       eff.leg.col <- input$das_effort_det_bft_col[bft.which]

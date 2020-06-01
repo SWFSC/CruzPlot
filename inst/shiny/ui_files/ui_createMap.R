@@ -4,7 +4,11 @@ ui.createMap <- function() {
   tabItem(
     tabName = "createmap",
     fluidRow(
-      box(status = "primary", width = 6, plotOutput("plot1", height = "auto")),
+      box(
+        status = "primary", width = 6,
+        conditionalPanel("input.tabset1 == 'Range'", plotOutput("plot1", height = "auto", brush = "map_brush")),
+        conditionalPanel("input.tabset1 != 'Range'", plotOutput("plot1b", height = "auto"))
+      ),
       tabBox(
         title = "Map", width = 6, id = "tabset1",
 
@@ -14,9 +18,9 @@ ui.createMap <- function() {
           fluidRow(
             box(
               title = "Map range", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-              helpText("For longitude values, please use the range -180 to 180. ",
-                       "Thus, for a map of the Pacific, you could enter 130 and -110 for ",
-                       "the left and right longitude, respectively.", tags$br(),
+              helpText("For longitude values, please use the range -180 to 180.",
+                       "For instance, left and right longitudes of 130 and -110, respectively,",
+                       "will give you a map of the Pacific.", tags$br(),
                        "Click the 'Replot map' button after changing map range values,",
                        "or if the map isn't properly sized in the window."),
               fluidRow( #To keep input boxes in line even if labels spill over
@@ -35,6 +39,11 @@ ui.createMap <- function() {
                 column(3, selectInput("resolution", label = tags$h5("Resolution"),
                                       choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5])),
                 column(3, tags$br(), tags$br(), actionButton("map_replot", "Replot map"))
+                # column(
+                #   width = 6, tags$br(), tags$br(),
+                #   uiOutput("map_replot_brush_uiOut_button"),
+                #   uiOutput("map_replot_brush_uiOut_message")
+                # )
               ),
               tags$h5("Set the map range to a default study area and replot:"),
               actionButton("map_replot_cce", "CCE"),

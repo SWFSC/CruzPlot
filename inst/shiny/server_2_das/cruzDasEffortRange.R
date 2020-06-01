@@ -50,9 +50,12 @@ cruzDasEffortParams <- reactive({
     # Color code by Bft or SNF
     if (input$das_effort_det_byBft) {
       bft.cols <- input$das_effort_det_bft_col
+      bft.col.num <- cruzDasEffortFilterBeaufortVal()[2] + 1
       validate(
-        need(length(bft.cols) == 10,
-             "Please choose exactly 10 colors, one for each possible Beaufort value")
+        need(length(bft.cols) >= bft.col.num,
+             paste("Please choose at least", bft.col.num,
+                   "colors, one for each possible Beaufort value between 0",
+                   "and the specified maximum Beaufort"))
       )
 
       eff.col <- bft.cols[das.eff.lines$Bft + 1]

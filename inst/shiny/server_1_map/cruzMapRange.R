@@ -98,10 +98,37 @@ cruzMapParam <- reactive({
 
 
 ###############################################################################
-# Series of steps/actions triggered by replot_reac()
+# Use brush to fill inputs with new map range
+observeEvent(input$map_brush, {
+  req(cruz.map.range$lon.range, cruz.map.range$lat.range)
 
-#------------------------------------------------------------------------------
-### Set lon reactiveValues
+  if (isTruthy(input$map_brush)) {
+    z <- input$map_brush
+    z.coords <- round(c(z$xmin, z$xmax, z$ymin, z$ymax), 1)
+    lon.left <- ifelse(z.coords[1] > 180, z.coords[1] - 360, z.coords[1])
+    lon.right <- ifelse(z.coords[2] > 180, z.coords[2] - 360, z.coords[2])
+
+    updateNumericInput(session, "lon_left", value = lon.left)
+    updateNumericInput(session, "lon_right", value = lon.right)
+    updateNumericInput(session, "lat_bot", value = z.coords[3])
+    updateNumericInput(session, "lat_top", value = z.coords[4])
+
+  } else {
+    lon.range <- cruz.map.range$lon.range
+    lat.range <- cruz.map.range$lat.range
+
+    lon.range <- ifelse(lon.range > 180, lon.range - 360, lon.range)
+
+    updateNumericInput(session, "lon_left", value = lon.range[1])
+    updateNumericInput(session, "lon_right", value = lon.range[2])
+    updateNumericInput(session, "lat_bot", value = lat.range[1])
+    updateNumericInput(session, "lat_top", value = lat.range[2])
+  }
+}, ignoreNULL = FALSE)
+
+
+###############################################################################
+# Series of steps/actions triggered by input$map_replot
 observeEvent(input$map_replot, {
   lon.min <- input$lon_left
   lon.max <- input$lon_right
@@ -124,7 +151,7 @@ observeEvent(input$map_replot, {
   # Determine if world2 map should be used and thus if lons need to be rescaled
   world2 <- (lon.max < lon.min) && (lon.min > 0) && (lon.max < 0)
 
-    if (world2) {
+  if (world2) {
     lon.min <- ifelse(lon.min < 0, 360 + lon.min, lon.min)
     lon.max <- ifelse(lon.max < 0, 360 + lon.max, lon.max)
   }
@@ -149,6 +176,9 @@ observeEvent(input$map_replot, {
   cruz.map.range$lat.range <- c(lat.min, lat.max)
   cruz.map.range$world2 <- world2
   cruz.map.range$map.name <- list(m, reg.toplot)
-}, ignoreNULL = FALSE, priority = 10)
+
+  # Reset map brush, in case
+  session$resetBrush("map_brush")
+}, ignoreNULL = FALSE, priority = 9)
 
 ###############################################################################

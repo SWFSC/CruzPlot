@@ -110,6 +110,10 @@ output$plot1 <- renderPlot({
   plotMap()()
   plotInteractive()()
 }, height = map.height, units = "px", res = plot.res)
+output$plot1b <- renderPlot({
+  plotMap()()
+  plotInteractive()()
+}, height = map.height, units = "px", res = plot.res)
 output$plot2 <- renderPlot({
   plotMap()()
   plotInteractive()()

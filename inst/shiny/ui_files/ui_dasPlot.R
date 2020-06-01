@@ -355,9 +355,10 @@ ui.dasPlot <- function() {
                   conditionalPanel(
                     condition = "input.das_effort_det_byBft",
                     helpText("Each selected color corresponds to a Beaufort value, from low to high.",
-                             "You must choose exactly 10 colors, no matter the Beaufort filters.",
-                             "The first color corresponds to Beaufort 0, the second to Beaufort 1, and so on.",
-                             "See 'Legends' tab to control effort legend"),
+                             "You must choose at least as many colors as the maximum Beaufort value, plus one.",
+                             "Additional selected colors will be ignored.",
+                             "The first color corresponds to Beaufort 0, the second color to Beaufort 1, and so on,",
+                             "even if the Beaufort filter values change."),
                     conditionalPanel(
                       condition = "input.color_style == 2",
                       tags$span(tags$h5("You cannot plot effort color-coded by Beaufort when using grey scale"),

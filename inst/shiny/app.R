@@ -180,13 +180,11 @@ server <- function(input, output, session) {
   # Read Species codes and renderUI for mammal and turtle codes
   source(file.path("server_files", "cruzSpeciesCodes.R"), local = TRUE, chdir = TRUE)
 
-  # Load DAS file and update symbol properties
-  # using fileInput, the output dataframe das.file has name,size,type and datapath
-  # the actual data are stored at the temporary file and location given by datapath
+  # Load DAS file, and do related actions
   source(file.path("server_2_das", "cruzDasGeneral.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasRenderUI.R"), local = TRUE, chdir = TRUE)
 
-  source(file.path("server_2_das", "cruzDasSightSpecies.R"), local = TRUE, chdir = TRUE)
+  source(file.path("server_2_das", "cruzDasSightProcess.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasSightFilter.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasSightRange.R"), local = TRUE, chdir = TRUE)
   source(file.path("server_2_das", "cruzDasSightSymbol.R"), local = TRUE, chdir = TRUE)
@@ -206,7 +204,6 @@ server <- function(input, output, session) {
 
   #----------------------------------------------------------------------------
   ### Non-DAS data tab
-  # Read csv file and plot lines or points
   source(file.path("server_files", "cruzNonDas.R"), local = TRUE, chdir = TRUE)
 
 
