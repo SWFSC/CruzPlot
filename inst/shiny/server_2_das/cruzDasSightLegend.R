@@ -39,7 +39,7 @@ cruzDasSightLegend <- reactive({
     if ("3" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name_Scientific)
     if ("4" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Name_Common)
     validate(
-      need(leg.lab, "Please select sighting legend species information to display")
+      need(leg.lab, "Please select species information to display in the sighting legend")
     )
 
     if (cruzDasSightEventResight()) leg.lab <- paste0(leg.lab, ", Event: ", input$das_sighting_events)

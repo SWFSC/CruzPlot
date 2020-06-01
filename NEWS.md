@@ -1,4 +1,4 @@
-# CruzPlot 1.1 (in development)
+# CruzPlot 1.1
 
 * User can now change the map range (zoom in) by drawing a box with their mouse cursor
 
@@ -20,7 +20,7 @@
 
 * When plotting detailed effort by Beaufort, users only have to enter as many Beaufort colors as the maximum Beaufort filter value plus one
 
-* Can now plot resights for one species at a time
+* Added the ability to plot resight events when one species code is selected
 
 
 # CruzPlot 1.0

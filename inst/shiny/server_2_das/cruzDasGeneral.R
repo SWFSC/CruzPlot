@@ -114,12 +114,10 @@ observeEvent(input$das_file_help, {
             "or at the B event is it immediately precedes said R event.",
             "This argument should be FALSE only if 1) R events are not always followed by a PVNW event sequence or",
             "2) state/condition information was purposefully not entered if it did not change (similar to reset.event)."),
-    tags$br(), tags$br(),
-    tags$h5("When plotting resights (s, k, or g events): 1) you can only plot a single sighting type (e.g. S and s event)",
-            "and a single species at one time,",
-            "and 2) The 'Symbol color...' entry corresponds the the order of the selected events.",
-            "In addition, for resight plotting please ensure that the loaded DAS file is not a concatenated file,
-            i.e. each sighting number in the file corresponds to a single sighting/resighting group."),
+    tags$h5(tags$strong("reset.day argument:"),
+            "This argument is always set to TRUE - the user cannot specify it when using CruzPlot.",
+            "When TRUE, all of the state and condition information is reset at the beginning of each new day,",
+            "rather than being carried over from the previous day."),
     easyClose = FALSE
   ))
 })
@@ -136,6 +134,12 @@ observeEvent(input$das_sighting_events_help, {
     tags$h5(tags$strong("s event:"), "Standard cetacean resight. Corresponds to a previous S event"),
     tags$h5(tags$strong("g event:"), "Cetacean subgroup resight. Corresponds to a previous G event"),
     tags$h5(tags$strong("k event:"), "Tracker cetacean resight. Corresponds to a previous K event"),
+    tags$br(), tags$br(),
+    tags$h5("When plotting resights (s, k, or g events): 1) you can only plot a single sighting type (e.g. S and s event)",
+            "and a single species at one time,",
+            "and 2) The 'Symbol color...' entry corresponds the the order of the selected events.",
+            "In addition, for resight plotting please ensure that the loaded DAS file is not a concatenated file,
+            i.e. each sighting number in the file corresponds to a single sighting/resighting group."),
     easyClose = FALSE
   ))
 })
