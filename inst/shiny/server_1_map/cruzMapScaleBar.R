@@ -42,17 +42,17 @@ output$scale_lat_uiOut_numeric <- renderUI({
   numericInput("scale_lat", tags$h5("Latitude"), value = cruz.scale$scale.lat)
 })
 
+observeEvent(input$scale_units, {
+  cruz.scale$scale.len <- if (input$scale_units == 1) {
+    base::signif(cruz.scale$scale.len * 1.852, 2)
+  } else {
+    base::signif(cruz.scale$scale.len / 1.852, 2)
+  }
+})
+
 output$out_scale_len <- renderUI({
   title.new <- ifelse(input$scale_units == 1, "Length in km", "Length in nmi")
   numericInput("scale_len", tags$h5(title.new), value = cruz.scale$scale.len)
-})
-
-observeEvent(input$scale_units, {
-  cruz.scale$scale.len <- if (input$scale_units == 1) {
-    cruz.scale$scale.len * 1.852
-  } else {
-    cruz.scale$scale.len / 1.852
-  }
 })
 
 
@@ -60,25 +60,36 @@ observeEvent(input$scale_units, {
 observe({
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
-  bar.out <- !(between(cruz.scale$scale.lon, lon.range[1], lon.range[2]) |
-                   between(cruz.scale$scale.lat, lat.range[1], lat.range[2]))
-  if (!isTruthy(bar.out)) bar.out <- TRUE
 
-  if (!input$bar | bar.out) {
-    lon.diff <- abs(lon.range[2] - lon.range[1])
-    lat.diff <- abs(lat.range[2] - lat.range[1])
+  isolate({
+    x <- cruz.scale$scale.lon
+    y <- cruz.scale$scale.lat
 
-    # Scale bar longitude start
-    lon.new <- 0.1 * lon.diff + lon.range[1]
-    lon.new <- ifelse(lon.new > 180, lon.new - 360, lon.new)
+    if (!isTruthy(x) | !isTruthy(y)) {
+      bar.in.range <- TRUE
+    } else {
+      x <- ifelse(cruz.map.range$world2, x + 360, x)
+      bar.in.range <- between(x, lon.range[1], lon.range[2]) &
+        between(y, lat.range[1], lat.range[2])
+    }
 
-    # Scale bar latitude start
-    lat.new <- 0.1 * lat.diff + lat.range[1]
+    # If scale bar is off or bar is out of current map range
+    if (!input$bar | !bar.in.range) {
+      lon.diff <- abs(lon.range[2] - lon.range[1])
+      lat.diff <- abs(lat.range[2] - lat.range[1])
 
-    # Set reactiveValues
-    cruz.scale$scale.lon <- lon.new
-    cruz.scale$scale.lat <- lat.new
-  }
+      # Scale bar longitude start
+      lon.new <- 0.1 * lon.diff + lon.range[1]
+      lon.new <- ifelse(lon.new > 180, lon.new - 360, lon.new)
+
+      # Scale bar latitude start
+      lat.new <- 0.1 * lat.diff + lat.range[1]
+
+      # Set reactiveValues
+      cruz.scale$scale.lon <- lon.new
+      cruz.scale$scale.lat <- lat.new
+    }
+  })
 }, priority = 1) #Must run before observe() for bar length
 
 ### After getting start position, get the default scale bar length

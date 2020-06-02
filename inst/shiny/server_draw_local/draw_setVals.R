@@ -56,13 +56,14 @@ if (input$bar) {
 
   validate(
     need(lon.range[1] <= scale.bar$x1,
-         message = "Start of scale bar must be after left longitude value"),
+         "Start of scale bar must be after left longitude value"),
     need(lon.range[2] >= (scale.bar$x2),
-         message = "End of scale bar must be before right longitude value"),
+         paste("End of scale bar must be before right longitude value -",
+               "please extend the map range or decrease the scale bar length")),
     need(lat.range[1] <= scale.bar$y,
-         message = "Scale bar latitude must be greater than bottom latitude value"),
+         "Scale bar latitude must be greater than bottom latitude value"),
     need(lat.range[2] >= scale.bar$y,
-         message = "Scale bar latitude must be less than top latitude value")
+         "Scale bar latitude must be less than top latitude value")
   )
 }
 

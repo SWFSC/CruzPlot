@@ -26,7 +26,7 @@ ui.createMap <- function() {
                        "In addition, users can automatically change the map range input values",
                        "by clicking and holding to draw a box on map, although users still must click 'Replot map'.",
                        "To clear the box, click within the plot outside of the box."),
-              fluidRow( #To keep input boxes in line even if labels spill over
+              fluidRow( #Separate to keep input boxes in line even if labels spill over
                 column(3, tags$h5("Left longitude")),
                 column(3, tags$h5("Right longitude")),
                 column(3, tags$h5("Bottom latitude")),
@@ -55,7 +55,8 @@ ui.createMap <- function() {
               checkboxInput("bar", "Plot scale bar", value = FALSE),
               conditionalPanel(
                 condition = "input.bar",
-                helpText("Provide the coordinates for the left edge of the scale bar"),
+                helpText("Provide the coordinates for the left edge of the scale bar.",
+                         "The coordinates must have the same range as the map range coordinates."),
                 fluidRow(
                   column(4, uiOutput("scale_lon_uiOut_numeric")),
                   column(4, uiOutput("scale_lat_uiOut_numeric")),

@@ -1,3 +1,8 @@
+# CruzPlot 1.2 (in development)
+
+* Fixed bug in specifying scale bar position
+
+
 # CruzPlot 1.1
 
 * User can now change the map range (zoom in) by drawing a box with their mouse cursor
