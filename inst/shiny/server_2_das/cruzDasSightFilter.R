@@ -37,7 +37,7 @@ cruzDasSightFilter <- reactive({
       mutate(DateTime = as.character(DateTime),
              Cruise = as.character(Cruise)) %>%
       select(Event, DateTime, OnEffort, Cruise, Mode, EffType, Bft,
-             SightNo, PerpDistKm,
+             SightNo, Sp, PerpDistKm,
              # File = file_das, #Can take up too much space
              `Line number` = line_num) %>%
       distinct()

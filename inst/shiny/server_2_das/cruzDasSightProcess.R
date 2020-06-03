@@ -78,7 +78,8 @@ cruzDasSightPosition <- reactive({
       mutate(DateTime = as.character(DateTime),
              Cruise = as.character(Cruise),
              Resight = Event %in% c("s", "g")) %>%
-      select(Event, DateTime, Lat, Lon, OnEffort, Cruise, SightNo, Resight,
+      select(Event, DateTime, Lat, Lon, OnEffort, Cruise,
+             SightNo, Sp, Resight,
              # File = file_das,
              `Line number` = line_num) %>%
       distinct()

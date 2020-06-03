@@ -3,6 +3,62 @@
 
 
 ###############################################################################
+# Table of all sightings in file
+cruzDasOutSight_TotTable <- reactive({
+  das.sight <- cruzDasSightSpeciesProcess()
+  sight.type <- input$das_sighting_type
+
+  if (sight.type == 2) {
+    ### Turtles
+    das.sight <- das.sight %>% filter(.data$Event == "t")
+    df.join <- NULL
+    df.out <- if (input$das_sighting_code_2_all == 1) {
+      das.sight %>%
+        group_by(Event) %>%
+        summarise(Count = n(), .groups = "drop")
+    } else {
+      das.sight %>%
+        filter(Sp %in% input$das_sighting_code_2) %>%
+        group_by(Event, Sp) %>%
+        summarise(Count = n(), .groups = "drop")
+    }
+
+  } else if (sight.type == 3) {
+    ### Boats
+    das.sight <- das.sight %>% filter(.data$Event == "F")
+    df.join <- NULL
+    df.out <- das.sight %>%
+      group_by(Event) %>%
+      summarise(Count = n(), .groups = "drop")
+
+  } else if (sight.type == 1) {
+    ### Marine mammals
+    das.sight <- das.sight <- das.sight %>%
+      filter(.data$Event %in% input$das_sighting_events)
+    df.join <- data.frame(Event = input$das_sighting_events)
+
+    df.out <- if (input$das_sighting_code_1_all == 1) {
+      das.sight %>%
+        group_by(Event) %>%
+        summarise(Count = n(), .groups = "drop")
+    } else {
+      das.sight %>%
+        filter(Sp %in% input$das_sighting_code_1) %>%
+        group_by(Event, Sp) %>%
+        summarise(Count = n(), .groups = "drop")
+    }
+  }
+
+  if (isTruthy(df.join)) {
+    df.out <- df.out %>%
+      full_join(df.join, by = "Event") %>%
+      mutate(Count = ifelse(is.na(.data$Count), 0, .data$Count)) %>%
+      arrange(.data$Event)
+  }
+
+  t(df.out)
+})
+
 # Sightings table
 cruzDasOutSight_Table <- reactive({
   req(cruz.list$das.data)
@@ -12,17 +68,20 @@ cruzDasOutSight_Table <- reactive({
                "generate sightings tabular output"))
   )
 
+
   # Get filtered data, which also handles error checks
   data.list <- cruzDasSightRange()
   das.sight <- data.list$das.sight
 
   das.sight.summ <- das.sight %>%
     group_by(.data$Sp) %>%
-    summarise(std = sum(.data$EffType == "S"),
-              nstd = sum(.data$EffType == "N"),
-              fine = sum(.data$EffType == "F"),
+    summarise(std = sum(.data$EffType == "S", na.rm = TRUE),
+              #na.rm=TRUE b/c off effort sightings might not have effort type
+              nstd = sum(.data$EffType == "N", na.rm = TRUE),
+              fine = sum(.data$EffType == "F", na.rm = TRUE),
               off_eff = sum(!.data$OnEffort),
-              total = n())
+              total = n(),
+              .groups = "drop")
 
   # 'Filter' summary for columns specified by sighting filters, and rename
   #   Data has already been filtered, just need to make the table pretty

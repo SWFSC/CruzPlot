@@ -1,6 +1,8 @@
-# CruzPlot 1.2 (in development)
+# CruzPlot 1.2
 
 * Fixed bug in specifying scale bar position
+
+* Fixed bug in tabular sighting output, and added table summarizing the total number of (unfiltered) sightings.
 
 
 # CruzPlot 1.1

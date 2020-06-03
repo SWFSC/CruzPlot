@@ -1,6 +1,6 @@
 Package: CruzPlot
 Title: Plot Shipboard DAS Data
-Version: 1.2.0.9000
+Version: 1.2
 Authors@R: 
     c(person("Samuel", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov"), 
       person("Tim", "Gerrodette", role = c("ctb")))

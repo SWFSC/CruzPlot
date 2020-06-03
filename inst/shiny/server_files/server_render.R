@@ -97,11 +97,14 @@ output$das_sight_spcodes_message <- renderText({
 
 
 # Tabular output
-output$das_out_sight_table <- renderTable(cruzDasOutSight_Table())
-output$cruzDasOutSight_Save_text <- renderText(cruzDasOutSight_Save())
-
 output$das_out_effort_table <- renderTable(cruzDasOutEffort_Table())
 output$cruzDasOutEffort_Save_text <- renderText(cruzDasOutEffort_Save())
+
+output$das_out_sight_tot_table <- renderTable({
+  cruzDasOutSight_TotTable()
+}, rownames = TRUE, colnames = FALSE)
+output$das_out_sight_table <- renderTable(cruzDasOutSight_Table())
+output$cruzDasOutSight_Save_text <- renderText(cruzDasOutSight_Save())
 
 
 #------------------------------------------------------------------------------
