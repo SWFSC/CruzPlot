@@ -585,7 +585,7 @@ ui.dasPlot <- function() {
                                    choices = list("Species abbreviation" = 2,
                                                   "Scientific name" = 3, "Common name" = 4),
                                    selected = NULL, inline = TRUE),
-                checkboxInput("das_out_allcheck", "Include an 'All' summary row", value = FALSE),
+                checkboxInput("das_out_allcheck", "Include an 'All' summary row", value = TRUE),
                 tableOutput("das_out_sight_table"),
                 downloadButton("das_out_sight_save", "Save sightings table")
               )

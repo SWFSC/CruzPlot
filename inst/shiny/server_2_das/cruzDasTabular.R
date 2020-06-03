@@ -64,8 +64,7 @@ cruzDasOutSight_Table <- reactive({
   req(cruz.list$das.data)
   validate(
     need(input$das_sightings,
-         paste("'Plot sightings' must be selected to",
-               "generate sightings tabular output"))
+         "'Plot sightings' must be selected to generate tabular sightings output")
   )
 
 
@@ -75,10 +74,10 @@ cruzDasOutSight_Table <- reactive({
 
   das.sight.summ <- das.sight %>%
     group_by(.data$Sp) %>%
-    summarise(std = sum(.data$EffType == "S", na.rm = TRUE),
+    summarise(std = sum(.data$OnEffort & .data$EffType == "S", na.rm = TRUE),
               #na.rm=TRUE b/c off effort sightings might not have effort type
-              nstd = sum(.data$EffType == "N", na.rm = TRUE),
-              fine = sum(.data$EffType == "F", na.rm = TRUE),
+              nstd = sum(.data$OnEffort & .data$EffType == "N", na.rm = TRUE),
+              fine = sum(.data$OnEffort & .data$EffType == "F", na.rm = TRUE),
               off_eff = sum(!.data$OnEffort),
               total = n(),
               .groups = "drop")
