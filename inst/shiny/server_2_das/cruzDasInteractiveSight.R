@@ -3,7 +3,7 @@
 ### Interactive sighting click
 observeEvent(input$sight_click, {
   click.curr <- c(input$sight_click$x, input$sight_click$y)
-  das.sight <- cruzDasSightRange()$das.sight
+  das.sight <- cruzDasSightFilter()$das.sight
 
   param.unit <- cruzMapParam()$param.unit
   param.unit.diff <- c(param.unit[2]-param.unit[1], param.unit[4]-param.unit[3])
@@ -13,7 +13,7 @@ observeEvent(input$sight_click, {
   y.ratio <- param.inch[2]/param.unit.diff[2]
 
   # Determine closest point and return information to print
-  sight.type <- cruzDasSightRange()$sight.type
+  sight.type <- cruzDasSightFilter()$sight.type
   close.info <- if (sight.type == 1) {
     # type = 1 means mammal sighting for function cruzClosestPt
     cruzClosestPt(click.curr, type = 1, das.sight$Lat, das.sight$Lon,
@@ -42,7 +42,7 @@ observeEvent(input$sight_click, {
 ### Hover to display sighitng information
 observeEvent(input$sight_hover, {
   sight$hover <- c(input$sight_hover$x, input$sight_hover$y)
-  das.sight <- cruzDasSightRange()$das.sight
+  das.sight <- cruzDasSightFilter()$das.sight
 
   param.unit <- cruzMapParam()$param.unit
   param.unit.diff <- c(param.unit[2]-param.unit[1], param.unit[4]-param.unit[3])
@@ -52,7 +52,7 @@ observeEvent(input$sight_hover, {
   y.ratio <- param.inch[2]/param.unit.diff[2]
 
   # Determine closest point and return information to print
-  sight.type <- cruzDasSightRange()$sight.type
+  sight.type <- cruzDasSightFilter()$sight.type
   close.info <- if (sight.type == 1) {
     # type = 1 means mammal sighting for function cruzClosestPt
     cruzClosestPt(sight$hover, type = 1, das.sight$Lat, das.sight$Lon,
@@ -96,26 +96,3 @@ observeEvent(input$das_sight_interactive_reset_all, {
   sight$miss <- FALSE
   sight$hover.miss <- FALSE
 })
-
-
-# # Make sure interactively labeled sightings are still present
-# # ***Has some bug in it
-# cruzDasInteractiveSightCheck <- reactive({
-#   data.sight <- cruzDasSightRange()$data.sight
-#   sight.type <- cruzDasSightRange()$sight.type
-#
-#   # Only need to do checks when data.sight changes
-#   isolate(sight.lab <- sight$lab)
-#   browser()
-#   if(!is.null(sight.lab)) {
-#     sight.num <- gsub(" ", "", substr(sight.lab, 3, 6))
-#     if(sight.type == 1) keep.pt <- which(sight.num %in% data.sight$Data1)
-#     if(sight.type > 1) keep.pt <- which(sight.num %in% data.sight$Data2)
-#     if(length(keep.pt) == 0) isolate(sight$click <- sight$lab <- NULL)
-#     else {
-#       keep.click <- sort(c(2*keep.pt, (2*keep.pt)-1))
-#       isolate(sight$click <- sight$click[keep.click])
-#       isolate(sight$lab <- sight$lab[keep.pt])
-#     }
-#   }
-# })

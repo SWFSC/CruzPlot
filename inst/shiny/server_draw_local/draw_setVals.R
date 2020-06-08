@@ -264,15 +264,15 @@ if (isTruthy(cruz.list$das.data)) {
   # Sightings
   if (input$das_sightings) {
     # Error checks are in cruzDasSight... functions
-    das.sight <- cruzDasSightRange()$das.sight
-    sight.type <- cruzDasSightRange()$sight.type
+    das.sight <- cruzDasSightFilter()$das.sight
+    sight.type <- cruzDasSightFilter()$sight.type
     das.sight.pt <- cruzDasSightSymbol()$pt.df
     if (input$das_legend) das.sight.legend <- cruzDasSightLegend()
   }
 
   # Effort
   if (as.numeric(input$das_effort) != 1) {
-    das.eff.lines <- cruzDasEffortRange()
+    das.eff.lines <- cruzDasEffortFilter()
 
     eff.col <- cruzDasEffortParams()$eff.col
     eff.lwd <- cruzDasEffortParams()$eff.lwd

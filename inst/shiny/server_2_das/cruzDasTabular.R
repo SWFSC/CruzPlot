@@ -69,7 +69,7 @@ cruzDasOutSight_Table <- reactive({
 
 
   # Get filtered data, which also handles error checks
-  data.list <- cruzDasSightRange()
+  data.list <- cruzDasSightFilter()
   das.sight <- data.list$das.sight
 
   das.sight.summ <- das.sight %>%
@@ -135,7 +135,7 @@ output$das_out_sight_save <- downloadHandler(
 ###############################################################################
 # Effort
 cruzDasOutEffort_Table <- reactive({
-  das.eff.lines <- cruzDasEffortRange()
+  das.eff.lines <- cruzDasEffortFilter()
 
   # Calculate distance
   dist.effort.m <- geosphere::distVincentyEllipsoid(

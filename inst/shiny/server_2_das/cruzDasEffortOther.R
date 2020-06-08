@@ -1,7 +1,51 @@
-# cruzDasEffortFilter for CruzPlot - file 2 of effort processing
-#   cruzDasEffortFilter() returns filtered effort data
+# File 2 of effort processing
+#   cruzDasEffortRange() subsets effort data to map range
+#   cruzDasEffortFilter() returns filtered effort data - with helper functions
+#   cruzDasEffortParams() takes filtered data and returns plotting params
 
 
+###############################################################################
+###############################################################################
+### Final effort function - gets filtered data from cruzDasEffortFilter()
+cruzDasEffortRange <- reactive({
+  das.eff.lines <- cruzDasEffortEvent()
+
+  # Check for any effort lines with NA coordinates
+  ll.na <- sum(is.na(das.eff.lines$st_lat) | is.na(das.eff.lines$st_lon) |
+                 is.na(das.eff.lines$end_lat) | is.na(das.eff.lines$end_lon))
+  validate(
+    need(ll.na == 0,
+         "Error processing effort line positions - please report this as an issue")
+  )
+
+  # Adjust longitudes if world2 map is being used
+  if (cruz.map.range$world2) {
+    das.eff.lines <- das.eff.lines %>%
+      mutate(st_lon = ifelse(.data$st_lon < 0, .data$st_lon + 360, .data$st_lon),
+             end_lon = ifelse(.data$end_lon < 0, .data$end_lon + 360, .data$end_lon))
+  }
+
+  # Remove any effort lines with both st and end points outside map range
+  lon.range <- cruz.map.range$lon.range
+  lat.range <- cruz.map.range$lat.range
+
+  das.eff.lines.range <- das.eff.lines %>%
+    filter(between(.data$st_lat, lat.range[1], lat.range[2]),
+           between(.data$st_lon, lon.range[1], lon.range[2]),
+           between(.data$end_lat, lat.range[1], lat.range[2]),
+           between(.data$end_lon, lon.range[1], lon.range[2]))
+
+  validate(
+    need(nrow(das.eff.lines.range) > 0,
+         "No effort lines are completely within the map boundaries")
+  )
+
+  # Return
+  das.eff.lines.range
+})
+
+
+###############################################################################
 ###############################################################################
 observeEvent(input$das_sightings, {
   if (!input$das_sightings) {
@@ -13,7 +57,9 @@ observeEvent(input$das_sightings, {
 ###############################################################################
 # Top-level function for filtering effort line data
 cruzDasEffortFilter <- reactive({
-  das.eff.lines <- cruzDasEffortEvent()
+  #Called in draw_setVals
+
+  das.eff.lines <- cruzDasEffortRange()
 
   if (input$das_effort_filter_same) {
     validate(
@@ -83,7 +129,8 @@ cruzDasEffortFilter <- reactive({
   if (anyNA(x)) warning(paste("some", x.txt, "filter values were NA"))
 
   validate(
-    need(any(x), paste("No effort lines match the given", x.txt, "filters"))
+    need(any(x), paste("No effort lines within the map range",
+                       "match the given", x.txt, "filter"))
   )
   x
 }
@@ -92,7 +139,7 @@ cruzDasEffortFilter <- reactive({
 #------------------------------------------------------------------------------
 ### Closing/passing mode filter
 cruzDasEffortFilterMode <- reactive ({
-  das.eff.lines <- cruzDasEffortEvent()
+  das.eff.lines <- cruzDasEffortRange()
 
   keep <- das.eff.lines$Mode %in% input$das_effort_cp
   .func_eff_filt_validate(keep, "mode (closing/passing)")
@@ -102,7 +149,7 @@ cruzDasEffortFilterMode <- reactive ({
 #------------------------------------------------------------------------------
 ### S/N/F effort type filter
 cruzDasEffortFilterEfftype <- reactive ({
-  das.eff.lines <- cruzDasEffortEvent()
+  das.eff.lines <- cruzDasEffortRange()
 
   keep <- das.eff.lines$EffType %in% input$das_effort_snf
   .func_eff_filt_validate(keep, "effort type (standard/non-standard/fine)")
@@ -130,7 +177,7 @@ cruzDasEffortFilterBeaufortVal <- reactive({
 })
 
 cruzDasEffortFilterBeaufort <- reactive ({
-  das.eff.lines <- cruzDasEffortEvent()
+  das.eff.lines <- cruzDasEffortRange()
   bft.vals <- cruzDasEffortFilterBeaufortVal()
 
   keep <- if (identical(bft.vals, c(0, 9))) {
@@ -145,7 +192,7 @@ cruzDasEffortFilterBeaufort <- reactive ({
 #------------------------------------------------------------------------------
 ### Date Filter
 cruzDasEffortFilterDate <- reactive({
-  das.eff.lines <- cruzDasEffortEvent()
+  das.eff.lines <- cruzDasEffortRange()
 
   eff.date.vals <- if (input$das_effort_filter_same) {
     input$das_sight_dateRange
@@ -168,7 +215,7 @@ cruzDasEffortFilterDate <- reactive({
 #------------------------------------------------------------------------------
 ### Cruise number filter
 cruzDasEffortFilterCruise <- reactive ({
-  das.eff.lines <- cruzDasEffortEvent()
+  das.eff.lines <- cruzDasEffortRange()
 
   if (input$das_effort_filter_same) {
     if (is.null(input$das_sight_cruiseNum)) {
@@ -176,7 +223,7 @@ cruzDasEffortFilterCruise <- reactive ({
     } else {
       eff.cruise.vals <- as.numeric(input$das_sight_cruise)
       keep <- das.eff.lines$Cruise %in% eff.cruise.vals
-      .func_sight_filt_validate(keep, "cruise number") }
+      .func_eff_filt_validate(keep, "cruise number") }
 
   } else {
     if (is.null(input$das_effort_cruise)) {
@@ -184,9 +231,54 @@ cruzDasEffortFilterCruise <- reactive ({
     } else {
       eff.cruise.vals <- as.numeric(input$das_effort_cruise)
       keep <- das.eff.lines$Cruise %in% eff.cruise.vals
-      .func_sight_filt_validate(keep, "cruise number")}
+      .func_eff_filt_validate(keep, "cruise number")}
   }
 })
 
 
 ###############################################################################
+###############################################################################
+### Get effort plotting colors and line widths
+cruzDasEffortParams <- reactive({
+  if (input$das_effort == 2) {
+    ## If simplified effort, simple results
+    eff.col <- input$das_effort_simp_col
+    eff.lwd <- input$das_effort_simp_lwd
+
+  } else if (input$das_effort == 3) {
+    ## If detailed effort, not as simple
+    das.eff.lines <- cruzDasEffortFilter()
+
+    # Color code by Bft or SNF
+    if (input$das_effort_det_byBft) {
+      bft.cols <- input$das_effort_det_bft_col
+      bft.col.num <- cruzDasEffortFilterBeaufortVal()[2] + 1
+      validate(
+        need(length(bft.cols) >= bft.col.num,
+             paste("Please choose at least", bft.col.num,
+                   "colors, one for each possible Beaufort value between 0",
+                   "and the specified maximum Beaufort"))
+      )
+
+      eff.col <- bft.cols[das.eff.lines$Bft + 1]
+      eff.lwd <- input$das_effort_det_bft_lwd
+
+    } else {
+      eff.col <- case_when(
+        das.eff.lines$EffType == "S" ~ input$das_effort_det_col_s,
+        das.eff.lines$EffType == "N" ~ input$das_effort_det_col_n,
+        das.eff.lines$EffType == "F" ~ input$das_effort_det_col_f
+      )
+      eff.lwd <- case_when(
+        das.eff.lines$EffType == "S" ~ input$das_effort_det_lwd_s,
+        das.eff.lines$EffType == "N" ~ input$das_effort_det_lwd_n,
+        das.eff.lines$EffType == "F" ~ input$das_effort_det_lwd_f
+      )
+    }
+  }
+
+  list(eff.col = eff.col, eff.lwd = eff.lwd)
+})
+
+###############################################################################
+

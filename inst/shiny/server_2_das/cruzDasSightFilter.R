@@ -1,4 +1,4 @@
-# cruzDasSightFilter for CruzPlot - step 2 of processing species data
+# cruzDasSightFilter for CruzPlot - step 3 of processing species data
 #   cruiseDasSightFilter() pulls individual filters together
 
 #   cruzDasSightFilterEffort() returns a logical indicating which rows satisfy the effort filter
@@ -11,7 +11,7 @@
 ###############################################################################
 ### Top-level function for filtering
 cruzDasSightFilter <- reactive({
-  data.list <- cruzDasSightSpecies()
+  data.list <- cruzDasSightRange()
 
   das.sight    <- data.list$das.sight
   sight.type   <- data.list$sight.type
@@ -63,16 +63,31 @@ cruzDasSightFilter <- reactive({
   keep.all[is.na(keep.all)] <- FALSE
   das.sight.filt <- das.sight[keep.all, ]
 
-  ### Final checks and return
+  ### Final checks, calculate sp.count, and return
   validate(
     need(sum(is.na(das.sight.filt$Event)) == 0,
          "Error in CruzPlot sighting filtering - please report this as an issue") %then%
       need(nrow(das.sight) > 0,
-           "None of the specified sightings match the given filters")
+           "No sightings match the given filters")
   )
 
-  list(das.sight = das.sight.filt, sight.type = sight.type,
-       sp.codes = sp.codes, sp.selection = sp.selection)
+  # Check that at least one sighting is still within map range, and get sp.count
+  if (sight.type %in% c(1, 2)) {
+    if (!sp.selection) sp.codes <- base::intersect(sp.codes, das.sight.filt$SpCode)
+
+    # Calculate count for each species
+    sp.count <- vapply(sp.codes, function(i, j) {
+      sum(j$SpCode == i)
+    }, 1, j = das.sight.filt, USE.NAMES = FALSE)
+
+  } else {
+    sp.count <- nrow(das.sight.filt)
+  }
+
+  list(
+    das.sight = das.sight.filt, sight.type = sight.type,
+    sp.codes = sp.codes, sp.selection = sp.selection, sp.count = sp.count
+  )
 })
 
 
@@ -81,7 +96,8 @@ cruzDasSightFilter <- reactive({
 
 .func_sight_filt_validate <- function(x, x.txt) {
   validate(
-    need(any(x), paste("No sightings match the given", x.txt, "filters"))
+    need(any(x), paste("None of the specified sightings within the map range",
+                       "match the given", x.txt, "filter"))
   )
   x
 }
@@ -89,7 +105,7 @@ cruzDasSightFilter <- reactive({
 #------------------------------------------------------------------------------
 # On/off effort
 cruzDasSightFilterEffort <- reactive({
-  das.sight <- cruzDasSightSpecies()$das.sight
+  das.sight <- cruzDasSightRange()$das.sight
   effort.val <- switch(as.numeric(input$das_sight_effort), c(0, 1), 1, 0)
   keep <- as.numeric(das.sight$OnEffort) %in% effort.val
   .func_sight_filt_validate(keep, "on/off effort")
@@ -97,14 +113,14 @@ cruzDasSightFilterEffort <- reactive({
 
 # Mode: C/P
 cruzDasSightFilterMode <- reactive({
-  das.sight <- cruzDasSightSpecies()$das.sight
+  das.sight <- cruzDasSightRange()$das.sight
   keep <- das.sight$Mode %in% input$das_sight_cp
   .func_sight_filt_validate(keep, "mode (closing/passing)")
 })
 
 # Effort type: S/N/F
 cruzDasSightFilterEfftype <- reactive({
-  das.sight <- cruzDasSightSpecies()$das.sight
+  das.sight <- cruzDasSightRange()$das.sight
   keep <- das.sight$EffType %in% input$das_sight_snf
   .func_sight_filt_validate(keep, "effort type (standard/non-standard/fine)")
 })
@@ -112,7 +128,7 @@ cruzDasSightFilterEfftype <- reactive({
 #------------------------------------------------------------------------------
 # Beaufort
 cruzDasSightFilterBeaufort <- reactive({
-  das.sight <- cruzDasSightSpecies()$das.sight
+  das.sight <- cruzDasSightRange()$das.sight
   bft.min <- as.numeric(input$das_sight_minBft)
   bft.max <- as.numeric(input$das_sight_maxBft)
 
@@ -132,7 +148,7 @@ cruzDasSightFilterBeaufort <- reactive({
 #------------------------------------------------------------------------------
 # Dates
 cruzDasSightFilterDate <- reactive({
-  das.sight <- cruzDasSightSpecies()$das.sight
+  das.sight <- cruzDasSightRange()$das.sight
   date.vals <- input$das_sight_dateRange
 
   validate(
@@ -149,7 +165,7 @@ cruzDasSightFilterDate <- reactive({
 #------------------------------------------------------------------------------
 # Cruise numbers
 cruzDasSightFilterCruise <- reactive({
-  das.sight <- cruzDasSightSpecies()$das.sight
+  das.sight <- cruzDasSightRange()$das.sight
 
   if (is.null(input$das_sight_cruise)) {
     # Return here to keep records that have 'NA' value
@@ -165,7 +181,7 @@ cruzDasSightFilterCruise <- reactive({
 #------------------------------------------------------------------------------
 # Perpendicular distance truncation
 cruzDasSightFilterTrunc <- reactive({
-  das.sight <- cruzDasSightSpecies()$das.sight
+  das.sight <- cruzDasSightRange()$das.sight
 
   pdist.val <- ifelse(
     input$das_sight_trunc_units == 1,

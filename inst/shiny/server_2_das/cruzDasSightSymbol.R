@@ -16,7 +16,7 @@
 
 ###############################################################################
 cruzDasSightSymbol <- reactive({
-  data.list <- cruzDasSightRange()
+  data.list <- cruzDasSightFilter()
 
   sight.type   <- data.list$sight.type
   das.sight    <- data.list$das.sight
@@ -196,7 +196,7 @@ cruzDasSightSymbolAnimalSelected <- reactive({
 
 # Plot parameters for plotting all mammal/turtle species
 cruzDasSightSymbolAnimalAll <- reactive({
-  sp.codes.len <- length(cruzDasSightRange()$sp.codes)
+  sp.codes.len <- length(cruzDasSightFilter()$sp.codes)
   pch.all <- unname(unlist(cruz.symbol.type))
   col.all <- c(
     "black", "red", "forestgreen", "orange",
@@ -215,8 +215,8 @@ cruzDasSightSymbolAnimalAll <- reactive({
   pt.lwd <- 1
 
   stopifnot(
-    length(pt.pch) == length(unique(cruzDasSightRange()$das.sight$SpCode)),
-    length(pt.col) == length(unique(cruzDasSightRange()$das.sight$SpCode))
+    length(pt.pch) == length(unique(cruzDasSightFilter()$das.sight$SpCode)),
+    length(pt.col) == length(unique(cruzDasSightFilter()$das.sight$SpCode))
   )
 
   list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd)

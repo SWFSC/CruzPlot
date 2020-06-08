@@ -3,7 +3,7 @@
 ### Click to add labels to map
 observeEvent(input$effort_click, {
   click.curr <- c(input$effort_click$x, input$effort_click$y)
-  das.effort <- cruzDasEffortRange()
+  das.effort <- cruzDasEffortFilter()
 
   param.unit <- cruzMapParam()$param.unit
   param.unit.diff <- c(param.unit[2]-param.unit[1], param.unit[4]-param.unit[3])
@@ -36,7 +36,7 @@ observeEvent(input$effort_click, {
 ### Hover to see R and E lat/lon coordinates
 observeEvent(input$effort_hover, {
   effort$hover <- c(input$effort_hover$x, input$effort_hover$y)
-  das.effort <- cruzDasEffortRange()
+  das.effort <- cruzDasEffortFilter()
 
   param.unit <- cruzMapParam()$param.unit
   param.unit.diff <- c(param.unit[2]-param.unit[1], param.unit[4]-param.unit[3])
@@ -83,18 +83,3 @@ observeEvent(input$das_effort_interactive_reset_all, {
   effort$miss <- FALSE
   effort$hover.miss <- FALSE
 })
-
-
-# ### Make sure interactively labeled effort lines are still present
-# cruzDasInteractiveEffortCheck <- reactive({
-#   data.effort <- cruzDasEffortFilter()
-#
-#   # Only need to do checks when data.sight changes
-#   isolate(effort.lab <- effort$lab)
-#
-#   if(!is.null(effort.lab)) {
-#     #     keep.click <- sapply(1:length(effort.lab), function(j) any(sapply(1:length(data.effort[,1]), function(i) all(effort.lab[j,] %in% data.effort[i,]))))
-#     #     isolate(effort$click <- effort$click[keep.click])
-#     #     isolate(effort$lab <- effort$lab[keep.pt])
-#   }
-# })

@@ -1,7 +1,7 @@
-# cruzDasSightRange for CruzPlot - step 3 of processing species data
+# cruzDasSightRange for CruzPlot - step 2 of processing species data
 #   cruzDasSightPosition returns das_sight with Lat/Lon columns adjusted for
 #     world2 and ship/sighting position.
-#     NOTE: Now done when removing records with NA positions
+#     NOTE: Now done when removing records with NA positions in cruzDasSightProcess.R
 #   cruzDasSightRange() returns list, which includes sightings within map range,
 #     selected sighting type, species codes, and counts for each species
 
@@ -11,10 +11,9 @@ cruzDasSightRange <- reactive({
   #----------------------------------------------------------------------------
   req(cruz.list$das.data)
 
-  das.sight <- cruzDasSightFilter()$das.sight
-  # browser()
+  data.list <- cruzDasSightSpecies()
 
-  data.list <- cruzDasSightFilter()
+  das.sight    <- data.list$das.sight
   sight.type   <- data.list$sight.type
   sp.codes     <- data.list$sp.codes
   sp.selection <- data.list$sp.selection
@@ -44,23 +43,10 @@ cruzDasSightRange <- reactive({
          "No sightings are within the map boundaries for the selected sighting type/species")
   )
 
-  # Check that at least one sighting is still within map range, and get sp.count
-  if (sight.type %in% c(1, 2)) {
-    if (!sp.selection) sp.codes <- base::intersect(sp.codes, das.sight.filt$SpCode)
-
-    # Calculate count for each species
-    sp.count <- vapply(sp.codes, function(i, j) {
-      sum(j$SpCode == i)
-    }, 1, j = das.sight.filt, USE.NAMES = FALSE)
-
-  } else {
-    sp.count <- nrow(das.sight.filt)
-  }
-
 
   #----------------------------------------------------------------------------
   list(
     das.sight = das.sight.filt, sight.type = sight.type,
-    sp.codes = sp.codes, sp.selection = sp.selection, sp.count = sp.count
+    sp.codes = sp.codes, sp.selection = sp.selection
   )
 })
