@@ -65,20 +65,22 @@ if (isTruthy(cruz.list$das.data)) {
 
 
   ## Plot effort legend
-  if (input$eff_legend & input$das_effort != 1) { #input$das_effort_det_byBft & input$das_effort == "3") {
-    op <- par(family = data.eff.legend$font.fam)
-    legend(x = data.eff.legend$eff.leg.x,
-           y = data.eff.legend$eff.leg.y,
-           title = data.eff.legend$eff.leg.title,
-           legend = data.eff.legend$eff.leg.lab,
-           lwd = data.eff.legend$eff.leg.lwd,
-           col = data.eff.legend$eff.leg.col,
-           bty = data.eff.legend$eff.leg.bty,
-           box.col = data.eff.legend$eff.leg.box.col,
-           box.lwd = data.eff.legend$eff.leg.box.lwd,
-           cex = data.eff.legend$eff.leg.box.cex,
-           bg = "white")
-    par(op)
+  if (input$das_effort != 1) {
+    if (isTruthy(das.eff.legend)) {
+      op <- par(family = das.eff.legend$font.fam)
+      legend(x = das.eff.legend$eff.leg.x,
+             y = das.eff.legend$eff.leg.y,
+             title = das.eff.legend$eff.leg.title,
+             legend = das.eff.legend$eff.leg.lab,
+             lwd = das.eff.legend$eff.leg.lwd,
+             col = das.eff.legend$eff.leg.col,
+             bty = das.eff.legend$eff.leg.bty,
+             box.col = das.eff.legend$eff.leg.box.col,
+             box.lwd = das.eff.legend$eff.leg.box.lwd,
+             cex = das.eff.legend$eff.leg.box.cex,
+             bg = "white")
+      par(op)
+    }
   }
 }
 

@@ -1,14 +1,33 @@
 # Turn off effort legend when switching to Simplified Effort
 observeEvent(input$das_effort, {
-  if (input$das_effort == 2)
+  if (input$das_effort == 2) {
     updateCheckboxInput(session, "eff_legend", value = FALSE)
+    cruz.eff.leg(FALSE)
+
+    if (input$eff_legend_title == "Effort by Beaufort") {
+      updateTextInput(session, "eff_legend_title", value = "")
+      cruz.eff.leg.title("")
+    }
+  }
 
   if (input$das_effort == 3) {
     updateCheckboxInput(session, "eff_legend", value = TRUE)
+    cruz.eff.leg(TRUE)
 
-    if (input$eff_legend_title == "")
+    if (input$eff_legend_title == "") {
       updateTextInput(session, "eff_legend_title", value = "Effort by Beaufort")
+      cruz.eff.leg.title("Effort by Beaufort")
+    }
   }
+})
+
+# Use reactiveVals so that map doesn't have to plot twice due to update
+observeEvent(input$eff_legend, {
+  cruz.eff.leg(input$eff_legend)
+})
+
+observeEvent(input$eff_legend_title, {
+  cruz.eff.leg.title(input$eff_legend_title)
 })
 
 
@@ -33,7 +52,8 @@ cruzDasEffortLegend <- reactive({
 
   font.fam <- font.family.vals[as.numeric(input$eff_legend_font)]
 
-  eff.leg.title <- if (input$eff_legend_title == "") NULL else input$eff_legend_title
+  # eff.leg.title <- if (input$eff_legend_title == "") NULL else input$eff_legend_title
+  eff.leg.title <- if (cruz.eff.leg.title() == "") NULL else cruz.eff.leg.title()
 
   eff.leg.bty <- ifelse(input$eff_legend_boxCol == 1, "n", "o")
   eff.leg.box.col <- ifelse(input$eff_legend_boxCol == 2, NA, "black")

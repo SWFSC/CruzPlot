@@ -5,6 +5,8 @@
 # 'Initialize' reactiveVals. These values do not need to be saved
 
 cruz.load.color.flag <- reactiveVal(FALSE)
+cruz.eff.leg <- reactiveVal(FALSE)
+cruz.eff.leg.title <- reactiveVal("")
 # cruz.das.symbol.type <- reactiveVal(NULL)
 # cruz.das.symbol.color <- reactiveVal(NULL)
 
