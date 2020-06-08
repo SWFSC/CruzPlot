@@ -1,6 +1,6 @@
 Package: CruzPlot
 Title: Plot Shipboard DAS Data
-Version: 1.2
+Version: 1.3.0.9000
 Authors@R: 
     c(person("Samuel", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov"), 
       person("Tim", "Gerrodette", role = c("ctb")))
@@ -19,7 +19,7 @@ Imports:
     shinydashboard,
     shinyjs,
     stringr, 
-    swfscDAS
+    swfscDAS (>= 0.2)
 Remotes:
     smwoodman/swfscDAS
 License: MIT + file LICENSE

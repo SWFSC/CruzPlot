@@ -15,7 +15,7 @@ cruzDasSightLegend <- reactive({
   names.lab <- input$das_legend_names
 
   if (sight.type %in% c(3, 4)) {
-    leg.lab <- leg.df$Sp
+    leg.lab <- leg.df$SpCode
     if ("5" %in% names.lab) leg.lab <- paste0(leg.lab, ", n = ", sp.count)
 
   } else {
@@ -26,7 +26,6 @@ cruzDasSightLegend <- reactive({
     )
 
     sp.codes.all.use <- sp.codes.all[temp.use, ]
-    # browser()
 
     # # This piece cuts the common name at the first comma, which results in incorrect names for some codes
     # sp.codes.all.use$Name_Common <- vapply(sp.codes.all.use$Name_Common, function(i) {

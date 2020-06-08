@@ -35,7 +35,7 @@ cruzDasSightSymbol <- reactive({
     # Boats and C-Pods
     symbol.prop <- cruzDasSightSymbolBoat()
     leg.df <- data.frame(
-      Sp = ifelse(sight.type == 3, "Boat", "CPOD"),
+      SpCode = ifelse(sight.type == 3, "Boat", "CPOD"),
       pch = symbol.prop$pt.pch,
       col = symbol.prop$pt.col,
       cex = symbol.prop$pt.cex,
@@ -77,7 +77,6 @@ cruzDasSightSymbol <- reactive({
 
     # For each parameter, rep() until it's length == sp.codes.len,
     #   and check that there aren't more selected than species
-    # browser()
     if (cruzDasSightEventResight()) {
       # Requires that only one species is selected
       validate(
@@ -85,7 +84,7 @@ cruzDasSightSymbol <- reactive({
              "Please provide only one symbol size when plotting resights")
       )
       leg.df <- data.frame(
-        Sp = sp.codes,
+        SpCode = sp.codes,
         Event = sort(input$das_sighting_events, decreasing = TRUE),#Ensures S, s, or equivalent
         pch = .func_sight_symbol_pt(leg.pch, "type", 1),
         col = .func_sight_symbol_pt(leg.col, "color", 2),
@@ -96,7 +95,7 @@ cruzDasSightSymbol <- reactive({
     } else {
       sp.codes.len <- length(sp.codes)
       leg.df <- data.frame(
-        Sp = sp.codes,
+        SpCode = sp.codes,
         pch = .func_sight_symbol_pt(leg.pch, "type", sp.codes.len),
         col = .func_sight_symbol_pt(leg.col, "color", sp.codes.len),
         cex = .func_sight_symbol_pt(leg.cex, "size", sp.codes.len),
@@ -106,12 +105,12 @@ cruzDasSightSymbol <- reactive({
   }
 
   if (cruzDasSightEventResight()) {
-    pt.df <- left_join(das.sight, leg.df, by = c("Sp", "Event")) %>%
-      select(.data$Sp, .data$Lon, .data$Lat,
+    pt.df <- left_join(das.sight, leg.df, by = c("SpCode", "Event")) %>%
+      select(.data$SpCode, .data$Lon, .data$Lat,
              .data$pch, .data$col, .data$cex, .data$lwd)
   } else {
-    pt.df <- left_join(das.sight, leg.df, by = "Sp") %>%
-      select(.data$Sp, .data$Lon, .data$Lat,
+    pt.df <- left_join(das.sight, leg.df, by = "SpCode") %>%
+      select(.data$SpCode, .data$Lon, .data$Lat,
              .data$pch, .data$col, .data$cex, .data$lwd)
   }
 
@@ -216,8 +215,8 @@ cruzDasSightSymbolAnimalAll <- reactive({
   pt.lwd <- 1
 
   stopifnot(
-    length(pt.pch) == length(unique(cruzDasSightRange()$das.sight$Sp)),
-    length(pt.col) == length(unique(cruzDasSightRange()$das.sight$Sp))
+    length(pt.pch) == length(unique(cruzDasSightRange()$das.sight$SpCode)),
+    length(pt.col) == length(unique(cruzDasSightRange()$das.sight$SpCode))
   )
 
   list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd)

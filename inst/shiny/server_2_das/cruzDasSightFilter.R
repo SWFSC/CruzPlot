@@ -37,7 +37,7 @@ cruzDasSightFilter <- reactive({
       mutate(DateTime = as.character(DateTime),
              Cruise = as.character(Cruise)) %>%
       select(Event, DateTime, OnEffort, Cruise, Mode, EffType, Bft,
-             SightNo, Sp, PerpDistKm,
+             SightNo, SpCode, PerpDistKm,
              # File = file_das, #Can take up too much space
              `Line number` = line_num) %>%
       distinct()
@@ -71,7 +71,7 @@ cruzDasSightFilter <- reactive({
 
   # If plotting selected mammals, check that all selected still have sightings
   if (sp.selection) {
-    sp.codes.none <- base::setdiff(sp.codes, das.sight.filt$Sp)
+    sp.codes.none <- base::setdiff(sp.codes, das.sight.filt$SpCode)
     validate(
       need(length(sp.codes.none) == 0,
            paste("The following species code(s) does (do) not",

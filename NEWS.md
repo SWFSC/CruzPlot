@@ -1,3 +1,8 @@
+# CruzPlot 1.3 (in development)
+
+* Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS package version >= 1.2
+
+
 # CruzPlot 1.2
 
 * Fixed bug in specifying scale bar position

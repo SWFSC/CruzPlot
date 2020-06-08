@@ -7,35 +7,12 @@
 
 
 ###############################################################################
-# cruzDasSightPosition <- reactive({
-#   req(cruz.list$das.data)
-#   das.sight <- cruzDasSightFilter()$das.sight
-#
-#   # 'Select' ship or sighting position
-#   if (input$das_sightings_position == 1) {
-#     das.sight$Lat <- das.sight$Lat_ship
-#     das.sight$Lon <- das.sight$Lon_ship
-#
-#   } else { #input$das_sightings_position == 2
-#     das.sight$Lat <- das.sight$Lat_sight
-#     das.sight$Lon <- das.sight$Lon_sight
-#   }
-#
-#   # Adjust longitudes if world2 map is being used
-#   if (cruz.map.range$world2)
-#     das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
-#
-#   das.sight
-# })
-
-
-###############################################################################
 cruzDasSightRange <- reactive({
   #----------------------------------------------------------------------------
   req(cruz.list$das.data)
 
-  # das.sight <- cruzDasSightPosition()
   das.sight <- cruzDasSightFilter()$das.sight
+  # browser()
 
   data.list <- cruzDasSightFilter()
   sight.type   <- data.list$sight.type
@@ -67,7 +44,7 @@ cruzDasSightRange <- reactive({
   if (sight.type %in% c(1, 2)) {
     if (sp.selection) {
       # If only selected species are plotted, check all passed range filter
-      sp.codes.none <- base::setdiff(sp.codes, das.sight.filt$Sp)
+      sp.codes.none <- base::setdiff(sp.codes, das.sight.filt$SpCode)
       validate(
         need(length(sp.codes.none) == 0,
              paste("The following species code(s) does (do) not",
@@ -77,12 +54,12 @@ cruzDasSightRange <- reactive({
 
     } else {
       # If all species are being plotted, filter for species in filtered data
-      sp.codes <- base::intersect(sp.codes, das.sight.filt$Sp)
+      sp.codes <- base::intersect(sp.codes, das.sight.filt$SpCode)
     }
 
     # Calculate count for each species
     sp.count <- vapply(sp.codes, function(i, j) {
-      sum(j$Sp == i)
+      sum(j$SpCode == i)
     }, 1, j = das.sight.filt, USE.NAMES = FALSE)
 
   } else {
@@ -92,7 +69,7 @@ cruzDasSightRange <- reactive({
 
   #----------------------------------------------------------------------------
   list(
-    das.sight = das.sight.filt, sight.type = sight.type, sp.codes = sp.codes,
-    sp.selection = sp.selection, sp.count = sp.count
+    das.sight = das.sight.filt, sight.type = sight.type,
+    sp.codes = sp.codes, sp.selection = sp.selection, sp.count = sp.count
   )
 })

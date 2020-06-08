@@ -18,8 +18,8 @@ cruzDasOutSight_TotTable <- reactive({
         summarise(Count = n(), .groups = "drop")
     } else {
       das.sight %>%
-        filter(Sp %in% input$das_sighting_code_2) %>%
-        group_by(Event, Sp) %>%
+        filter(SpCode %in% input$das_sighting_code_2) %>%
+        group_by(Event, SpCode) %>%
         summarise(Count = n(), .groups = "drop")
     }
 
@@ -43,8 +43,8 @@ cruzDasOutSight_TotTable <- reactive({
         summarise(Count = n(), .groups = "drop")
     } else {
       das.sight %>%
-        filter(Sp %in% input$das_sighting_code_1) %>%
-        group_by(Event, Sp) %>%
+        filter(SpCode %in% input$das_sighting_code_1) %>%
+        group_by(Event, SpCode) %>%
         summarise(Count = n(), .groups = "drop")
     }
   }
@@ -73,7 +73,7 @@ cruzDasOutSight_Table <- reactive({
   das.sight <- data.list$das.sight
 
   das.sight.summ <- das.sight %>%
-    group_by(.data$Sp) %>%
+    group_by(.data$SpCode) %>%
     summarise(std = sum(.data$OnEffort & .data$EffType == "S", na.rm = TRUE),
               #na.rm=TRUE b/c off effort sightings might not have effort type
               nstd = sum(.data$OnEffort & .data$EffType == "N", na.rm = TRUE),
@@ -98,22 +98,22 @@ cruzDasOutSight_Table <- reactive({
   }
 
   das.sight.summ.all <- if (input$das_out_allcheck) {
-    c(list(`Species code` = "All"), lapply(select(das.sight.summ, -Sp), sum))
+    c(list(`Species code` = "All"), lapply(select(das.sight.summ, -SpCode), sum))
   } else {
     NULL
   }
 
   # Add in selected species identifiers, join, and do name wrangling
   das.sight.sp <- das.sight.summ %>%
-    select(.data$Sp) %>%
-    left_join(req(cruz.list$sp.codes), by = c("Sp" = "Code"))
+    select(.data$SpCode) %>%
+    left_join(req(cruz.list$sp.codes), by = c("SpCode" = "Code"))
 
   das.sight.sp %>%
-    rename("Species code" = .data$Sp, "Abbreviation" = .data$Abbr,
+    rename("Species code" = .data$SpCode, "Abbreviation" = .data$Abbr,
            "Scientific name" = .data$Name_Scientific,
            "Common name" = .data$Name_Common) %>%
     select(c(1, as.numeric(input$das_out_sciname))) %>%
-    left_join(das.sight.summ, by = c("Species code" = "Sp")) %>%
+    left_join(das.sight.summ, by = c("Species code" = "SpCode")) %>%
     bind_rows(das.sight.summ.all) %>%
     rename("Standard" = .data$std, "Non-standard" = .data$nstd,
            "Fine" = .data$fine, "Off effort" = .data$off_eff, "Total" = .data$total)
@@ -138,7 +138,6 @@ cruzDasOutEffort_Table <- reactive({
   das.eff.lines <- cruzDasEffortRange()
 
   # Calculate distance
-  # TODO - provide flexible distance calculation method?
   dist.effort.m <- geosphere::distVincentyEllipsoid(
     cbind(das.eff.lines$st_lon, das.eff.lines$st_lat),
     cbind(das.eff.lines$end_lon, das.eff.lines$end_lat)

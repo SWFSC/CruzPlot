@@ -48,7 +48,7 @@ cruzDasSightSpeciesTurtles <- reactive({
 ###############################################################################
 # So that das_sight is run once
 cruzDasSightSpeciesProcess <- reactive({
-  swfscDAS::das_sight(req(cruz.list$das.data), returnformat = "default")
+  swfscDAS::das_sight(req(cruz.list$das.data), return.format = "default")
 })
 
 
@@ -77,9 +77,9 @@ cruzDasSightPosition <- reactive({
       slice(ll.na) %>%
       mutate(DateTime = as.character(DateTime),
              Cruise = as.character(Cruise),
-             Resight = Event %in% c("s", "g")) %>%
+             Resight = Event %in% c("s", "k", "g")) %>%
       select(Event, DateTime, Lat, Lon, OnEffort, Cruise,
-             SightNo, Sp, Resight,
+             SightNo, SpCode, Resight,
              # File = file_das,
              `Line number` = line_num) %>%
       distinct()
@@ -248,7 +248,7 @@ cruzDasSightEvent <- reactive({
                      "- this is a DAS error that needs to be fixed to plot g events"))
         )
 
-        col.names <- c("Prob", "Sp", "ProbSp")
+        col.names <- c("Prob", "SpCode", "SpProb")
         d.toadd <- das.sight.main %>%
           select(.data$ss_id, !!col.names) %>%
           filter(.data$ss_id %in% das.sight.res$ss_id) %>%
@@ -319,15 +319,15 @@ cruzDasSightSpecies <- reactive({
 
       # 977 used as probable vaquita sighting on some cruises
       das.sight <- das.sight %>%
-        mutate(Sp = ifelse(.data$Sp == "977", "041", .data$Sp),
-               Sp = ifelse(.data$Prob, .data$ProbSp, .data$Sp))
+        mutate(SpCode = ifelse(.data$SpCode == "977", "041", .data$SpCode),
+               SpCode = ifelse(.data$Prob, .data$SpProb, .data$SpCode))
     }
 
     # Filter for selected species, and check that all selected species are in data
-    das.sight <- das.sight %>% filter(.data$Sp %in% sp.codes)
+    das.sight <- das.sight %>% filter(.data$SpCode %in% sp.codes)
 
     if (input$das_sighting_code_1_all == 2) {
-      sp.codes.none <- base::setdiff(sp.codes, das.sight$Sp)
+      sp.codes.none <- base::setdiff(sp.codes, das.sight$SpCode)
       validate(
         need(length(sp.codes.none) == 0,
              paste("The following species code(s) does (do) not",
@@ -343,10 +343,10 @@ cruzDasSightSpecies <- reactive({
     sp.codes <- cruzDasSightSpeciesTurtles()
 
     das.sight <- das.sight %>%
-      filter(.data$Sp %in% sp.codes)
+      filter(.data$SpCode %in% sp.codes)
 
     if (input$das_sighting_code_2_all == 2) {
-      sp.codes.none <- base::setdiff(sp.codes, das.sight$Sp)
+      sp.codes.none <- base::setdiff(sp.codes, das.sight$SpCode)
       validate(
         need(length(sp.codes.none) == 0,
              paste("The following species code(s) does (do) not",
@@ -359,7 +359,7 @@ cruzDasSightSpecies <- reactive({
     #--------------------------------------------------------------------------
   } else if (sight.type == 3) {
     # 3: Boats
-    das.sight <- das.sight %>% mutate(Sp = "Boat")
+    das.sight <- das.sight %>% mutate(SpCode = "Boat")
     sp.codes <- NULL
 
 
@@ -425,7 +425,7 @@ cruzDasSightSpecies <- reactive({
   # If "Plot all..." was selected, only return codes in sighting data
   if ((sight.type == 1 && input$das_sighting_code_1_all == 1) |
       (sight.type == 2 && input$das_sighting_code_2_all == 1)) {
-    sp.codes <- base::intersect(sp.codes, das.sight$Sp)
+    sp.codes <- base::intersect(sp.codes, das.sight$SpCode)
   }
 
   # Return list
