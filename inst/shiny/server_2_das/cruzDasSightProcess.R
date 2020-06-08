@@ -144,8 +144,9 @@ cruzDasSightPosition <- reactive({
   }
 
   # Adjust longitudes if world2 map is being used
-  if (cruz.map.range$world2)
-    das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
+  # #this is done in cruzDasSightRange()
+  # if (cruz.map.range$world2)
+  #   das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
 
   das.sight
 })

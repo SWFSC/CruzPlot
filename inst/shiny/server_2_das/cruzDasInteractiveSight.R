@@ -77,17 +77,24 @@ observeEvent(input$sight_hover, {
 
 ### Remove last point
 observeEvent(input$das_sight_interactive_reset_last, {
-  sight$click <- if (length(sight$click) == 2) NULL else sight$click[1:(length(sight$click)-2)]
-  sight$lab <- if (length(sight$lab) == 1) NULL else sight$lab[1:(length(sight$lab)-1)]
+  sight$click <- if (length(sight$click) == 1) NULL else head(sight$click, -1)
+  sight$lab <- if (length(sight$lab) == 1) NULL else head(sight$lab, -1)
   sight$miss <- FALSE
+
+  sight$hover <- NULL
+  sight$hover.lab <- NULL
+  sight$hover.miss <- FALSE
 })
 
 
 ### Remove all points
 observeEvent(input$das_sight_interactive_reset_all, {
   sight$click <- NULL
+  sight$hover <- NULL
+  sight$hover.lab <- NULL
   sight$lab <- NULL
   sight$miss <- FALSE
+  sight$hover.miss <- FALSE
 })
 
 

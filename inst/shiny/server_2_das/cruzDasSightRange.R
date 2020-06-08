@@ -22,6 +22,10 @@ cruzDasSightRange <- reactive({
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range
 
+  # Adjust longitudes if world2 map is being used
+  if (cruz.map.range$world2)
+    das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
+
   # NA values removed back in cruzDasSightSpeciesProcess()
   ll.na <- sum(is.na(das.sight$Lat) | is.na(das.sight$Lon))
   validate(

@@ -2,6 +2,10 @@
 
 * Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS package version >= 1.2
 
+* Fixed bug in plotting effort lines - the longitude coordinates did not get transformed correctly when the map spanned the 180th meridian
+
+* Fixed bugs in interactive labeling
+
 
 # CruzPlot 1.2
 

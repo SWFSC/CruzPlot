@@ -15,6 +15,13 @@ cruzDasEffortRange <- reactive({
          "Error processing effort line positions - please report this as an issue")
   )
 
+  # Adjust longitudes if world2 map is being used
+  if (cruz.map.range$world2) {
+    das.eff.lines <- das.eff.lines %>%
+      mutate(st_lon = ifelse(.data$st_lon < 0, .data$st_lon + 360, .data$st_lon),
+             end_lon = ifelse(.data$end_lon < 0, .data$end_lon + 360, .data$end_lon))
+  }
+
   # Remove any effort lines with both st and end points outside map range
   lon.range <- cruz.map.range$lon.range
   lat.range <- cruz.map.range$lat.range

@@ -37,6 +37,10 @@ cruzClosestPt <- function(curr.pt, type, das.lat, das.lon, das.date,
     min.index <- which.min(d.min)
   }
 
+  # After determining closest DAS point, convert longitudes to [-180, 180] for display
+  das.lon <- ifelse(das.lon > 180, das.lon - 360, das.lon)
+  if (!is.null(das.lon2)) ifelse(das.lon2 > 180, das.lon2 - 360, das.lon2)
+
   # Extract DAS information
   das.date.val <- das.date[min.index]
   # "Cr:", data.das$Cruise[min.index], "\n",   # no cruise number for vaquita cruise
