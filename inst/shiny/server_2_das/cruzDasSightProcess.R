@@ -223,7 +223,7 @@ cruzDasSightEvent <- reactive({
                      "this is a DAS error that needs to be fixed to plot s/k events"))
         )
 
-        col.names <- c("Prob", "Sp", "ProbSp")
+        col.names <- c("Prob", "SpCode", "SpProb")
         d.toadd <- das.sight.main %>%
           select(SightNo, !!col.names) %>%
           filter(SightNo %in% das.sight.res$SightNo) %>%

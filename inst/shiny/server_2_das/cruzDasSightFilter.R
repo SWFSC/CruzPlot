@@ -66,19 +66,10 @@ cruzDasSightFilter <- reactive({
   ### Final checks and return
   validate(
     need(sum(is.na(das.sight.filt$Event)) == 0,
-         "Error in CruzPlot sighting filtering - please report this as an issue")
+         "Error in CruzPlot sighting filtering - please report this as an issue") %then%
+      need(nrow(das.sight) > 0,
+           "None of the specified sightings match the given filters")
   )
-
-  # If plotting selected mammals, check that all selected still have sightings
-  if (sp.selection) {
-    sp.codes.none <- base::setdiff(sp.codes, das.sight.filt$SpCode)
-    validate(
-      need(length(sp.codes.none) == 0,
-           paste("The following species code(s) does (do) not",
-                 "have any sightings that match the given filters:",
-                 paste(sp.codes.none, collapse = ", ")))
-    )
-  }
 
   list(das.sight = das.sight.filt, sight.type = sight.type,
        sp.codes = sp.codes, sp.selection = sp.selection)

@@ -41,25 +41,12 @@ cruzDasSightRange <- reactive({
            between(.data$Lon, lon.range[1], lon.range[2]))
   validate(
     need(nrow(das.sight.filt) > 0,
-         "No sightings are within the map boundaries")
+         "No sightings are within the map boundaries for the selected sighting type/species")
   )
 
-  # Check that all selected mammal/turtle codes are still present, and get sp.count
+  # Check that at least one sighting is still within map range, and get sp.count
   if (sight.type %in% c(1, 2)) {
-    if (sp.selection) {
-      # If only selected species are plotted, check all passed range filter
-      sp.codes.none <- base::setdiff(sp.codes, das.sight.filt$SpCode)
-      validate(
-        need(length(sp.codes.none) == 0,
-             paste("The following species code(s) does (do) not",
-                   "have any sightings within the provided map range:",
-                   paste(sp.codes.none, collapse = ", ")))
-      )
-
-    } else {
-      # If all species are being plotted, filter for species in filtered data
-      sp.codes <- base::intersect(sp.codes, das.sight.filt$SpCode)
-    }
+    if (!sp.selection) sp.codes <- base::intersect(sp.codes, das.sight.filt$SpCode)
 
     # Calculate count for each species
     sp.count <- vapply(sp.codes, function(i, j) {
