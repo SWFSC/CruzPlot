@@ -1,10 +1,12 @@
-# CruzPlot 1.3 (in development)
+# CruzPlot 1.3
 
 * Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS package version >= 1.2
 
 * Fixed bug in plotting effort lines - the longitude coordinates did not get transformed correctly when the map spanned the 180th meridian
 
 * Fixed bugs in interactive labeling
+
+* CruzPlot now filters sightings and effort by map range before other filters to ensure error messages are accurate. Also removed requirement that all selected species codes must have a sighting that satisfies the given map range and filter.
 
 
 # CruzPlot 1.2
