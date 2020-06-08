@@ -135,15 +135,16 @@ output$das_out_sight_save <- downloadHandler(
 ###############################################################################
 # Effort
 cruzDasOutEffort_Table <- reactive({
-  das.eff.lines <- cruzDasEffortFilter()
+  das.eff.lines <- cruzDasEffortFilter() %>%
+    mutate(st_lon = ifelse(.data$st_lon > 180, .data$st_lon - 360, .data$st_lon),
+           end_lon = ifelse(.data$end_lon > 180, .data$end_lon - 360, .data$end_lon))
 
   # Calculate distance
-  dist.effort.m <- geosphere::distVincentyEllipsoid(
+  dist.effort.km <- geosphere::distVincentyEllipsoid(
     cbind(das.eff.lines$st_lon, das.eff.lines$st_lat),
     cbind(das.eff.lines$end_lon, das.eff.lines$end_lat)
-  )
+  ) / 1000
 
-  dist.effort.km <- dist.effort.m / 1000
   das.eff.lines$dist <-  if (input$das_out_effort_units == 2) {
     dist.effort.km / 1.852
   } else {
@@ -167,7 +168,8 @@ cruzDasOutEffort_Table <- reactive({
       summarise(std = sum(dist[EffType == "S"]),
                 nstd = sum(dist[EffType == "N"]),
                 fine = sum(dist[EffType == "F"]),
-                total = sum(dist))
+                total = sum(dist),
+                .groups = "drop")
 
     eff.out <- rbind(eff.summ, vapply(eff.summ, sum, 1)) %>%
       mutate(Bft = c(head(Bft, -1), "All"))
