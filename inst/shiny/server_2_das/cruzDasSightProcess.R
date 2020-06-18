@@ -223,7 +223,7 @@ cruzDasSightEvent <- reactive({
                      "this is a DAS error that needs to be fixed to plot s/k events"))
         )
 
-        col.names <- c("Prob", "SpCode", "SpProb")
+        col.names <- c("Prob", "SpCode", "SpCodeProb")
         d.toadd <- das.sight.main %>%
           select(SightNo, !!col.names) %>%
           filter(SightNo %in% das.sight.res$SightNo) %>%
@@ -249,7 +249,7 @@ cruzDasSightEvent <- reactive({
                      "- this is a DAS error that needs to be fixed to plot g events"))
         )
 
-        col.names <- c("Prob", "SpCode", "SpProb")
+        col.names <- c("Prob", "SpCode", "SpCodeProb")
         d.toadd <- das.sight.main %>%
           select(.data$ss_id, !!col.names) %>%
           filter(.data$ss_id %in% das.sight.res$ss_id) %>%
@@ -321,7 +321,7 @@ cruzDasSightSpecies <- reactive({
       # 977 used as probable vaquita sighting on some cruises
       das.sight <- das.sight %>%
         mutate(SpCode = ifelse(.data$SpCode == "977", "041", .data$SpCode),
-               SpCode = ifelse(.data$Prob, .data$SpProb, .data$SpCode))
+               SpCode = ifelse(.data$Prob, .data$SpCodeProb, .data$SpCode))
     }
 
     # Filter for selected species, and check that all selected species are in data

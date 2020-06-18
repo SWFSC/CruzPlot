@@ -1,6 +1,13 @@
+# CruzPlot 1.4
+
+* Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS version >= 0.3
+
+* Fixed a bug where the tabular sighting output would display an uninformative error message
+
+
 # CruzPlot 1.3
 
-* Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS package version >= 1.2
+* Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS version >= 0.2
 
 * Fixed bug in plotting effort lines - the longitude coordinates did not get transformed correctly when the map spanned the 180th meridian
 

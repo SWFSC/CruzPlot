@@ -5,6 +5,7 @@
 ###############################################################################
 # Table of all sightings in file
 cruzDasOutSight_TotTable <- reactive({
+  req(cruzDasSightFilter())
   das.sight <- cruzDasSightSpeciesProcess()
   sight.type <- input$das_sighting_type
 
