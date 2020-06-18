@@ -32,7 +32,7 @@
       </button>
       <span class="navbar-brand">
         <a class="navbar-link" href="index.html">CruzPlot</a>
-        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.3</span>
+        <span class="version label label-default" data-toggle="tooltip" data-placement="bottom" title="Released version">1.4</span>
       </span>
     </div>
 
@@ -83,26 +83,22 @@
 <div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("devtools") # Install devtools package if needed</span>
 <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/swfscDAS"</span>)
 <span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/CruzPlot"</span>)</pre></div>
-<p>If your version of CruzPlot is outdated, running the above command will install the new version. However, if you want to reinstall the same version of CruzPlot, you can run:</p>
+<p>Note that CruzPlot depends on swfscDAS, and thus you should ensure that swfscDAS is installed and updated as well. If your version of CruzPlot is outdated, running the above command will install the new version. However, if you want to reinstall the same version of CruzPlot, you can run:</p>
 <div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">devtools</span><span class="kw ns">::</span><span class="fu">install_github</span>(<span class="st">"smwoodman/CruzPlot"</span>, <span class="kw">force</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
 <p>Before installing CruzPlot, you must have <a href="https://www.r-project.org/">R</a>, <a href="https://rstudio.com/products/rstudio/download/#download">RStudio</a>, and the appropriate version of <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> installed. It is best practice to install after closing all instances of R and RStudio, and then running the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.</p>
 <p>After updating, it is recommended to create and save new workspaces, rather than using workspaces saved with a previous version of CruzPlot.</p>
 </div>
-<div id="run-cruzplot" class="section level2">
+<div id="running-cruzplot" class="section level2">
 <h2 class="hasAnchor">
-<a href="#run-cruzplot" class="anchor"></a>Run CruzPlot</h2>
+<a href="#running-cruzplot" class="anchor"></a>Running CruzPlot</h2>
 <p>To open and run CruzPlot, run the following code in RStudio:</p>
 <div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">CruzPlot</span><span class="kw ns">::</span><span class="fu"><a href="reference/cruzplot_gui.html">cruzplot_gui</a></span>()</pre></div>
+<p>If text or images overlap within the CruzPlot window, you can make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus (‘-’) on Windows systems)</p>
 </div>
 <div id="cruzplot-manual" class="section level2">
 <h2 class="hasAnchor">
 <a href="#cruzplot-manual" class="anchor"></a>CruzPlot manual</h2>
 <p>The CruzPlot manual can be downloaded <a href="https://github.com/smwoodman/CruzPlot/blob/master/inst/shiny/www/CruzPlot_Manual_app.pdf">at this link</a>, or accessed when running CruzPlot by opening the “CruzPlot Manual” page. It is recommended for new users to read the first two pages of the manual for orientation purposes; the rest of the manual contains section-specific information (formatting requirements, etc.) and can be read on an as-needed basis.</p>
-</div>
-<div id="additional-details" class="section level2">
-<h2 class="hasAnchor">
-<a href="#additional-details" class="anchor"></a>Additional details</h2>
-<p>If text or images overlap within the CruzPlot window, you can make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus (‘-’) on Windows systems)</p>
 </div>
 </div>
   </div>
