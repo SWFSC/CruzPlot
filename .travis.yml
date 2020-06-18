@@ -28,6 +28,10 @@ addons:
     packages:
       - libnetcdf-dev
       - netcdf-bin
+      - libudunits2-dev
+      - libproj-dev
+      - libgeos-dev
+      - libgdal-dev
 
 # Stages -----------------------------------------------------------------------
 
