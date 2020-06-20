@@ -1,11 +1,11 @@
-# CruzPlot 1.4
+# CruzPlot 1.4.0
 
 * Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS version >= 0.3
 
 * Fixed a bug where the tabular sighting output would display an uninformative error message
 
 
-# CruzPlot 1.3
+# CruzPlot 1.3.0
 
 * Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS version >= 0.2
 
@@ -16,14 +16,14 @@
 * CruzPlot now filters sightings and effort by map range before other filters to ensure error messages are accurate. Also removed requirement that all selected species codes must have a sighting that satisfies the given map range and filter.
 
 
-# CruzPlot 1.2
+# CruzPlot 1.2.0
 
 * Fixed bug in specifying scale bar position
 
 * Fixed bug in tabular sighting output, and added table summarizing the total number of (unfiltered) sightings.
 
 
-# CruzPlot 1.1
+# CruzPlot 1.1.0
 
 * User can now change the map range (zoom in) by drawing a box with their mouse cursor
 
@@ -48,7 +48,7 @@
 * Added the ability to plot resight events when one species code is selected
 
 
-# CruzPlot 1.0
+# CruzPlot 1.0.0
 
 ### General
 
@@ -91,6 +91,6 @@
 * Interactive sighting and effort maps both have combined view and label (hover and click) functionality
 
 
-# CruzPlot 0.1
+# CruzPlot 0.1.0
 
 * Initial version - CruzPlot converted from a collection of scripts to an R package
