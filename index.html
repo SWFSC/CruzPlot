@@ -75,31 +75,31 @@
 <a href="#cruzplot" class="anchor"></a>CruzPlot</h1></div>
 <!-- badges: start -->
 
-<p><code>CruzPlot</code> is an R package that contains a GUI for creating maps, plotting data, and performing basic data summaries from data files in the “DAS” format produced by WinCruz.</p>
+<p>CruzPlot is an R package that contains a GUI for creating maps, plotting data, and performing basic data summaries from data files in the “DAS” format produced by WinCruz.</p>
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install <code>CruzPlot</code> from <a href="https://github.com/">GitHub</a> with:</p>
+<p>You can install CruzPlot from <a href="https://github.com/">GitHub</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="r"><span class="co"># install.packages("remotes") # Install remotes package if needed</span>
-<span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/swfscDAS"</span>)
+<span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/swfscDAS"</span>, <span class="kw">build_vignettes</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 <span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/CruzPlot"</span>)</pre></div>
 <p>Note that CruzPlot depends on swfscDAS, and thus you should ensure that <a href="https://smwoodman.github.io/swfscDAS/">swfscDAS</a> is installed and updated as well. Running the above code will ensure the latest versions of both packages are installed. However, if you want to force an installation, you can run:</p>
-<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/swfscDAS"</span>, <span class="kw">force</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
+<div class="sourceCode" id="cb2"><pre class="r"><span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/swfscDAS"</span>, <span class="kw">force</span> <span class="kw">=</span> <span class="fl">TRUE</span>, <span class="kw">build_vignettes</span> <span class="kw">=</span> <span class="fl">TRUE</span>)
 <span class="kw pkg">remotes</span><span class="kw ns">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/CruzPlot"</span>, <span class="kw">force</span> <span class="kw">=</span> <span class="fl">TRUE</span>)</pre></div>
-<p>Before installing <code>CruzPlot</code>, you must have <a href="https://www.r-project.org/">R</a>, <a href="https://rstudio.com/products/rstudio/download/#download">RStudio</a>, and the appropriate version of <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> installed. It is best practice to install after closing all instances of R and RStudio, and then running the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.</p>
-<p>After updating, it is recommended to create and save new workspaces, rather than using workspaces saved with a previous version of <code>CruzPlot.</code></p>
+<p>Before installing CruzPlot, you must have <a href="https://www.r-project.org/">R</a>, <a href="https://rstudio.com/products/rstudio/download/#download">RStudio</a>, and the appropriate version of <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> installed. It is best practice to install after closing all instances of R and RStudio, and then running the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.</p>
+<p>After updating, it is recommended to create and save new workspaces, rather than using workspaces saved with a previous version of CruzPlot.</p>
 </div>
 <div id="running-cruzplot" class="section level2">
 <h2 class="hasAnchor">
 <a href="#running-cruzplot" class="anchor"></a>Running CruzPlot</h2>
-<p>To open and run <code>CruzPlot</code>, run the following code in RStudio:</p>
+<p>To open and run CruzPlot, run the following code in RStudio:</p>
 <div class="sourceCode" id="cb3"><pre class="r"><span class="kw pkg">CruzPlot</span><span class="kw ns">::</span><span class="fu"><a href="reference/cruzplot_gui.html">cruzplot_gui</a></span>()</pre></div>
-<p>If text or images overlap within the <code>CruzPlot</code> window, you can make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus (‘-’) on Windows systems)</p>
+<p>If text or images overlap within the CruzPlot window, you can make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus (‘-’) on Windows systems)</p>
 </div>
 <div id="cruzplot-manual" class="section level2">
 <h2 class="hasAnchor">
 <a href="#cruzplot-manual" class="anchor"></a>CruzPlot manual</h2>
-<p>The <code>CruzPlot</code> manual can be downloaded <a href="https://github.com/smwoodman/CruzPlot/blob/master/inst/shiny/www/CruzPlot_Manual_app.pdf">at this link</a>, or accessed when running <code>CruzPlot</code> by opening the “CruzPlot Manual” page. It is recommended for new users to read the first two pages of the manual for orientation purposes; the rest of the manual contains section-specific information (formatting requirements, etc.) and can be read on an as-needed basis.</p>
+<p>The CruzPlot manual can be downloaded <a href="https://github.com/smwoodman/CruzPlot/blob/master/inst/shiny/www/CruzPlot_Manual_app.pdf">at this link</a>, or accessed when running CruzPlot by opening the “CruzPlot Manual” page. It is recommended for new users to read the first two pages of the manual for orientation purposes; the rest of the manual contains section-specific information (formatting requirements, etc.) and can be read on an as-needed basis.</p>
 </div>
 </div>
   </div>
