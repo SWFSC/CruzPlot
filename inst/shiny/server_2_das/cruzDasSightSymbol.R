@@ -89,7 +89,8 @@ cruzDasSightSymbol <- reactive({
         pch = .func_sight_symbol_pt(leg.pch, "type", 1),
         col = .func_sight_symbol_pt(leg.col, "color", 2),
         cex = .func_sight_symbol_pt(c(leg.cex, 0.75 * leg.cex), "size", 2),
-        lwd = .func_sight_symbol_pt(leg.lwd, "line width", 1)
+        lwd = .func_sight_symbol_pt(leg.lwd, "line width", 1),
+        stringsAsFactors = FALSE
       )
 
     } else {
@@ -99,7 +100,8 @@ cruzDasSightSymbol <- reactive({
         pch = .func_sight_symbol_pt(leg.pch, "type", sp.codes.len),
         col = .func_sight_symbol_pt(leg.col, "color", sp.codes.len),
         cex = .func_sight_symbol_pt(leg.cex, "size", sp.codes.len),
-        lwd = .func_sight_symbol_pt(leg.lwd, "line width", sp.codes.len)
+        lwd = .func_sight_symbol_pt(leg.lwd, "line width", sp.codes.len),
+        stringsAsFactors = FALSE
       )
     }
   }

@@ -1,3 +1,8 @@
+# CruzPlot 1.4.1
+
+* Fixed a bug that made CruzPlot display incorrect colors for sightings (#2)
+
+
 # CruzPlot 1.4.0
 
 * Catch up with changes made in swfscDAS. CruzPlot now depends on swfscDAS version >= 0.3

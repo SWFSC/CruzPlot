@@ -36,7 +36,7 @@ cruzDasOutSight_TotTable <- reactive({
     ### Marine mammals
     das.sight <- das.sight <- das.sight %>%
       filter(.data$Event %in% input$das_sighting_events)
-    df.join <- data.frame(Event = input$das_sighting_events)
+    df.join <- data.frame(Event = input$das_sighting_events, stringsAsFactors = FALSE)
 
     df.out <- if (input$das_sighting_code_1_all == 1) {
       das.sight %>%
