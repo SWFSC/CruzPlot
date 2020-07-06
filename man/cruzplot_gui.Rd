@@ -13,6 +13,10 @@ passed to \code{launch.browser} argument of \code{\link[shiny]{runApp}}}
 \description{
 Open the CruzPlot utility program, an R Shiny application
 }
+\examples{
+if (interactive()) cruzplot_gui(launch.browser = TRUE)
+
+}
 \seealso{
 \url{https://smwoodman.github.io/CruzPlot/}
 }

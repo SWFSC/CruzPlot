@@ -5,7 +5,8 @@
 #' @param launch.browser Logical with default of \code{TRUE};
 #'   passed to \code{launch.browser} argument of \code{\link[shiny]{runApp}}
 #'
-#' @usage cruzplot_gui(launch.browser = TRUE)
+#' @examples
+#' if (interactive()) cruzplot_gui(launch.browser = TRUE)
 #'
 #' @seealso \url{https://smwoodman.github.io/CruzPlot/}
 #'
