@@ -1,3 +1,7 @@
+## Resubmission
+This is a resubmission of CruzPlot v1.4.1. In this version I have:
+* In the Description field, I single quoted 'WinCruz' and added a reference (the reference is the same for both 'DAS' and 'WinCruz')
+
 ## Release summary
 Initial release (v1.4.1)
 

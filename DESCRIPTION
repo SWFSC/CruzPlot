@@ -5,7 +5,8 @@ Authors@R:
     c(person("Samuel", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov"), 
       person("Tim", "Gerrodette", role = c("ctb")))
 Description: A utility program oriented to create maps, plot data, and do basic data summaries
-  from data files in the "DAS" format produced by WinCruz.
+  from data files in the 'DAS' format produced by 'WinCruz' 
+  <https://www.fisheries.noaa.gov/about/marine-mammal-and-turtle-division-southwest-fisheries-science-center>.
 URL: https://smwoodman.github.io/CruzPlot/, https://github.com/smwoodman/CruzPlot
 BugReports: https://github.com/smwoodman/CruzPlot/issues
 Imports: 
