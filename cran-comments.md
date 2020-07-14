@@ -1,6 +1,6 @@
 ## Resubmission
 This is a resubmission of CruzPlot v1.4.1. In this version I have:
-* In the Description field, I single quoted 'WinCruz' and added a reference (the reference is the same for both 'DAS' and 'WinCruz')
+* In the Description field, single quoted 'WinCruz' and added references for both 'DAS' and 'WinCruz'
 
 ## Release summary
 Initial release (v1.4.1)
@@ -16,9 +16,9 @@ There were no ERRORs or WARNINGs
 
 There was one NOTE on win-builder: 
 
-* "Possibly mis-spelled words in DESCRIPTION: DAS, WinCruz"
+* "Possibly mis-spelled words in DESCRIPTION: DAS"
 
-DAS is the name of a specific data format, and WinCruz is the name of the program that produces DAS data
+DAS is the name of a specific data format, and has an associated webpage reference in the Decription
 
 ## Downstream dependencies
 No downstream dependencies
