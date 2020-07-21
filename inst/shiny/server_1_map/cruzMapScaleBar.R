@@ -106,7 +106,7 @@ observe({
     })
 
     # Scale bar length; suppressWarnings() for if world2
-    lon.range.m <- suppressWarnings(distVincentyEllipsoid(
+    lon.range.m <- suppressWarnings(geosphere::distVincentyEllipsoid(
       c(lon.range[1], lat.pos), c(lon.range[2], lat.pos)
     ))
     len.new.km <- lon.range.m * 0.2 / 1000
@@ -146,7 +146,7 @@ cruzMapScaleBar <- reactive({
   }
 
   scale.x1 <- ifelse((world2 && scale.lon < 0), scale.lon + 360, scale.lon)
-  scale.x2 <- destPoint(c(scale.lon, scale.lat), 90, scale.len.m)[1]
+  scale.x2 <- geosphere::destPoint(c(scale.lon, scale.lat), 90, scale.len.m)[1]
   scale.x2 <- ifelse((world2 && scale.x2 < 0), scale.x2 + 360, scale.x2)
 
   scale.y <- scale.lat

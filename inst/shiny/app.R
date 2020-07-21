@@ -7,20 +7,6 @@ list.packages <- list(
   "shinydashboard", "shinyjs", "stringr", "swfscDAS"
 )
 
-p.check <- vapply(list.packages, requireNamespace, as.logical(1), quietly = TRUE)
-if (!all(p.check))
-  stop("To use CruzPlot, the following packages must be installed: ",
-       paste(list.packages, collapse = ", "), "\n",
-       "To install the missing packages, run the following:\n",
-       "install.packages(c(\"", paste(list.packages[!p.check],
-                                      collapse = "\", \""), "\"))")
-
-# stopifnot(
-#   "Error attaching CruzPlot package - please reintall CruzPlot" = require(CruzPlot),
-#   "Error attaching packages - please reinstall CruzPlot" =
-#     all(sapply(list.packages, require, character.only = TRUE))
-# )
-
 if (!require(CruzPlot))
   stop("Error attaching CruzPlot package - please reintall CruzPlot")
 if (!all(sapply(list.packages, require, character.only = TRUE)))
@@ -50,6 +36,9 @@ start.tick <- list(interval = 5, lon = -135, lat = 30)
 
 ###############################################################################
 ##### Assorted other stuff...
+old <- options()
+on.exit(options(old))
+
 options(shiny.maxRequestSize = 50 * 1024^2) # Max file size is 50MB
 options("digits" = 5)   # for proper display of sighting and effort coordinates
 
@@ -223,6 +212,9 @@ server <- function(input, output, session) {
   ### Other output - static plot
   plotMap <- reactive({
     function() {
+      oldpar <- par(no.readonly = TRUE)
+      on.exit(par(oldpar))
+
       # Set values and call reactive functions; done first to trigger validate statements
       source(file.path("server_draw_local", "draw_setVals.R"), local = TRUE, chdir = TRUE)
 

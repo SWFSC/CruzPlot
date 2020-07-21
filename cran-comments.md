@@ -1,5 +1,11 @@
 ## Resubmission
-This is a resubmission of CruzPlot v1.4.1. In this version I have:
+This is a second resubmission of CruzPlot v1.4.1. In this version I have:
+* Used on.exit to esnure I do not change the user's par and options
+* Clarified the code documentation "# Color code by Bft or SNF "
+* Ensured that all authors, contributors and copyright holders are correct (I am not a copright holder)
+* Added standalone unit tests to test the functionality from other packages used in the Shiny app
+
+In the first resubmission I: 
 * In the Description field, single quoted 'WinCruz' and added references for both 'DAS' and 'WinCruz'
 
 ## Release summary
