@@ -1,6 +1,6 @@
 # CruzPlot 1.4.2
 
-* Fixed documentation, etc., for CRAN submission
+* Fixed documentation and added tests for CRAN submission
 
 # CruzPlot 1.4.1
 
