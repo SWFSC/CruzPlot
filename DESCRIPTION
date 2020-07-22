@@ -23,7 +23,7 @@ Imports:
     stringr, 
     swfscDAS (>= 0.3.0)
 Suggests:
-    RCurl, 
+    httr, 
     testthat
 License: MIT + file LICENSE
 Encoding: UTF-8
