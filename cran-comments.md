@@ -1,6 +1,6 @@
 ## Resubmission
-This is a second resubmission of CruzPlot v1.4.1. In this version I have:
-* Used on.exit to esnure I do not change the user's par and options
+This is a second resubmission of CruzPlot (now v1.4.2). In this version I have:
+* Used on.exit to ensure I do not change the user's par and options
 * Clarified the code documentation "# Color code by Bft or SNF "
 * Ensured that all authors, contributors and copyright holders are correct (I am not a copright holder)
 * Added standalone unit tests to test the functionality from other packages used in the Shiny app

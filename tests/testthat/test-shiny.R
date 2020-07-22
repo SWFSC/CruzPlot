@@ -35,3 +35,12 @@ test_that("dashboard works", {
 
   expect_identical(class(ui), "shiny.tag")
 })
+
+
+test_that("renderPlot args are as required", {
+  d <- renderPlot({
+    plot(1:10)
+  }, height = 100, units = "px", res = 72)
+
+  expect_identical(class(d), c("shiny.render.function", "function"))
+})

@@ -1,9 +1,8 @@
 library(mapdata)
 
-skip_if_not_installed("maps")
-skip_if_not_installed("geosphere")
-
 test_that("map databases are present and map calls work", {
+  skip_if_not_installed("maps")
+
   x.try1 <- try(maps::map("world", xlim = c(-135, -110), ylim = c(30, 50), plot = FALSE),
                 silent = TRUE)
   x.try2 <- try(maps::map("world2", xlim = c(170, 220), ylim = c(30, 50), plot = FALSE),
@@ -13,23 +12,25 @@ test_that("map databases are present and map calls work", {
   x.try4 <- try(maps::map("world2Hires", xlim = c(170, 220), ylim = c(30, 50), plot = FALSE),
                 silent = TRUE)
 
-  expect_identical(isTruthy(x.try1), TRUE)
-  expect_identical(isTruthy(x.try2), TRUE)
-  expect_identical(isTruthy(x.try3), TRUE)
-  expect_identical(isTruthy(x.try4), TRUE)
+  expect_identical(shiny::isTruthy(x.try1), TRUE)
+  expect_identical(shiny::isTruthy(x.try2), TRUE)
+  expect_identical(shiny::isTruthy(x.try3), TRUE)
+  expect_identical(shiny::isTruthy(x.try4), TRUE)
 })
 
 
-test_that("marmap can download bathy file", {
-  if (curl::has_internet()) {
-    a <- try(marmap::getNOAA.bathy(lon1=-20,lon2=-40,lat1=30,lat2=20, resolution=60),
-             silent = TRUE)
-    expect_identical(isTruthy(a), TRUE)
-  }
+test_that("The url that marmap queries for bathy data exists", {
+  # skip_if_not_installed("RCurl")
+  # expect_identical(RCurl::url.exists("https://www.ngdc.noaa.gov/"), TRUE)
+
+  a <- marmap::getNOAA.bathy(lon1=-20,lon2=-30,lat1=30,lat2=20, resolution=60)
+  expect_identical(shiny::isTruthy(a), TRUE)
 })
 
 
 test_that("geosphere functions work as expected", {
+  skip_if_not_installed("geosphere")
+
   dist.ex <- geosphere::distVincentyEllipsoid(c(0, 0), c(90, 90))
 
   # Test 0 distance
@@ -52,10 +53,3 @@ test_that("geosphere functions work as expected", {
   expect_equal(mat.0, dpt.0)
   expect_equal(mat.eq + matrix(c(1, 1, 0, 0), ncol = 2), dpt.eq)
 })
-
-
-d <- renderPlot({
-  plot(1:10)
-}, height = 100, units = "px", res = 72)
-
-class(d)

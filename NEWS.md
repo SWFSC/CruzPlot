@@ -1,3 +1,7 @@
+# CruzPlot 1.4.2
+
+* Fixed documentation, etc., for CRAN submission
+
 # CruzPlot 1.4.1
 
 * Fixed a bug that made CruzPlot display incorrect colors for sightings (#2)
