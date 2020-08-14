@@ -249,7 +249,7 @@ cruzDasEffortParams <- reactive({
     ## If detailed effort, not as simple
     das.eff.lines <- cruzDasEffortFilter()
 
-    # Color code by Beaufort or effort type
+    # Use Beaufort or effort type values to generate colors
     if (input$das_effort_det_byBft) {
       bft.cols <- input$das_effort_det_bft_col
       bft.col.num <- cruzDasEffortFilterBeaufortVal()[2] + 1

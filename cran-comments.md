@@ -1,5 +1,9 @@
 ## Resubmission
-This is a second resubmission of CruzPlot (now v1.4.2). In this version I have:
+This is a third resubmission of CruzPlot (v1.4.2). In this version I have:
+* Received permission from CRAN maintainers to omit the copyright holder since I developed this package on behalf of NOAA, a US government agency, and thus my understanding is that all of this work is in the public domain
+* Rephrased '# code by Beaufort or effort type' to make it more clear this is not stating that someone named Beaufort provided code
+
+In the second resubmission of CruzPlot (now v1.4.2) I:
 * Used on.exit to ensure I do not change the user's par and options
 * Clarified the code documentation "# Color code by Bft or SNF "
 * Ensured that all person() information correct
@@ -24,7 +28,7 @@ There was one NOTE on win-builder:
 
 * "Possibly mis-spelled words in DESCRIPTION: DAS"
 
-DAS is the name of a specific data format, and has an associated webpage reference in the Decription
+DAS is the name of a specific data format, and has an associated webpage reference in the Description
 
 ## Downstream dependencies
 No downstream dependencies
