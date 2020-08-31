@@ -5,9 +5,9 @@ Authors@R:
     c(person("Samuel", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov", comment = c(ORCID = "0000-0001-6071-8186")), 
       person("Tim", "Gerrodette", role = c("aut")))
 Description: A utility program oriented to create maps, plot data, and do basic data summaries
-    of 'DAS' data <https://swfsc.noaa.gov/publications/TM/SWFSC/NOAA-TM-NMFS-SWFSC-305.PDF> 
+    of 'DAS' data <https://swfsc-publications.fisheries.noaa.gov/publications/TM/SWFSC/NOAA-TM-NMFS-SWFSC-305.PDF> 
     produced by 'WinCruz' from the Southwest Fisheries Science Center.
-    <https://www.fisheries.noaa.gov/west-coast/science-data/california-current-marine-mammal-assessment-research>.
+    <https://www.fisheries.noaa.gov/west-coast/science-data/california-current-marine-mammal-assessment-program>.
 URL: https://smwoodman.github.io/CruzPlot/, https://github.com/smwoodman/CruzPlot/
 BugReports: https://github.com/smwoodman/CruzPlot/issues/
 Imports: 
