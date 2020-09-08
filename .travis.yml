@@ -22,16 +22,16 @@ matrix:
     # capitalized term. This also might need to be done in tic.R
     - BUILD_PKGDOWN=true
 
-addons:
-  # postgresql: "10"
-  apt:
-    packages:
-      - libnetcdf-dev
-      - netcdf-bin
-      - libudunits2-dev
-      - libproj-dev
-      - libgeos-dev
-      - libgdal-dev
+# addons:
+#   # postgresql: "10"
+#   apt:
+#     packages:
+#       - libnetcdf-dev
+#       - netcdf-bin
+#       - libudunits2-dev
+#       - libproj-dev
+#       - libgeos-dev
+#       - libgdal-dev
 
 # Stages -----------------------------------------------------------------------
 
