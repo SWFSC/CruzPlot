@@ -5,6 +5,8 @@
 
 <!-- badges: start -->
 
+[![CRAN
+version](http://www.r-pkg.org/badges/version/CruzPlot)](https://cran.r-project.org/package=CruzPlot)
 [![Travis build
 status](https://travis-ci.com/smwoodman/CruzPlot.svg?branch=master)](https://travis-ci.com/smwoodman/CruzPlot)
 [![AppVeyor build
