@@ -81,19 +81,17 @@
 <div id="installation" class="section level2">
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
-<p>You can install CruzPlot from <a href="https://github.com/">GitHub</a> with:</p>
+<p>You can install the released version of CruzPlot from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
 <div class="sourceCode" id="cb1"><pre class="downlit">
+<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"CruzPlot"</span>)
+</pre></div>
+<p>You can install the developmental version of CruzPlot from <a href="https://github.com/">GitHub</a>. To use the development version of CruzPlot, it is recommended to install the development version of <a href="https://smwoodman.github.io/swfscDAS/index.html">swfscDAS</a> as well:</p>
+<div class="sourceCode" id="cb2"><pre class="downlit">
 <span class="co"># install.packages("remotes") # Install remotes package if needed</span>
 <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/swfscDAS"</span>, build_vignettes = <span class="fl">TRUE</span>)
 <span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/CruzPlot"</span>)
 </pre></div>
-<p>Note that CruzPlot depends on swfscDAS, and thus you should ensure that <a href="https://smwoodman.github.io/swfscDAS/">swfscDAS</a> is installed and updated as well. Running the above code will ensure the latest versions of both packages are installed. However, if you want to force an installation, you can run:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/swfscDAS"</span>, force = <span class="fl">TRUE</span>, build_vignettes = <span class="fl">TRUE</span>)
-<span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/CruzPlot"</span>, force = <span class="fl">TRUE</span>)
-</pre></div>
-<p>Before installing CruzPlot, you must have <a href="https://www.r-project.org/">R</a>, <a href="https://rstudio.com/products/rstudio/download/#download">RStudio</a>, and the appropriate version of <a href="https://cran.r-project.org/bin/windows/Rtools/">Rtools</a> installed. It is best practice to install after closing all instances of R and RStudio, and then running the install code from the R GUI rather than RStudio. Please contact the developer if you have any issues.</p>
-<p>After updating, it is recommended to create and save new workspaces, rather than using workspaces saved with a previous version of CruzPlot.</p>
+<p>After updating CruzPlot, it is recommended to create and save new workspaces, rather than using workspaces saved with a previous version of CruzPlot. Please contact the developer if you have any issues.</p>
 </div>
 <div id="running-cruzplot" class="section level2">
 <h2 class="hasAnchor">
