@@ -42,7 +42,7 @@
       <ul class="nav navbar-nav">
 <li>
   <a href="index.html">
-    <span class="fas fa fas fa-home fa-lg"></span>
+    <span class="fas fa-home fa-lg"></span>
      
   </a>
 </li>
@@ -56,7 +56,7 @@
 <ul class="nav navbar-nav navbar-right">
 <li>
   <a href="https://github.com/smwoodman/CruzPlot/">
-    <span class="fab fa fab fa-github fa-lg"></span>
+    <span class="fab fa-github fa-lg"></span>
      
   </a>
 </li>
@@ -82,24 +82,21 @@
 <h2 class="hasAnchor">
 <a href="#installation" class="anchor"></a>Installation</h2>
 <p>You can install the released version of CruzPlot from <a href="https://CRAN.R-project.org">CRAN</a> with:</p>
-<div class="sourceCode" id="cb1"><pre class="downlit">
-<span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span>(<span class="st">"CruzPlot"</span>)
-</pre></div>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html">install.packages</a></span><span class="op">(</span><span class="st">"CruzPlot"</span><span class="op">)</span></code></pre></div>
 <p>You can install the developmental version of CruzPlot from <a href="https://github.com/">GitHub</a>. To use the development version of CruzPlot, it is recommended to install the development version of <a href="https://smwoodman.github.io/swfscDAS/index.html">swfscDAS</a> as well:</p>
-<div class="sourceCode" id="cb2"><pre class="downlit">
-<span class="co"># install.packages("remotes") # Install remotes package if needed</span>
-<span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/swfscDAS"</span>, build_vignettes = <span class="fl">TRUE</span>)
-<span class="kw">remotes</span>::<span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span>(<span class="st">"smwoodman/CruzPlot"</span>)
-</pre></div>
+<div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="co"># install.packages("remotes") # Install remotes package if needed</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"smwoodman/swfscDAS"</span>, build_vignettes <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>
+<span class="fu">remotes</span><span class="fu">::</span><span class="fu"><a href="https://remotes.r-lib.org/reference/install_github.html">install_github</a></span><span class="op">(</span><span class="st">"smwoodman/CruzPlot"</span><span class="op">)</span></code></pre></div>
 <p>After updating CruzPlot, it is recommended to create and save new workspaces, rather than using workspaces saved with a previous version of CruzPlot. Please contact the developer if you have any issues.</p>
 </div>
 <div id="running-cruzplot" class="section level2">
 <h2 class="hasAnchor">
 <a href="#running-cruzplot" class="anchor"></a>Running CruzPlot</h2>
 <p>To open and run CruzPlot, run the following code in RStudio:</p>
-<div class="sourceCode" id="cb3"><pre class="downlit">
-<span class="kw">CruzPlot</span>::<span class="fu"><a href="reference/cruzplot_gui.html">cruzplot_gui</a></span>()
-</pre></div>
+<div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span class="fu">CruzPlot</span><span class="fu">::</span><span class="fu"><a href="reference/cruzplot_gui.html">cruzplot_gui</a></span><span class="op">(</span><span class="op">)</span></code></pre></div>
 <p>If text or images overlap within the CruzPlot window, you can make the browser window full screen or adjust the text size in your browser (e.g., Ctrl - minus (‘-’) on Windows systems)</p>
 </div>
 <div id="cruzplot-manual" class="section level2">
@@ -141,8 +138,7 @@
 <h2>Dev status</h2>
 <ul class="list-unstyled">
 <li><a href="https://cran.r-project.org/package=CruzPlot"><img src="http://www.r-pkg.org/badges/version/CruzPlot" alt="CRAN version"></a></li>
-<li><a href="https://travis-ci.com/smwoodman/CruzPlot"><img src="https://travis-ci.com/smwoodman/CruzPlot.svg?branch=master" alt="Travis build status"></a></li>
-<li><a href="https://ci.appveyor.com/project/smwoodman/CruzPlot"><img src="https://ci.appveyor.com/api/projects/status/github/smwoodman/CruzPlot?branch=master&amp;svg=true" alt="AppVeyor build status"></a></li>
+<li><a href="https://github.com/smwoodman/CruzPlot/actions"><img src="https://github.com/smwoodman/CruzPlot/workflows/R-CMD-check/badge.svg" alt="R-CMD-check"></a></li>
 </ul>
 </div>
 </div>
@@ -154,7 +150,7 @@
 </div>
 
 <div class="pkgdown">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.0.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/">pkgdown</a> 1.6.1.</p>
 </div>
 
       </footer>
