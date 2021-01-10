@@ -42,5 +42,5 @@ test_that("renderPlot args are as required", {
     plot(1:10)
   }, height = 100, units = "px", res = 72)
 
-  expect_identical(class(d), c("shiny.render.function", "function"))
+  expect_true(inherits(d, c("shiny.render.function", "function")))
 })
