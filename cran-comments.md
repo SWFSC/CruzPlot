@@ -1,34 +1,15 @@
-## Resubmission
-This is a third resubmission of CruzPlot (v1.4.2). In this version I have:
-* Received permission from CRAN maintainers to omit the copyright holder since I developed this package on behalf of NOAA, a US government agency, and thus my understanding is that all of this work is in the public domain
-* Rephrased '# code by Beaufort or effort type' to make it more clear that this comment is referring to color-coding objects, not stating that someone named Beaufort provided code
-
-In the second resubmission of CruzPlot (now v1.4.2) I:
-* Used on.exit to ensure I do not change the user's par and options
-* Clarified the code documentation "# Color code by Bft or SNF "
-* Ensured that all person() information correct
-* Added standalone unit tests to test the functionality from other packages used in the Shiny app
-
-In the first resubmission I: 
-* In the Description field, single quoted 'WinCruz' and added references for both 'DAS' and 'WinCruz'
-
 ## Release summary
-Initial release (v1.4.1)
+This is a minor release that fixes a test to stay current with the shiny package
 
-## Test environments
-* Windows 10, R 4.0.2 (local)
-* win-builder (devel and release)
-* OS X, R 4.0.2 (local)
-* ubuntu 14.04.5 (on travis-ci.com, R devel, oldrel, and release)
+## Test environments (R-release = v4.0.3)
+* Windows 10, R-release (local)
+* win-builder (devel)
+* Microsoft Windows Server 2019 10.0.17763 (on github actions) R-release
+* mac OS 10.15.7 (on github actions) R-release
+* ubuntu 20.04 (on github actions) R-devel and release
 
 ## R CMD check results
-There were no ERRORs or WARNINGs
-
-There was one NOTE on win-builder: 
-
-* "Possibly mis-spelled words in DESCRIPTION: DAS"
-
-DAS is the name of a specific data format, and has an associated webpage reference in the Description
+There were no ERRORs or WARNINGs or NOTEs
 
 ## Downstream dependencies
 No downstream dependencies

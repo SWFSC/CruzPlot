@@ -1,3 +1,7 @@
+# CruzPlot 1.4.3
+
+* Fixed a test to stay current with shiny v1.6 - no changes to user functionality
+
 # CruzPlot 1.4.2
 
 * Fixed documentation and added tests for CRAN submission
