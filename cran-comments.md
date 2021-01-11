@@ -1,5 +1,7 @@
 ## Release summary
-This is a minor release that fixes a test to stay current with the shiny package
+This is a minor release that fixes a test to stay current with the shiny package.
+
+Re the notes at https://cran.rstudio.com//web/checks/check_results_CruzPlot.html ("All declared Imports should be used"): imports that aren't explicitly used are required by the Shiny app, which is the primary component of the CruzPlot package.
 
 ## Test environments (R-release = v4.0.3)
 * Windows 10, R-release (local)
