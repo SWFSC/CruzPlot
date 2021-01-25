@@ -1,6 +1,6 @@
 # CruzPlot 1.4.4
 
-* Ensure that CruzPlot fails gracefully if [gis.ngdc.noaa.gov](gis.ngdc.noaa.gov) is not available for `marmap::getNOAA.bathy` when attempting to download bathymetric data
+* Ensure that CruzPlot fails gracefully if the NOAA server is not available for [`marmap::getNOAA.bathy`](https://cran.r-project.org/web/packages/marmap/marmap.pdf) when attempting to download bathymetric data
 
 
 # CruzPlot 1.4.3
