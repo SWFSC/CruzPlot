@@ -120,7 +120,7 @@ output$depth_download_message <- renderUI({
   }
 })
 
-#
+# 'Reset' message if user leaves the page
 observe({
   input$tabs
   input$tabset1

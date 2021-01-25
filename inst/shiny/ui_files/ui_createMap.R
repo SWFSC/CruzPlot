@@ -278,7 +278,7 @@ ui.createMap <- function() {
             box(
               title = "Download bathymetric data", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
               helpText("Download bathymetric data from NOAA website (see the documentation for",
-                       tags$a(href = "https://cran.r-project.org/web/packages/marmap/marmap.pdf",
+                       tags$a(href = "https://CRAN.R-project.org/package=marmap",
                               "marmap function 'getNOAA.bathy'"),
                        "for more details).",
                        "The coordinates of the downloaded data will be the same as the current map range.",
