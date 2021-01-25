@@ -1,10 +1,17 @@
+# CruzPlot 1.4.4
+
+* Ensure that CruzPlot fails gracefully if [gis.ngdc.noaa.gov](gis.ngdc.noaa.gov) is not available for `marmap::getNOAA.bathy` when attempting to download bathymetric data
+
+
 # CruzPlot 1.4.3
 
 * Fixed a test to stay current with shiny v1.6 - no changes to user functionality
 
+
 # CruzPlot 1.4.2
 
 * Fixed documentation and added tests for CRAN submission
+
 
 # CruzPlot 1.4.1
 

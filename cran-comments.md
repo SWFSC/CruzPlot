@@ -1,5 +1,5 @@
 ## Release summary
-This is a minor release that fixes a test to stay current with the shiny package.
+This is a minor release that an error from https://cran.r-project.org/web/checks/check_results_CruzPlot.html to address the CRAN policy 'Packages which use Internet resources should fail gracefully with an informative message if the resource is not available or has changed (and not give a check warning nor error).'
 
 Re the notes at https://cran.rstudio.com//web/checks/check_results_CruzPlot.html ("All declared Imports should be used"): imports that aren't explicitly used are required by the Shiny app, which is the primary component of the CruzPlot package.
 
@@ -11,13 +11,7 @@ Re the notes at https://cran.rstudio.com//web/checks/check_results_CruzPlot.html
 * ubuntu 20.04 (on github actions) R-devel and release
 
 ## R CMD check results
-There were no ERRORs or WARNINGs
-
-There was one NOTE on win-builder:
-
-* New maintainer: Sam Woodman <sam.woodman@noaa.gov>, Old maintainer(s): Samuel Woodman <sam.woodman@noaa.gov>
-
-I updated my name to be consistent with my other packages.
+There were no ERRORs, WARNINGs, or NOTEs
 
 ## Downstream dependencies
 No downstream dependencies

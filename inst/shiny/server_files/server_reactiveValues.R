@@ -17,6 +17,7 @@ cruz.list <- reactiveValues(
   planned.transects = NULL, # Dataframe of planned transect lines
   coastline = NULL,         # Coastline file
   bathy.xyz = NULL,         # Bathymetric data, converted to CSV file xyz coordinates
+  bathy.download = FALSE,   # Logical flag indicating if a bathy download failed
   sp.codes = NULL,          # Species code file
   sp.codes.name = NULL,     # Either "default" or "personal"
   das.data = NULL,          # DAS dataframe

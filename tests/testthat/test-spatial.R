@@ -19,17 +19,6 @@ test_that("map databases are present and map calls work", {
 })
 
 
-test_that("The url that marmap queries for bathy data exists", {
-  # a <- marmap::getNOAA.bathy(lon1=-20,lon2=-30,lat1=30,lat2=20, resolution=60)
-  # expect_identical(shiny::isTruthy(a), TRUE)
-
-  skip_if_not_installed("httr")
-  # url used by marmap: https://github.com/ericpante/marmap/blob/master/R/getNOAA.bathy.R
-  r <- httr::GET("https://gis.ngdc.noaa.gov/arcgis/rest/services/DEM_mosaics/ETOPO1_bedrock/ImageServer/")
-  expect_identical(httr::http_status(r)$category, "Success")
-})
-
-
 test_that("geosphere functions work as expected", {
   skip_if_not_installed("geosphere")
 

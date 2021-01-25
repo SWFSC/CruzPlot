@@ -108,6 +108,26 @@ output$depth_download_button <- renderUI({
   downloadButton("depth_download", "Download bathymetric file")
 })
 
+# Message indicating if download using marmap::getNOAA.bathy failed
+output$depth_download_message <- renderUI({
+  if (cruz.list$bathy.download) {
+    validate(
+      paste("CruzPlot was not able to resolve host: gis.ngdc.noaa.gov.",
+            "Please check your internet connection and try again")
+    )
+  } else {
+    NULL
+  }
+})
+
+#
+observe({
+  input$tabs
+  input$tabset1
+
+  isolate(cruz.list$bathy.download <- FALSE)
+})
+
 # Download bathymetric file
 output$depth_download <- downloadHandler(
   filename = function() {
@@ -124,6 +144,7 @@ output$depth_download <- downloadHandler(
   },
 
   content = function(file) {
+    cruz.list$bathy.download <- FALSE
     lon.range <- cruz.map.range$lon.range
     lat.range <- cruz.map.range$lat.range
     world2 <- cruz.map.range$world2
@@ -136,7 +157,8 @@ output$depth_download <- downloadHandler(
       keep = FALSE
     ), silent = TRUE)
 
-    validate(need(bathy, "Donwload did not work"))
+    if (!isTruthy(bathy)) cruz.list$bathy.download <- TRUE
+    validate(need(bathy, "Download did not work"))
 
     write.csv(marmap::as.xyz(bathy), file = file, row.names = FALSE)
 
