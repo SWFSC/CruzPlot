@@ -67,16 +67,10 @@ if (input$bar) {
   )
 }
 
-validate(
-  need(!is.na(input$label_title_size),
-       "Please enter a valid title size value") %then%
-    need(!is.na(input$label_axis_size),
-         "Please enter a valid axis label size value") %then%
-    need(input$label_title_size > 0,
-         "Please enter a title size greater than zero") %then%
-    need(input$label_axis_size > 0,
-         "Please enter an axis label size greater than zero")
-)
+validate(need(!is.na(input$label_title_size), "Please enter a valid title size value"))
+validate(need(!is.na(input$label_axis_size), "Please enter a valid axis label size value"))
+validate(need(input$label_title_size > 0, "Please enter a title size greater than zero"))
+validate(need(input$label_axis_size > 0, "Please enter an axis label size greater than zero"))
 title.info <- cruzMapLabelTitle()
 axes.info <- cruzMapLabelAxes()
 
@@ -84,25 +78,17 @@ axes.info <- cruzMapLabelAxes()
 #------------------------------------------------------------------------------
 # Other map paramters - tick/grid
 if (input$tick || input$grid) {
-  # Error checks
-  validate( #Check that tick intervals are possibly valid
-    need(!is.na(cruz.tick$tick.interval.major),
-         "Please enter a valid major tick interval value") %then%
-      need(!is.na(input$tick_interval_minor),
-           "Please enter a valid minor tick interval value") %then%
-      need(cruz.tick$tick.interval.major > 0,
-           "Please enter a major tick interval value greater than zero") %then%
-      need(input$tick_interval_minor >= 0,
-           paste("Please enter a minor tick interval value",
-                 "greater than or equal to zero"))
-  )
-  validate( #Check that tick label size is a valid entry
-    need(!is.na(input$label_tick_size),
-         "Please enter a valid tick label size value") %then%
-      need(input$label_tick_size >= 0,
-           paste("Please enter a tick label size value",
-                 "greater than or equal to zero"))
-  )
+  ### Error checks
+  # Check that tick intervals are possibly valid
+  validate(need(!is.na(cruz.tick$tick.interval.major), "Please enter a valid major tick interval value"))
+  validate(need(!is.na(input$tick_interval_minor), "Please enter a valid minor tick interval value"))
+  validate(need(cruz.tick$tick.interval.major > 0, "Please enter a major tick interval value greater than zero"))
+  validate(need(input$tick_interval_minor >= 0, "Please enter a minor tick interval value greater than or equal to zero"))
+
+  # Check that tick label size is a valid entry
+  validate(need(!is.na(input$label_tick_size), "Please enter a valid tick label size value"))
+  validate(need(input$label_tick_size >= 0, "Please enter a tick label size value greater than or equal to zero"))
+
   if (!world2) { #Check that actual longitude values are valid given map rnages
     validate(
       need(lon.range[1] <= as.numeric(cruz.tick$label.lon.start),

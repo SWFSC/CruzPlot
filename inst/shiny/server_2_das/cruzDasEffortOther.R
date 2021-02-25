@@ -112,10 +112,9 @@ cruzDasEffortFilter <- reactive({
   ### Final checks and return
   validate(
     need(sum(is.na(das.eff.lines.filt$Event)) == 0,
-         "Error in CruzPlot effort filtering - please report this as an issue") %then%
-      need(nrow(das.eff.lines.filt) > 0,
-           "No effort lines match the provided filters")
+         "Error in CruzPlot effort filtering - please report this as an issue")
   )
+  validate(need(nrow(das.eff.lines.filt) > 0, "No effort lines match the provided filters"))
 
   das.eff.lines.filt
 })

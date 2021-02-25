@@ -1,9 +1,9 @@
 ## Release summary
-This is a minor release that an error from https://cran.r-project.org/web/checks/check_results_CruzPlot.html to address the CRAN policy 'Packages which use Internet resources should fail gracefully with an informative message if the resource is not available or has changed (and not give a check warning nor error).'
+This is a minor release to remove the use of `shiny:::%OR%`, which is not supported anymore, in the package
 
 Re the notes at https://cran.rstudio.com//web/checks/check_results_CruzPlot.html ("All declared Imports should be used"): imports that aren't explicitly used are required by the Shiny app, which is the primary component of the CruzPlot package.
 
-## Test environments (R-release = v4.0.3)
+## Test environments (R-release = v4.0.4)
 * Windows 10, R-release (local)
 * win-builder (devel)
 * Microsoft Windows Server 2019 10.0.17763 (on github actions) R-release

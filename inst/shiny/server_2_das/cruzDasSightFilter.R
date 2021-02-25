@@ -66,10 +66,9 @@ cruzDasSightFilter <- reactive({
   ### Final checks, calculate sp.count, and return
   validate(
     need(sum(is.na(das.sight.filt$Event)) == 0,
-         "Error in CruzPlot sighting filtering - please report this as an issue") %then%
-      need(nrow(das.sight) > 0,
-           "No sightings match the given filters")
+         "Error in CruzPlot sighting filtering - please report this as an issue")
   )
+  validate(need(nrow(das.sight) > 0, "No sightings match the given filters"))
 
   # Check that at least one sighting is still within map range, and get sp.count
   if (sight.type %in% c(1, 2)) {

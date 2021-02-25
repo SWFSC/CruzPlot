@@ -16,9 +16,11 @@ cruzDasEffortEvent <- reactive({
 
   validate(
     need(sum(das.eff$Event == "R") == sum(das.eff$Event == "E"),
-         "There are not an equal number of R and E events in the data") %then%
-      need(all((which(das.eff$Event == "E") - which(das.eff$Event == "R")) > 0),
-           "R and E events do not properly alternate"),
+         "There are not an equal number of R and E events in the data")
+  )
+  validate(
+    need(all((which(das.eff$Event == "E") - which(das.eff$Event == "R")) > 0),
+         "R and E events do not properly alternate"),
     need(identical(tail(das.eff$Event, 1), "E"),
          "The DAS data effort must end with an E event")
   )
@@ -71,8 +73,8 @@ cruzDasEffortEvent <- reactive({
 
   # Filter for non-NA lines
   das.eff.lines %>%
-      filter(!is.na(.data$st_lat), !is.na(.data$end_lat),
-             !is.na(.data$st_lon), !is.na(.data$end_lon))
+    filter(!is.na(.data$st_lat), !is.na(.data$end_lat),
+           !is.na(.data$st_lon), !is.na(.data$end_lon))
 })
 
 ###############################################################################

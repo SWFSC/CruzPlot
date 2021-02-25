@@ -79,12 +79,11 @@ cruzMapColorWater <- reactive({
       silent = TRUE
     )
 
-    validate(
-      need(inherits(bathy, "bathy"),
-           paste("Unable to convert the loaded CSV file into a bathy object;",
-                 "see `maramp::as.bathy` for data format requirements")) %then%
-        need(length(bathy) > 0,
-             "The loaded bathymetric data does not cover any of the current map area")
+    validate(need(inherits(bathy, "bathy"),
+                  paste("Unable to convert the loaded CSV file into a bathy object;",
+                        "see `maramp::as.bathy` for data format requirements")))
+    validate(need(length(bathy) > 0,
+                  "The loaded bathymetric data does not cover any of the current map area")
     )
   }
 
@@ -99,11 +98,10 @@ cruzMapColorWater <- reactive({
 output$depth_download_button <- renderUI({
   v.val <- input$depth_res
   v.mess <- "Bathymetric data resolution must be a whole number between 0 and 60"
-  validate(
-    need(!is.na(v.val), v.mess) %then%
-      need(isTRUE(all.equal(v.val %% 1, 0)), v.mess) %then%
-      need(between(v.val, 0, 60), v.mess)
-  )
+
+  validate(need(!is.na(v.val), v.mess))
+  validate(need(isTRUE(all.equal(v.val %% 1, 0)), v.mess))
+  validate(need(between(v.val, 0, 60), v.mess))
 
   downloadButton("depth_download", "Download bathymetric file")
 })

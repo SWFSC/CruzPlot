@@ -200,12 +200,16 @@ cruzDasSightEvent <- reactive({
       # Checks - other
       validate(
         need(length(unique(na.omit(cruz.list$das.data$file_das))) == 1,
-             "You can only process resights when plotting data from a single DAS file") %then%
-          # ^b/c different files could have same SightNo, etc.
-          # Doesn't solve concatenated files..
+             "You can only process resights when plotting data from a single DAS file")
+        # ^b/c different files could have same SightNo, etc.
+        # Doesn't solve concatenated files..
+      )
+      validate(
         need(sum(c("s", "k", "g") %in% sp.events) == 1,
-             "You can only plot one type of resight at a time") %then%
-          if ("s" %in% sp.events) need("S" %in% sp.events, "To plot s events, S events must also be plotted"),
+             "You can only plot one type of resight at a time")
+      )
+      validate(
+        if ("s" %in% sp.events) need("S" %in% sp.events, "To plot s events, S events must also be plotted"),
         if ("k" %in% sp.events) need("K" %in% sp.events, "To plot k events, K events must also be plotted"),
         if ("g" %in% sp.events) need("G" %in% sp.events, "To plot g events, G events must also be plotted"),
         need(length(sp.events) == 2,

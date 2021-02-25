@@ -1,3 +1,7 @@
+# CruzPlot 1.4.5
+
+* Fixed a bug to stay current with the shiny package - no changes to user functionality
+
 # CruzPlot 1.4.4
 
 * Ensure that CruzPlot fails gracefully if the NOAA server is not available for [`marmap::getNOAA.bathy`](https://cran.r-project.org/package=marmap) when attempting to download bathymetric data

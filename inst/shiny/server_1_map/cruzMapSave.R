@@ -10,31 +10,25 @@ output$downloadMap_button <- renderUI({
   # Resolution
   v.val <- input$download_res
   v.message <- "Resolution must be a whole number greater than zero"
-  validate(
-    need(!is.na(v.val), v.message) %then%
-      need(isTRUE(all.equal(v.val %% 1, 0)), v.message) %then%
-      need(v.val > 0, v.message)
-  )
+  validate(need(!is.na(v.val), v.message))
+  validate(need(isTRUE(all.equal(v.val %% 1, 0)), v.message))
+  validate(need(v.val > 0, v.message))
 
   # Plot dimensions
   if (input$download_dim == 2) {
     # Plot width
     v.val <- input$download_width
     v.message <- "Plot width must be greater than zero"
-    validate(
-      need(!is.na(v.val), v.message) %then%
-        # need(isTRUE(all.equal(v.val %% 1, 0)), v.message) %then%
-        need(v.val > 0, v.message)
-    )
+    validate(need(!is.na(v.val), v.message))
+    # validate(need(isTRUE(all.equal(v.val %% 1, 0)), v.message))
+    validate(need(v.val > 0, v.message))
 
     # Plot height
     v.val <- input$download_height
     v.message <- "Plot height must be greater than zero"
-    validate(
-      need(!is.na(v.val), v.message) %then%
-        # need(isTRUE(all.equal(v.val %% 1, 0)), v.message) %then%
-        need(v.val > 0, v.message)
-    )
+    validate(need(!is.na(v.val), v.message))
+    # validate(need(isTRUE(all.equal(v.val %% 1, 0)), v.message)
+    validate(need(v.val > 0, v.message))
   }
 
   # Button

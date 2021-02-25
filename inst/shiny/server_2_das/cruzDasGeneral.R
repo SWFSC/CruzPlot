@@ -29,17 +29,17 @@ das_file_load <- eventReactive(input$das_file, {
   reset.effort <- input$das_file_reset_effort == 1
   # reset.day    <- input$das_file_reset_day == 1
 
-  validate(
-    need(!is.na(skip), "skip must be a valid number") %then%
-      need(isTRUE(all.equal(skip %% 1, 0)), "skip must be a whole number") %then%
-      need(skip >= 0, "skip must be greater than or equal to zero")
-  )
+  v.tmp <- "skip must be a valid, whole number greater than or equal to 0"
+  validate(need(!is.na(skip), v.tmp))
+  validate(need(isTRUE(all.equal(skip %% 1, 0)), v.tmp))
+  validate(need(skip >= 0, v.tmp))
+  rm(v.tmp)
 
-  validate(
-    need(!is.na(days.gap), "days.gap must be a valid number") %then%
-      need(isTRUE(all.equal(days.gap %% 1, 0)), "days.gap must be a whole number") %then%
-      need(days.gap >= 0, "days.gap must be greater than or equal to zero")
-  )
+  v.tmp <- "days.gap must be a valid, whole number greater than or equal to 0"
+  validate(need(!is.na(days.gap), v.tmp))
+  validate(need(isTRUE(all.equal(days.gap %% 1, 0)), v.tmp))
+  validate(need(days.gap >= 0, v.tmp))
+  rm(v.tmp)
 
   # Process DAS file
   withProgress(message = "Processing DAS file", value = 0.6, {

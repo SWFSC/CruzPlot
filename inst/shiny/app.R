@@ -136,8 +136,6 @@ ui <- dashboardPage(
 
 ###############################################################################
 ##### server
-`%then%` <- shiny:::`%OR%` # For sequential need() evals within one validate()
-
 server <- function(input, output, session) {
   ### Quit GUI
   session$onSessionEnded(function() {
