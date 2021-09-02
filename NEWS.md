@@ -1,3 +1,10 @@
+# CruzPlot 1.4.6
+
+* Fixed a bug that caused the map range brush and interactive plot labels to not work correctly
+
+* Added a 'Main Hawaiian Islands' default range button
+
+
 # CruzPlot 1.4.5
 
 * Fixed a bug to stay current with the shiny package - no changes to user functionality

@@ -111,27 +111,21 @@ output$cruzDasOutSight_Save_text <- renderText(cruzDasOutSight_Save())
 # Plot Map
 output$plot1 <- renderPlot({
   plotMap()()
-  plotInteractive()()
 }, height = map.height, units = "px", res = plot.res)
 output$plot1b <- renderPlot({
   plotMap()()
-  plotInteractive()()
 }, height = map.height, units = "px", res = plot.res)
 output$plot2 <- renderPlot({
   plotMap()()
-  plotInteractive()()
 }, height = map.height, units = "px", res = plot.res)
 output$plot3 <- renderPlot({
   plotMap()()
-  plotInteractive()()
 }, height = map.height, units = "px", res = plot.res)
 output$plot4 <- renderPlot({
   plotMap()()
-  plotInteractive()()
 }, height = map.height, units = "px", res = plot.res)
 output$plot5 <- renderPlot({
   plotMap()()
-  plotInteractive()()
 }, height = map.height, units = "px", res = plot.res)
 
 

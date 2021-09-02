@@ -43,11 +43,13 @@ ui.createMap <- function() {
                                       choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5])),
                 column(3, tags$br(), tags$br(), actionButton("map_replot", "Replot map"))
               ),
+              tags$span(htmlOutput("map_range_message"), style = "color: red;"),
               tags$h5("Set the map range to a default study area and replot:"),
               actionButton("map_replot_cce", "CCE"),
               actionButton("map_replot_cce2", "Extended CCE"),
               actionButton("map_replot_etp", "ETP"),
               actionButton("map_replot_hawaii", "Hawaii"),
+              actionButton("map_replot_hawaiimain", "Main Hawaiian Islands"),
               actionButton("map_replot_marianas", "Marianas")
             ),
             box(

@@ -1,6 +1,7 @@
-# Set values for subsequent draw code
+# All code for drawing static plot
 
-###############################################################################
+##############################################################################
+##############################################################################
 # draw_setVals - Set map param values and call reactive functions for drawMap.R
 
 #------------------------------------------------------------------------------
@@ -275,4 +276,274 @@ if (isTruthy(cruz.list$das.data)) {
   }
 }
 
+
+
+##############################################################################
+##############################################################################
+##############################################################################
+### drawMap for CruzPlot
+## Creates window and then plots water and land (map)
+## Plots scale bar, tick marks/labels, map labels, and grid lines as specified
+
 ###############################################################################
+# Range and map window triggers for redrawing the map
+input$map_replot
+input$map_size
+input$dimension
+
+###############################################################################
+#------------------------------------------------------------------------------
+### Window
+mar1 <- ifelse(nchar(axes.info$lab.lon) > 0, 7, 3)
+mar2 <- ifelse(nchar(axes.info$lab.lat) > 0, 7, 5)
+mar3 <- ifelse(nchar(title.info$lab)    > 0, 7, 2)
+
+x.try <- try(map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
+                 mar = c(mar1, mar2, mar3, 4)),
+             silent = TRUE)
+validate(need(x.try, "Error - there must be some land in the map area"))
+
+x.1 <- map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
+           mar = c(mar1, mar2, mar3, 4))
+param <- cruzMapParam()$param.unit
+
+#------------------------------------------------------------------------------
+### Water
+rect(param[1], param[3], param[2], param[4], col = map.water.col[[1]])
+
+# Depth
+map.depth <- map.water.col[[2]]
+if (isTruthy(map.depth))
+  plot(map.depth, image = TRUE, land = TRUE, add = TRUE,
+       axes = FALSE, xlab = NA, ylab = NA, lwd = 0.0,
+       bpal = list(c(0, max(map.depth), "grey"),
+                   c(min(map.depth), 0, bathy.col)))
+
+#------------------------------------------------------------------------------
+### Land
+if (input$coast) {
+  # Coastline
+  validate(
+    need(isTruthy(map.coastline),
+         message = "Please input a valid coastline file")
+  )
+
+  polygon(x = map.coastline$lon, y = map.coastline$lat, col = map.land.col)
+  lines(x = map.coastline$lon, y = map.coastline$lat)
+
+} else {
+  # Default from maps package
+  map(map.name[[1]], regions = map.name[[2]],
+      xlim = lon.range[1:2], ylim = lat.range[1:2],
+      fill = TRUE, col = map.land.col, add = TRUE)
+}
+
+#------------------------------------------------------------------------------
+### Rivers and Lakes
+if (input$color_lakes_rivers)
+  map(map.river, col = map.water.col[[1]], add = TRUE)
+
+graphics::box()
+
+#------------------------------------------------------------------------------
+### Tick marks and labels
+if (input$tick) {
+  # Draw major and minor tick marks
+  if (tick.lon.bool$bot[1]) {
+    axis(1, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale, family = tick.param$font)
+    axis(1, at = tick.lon$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+         tcl = par("tcl") *0.4*tick.param$len)
+  }
+  if (tick.lat.bool$left[1]) {
+    axis(2, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale, family = tick.param$font)
+    axis(2, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+         tcl = par("tcl") * 0.4*tick.param$len)
+  }
+  if (tick.lon.bool$top[1]) {
+    axis(3, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale, family = tick.param$font)
+    axis(3, at = tick.lon$min, labels = FALSE, lwd = 0,  lwd.ticks = 1,
+         tcl = par("tcl") * 0.4*tick.param$len)
+  }
+  if (tick.lat.bool$right[1]) {
+    axis(4, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale, family = tick.param$font)
+    axis(4, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+         tcl = par("tcl") * 0.4*tick.param$len)
+  }
+
+  # Draw tick labels
+  if (tick.lon.bool$bot[2])
+    axis(1, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
+         cex.axis = tick.param$scale, family = tick.param$font)
+  if (tick.lat.bool$left[2])
+    axis(2, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
+         las = 1, cex.axis = tick.param$scale, family = tick.param$font)
+  if (tick.lon.bool$top[2])
+    axis(3, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
+         cex.axis = tick.param$scale, family = tick.param$font)
+  if (tick.lat.bool$right[2])
+    axis(4, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
+         las = 1, cex.axis = tick.param$scale, family = tick.param$font)
+}
+
+#------------------------------------------------------------------------------
+### Grid lines
+if (input$grid) {
+  abline(v = tick.lon$maj, col = grid.param$col, lwd = grid.param$lwd,
+         lty = as.numeric(grid.param$lty))
+  abline(h = tick.lat$maj, col = grid.param$col, lwd = grid.param$lwd,
+         lty = as.numeric(grid.param$lty))
+}
+
+#------------------------------------------------------------------------------
+### Scale bar
+if (input$bar) {
+  lines(c(scale.bar$x1, scale.bar$x2), c(scale.bar$y, scale.bar$y),
+        lwd = scale.bar$lwd)
+  text(mean(c(scale.bar$x1, scale.bar$x2)),
+       scale.bar$y-0.04*abs(lat.range[2]-lat.range[1]),
+       paste(scale.bar$len, scale.bar$units.str))
+}
+
+#------------------------------------------------------------------------------
+### Labels
+# Title
+if (!is.null(title.info$lab)) {
+  title(main = title.info$lab, line = 3, family = title.info$fam,
+        cex.main = title.info$cex)
+}
+
+# Longitude axis
+if (!is.null(axes.info$lab.lon)) {
+  title(xlab = axes.info$lab.lon, family = axes.info$fam,
+        cex.lab = axes.info$cex)
+}
+# Latitude axis
+if (!is.null(axes.info$lab.lat)) {
+  title(ylab = axes.info$lab.lat, family = axes.info$fam,
+        cex.lab = axes.info$cex, line = 4)
+}
+
+#------------------------------------------------------------------------------
+### Transect lines
+# Not in drawData since this isn't DAS data
+if (input$planned_transects_plot) {
+  if (anyNA(planned_transects_class2())) {
+    # No class2
+    for (i in pltrans.list) {
+      for (k in i) {
+        graphics::lines(
+          x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = pltrans.lwd
+        )
+      }
+    }
+
+  } else {
+    # Yes class 2
+    for (i in pltrans.list) {
+      for (j in i) {
+        for (k in j) {
+          graphics::lines(
+            x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = pltrans.lwd
+          )
+        }
+      }
+    }
+  }
+}
+
+
+
+##############################################################################
+##############################################################################
+###############################################################################
+# drawData for CruzPlot
+#   Plots selected sightings, legends, and effort lines from DAS file
+#   Plots non-DAS data (lines or points)
+
+
+### Plot non-DAS data
+if (isTruthy(data.ndas)) {
+  # Plot lines
+  data.ndas.l <- data.ndas[[1]]
+  if (length(data.ndas.l) > 0) {
+    for(i in seq_along(data.ndas.l)) {
+      data.ndas.l.curr <- data.ndas.l[[i]]
+      lines(x = data.ndas.l.curr$x, y = data.ndas.l.curr$y,
+            lty = data.ndas.l.curr$type, col = data.ndas.l.curr$col,
+            lwd = data.ndas.l.curr$lwd)
+    }
+  }
+
+  # Plot points
+  data.ndas.p <- data.ndas[[2]]
+  if (length(data.ndas.p) > 0) {
+    for(j in seq_along(data.ndas.p)) {
+      data.ndas.p.curr <- data.ndas.p[[j]]
+      points(x = data.ndas.p.curr$x, y = data.ndas.p.curr$y,
+             pch = data.ndas.p.curr$type, col = data.ndas.p.curr$col,
+             cex = data.ndas.p.curr$cex, lwd = data.ndas.p.curr$lwd)
+    }
+  }
+}
+
+
+### Plot DAS data
+if (isTruthy(cruz.list$das.data)) {
+  ## Plot effort segments
+  if (input$das_effort != "1")
+    segments(x0 = das.eff.lines$st_lon, x1 = das.eff.lines$end_lon,
+             y0 = das.eff.lines$st_lat, y1 = das.eff.lines$end_lat,
+             col = eff.col, lwd = eff.lwd)
+
+
+  ## Plot sighting points and legend
+  if (input$das_sightings) {
+    points(das.sight.pt$Lon, das.sight.pt$Lat,
+           pch = das.sight.pt$pch, col = das.sight.pt$col,
+           cex = das.sight.pt$cex, lwd = das.sight.pt$lwd)
+
+    if (input$das_legend) {
+      op <- par(family = das.sight.legend$font.fam)
+      legend(x = das.sight.legend$leg.x,
+             y = das.sight.legend$leg.y,
+             legend = das.sight.legend$leg.lab,
+             title = das.sight.legend$leg.title,
+             pch = das.sight.legend$leg.pch,
+             col = das.sight.legend$leg.col,
+             pt.cex = das.sight.legend$leg.cex,
+             pt.lwd = das.sight.legend$leg.lwd,
+             bty = das.sight.legend$leg.bty,
+             box.col = das.sight.legend$leg.box.col,
+             box.lwd = das.sight.legend$leg.box.lwd,
+             cex = das.sight.legend$leg.box.cex,
+             bg = "white")
+      par(op)
+    }
+  }
+
+
+  ## Plot effort legend
+  if (input$das_effort != 1) {
+    if (isTruthy(das.eff.legend)) {
+      op <- par(family = das.eff.legend$font.fam)
+      legend(x = das.eff.legend$eff.leg.x,
+             y = das.eff.legend$eff.leg.y,
+             title = das.eff.legend$eff.leg.title,
+             legend = das.eff.legend$eff.leg.lab,
+             lwd = das.eff.legend$eff.leg.lwd,
+             col = das.eff.legend$eff.leg.col,
+             bty = das.eff.legend$eff.leg.bty,
+             box.col = das.eff.legend$eff.leg.box.col,
+             box.lwd = das.eff.legend$eff.leg.box.lwd,
+             cex = das.eff.legend$eff.leg.box.cex,
+             bg = "white")
+      par(op)
+    }
+  }
+}
+
+graphics::box() # Added in case legend takes out some of the map border

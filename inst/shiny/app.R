@@ -182,9 +182,6 @@ server <- function(input, output, session) {
   source(file.path("server_2_das", "cruzDasEffortLegend.R"), local = TRUE, chdir = TRUE)
 
   source(file.path("server_2_das", "cruzDasInteractive.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasInteractiveEffort.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasInteractiveSight.R"), local = TRUE, chdir = TRUE)
-
   source(file.path("server_2_das", "cruzDasTabular.R"), local = TRUE, chdir = TRUE)
 
 
@@ -208,27 +205,18 @@ server <- function(input, output, session) {
 
 
   ### Other output - static plot
+
   plotMap <- reactive({
     function() {
-      oldpar <- par(no.readonly = TRUE)
-      on.exit(par(oldpar))
+      # The on.exit call causes the coordinates, eg from a click or brush event,
+      #   to not be scaled to the data space, aka their range is 0-1.
+      #   This is ok because the only par calls in CruzPlot are around legend
+      #   calls for the sake of the font family.
+      # oldpar <- par(no.readonly = TRUE)
+      # on.exit(par(oldpar))
 
-      # Set values and call reactive functions; done first to trigger validate statements
-      source(file.path("server_draw_local", "draw_setVals.R"), local = TRUE, chdir = TRUE)
-
-      # Plot map: window, water, land, and map extras
-      source(file.path("server_draw_local", "drawMap.R"), local = TRUE, chdir = TRUE)
-
-      # Plot data: sightings, legend, and effort
-      source(file.path("server_draw_local", "drawData.R"), local = TRUE, chdir = TRUE)
-    }
-  })
-
-
-  ### Other output - plot interactive labels
-  plotInteractive <- reactive({
-    function() {
-      source(file.path("server_draw_local", "drawInteractive.R"), local = TRUE, chdir = TRUE)
+      source(file.path("server_files", "drawStatic.R"), local = TRUE, chdir = TRUE)
+      source(file.path("server_files", "drawInteractive.R"), local = TRUE, chdir = TRUE)
     }
   })
 }
