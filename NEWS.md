@@ -1,3 +1,8 @@
+# CruzPlot 1.4.7 (in development)
+
+* Fixed a bug where the planned transects did not properly load from a saved workspace
+
+
 # CruzPlot 1.4.6
 
 * Fixed a bug that caused the map range brush and interactive plot labels to not work correctly

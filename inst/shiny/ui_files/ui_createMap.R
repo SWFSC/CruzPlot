@@ -88,7 +88,7 @@ ui.createMap <- function() {
 
         ################################### Panel 2
         tabPanel(
-          title = "Planned Transects",
+          title = "Planned Transects", value = "planned_transects",
           fluidRow(
             box(
               title = "Planned transects", status = "warning", solidHeader = FALSE, width = 12, collapsible = FALSE,

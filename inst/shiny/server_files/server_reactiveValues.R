@@ -4,9 +4,15 @@
 ###############################################################################
 # 'Initialize' reactiveVals. These values do not need to be saved
 
-cruz.load.color.flag <- reactiveVal(FALSE)
-cruz.eff.leg <- reactiveVal(FALSE)
-cruz.eff.leg.title <- reactiveVal("")
+cruz.load.color.flag  <- reactiveVal(FALSE)
+cruz.eff.leg          <- reactiveVal(FALSE)
+cruz.eff.leg.title    <- reactiveVal("")
+cruz.pt.load.toplot   <- reactiveVal(NULL)
+cruz.pt.load.toplot2  <- reactiveVal(NULL)
+cruz.pt.load.color    <- reactiveVal(NULL)
+cruz.pt.load.lty      <- reactiveVal(NULL)
+cruz.pt.load.tabs     <- reactiveVal(FALSE)
+cruz.pt.load.tabset1  <- reactiveVal(FALSE)
 # cruz.das.symbol.type <- reactiveVal(NULL)
 # cruz.das.symbol.color <- reactiveVal(NULL)
 
@@ -190,6 +196,18 @@ load_envir <- eventReactive(input$load_app_envir_file, {
     updateNumericInput(session, "scale_len", value = input.save$scale_len)
     updateNumericInput(session, "scale_width", value = input.save$scale_width)
 
+    if (input.save$planned_transects_plot) {
+      cruz.pt.load.toplot(input.save$planned_transects_toplot)
+      cruz.pt.load.toplot2(input.save$planned_transects_toplot2)
+      cruz.pt.load.color(input.save$planned_transects_color)
+      cruz.pt.load.lty(input.save$planned_transects_lty)
+      if (!(input$tabs == "createmap" & input$tabset1 == "planned_transects")) {
+        cruz.pt.load.tabs(input$tabs)
+        cruz.pt.load.tabset1(input$tabset1)
+        updateTabItems(session, "tabs", selected = "createmap")
+        updateTabsetPanel(session, "tabset1", selected = "planned_transects")
+      }
+    }
     updateCheckboxInput(session, "planned_transects_plot", value = input.save$planned_transects_plot)
     updateSelectInput(session, "planned_transects_toplot", selected = input.save$planned_transects_toplot)
     updateSelectInput(session, "planned_transects_toplot2", selected = input.save$planned_transects_toplot2)
@@ -339,6 +357,21 @@ load_envir <- eventReactive(input$load_app_envir_file, {
   })
 
   "Workspace loaded"
+})
+
+# Reset selected tab panel after switching to planned transet if needed
+observe({
+  input$tabs
+  input$tabset1
+
+  isolate({
+    if (isTruthy(cruz.pt.load.tabset1()) & isTruthy(cruz.pt.load.tabs())) {
+      updateTabsetPanel(session, "tabset1", selected = cruz.pt.load.tabset1())
+      updateTabItems(session, "tabs", selected = cruz.pt.load.tabs())
+    }
+    cruz.pt.load.tabset1(NULL)
+    cruz.pt.load.tabs(NULL)
+  })
 })
 
 output$load_app_text <- renderText({

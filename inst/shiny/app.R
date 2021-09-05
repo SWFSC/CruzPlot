@@ -7,10 +7,20 @@ list.packages <- list(
   "shinydashboard", "shinyjs", "stringr", "swfscDAS"
 )
 
-if (!require(CruzPlot))
-  stop("Error attaching CruzPlot package - please reintall CruzPlot")
-if (!all(sapply(list.packages, require, character.only = TRUE)))
-  stop("Error attaching packages - please reinstall CruzPlot")
+p.check <- vapply(list.packages, requireNamespace, as.logical(1), quietly = TRUE)
+if (!all(p.check))
+  stop("To use CruzPlot, the following packages must be installed: ",
+       paste(list.packages, collapse = ", "), "\n",
+       "To install the missing packages, run the following:\n",
+       "install.packages(c(\"", paste(list.packages[!p.check],
+                                      collapse = "\", \""), "\"))")
+
+sapply(list.packages, require, character.only = TRUE, warn.conflicts = FALSE)
+
+# if (!require(CruzPlot))
+#   stop("Error attaching CruzPlot package - please reintall CruzPlot")
+# if (!all(sapply(list.packages, require, character.only = TRUE)))
+#   stop("Error attaching packages - please reinstall CruzPlot")
 
 
 ###############################################################################

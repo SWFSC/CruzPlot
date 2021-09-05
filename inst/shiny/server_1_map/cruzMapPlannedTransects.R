@@ -168,18 +168,36 @@ output$planned_transects_toplot_uiOut_select <- renderUI({
   choices.list <- seq_along(choices.list.names)
   names(choices.list) <- choices.list.names
 
+  isolate({
+    choices.sel <- if (isTruthy(cruz.pt.load.toplot())) {
+      cruz.pt.load.toplot()
+    } else {
+      choices.list
+    }
+    cruz.pt.load.toplot(NULL)
+  })
+
   selectInput("planned_transects_toplot",
               tags$h5("Class(es) to plot"),
-              choices = choices.list, selected = choices.list,
+              choices = choices.list, selected = choices.sel,
               multiple = TRUE)
 })
 
 
 output$planned_transects_color_uiOut_select <- renderUI({
-  req(cruz.list$planned.transects, input$planned_transects_plot)
+  req(cruz.list$planned.transects)
+
+  isolate({
+    choices.sel <- if (isTruthy(cruz.pt.load.color())) {
+      cruz.pt.load.color()
+    } else {
+      "gray"
+    }
+    cruz.pt.load.color(NULL)
+  })
 
   selectInput("planned_transects_color", label = tags$h5("Color(s)"),
-              choices = cruz.palette.color, selected = "gray",
+              choices = cruz.palette.color, selected = choices.sel,
               multiple = TRUE)
 })
 
@@ -200,8 +218,17 @@ output$planned_transects_toplot2_uiOut_select <- renderUI({
     choices.list <- seq_along(choices.list.names)
     names(choices.list) <- choices.list.names
 
+    isolate({
+      choices.sel <- if (isTruthy(cruz.pt.load.toplot2())) {
+        cruz.pt.load.toplot2()
+      } else {
+        choices.list
+      }
+      cruz.pt.load.toplot2(NULL)
+    })
+
     selectInput("planned_transects_toplot2", tags$h5("Class 2(s) to plot"),
-                choices = choices.list, selected = choices.list,
+                choices = choices.list, selected = choices.sel,
                 multiple = TRUE)
   }
 })
@@ -219,14 +246,23 @@ output$planned_transects_toplot2_uiOut_select <- renderUI({
 # })
 
 output$planned_transects_lty_uiOut_select <- renderUI({
-  req(cruz.list$planned.transects, input$planned_transects_plot)
+  req(cruz.list$planned.transects)
 
   input.lab <- ifelse(
     anyNA(planned_transects_class2()), "Line type", "Line type(s)"
   )
 
+  isolate({
+    choices.sel <- if (isTruthy(cruz.pt.load.lty())) {
+      cruz.pt.load.lty()
+    } else {
+      1
+    }
+    cruz.pt.load.lty(NULL)
+  })
+
   selectInput("planned_transects_lty", label = tags$h5(input.lab),
-              choices = cruz.line.type, selected = 1,
+              choices = cruz.line.type, selected = choices.sel,
               multiple = !anyNA(planned_transects_class2()))
 
 })
