@@ -431,11 +431,13 @@ ui.dasPlot <- function() {
                 ),
                 conditionalPanel(
                   condition = "input.das_effort == 2",
-                  helpText(""),
+                  helpText("Note that to display interactive effort your cursor",
+                           "must be near the start or end points of the effort,",
+                           "rather than just the effort line displayed in the map"),
                   fluidRow(
                     column(4, radioButtons("das_effort_interactive", label = NULL,
                                            choices = list("Non-interactive plot" = 1,
-                                                          "View and label effort lines interactively" = 2),
+                                                          "View and label effort interactively" = 2),
                                            selected = 1)),
                     column(
                       width = 8,
