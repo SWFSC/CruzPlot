@@ -1,5 +1,5 @@
 ## Release summary
-This is a minor release to fix a small bug
+This is a minor release to fix several small bugs
 
 Re the notes at https://cran.rstudio.com//web/checks/check_results_CruzPlot.html ("All declared Imports should be used"): imports that aren't explicitly used are required by the Shiny app, which is the primary component of the CruzPlot package.
 

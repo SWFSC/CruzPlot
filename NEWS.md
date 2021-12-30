@@ -1,6 +1,8 @@
-# CruzPlot 1.4.7 (in development)
+# CruzPlot 1.4.7
 
 * Fixed a bug where the planned transects did not properly load from a saved workspace
+
+* Fixed issues in the save map feature
 
 
 # CruzPlot 1.4.6

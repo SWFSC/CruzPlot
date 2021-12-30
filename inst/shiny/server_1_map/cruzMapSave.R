@@ -55,8 +55,8 @@ output$downloadMap <- downloadHandler(
     file.res <- input$download_res
 
     if (input$download_dim == 1) {
-      file.width <- session$clientData$output_plot1_width / plot.res
-      file.height <- session$clientData$output_plot1_height / plot.res
+      file.width <- session$clientData$output_plot1b_width / plot.res
+      file.height <- session$clientData$output_plot1b_height / plot.res
 
     } else if (input$download_dim == 2) {
       file.width <- input$download_width
