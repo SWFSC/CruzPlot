@@ -2,7 +2,6 @@
 
 plotDownload <- function() {
   plotMap()()
-  plotInteractive()()
 }
 
 ### Render download button, with checks
