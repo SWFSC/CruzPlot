@@ -1,6 +1,6 @@
 Package: CruzPlot
 Title: Plot Shipboard DAS Data
-Version: 1.4.7
+Version: 1.4.8
 Authors@R: 
     c(person("Sam", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov", comment = c(ORCID = "0000-0001-6071-8186")), 
       person("Tim", "Gerrodette", role = c("aut")))
@@ -8,8 +8,10 @@ Description: A utility program oriented to create maps, plot data, and do basic 
     of 'DAS' data <https://swfsc-publications.fisheries.noaa.gov/publications/TM/SWFSC/NOAA-TM-NMFS-SWFSC-305.PDF> 
     produced by 'WinCruz' from the Southwest Fisheries Science Center.
     <https://www.fisheries.noaa.gov/west-coast/science-data/california-current-marine-mammal-assessment-program>.
-URL: https://smwoodman.github.io/CruzPlot/, https://github.com/smwoodman/CruzPlot/
+URL: https://smwoodman.github.io/CruzPlot/,
+    https://github.com/smwoodman/CruzPlot/
 BugReports: https://github.com/smwoodman/CruzPlot/issues/
+Depends: R (>= 4.0.0)
 Imports: 
     dplyr,
     DT,
@@ -25,6 +27,6 @@ Imports:
 Suggests:
     httr, 
     testthat
-License: GPL-3
+License: CC0
 Encoding: UTF-8
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.0

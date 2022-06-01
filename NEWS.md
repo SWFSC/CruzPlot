@@ -1,3 +1,10 @@
+# CruzPlot 1.4.8
+
+* CruzPlot now depends on R >= 4.0.0 for consistency across DAS packages
+
+* Updated License to CC0 for consistency across DAS packages
+
+
 # CruzPlot 1.4.7
 
 * Fixed a bug where the planned transects did not properly load from a saved workspace
