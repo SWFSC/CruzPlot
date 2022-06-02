@@ -7,9 +7,7 @@
 
 [![CRAN
 version](http://www.r-pkg.org/badges/version/CruzPlot)](https://cran.r-project.org/package=CruzPlot)
-[![R-CMD-check](https://github.com/smwoodman/CruzPlot/workflows/R-CMD-check/badge.svg)](https://github.com/smwoodman/CruzPlot/actions)
-<!-- [![Travis build status](https://travis-ci.com/smwoodman/CruzPlot.svg?branch=master)](https://travis-ci.com/smwoodman/CruzPlot) -->
-<!-- [![AppVeyor build status](https://ci.appveyor.com/api/projects/status/github/smwoodman/CruzPlot?branch=master&svg=true)](https://ci.appveyor.com/project/smwoodman/CruzPlot) -->
+[![R-CMD-check](https://github.com/smwoodman/CruzPlot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/smwoodman/CruzPlot/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 CruzPlot is an R package that contains a GUI for creating maps, plotting
