@@ -1,3 +1,8 @@
+# CruzPlot 1.4.9.9000
+
+* Moved repo to https://github.com/swfsc, and updated all associated documentation. 
+
+
 # CruzPlot 1.4.8
 
 * CruzPlot now depends on R >= 4.0.0 for consistency across DAS packages
@@ -117,7 +122,7 @@
 
 ### DAS data
 
-* CruzPlot now uses [swfscDAS](https://smwoodman.github.io/swfscDAS/) for processing DAS data
+* CruzPlot now uses [swfscDAS](https://swfsc.github.io/swfscDAS/) for processing DAS data
 
 * Users can load their own species codes file if they do not wish to use the default SpCodes.dat
 

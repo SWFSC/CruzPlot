@@ -19,4 +19,3 @@ from data files in the "DAS" format produced by WinCruz.
 \author{
 Sam Woodman \email{sam.woodman@noaa.gov}
 }
-\keyword{package}

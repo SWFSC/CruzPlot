@@ -2,8 +2,8 @@
 
 <!-- badges: start -->
 
-[![CRAN version](http://www.r-pkg.org/badges/version/CruzPlot)](https://cran.r-project.org/package=CruzPlot) [![R-CMD-check](https://github.com/smwoodman/CruzPlot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/smwoodman/CruzPlot/actions/workflows/R-CMD-check.yaml)
-
+[![CRAN version](http://www.r-pkg.org/badges/version/CruzPlot)](https://cran.r-project.org/package=CruzPlot)
+[![R-CMD-check](https://github.com/SWFSC/CruzPlot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SWFSC/CruzPlot/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 CruzPlot is an R package that contains a GUI for creating maps, plotting data, and performing basic data summaries from data files in the “DAS” format (typically produced by the SWFSC software WinCruz).

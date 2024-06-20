@@ -5,12 +5,10 @@
 #'
 #' @name CruzPlot-package
 #' @aliases cruzplot CruzPlot
-#' @docType package
 #' @title CruzPlot
 #' @author Sam Woodman \email{sam.woodman@@noaa.gov}
 #' @seealso \url{https://smwoodman.github.io/CruzPlot/}
 #'
 #' @importFrom shiny runApp
 #'
-#' @keywords package
-NULL
+"_PACKAGE"

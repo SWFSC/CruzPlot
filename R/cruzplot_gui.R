@@ -8,8 +8,6 @@
 #' @examples
 #' if (interactive()) cruzplot_gui(launch.browser = TRUE)
 #'
-#' @seealso \url{https://smwoodman.github.io/CruzPlot/}
-#'
 #' @export
 cruzplot_gui <- function(launch.browser = TRUE) {
   appDir <- system.file("shiny", package = "CruzPlot")

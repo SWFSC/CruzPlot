@@ -17,6 +17,3 @@ Open the CruzPlot utility program, an R Shiny application
 if (interactive()) cruzplot_gui(launch.browser = TRUE)
 
 }
-\seealso{
-\url{https://smwoodman.github.io/CruzPlot/}
-}

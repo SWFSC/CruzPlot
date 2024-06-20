@@ -1,16 +1,16 @@
 Package: CruzPlot
 Title: Plot Shipboard DAS Data
-Version: 1.4.8
+Version: 1.4.9.9000
 Authors@R: 
     c(person("Sam", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov", comment = c(ORCID = "0000-0001-6071-8186")), 
       person("Tim", "Gerrodette", role = c("aut")))
-Description: A utility program oriented to create maps, plot data, and do basic data summaries
-    of 'DAS' data <https://swfsc-publications.fisheries.noaa.gov/publications/TM/SWFSC/NOAA-TM-NMFS-SWFSC-305.PDF> 
-    produced by 'WinCruz' from the Southwest Fisheries Science Center.
+Description: A utility program oriented to create maps, plot data, and do basic data summaries of DAS data files. 
+    These files are typically, but do not have to be 
+    DAS <https://swfsc-publications.fisheries.noaa.gov/publications/TM/SWFSC/NOAA-TM-NMFS-SWFSC-305.PDF> data
+    produced by the Southwest Fisheries Science Center (SWFSC) program 'WinCruz'
     <https://www.fisheries.noaa.gov/west-coast/science-data/california-current-marine-mammal-assessment-program>.
-URL: https://smwoodman.github.io/CruzPlot/,
-    https://github.com/smwoodman/CruzPlot/
-BugReports: https://github.com/smwoodman/CruzPlot/issues/
+URL: https://swfsc.github.io/CruzPlot/, https://github.com/swfsc/CruzPlot/
+BugReports: https://github.com/swfsc/CruzPlot/issues/
 Depends: R (>= 4.0.0)
 Imports: 
     dplyr,
@@ -29,4 +29,4 @@ Suggests:
     testthat
 License: CC0
 Encoding: UTF-8
-RoxygenNote: 7.2.0
+RoxygenNote: 7.3.1
