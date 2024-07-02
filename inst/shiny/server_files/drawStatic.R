@@ -226,7 +226,9 @@ if (input$planned_transects_plot) {
           } else if (nrow(x) == 1){
             validate(need(FALSE, "Error in planned transect processing"))
           } else {
-            list(x$lon, x$lat, unname(pltrans.colors[as.character(i)]), unname(pltrans.lty[as.character(j)]))
+            list(x$lon, x$lat,
+                 unname(pltrans.colors[as.character(i)]),
+                 unname(pltrans.lty[as.character(j)]))
           }
         })
       })
@@ -351,25 +353,29 @@ if (input$tick) {
   # Draw major and minor tick marks
   if (tick.lon.bool$bot[1]) {
     axis(1, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale, family = tick.param$font)
+         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+         family = tick.param$font)
     axis(1, at = tick.lon$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
          tcl = par("tcl") *0.4*tick.param$len)
   }
   if (tick.lat.bool$left[1]) {
     axis(2, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale, family = tick.param$font)
+         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+         family = tick.param$font)
     axis(2, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
          tcl = par("tcl") * 0.4*tick.param$len)
   }
   if (tick.lon.bool$top[1]) {
     axis(3, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale, family = tick.param$font)
+         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+         family = tick.param$font)
     axis(3, at = tick.lon$min, labels = FALSE, lwd = 0,  lwd.ticks = 1,
          tcl = par("tcl") * 0.4*tick.param$len)
   }
   if (tick.lat.bool$right[1]) {
     axis(4, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale, family = tick.param$font)
+         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+         family = tick.param$font)
     axis(4, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
          tcl = par("tcl") * 0.4*tick.param$len)
   }

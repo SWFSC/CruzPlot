@@ -6,7 +6,7 @@
 [![R-CMD-check](https://github.com/SWFSC/CruzPlot/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/SWFSC/CruzPlot/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-CruzPlot is an R package that contains a GUI for creating maps, plotting data, and performing basic data summaries from data files in the “DAS” format (typically produced by the SWFSC software WinCruz).
+CruzPlot is an R package that contains a GUI for creating maps, plotting data, and performing basic data summaries from data files in the “DAS” format, typically produced by the SWFSC software WinCruz. However, see the [swfscDAS](https://github.com/SWFSC/swfscDAS/) for more discussion around DAS data.
 
 ## Installation
 
