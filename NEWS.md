@@ -2,6 +2,8 @@
 
 * Moved repo to https://github.com/swfsc, and updated all associated documentation. 
 
+* Changed license to Apache License (== 2), based on NMFS guidance at https://nmfs-opensci.github.io/GitHub-Guide
+
 
 # CruzPlot 1.4.8
 
