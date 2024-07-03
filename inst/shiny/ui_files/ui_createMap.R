@@ -303,9 +303,12 @@ ui.createMap <- function() {
               conditionalPanel(
                 condition = "input.grid",
                 fluidRow(
-                  column(3, selectInput("grid_line_color", label = tags$h5("Line color"), choices = cruz.palette.color, selected = "black")),
-                  column(3, numericInput("grid_line_width", label = tags$h5("Line width"), value = 1, min = 1, max = 6, step = 1)),
-                  column(3, selectInput("grid_line_type", label = tags$h5("Line type"), choices = cruz.line.type, selected = 1))
+                  column(3, selectInput("grid_line_color", label = tags$h5("Line color"),
+                                        choices = cruz.palette.color, selected = "black")),
+                  column(3, numericInput("grid_line_width", label = tags$h5("Line width"),
+                                         value = 1, min = 1, max = 6, step = 1)),
+                  column(3, selectInput("grid_line_type", label = tags$h5("Line type"),
+                                        choices = cruz.line.type, selected = 1))
                 )
               )
             )
@@ -328,17 +331,28 @@ ui.createMap <- function() {
                     column(6, radioButtons("download_dim", tags$h5("File dimensions"),
                                            choices = list("Use dimensions of plot window" = 1, "Specify dimensions" = 2),
                                            selected = 1)),
-                    column(6, numericInput("download_res", tags$h5("Resolution (ppi)"), value = 300, step = 50, min = 0))
+                    column(6, numericInput("download_res", tags$h5("Resolution (ppi)"),
+                                           value = 300, step = 50, min = 0))
                   ),
-                  conditionalPanel("input.download_dim == 1", helpText("Downloaded map should look exactly like displayed map")),
+                  conditionalPanel(
+                    condition = "input.download_dim == 1",
+                    helpText("Downloaded map will have the same dimensions as the displayed map")
+                  ),
                   conditionalPanel(
                     condition = "input.download_dim == 2",
                     fluidRow(
-                      column(6, numericInput("download_width", tags$h5("File width (inches)"), value = 10, step = 1, min = 0)),
-                      column(6, numericInput("download_height", tags$h5("File height (inches)"), value = 10, step = 1, min = 0))
+                      column(6, numericInput("download_width", tags$h5("File width (inches)"),
+                                             value = 10, step = 1, min = 0)),
+                      column(6, numericInput("download_height", tags$h5("File height (inches)"),
+                                             value = 10, step = 1, min = 0))
                     )
                   )
                 )
+              ),
+              conditionalPanel(
+                condition = "input.download_format != 1",
+                checkboxInput("background_transparent", "Make plot background transparent",
+                              value = TRUE)
               ),
               uiOutput("downloadMap_button")
             )

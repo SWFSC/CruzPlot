@@ -63,17 +63,22 @@ output$downloadMap <- downloadHandler(
       file.height <- input$download_height
     }
 
+    plot.bg <- if_else(input$background_transparent, "transparent", "white")
+
     # Save map
     if (input$download_format == 1) {
-      jpeg(file, width = file.width, height = file.height, units = "in", res = file.res)
+      jpeg(file, width = file.width, height = file.height, units = "in",
+           res = file.res)
       plotDownload()
       dev.off()
     } else if (input$download_format == 2) {
-      pdf(file, width = file.width, height = file.height, onefile = FALSE)
+      pdf(file, width = file.width, height = file.height, onefile = FALSE,
+          bg = plot.bg)
       plotDownload()
       dev.off()
     } else if (input$download_format == 3) {
-      png(file, width = file.width, height = file.height, units = "in", res = file.res)
+      png(file, width = file.width, height = file.height, units = "in",
+          res = file.res, bg = plot.bg)
       plotDownload()
       dev.off()
     }
