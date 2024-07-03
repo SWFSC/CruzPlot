@@ -225,8 +225,7 @@ server <- function(input, output, session) {
       # oldpar <- par(no.readonly = TRUE)
       # on.exit(par(oldpar))
 
-      source(file.path("server_files", "drawStatic.R"), local = TRUE, chdir = TRUE)
-      source(file.path("server_files", "drawInteractive.R"), local = TRUE, chdir = TRUE)
+      source(file.path("server_files", "cruzDraw.R"), local = TRUE, chdir = TRUE)
     }
   })
 }
