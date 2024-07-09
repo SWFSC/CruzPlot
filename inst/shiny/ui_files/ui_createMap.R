@@ -352,7 +352,7 @@ ui.createMap <- function() {
               conditionalPanel(
                 condition = "input.download_format != 1",
                 checkboxInput("background_transparent", "Make plot background transparent",
-                              value = TRUE)
+                              value = FALSE)
               ),
               uiOutput("downloadMap_button")
             )
