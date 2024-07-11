@@ -4,6 +4,10 @@
 
 * Changed license to Apache License (== 2), based on NMFS guidance at https://nmfs-opensci.github.io/GitHub-Guide
 
+* Added ability to download maps with a transparent background (#5)
+
+* Add CruzPlot package version number to the Shiny app
+
 
 # CruzPlot 1.4.8
 

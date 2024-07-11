@@ -88,7 +88,8 @@ source(file.path("ui_files", "ui_other.R"), local = TRUE, chdir = TRUE)
 
 # UI function
 ui <- dashboardPage(
-  dashboardHeader(title = "CruzPlot", titleWidth = "200"),
+  dashboardHeader(title = paste0("CruzPlot v", packageVersion("CruzPlot")),
+                  titleWidth = "220"),
 
   dashboardSidebar(
     sidebarMenu(
@@ -110,7 +111,7 @@ ui <- dashboardPage(
       numericInput("map_size", "Map height (pixels)", value = 600, min = 0, step = 100),
       tags$br(),
       actionButton("stop", "Close CruzPlot")
-    ), width = "200"
+    ), width = "220"
   ),
 
   dashboardBody(
