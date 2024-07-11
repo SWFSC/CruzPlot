@@ -8,7 +8,7 @@ Description: A utility program oriented to create maps, plot data, and do basic 
     These files are typically, but do not have to be 
     DAS <https://swfsc-publications.fisheries.noaa.gov/publications/TM/SWFSC/NOAA-TM-NMFS-SWFSC-305.PDF> data
     produced by the Southwest Fisheries Science Center (SWFSC) program 'WinCruz'.
-URL: https://swfsc.github.io/CruzPlot/, https://github.com/swfsc/CruzPlot/
+URL: https://github.com/swfsc/CruzPlot/, https://swfsc.github.io/CruzPlot/, https://connect.fisheries.noaa.gov/CruzPlot
 BugReports: https://github.com/swfsc/CruzPlot/issues/
 Depends: R (>= 4.0.0)
 Imports: 
