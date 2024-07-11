@@ -28,8 +28,6 @@ After updating CruzPlot, it is recommended to create and save new workspaces, ra
 
 ## Running CruzPlot
 
-## eSDM GUI
-
 If you have a stable internet connection, you can access CruzPlot online at <https://connect.fisheries.noaa.gov/CruzPlot>. You do not need to have R or RStudio installed to access CruzPlot online.
 
 To open and run CruzPlot locally on your computer, run the following code in RStudio:
