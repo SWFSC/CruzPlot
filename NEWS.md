@@ -1,12 +1,12 @@
-# CruzPlot 1.4.9.9000
+# CruzPlot 1.4.9
 
 * Moved repo to https://github.com/swfsc, and updated all associated documentation.
-
-* Published the CruzPlot shiny app at https://connect.fisheries.noaa.gov/CruzPlot
 
 * Changed license to Apache License (== 2), based on NMFS guidance at https://nmfs-opensci.github.io/GitHub-Guide
 
 * Added ability to download maps with a transparent background (#5)
+
+* Published the CruzPlot shiny app at https://connect.fisheries.noaa.gov/CruzPlot
 
 * Add CruzPlot package version number to the shiny app
 
