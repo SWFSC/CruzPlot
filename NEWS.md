@@ -1,3 +1,8 @@
+# CruzPlot 1.4.10 (dev)
+
+* Provide a more information error message when CruzPlot cannot load a DAS file (#6)
+
+
 # CruzPlot 1.4.9
 
 * Moved repo to https://github.com/swfsc, and updated all associated documentation.

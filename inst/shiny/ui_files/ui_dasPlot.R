@@ -33,37 +33,58 @@ ui.dasPlot <- function() {
           fluidRow(
             box(
               title = "DAS Data", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+              helpText("For details about these parameters,",
+                       actionLink("das_file_help", "click here"), "or see the official",
+                       tags$a(href = "https://swfsc.github.io/swfscDAS/reference/index.html",
+                              "swfscDAS documentation")),
               fluidRow(
-                column(
-                  width = 6,
-                  helpText("For details about these parameters,",
-                           actionLink("das_file_help", "click here"), "or see the official",
-                           tags$a(href = "https://swfsc.github.io/swfscDAS/reference/index.html",
-                                  "swfscDAS documentation")),
-                  fluidRow(
-                    column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading each file"),
-                                           value = 0, min = 0)),
-                    column(6, numericInput("das_file_days_gap", tags$h5("days.gap argument of das_process()"),
-                                           value = 20, min = 0, step = 1))
-                  ),
-                  fluidRow(
-                    column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
-                                          choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
-                    column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
-                                          choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
-                  )
-                ),
-                column(
-                  width = 6,
-                  helpText("To load DAS data file(s), first set the desired parameters, and then click the \"Browse...\" button and",
-                           "select the file(s) you want to load. Hold the Shift key to select multiple files.",
-                           "If you change the parameters, you will have to Browse and select the file(s) again.",
-                           "To 'remove' a file, browse again and select only the desired DAS file(s)"),
-                  fileInput("das_file", label = tags$h5("DAS file input"), multiple = TRUE),
-                  textOutput("das_file_load_text"),
-                  tags$span(textOutput("das_loaded_text"), style = "color: blue;")
-                )
-              )
+                column(3, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading each file"),
+                                       value = 0, min = 0)),
+                column(3, numericInput("das_file_days_gap", tags$h5("days.gap argument of das_process()"),
+                                       value = 20, min = 0, step = 1)),
+                column(3, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
+                                      choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
+                column(3, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
+                                      choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+              ),
+              helpText("To load DAS data file(s), first set the desired parameters, and then click the \"Browse...\" button and",
+                       "select the file(s) you want to load. Hold the Shift key to select multiple files.",
+                       "If you change the parameters, you will have to Browse and select the file(s) again.",
+                       "To 'remove' a file, browse again and select only the desired DAS file(s)"),
+              fileInput("das_file", label = tags$h5("DAS file input"), multiple = TRUE),
+              textOutput("das_file_load_text"),
+              tags$span(textOutput("das_loaded_text"), style = "color: blue;")
+              # fluidRow(
+              #   column(
+              #     width = 6,
+              #     helpText("For details about these parameters,",
+              #              actionLink("das_file_help", "click here"), "or see the official",
+              #              tags$a(href = "https://swfsc.github.io/swfscDAS/reference/index.html",
+              #                     "swfscDAS documentation")),
+              #     fluidRow(
+              #       column(6, numericInput("das_file_skip", tags$h5("Number of lines to skip before reading each file"),
+              #                              value = 0, min = 0)),
+              #       column(6, numericInput("das_file_days_gap", tags$h5("days.gap argument of das_process()"),
+              #                              value = 20, min = 0, step = 1))
+              #     ),
+              #     fluidRow(
+              #       column(6, selectInput("das_file_reset_event", tags$h5("reset.event argument of das_process()"),
+              #                             choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
+              #       column(6, selectInput("das_file_reset_effort", tags$h5("reset.effort argument of das_process()"),
+              #                             choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
+              #     )
+              #   ),
+              #   column(
+              #     width = 6,
+              #     helpText("To load DAS data file(s), first set the desired parameters, and then click the \"Browse...\" button and",
+              #              "select the file(s) you want to load. Hold the Shift key to select multiple files.",
+              #              "If you change the parameters, you will have to Browse and select the file(s) again.",
+              #              "To 'remove' a file, browse again and select only the desired DAS file(s)"),
+              #     fileInput("das_file", label = tags$h5("DAS file input"), multiple = TRUE),
+              #     textOutput("das_file_load_text"),
+              #     tags$span(textOutput("das_loaded_text"), style = "color: blue;")
+              #   )
+              # )
             ),
             box(
               title = "Species codes", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
@@ -72,7 +93,7 @@ ui.dasPlot <- function() {
                        "CruzPlot contains a default SpCodes.dat file (last modified 26 May 2020),",
                        "but you can also load your own species codes file.",
                        "This file must follow the same format as the default SpCodes.dat; see the manual for details"),
-              ui.new.line(),
+              # ui.new.line(),
               fluidRow(
                 column(5, fileInput("das_spcodes_file", tags$h5("Load species codes file"), accept = ".dat")),
                 column(6, offset = 1, tags$br(), tags$br(), actionButton("das_spcodes_default", "Load default species codes"))
