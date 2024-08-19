@@ -54,11 +54,12 @@ das_file_load <- eventReactive(input$das_file, {
 
   validate(
     need(isTruthy(das.proc),
-         paste("Error: unable to read and process the provided DAS file(s).\n\n",
-               "The call to das_read and das_process from the swfscDAS package",
-               "returned the following error. Please use `swfscDAS::das_check`",
-               " for a more information error message.\n\n",
-               attr(das.proc, "condition")))
+         paste0("Error: unable to read and process the provided DAS file(s).",
+                "\n\nThe call to das_read and das_process from the ",
+                "swfscDAS package returned the following error. ",
+                "Please use `swfscDAS::das_check` ",
+                "for a more informative error message.\n\n",
+                attr(das.proc, "condition")))
   )
 
   # Correct filename
