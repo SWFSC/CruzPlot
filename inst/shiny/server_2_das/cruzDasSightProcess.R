@@ -370,7 +370,7 @@ cruzDasSightSpecies <- reactive({
 
     #--------------------------------------------------------------------------
   } else {
-    validate("Invlaid sighting type (input$das_sighting_type) selection")
+    validate("Invalid sighting type (input$das_sighting_type) selection")
   }
 
 
