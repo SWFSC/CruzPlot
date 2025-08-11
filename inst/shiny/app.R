@@ -80,10 +80,11 @@ ui.select.instructions <- function() {
 
 
 # Load files with UI code
-source(file.path("ui_files", "ui_createMap.R"), local = TRUE, chdir = TRUE)
-source(file.path("ui_files", "ui_dasPlot.R"), local = TRUE, chdir = TRUE)
-source(file.path("ui_files", "ui_nonDasPlot.R"), local = TRUE, chdir = TRUE)
-source(file.path("ui_files", "ui_other.R"), local = TRUE, chdir = TRUE)
+source(file.path("cruzUI.R"), local = TRUE, chdir = TRUE)
+# source(file.path("ui_files", "ui_createMap.R"), local = TRUE, chdir = TRUE)
+# source(file.path("ui_files", "ui_dasPlot.R"), local = TRUE, chdir = TRUE)
+# source(file.path("ui_files", "ui_nonDasPlot.R"), local = TRUE, chdir = TRUE)
+# source(file.path("ui_files", "ui_other.R"), local = TRUE, chdir = TRUE)
 
 
 # UI function
@@ -173,14 +174,15 @@ server <- function(input, output, session) {
   ### Map tab
   map.height <- reactive(input$map_size)
 
-  source(file.path("server_1_map", "cruzMapCoastline.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_1_map", "cruzMapColorGrid.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_1_map", "cruzMapLabel.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_1_map", "cruzMapPlannedTransects.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_1_map", "cruzMapRange.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_1_map", "cruzMapScaleBar.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_1_map", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_1_map", "cruzMapSave.R"), local = TRUE, chdir = TRUE)
+  source(file.path("cruzMap.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_1_map", "cruzMapCoastline.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_1_map", "cruzMapColorGrid.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_1_map", "cruzMapLabel.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_1_map", "cruzMapPlannedTransects.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_1_map", "cruzMapRange.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_1_map", "cruzMapScaleBar.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_1_map", "cruzMapTick.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_1_map", "cruzMapSave.R"), local = TRUE, chdir = TRUE)
 
 
   #----------------------------------------------------------------------------
@@ -189,21 +191,22 @@ server <- function(input, output, session) {
   source(file.path("server_files", "cruzSpeciesCodes.R"), local = TRUE, chdir = TRUE)
 
   # Load DAS file, and do related actions
-  source(file.path("server_2_das", "cruzDasGeneral.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasRenderUI.R"), local = TRUE, chdir = TRUE)
-
-  source(file.path("server_2_das", "cruzDasSightProcess.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasSightFilter.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasSightRange.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasSightSymbol.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasSightLegend.R"), local = TRUE, chdir = TRUE)
-
-  source(file.path("server_2_das", "cruzDasEffortEvent.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasEffortOther.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasEffortLegend.R"), local = TRUE, chdir = TRUE)
-
-  source(file.path("server_2_das", "cruzDasInteractive.R"), local = TRUE, chdir = TRUE)
-  source(file.path("server_2_das", "cruzDasTabular.R"), local = TRUE, chdir = TRUE)
+  source(file.path("cruzDas.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasGeneral.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasRenderUI.R"), local = TRUE, chdir = TRUE)
+  #
+  # source(file.path("server_2_das", "cruzDasSightProcess.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasSightFilter.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasSightRange.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasSightSymbol.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasSightLegend.R"), local = TRUE, chdir = TRUE)
+  #
+  # source(file.path("server_2_das", "cruzDasEffortEvent.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasEffortOther.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasEffortLegend.R"), local = TRUE, chdir = TRUE)
+  #
+  # source(file.path("server_2_das", "cruzDasInteractive.R"), local = TRUE, chdir = TRUE)
+  # source(file.path("server_2_das", "cruzDasTabular.R"), local = TRUE, chdir = TRUE)
 
 
   #----------------------------------------------------------------------------

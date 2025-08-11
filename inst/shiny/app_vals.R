@@ -23,14 +23,27 @@ turtle.codes <- c("CC", "CM", "DC", "EI", "HT", "LK", "LV", "ND", "UH", "UT")
 
 # Ordered 1) by like color and 2) so that detailed eff default is as desired
 cruz.palette.color <- list(
-  "Black" = "black", "Purple" = "purple", "Light purple" = "darkorchid1",
-  "Dark blue" = "darkblue", "Blue" = "blue",
-  "Sky blue" = "dodgerblue2", "Light blue" = "lightblue",
-  "Green" = "forestgreen", "Light green" = "green", "Aqua" = "aquamarine2", "Yellow" = "yellow",
+  "Black" = "black",
+  "Purple" = "purple",
+  "Light purple" = "darkorchid1",
+  "Dark blue" = "darkblue",
+  "Blue" = "blue",
+  "Sky blue" = "dodgerblue2",
+  "Light blue" = "lightblue",
+  "Green" = "forestgreen",
+  "Light green" = "green",
+  "Aqua" = "aquamarine2",
+  "Yellow" = "yellow",
   "Orange" = "orange",
-  "Brown" = "tan4", "Light brown" = "wheat3", "Tan" = "bisque1",
-  "Pink" = "hotpink", "Light red" = "indianred2", "Red" = "red", "Dark red" = "red4",
-  "Gray" = "gray", "White" = "white"
+  "Brown" = "tan4",
+  "Light brown" = "wheat3",
+  "Tan" = "bisque1",
+  "Pink" = "hotpink",
+  "Light red" = "indianred2",
+  "Red" = "red",
+  "Dark red" = "red4",
+  "Gray" = "gray",
+  "White" = "white"
 )
 
 cruz.palette.gray <- list(
@@ -39,13 +52,27 @@ cruz.palette.gray <- list(
 )
 
 cruz.symbol.type <- list(
-  "0: Open Square" = 0, "1: Open Circle" = 1, "2: Open Up Triangle" = 2, "3: Plus" = 3,
-  "4: X" = 4, "5: Open Diamond" = 5, "6: Open Down Triangle" = 6, "7: Square with X" = 7,
-  "8: Asterisk" = 8, "9: Diamond with Plus" = 9, "10: Circle with Plus" = 10,
-  "11: Up-Down Triangles" = 11, "12: Square with Plus" = 12, "13: Circle with X" = 13,
-  "14: Square with Up Triangle" = 14, "15: Filled Square" = 15,
-  "16: Filled Circle" = 16, "17: Filled Up Triangle" = 17, "18: Filled Diamond" = 18,
-  "19: Filled Large Circle" = 19, "20: Filled Small Circle" = 20
+  "0: Open Square" = 0,
+  "1: Open Circle" = 1,
+  "2: Open Up Triangle" = 2,
+  "3: Plus" = 3,
+  "4: X" = 4,
+  "5: Open Diamond" = 5,
+  "6: Open Down Triangle" = 6,
+  "7: Square with X" = 7,
+  "8: Asterisk" = 8,
+  "9: Diamond with Plus" = 9,
+  "10: Circle with Plus" = 10,
+  "11: Up-Down Triangles" = 11,
+  "12: Square with Plus" = 12,
+  "13: Circle with X" = 13,
+  "14: Square with Up Triangle" = 14,
+  "15: Filled Square" = 15,
+  "16: Filled Circle" = 16,
+  "17: Filled Up Triangle" = 17,
+  "18: Filled Diamond" = 18,
+  "19: Filled Large Circle" = 19,
+  "20: Filled Small Circle" = 20
 )
 
 cruz.line.type <- list(
@@ -67,7 +94,7 @@ symbol.col.code <- unname(unlist(cruz.palette.color))
 symbol.col.gray <- names(cruz.palette.gray)
 symbol.col.code.gray <- unname(unlist(cruz.palette.gray))
 
-# Effort by Beaufrot default
+# Effort by Beaufort default
 eff.bft.default <- c(
   "darkblue", "dodgerblue2", "forestgreen", "green", "orange", "wheat3",
   "hotpink", "indianred2", "red", "red4"
