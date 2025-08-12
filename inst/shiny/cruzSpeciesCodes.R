@@ -60,6 +60,7 @@ cruzSpeciesMammals <- reactive({
 
 cruzSpeciesTurtles <- reactive({
   sp.codes <- req(cruz.list$sp.codes)
+  browser()
   # validate(need(sp.codes, "Please load a species code file in the 'Data' window"))
   ind.turtles <- which(sp.codes$Code %in% turtle.codes)
 

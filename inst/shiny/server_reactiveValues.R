@@ -61,7 +61,7 @@ cruz.tick <- reactiveValues(
 
 
 ###############################################################################
-### Save 'current app environemnt' data
+### Save 'current app environment' data
 # All input values are saved, but only applicable ones are updated in 'load'
 output$save_app_envir <- downloadHandler(
   filename = function() {

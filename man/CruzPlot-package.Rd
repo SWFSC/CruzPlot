@@ -10,8 +10,8 @@
 Create maps of shipboard DAS data
 }
 \details{
-A utility program oriented to create maps, plot data, and do basic data summaries
-from data files in the "DAS" format, typically produced by WinCruz.
+A utility program oriented to create maps, plot data, and do basic data
+summaries from data files in the "DAS" format, typically produced by WinCruz.
 }
 \seealso{
 \url{https://swfsc.github.io/CruzPlot/}
