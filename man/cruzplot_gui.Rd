@@ -4,11 +4,10 @@
 \alias{cruzplot_gui}
 \title{Open CruzPlot}
 \usage{
-cruzplot_gui(launch.browser = TRUE)
+cruzplot_gui(...)
 }
 \arguments{
-\item{launch.browser}{Logical with default of \code{TRUE};
-passed to \code{launch.browser} argument of \code{\link[shiny]{runApp}}}
+\item{...}{passed directly to [shiny::runApp()]}
 }
 \description{
 Open the CruzPlot utility program, an R Shiny application

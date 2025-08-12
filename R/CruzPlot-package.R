@@ -9,6 +9,11 @@
 #' @author Sam Woodman \email{sam.woodman@@noaa.gov}
 #' @seealso \url{https://swfsc.github.io/CruzPlot/}
 #'
-#' @importFrom shiny runApp
+#' @import shiny
+#' @importFrom dplyr between if_else
+#' @importFrom maps map
+#' @importFrom shinydashboard box dashboardBody tabItems tabItem dashboardHeader
+#'   dashboardPage dashboardSidebar sidebarMenu menuItem tabBox
+#' @importFrom shinyjs useShinyjs extendShinyjs js
 #'
 "_PACKAGE"
