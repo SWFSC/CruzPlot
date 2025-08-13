@@ -3,9 +3,15 @@
 \name{cruzTick}
 \alias{cruzTick}
 \alias{cruzTickMinor}
+\alias{cruzTickStart}
+\alias{cruzTickUpdate}
 \title{Tick calculations}
 \usage{
 cruzTickMinor(deg.range, maj.ticks, tick.maj.interval, n = 2)
+
+cruzTickStart(l.range, tick.maj.interval)
+
+cruzTickUpdate(lon.range, lat.range)
 }
 \arguments{
 \item{deg.range}{numeric vector of the range of figure}
@@ -15,6 +21,9 @@ cruzTickMinor(deg.range, maj.ticks, tick.maj.interval, n = 2)
 \item{tick.maj.interval}{width of major tick intervals}
 
 \item{n}{integer; default=2. Number of minor tick marks}
+
+\item{l.range}{numeric vector with two elements: the left and right values
+fopr either the latitude or longitude}
 
 \item{lon.range}{numeric vector with two elements: the left and right longitude values}
 

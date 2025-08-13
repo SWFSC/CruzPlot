@@ -1,15 +1,15 @@
 # Values used in CruzPlot shiny app
 
 #------------------------------------------------------------------------------
-# Countries to be removed for world2 map
-# Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
-remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali", "Burkina Faso", "Ghana", "Togo")
-mapnames <- map("world2", fill = TRUE, plot = FALSE)$names
-mapnames.hires <- map("world2Hires", fill = TRUE, plot = FALSE)$names
-regions.rm <- mapnames[!(mapnames %in% remove)]
-regions.rm.hires <- mapnames.hires[!(mapnames.hires %in% remove)]
+# # NOTE: These objects moved to mod_map_range
+# # Countries to be removed for world2 map
+# # Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
+# remove <- c("UK:Great Britain", "France", "Spain", "Algeria", "Mali", "Burkina Faso", "Ghana", "Togo")
+# mapnames <- map("world2", fill = TRUE, plot = FALSE)$names
+# mapnames.hires <- map("world2Hires", fill = TRUE, plot = FALSE)$names
+# regions.rm <- mapnames[!(mapnames %in% remove)]
+# regions.rm.hires <- mapnames.hires[!(mapnames.hires %in% remove)]
 
-bathy.col <- c("lightsteelblue4", "lightsteelblue3", "lightsteelblue2", "lightsteelblue1")
 
 
 # #MUST BE UPDATED IF TURTLE CODES IN SpCodes.dat ARE CHANGED
@@ -20,6 +20,8 @@ bathy.col <- c("lightsteelblue4", "lightsteelblue3", "lightsteelblue2", "lightst
 
 #------------------------------------------------------------------------------
 # Formatting options used in CruzPlot
+
+bathy.col <- c("lightsteelblue4", "lightsteelblue3", "lightsteelblue2", "lightsteelblue1")
 
 # Ordered 1) by like color and 2) so that detailed eff default is as desired
 cruz.palette.color <- list(
@@ -104,7 +106,7 @@ eff.bft.default <- c(
 #------------------------------------------------------------------------------
 
 usethis::use_data(
-  regions.rm, regions.rm.hires,
+  # regions.rm, regions.rm.hires,
   bathy.col,
   cruz.palette.color,
   cruz.palette.gray,

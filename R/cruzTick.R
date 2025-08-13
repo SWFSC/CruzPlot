@@ -7,13 +7,14 @@
 #' @param deg.range numeric vector of the range of figure
 #' @param lon.range numeric vector with two elements: the left and right longitude values
 #' @param lat.range numeric vector with two elements: the left and right latitude values
+#' @param l.range numeric vector with two elements: the left and right values
+#'   fopr either the latitude or longitude
 #' @param maj.ticks numeric vector of the location of major ticks
 #' @param tick.maj.interval width of major tick intervals
 #' @param n integer; default=2. Number of minor tick marks
 #'
 #' @details
 #' Additional details...
-#'
 #'
 #' @returns
 #' * cruzTickMinor: minor tick locations
@@ -31,6 +32,7 @@ cruzTickMinor <- function (deg.range, maj.ticks, tick.maj.interval, n=2) {
 }
 
 
+#' @name cruzTick
 #' @export
 cruzTickStart <- function(l.range, tick.maj.interval) {
   l.start <- ifelse(
@@ -44,6 +46,7 @@ cruzTickStart <- function(l.range, tick.maj.interval) {
 }
 
 
+#' @name cruzTick
 #' @export
 cruzTickUpdate <- function(lon.range, lat.range) {
   lon.diff <- abs(lon.range[2] - lon.range[1])

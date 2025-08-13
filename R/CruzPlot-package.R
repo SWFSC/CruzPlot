@@ -11,9 +11,11 @@
 #'
 #' @import shiny
 #' @importFrom dplyr between if_else
+#' @importFrom graphics par
 #' @importFrom maps map
 #' @importFrom shinydashboard box dashboardBody tabItems tabItem dashboardHeader
 #'   dashboardPage dashboardSidebar sidebarMenu menuItem tabBox
 #' @importFrom shinyjs useShinyjs extendShinyjs js
+#' @importFrom utils packageVersion
 #'
 "_PACKAGE"

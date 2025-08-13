@@ -1,16 +1,24 @@
 #' Map range module
 #'
-#' Shiny module fro defining map ranges
+#' Shiny module for defining map ranges
 #'
-#' @name map_range
+#' @name mod_map_range
 #'
 #' @param id character used to specify namespace, see [shiny::NS()]
+#'
+#' @details
+#' Additional details...
+#'
+#' @returns The server function returns a list of
+#'   1) the cruz.map.range reactiveValues object and
+#'   2) a reactive of the module's input object, converted to a list via
+#'   [shiny::reactiveValuesToList()]
 #'
 #' @export
 mod_map_range_ui <- function(id) {
   ns <- NS(id)
 
-  ### Set default values for map - keep this format in case they need to be user-provided
+  ### Set default values for map
   start.ll <- data.frame(X = c(-135, -117, 29, 52, 1))
   start.tick <- list(interval = 5, lon = -135, lat = 30)
 
@@ -29,7 +37,7 @@ mod_map_range_ui <- function(id) {
             "In addition, users can automatically change the map range input values",
             "by clicking and holding to draw a box on map, although users still must click 'Replot map'.",
             "To clear the box, click within the plot outside of the box."
-            ),
+          ),
           fluidRow( #Separate to keep input boxes in line even if labels spill over
             column(3, tags$h5("Left longitude")),
             column(3, tags$h5("Right longitude")),
@@ -52,7 +60,7 @@ mod_map_range_ui <- function(id) {
             ),
             column(3, tags$br(), tags$br(), actionButton(ns("map_replot"), "Replot map"))
           ),
-          tags$span(htmlOutput(ns("map_range_message")), style = "color: red;"),
+          # tags$span(htmlOutput(ns("map_range_message")), style = "color: red;"),
           tags$h5("Set the map range to a default study area and replot:"),
           actionButton(ns("map_replot_cce"), "CCE"),
           actionButton(ns("map_replot_cce2"), "Extended CCE"),
@@ -106,6 +114,8 @@ mod_map_range_ui <- function(id) {
   )
 }
 
+
+#' @name mod_map_range
 #' @export
 mod_map_range_server  <- function(id) {
   moduleServer(id, function(input, output, session) {
@@ -115,18 +125,58 @@ mod_map_range_server  <- function(id) {
       world2 = NULL,
       map.name = list()
     )
-    # cruz.map.range <- reactiveValues(
-    #   lon.range = c(-135, -117),
-    #   lat.range = NULL,
-    #   world2 = c(29, 52),
-    #   map.name = list("world", NULL)
-    # )
+
+    # Countries to be removed for world2 map
+    # Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
+    remove <- c(
+      "UK:Great Britain", "France", "Spain", "Algeria", "Mali", "Burkina Faso",
+      "Ghana", "Togo"
+    )
+    mapnames <- map("world2", plot = FALSE)$names
+    mapnames.hires <- map("mapdata::world2Hires", plot = FALSE)$names
+    regions.rm <- base::setdiff(mapnames, remove)
+    regions.rm.hires <- base::setdiff(mapnames.hires, remove)
+    # regions.rm.hires <- mapnames.hires[!(mapnames.hires %in% remove)]
 
     ###############################################################################
     # Update map range when default study area buttons are clicked
     world2_calc <- function(lon.min, lon.max) {
       (lon.max < lon.min) & (lon.min > 0) & (lon.max < 0)
     }
+
+    map_name_calc <- function(world2, res) {
+      # Calculate values that are stored in cruz.map.range#map.name\
+      hires <- (res == 2)
+
+      map.name <- if (world2) {
+        if_else(hires, "mapdata::world2Hires", "world2")
+      } else {
+        if_else(hires, "mapdata::worldHires", "world")
+      }
+
+      reg.toplot <- if (world2 & hires) {
+        regions.rm.hires
+      } else if (world2 & !hires) {
+        regions.rm
+      } else {
+        NULL
+      }
+
+      list(map.name, reg.toplot)
+    }
+
+    lon_range_world2 <- function(lon.range, world2) {
+      lon.min <- lon.range[1]
+      lon.max <- lon.range[2]
+
+      if (world2) {
+        lon.min <- ifelse(lon.min < 0, 360 + lon.min, lon.min)
+        lon.max <- ifelse(lon.max < 0, 360 + lon.max, lon.max)
+      }
+
+      c(lon.min, lon.max)
+    }
+
 
     default_range_set <- function(ll.vals, res) {
       world2 <- world2_calc(ll.vals[1], ll.vals[2])
@@ -136,17 +186,12 @@ mod_map_range_server  <- function(id) {
       updateNumericInput(session, "lat_bot", value = ll.vals[3])
       updateNumericInput(session, "lat_top", value = ll.vals[4])
 
-      cruz.map.range$lon.range <- c(ll.vals[1], if_else(world2, ll.vals[2] + 360, ll.vals[2]))
+      lon.range <- lon_range_world2(c(ll.vals[1], ll.vals[2]), world2)
+
+      cruz.map.range$lon.range <- lon.range
       cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])
       cruz.map.range$world2 <- world2
-      cruz.map.range$map.name <- list(
-        if (world2) {
-          if_else(res == 2, "world2Hires", "world2")
-        } else {
-          if_else(res == 2, "worldHires", "world")
-        },
-        if (world2) {if (res == 2) regions.rm.hires else regions.rm} else NULL
-      )
+      cruz.map.range$map.name <- map_name_calc(world2, res)
     }
 
     ### CCE
@@ -230,7 +275,7 @@ mod_map_range_server  <- function(id) {
 
     ###############################################################################
     # Series of steps/actions triggered by input$map_replot
-    map.range.message <- reactiveVal(NULL)
+    # map.range.message <- reactiveVal(NULL)
 
     observeEvent(input$map_replot, {
       lon.min <- input$lon_left
@@ -256,45 +301,49 @@ mod_map_range_server  <- function(id) {
 
       # Determine if world2 map should be used and thus if lons need to be rescaled
       world2 <- world2_calc(lon.min, lon.max)
-
-      if (world2) {
-        lon.min <- ifelse(lon.min < 0, 360 + lon.min, lon.min)
-        lon.max <- ifelse(lon.max < 0, 360 + lon.max, lon.max)
-      }
+      # browser()
+      lon.range <- lon_range_world2(c(lon.min, lon.max), world2)
+      # if (world2) {
+      #   lon.min <- ifelse(lon.min < 0, 360 + lon.min, lon.min)
+      #   lon.max <- ifelse(lon.max < 0, 360 + lon.max, lon.max)
+      # }
 
       # Get map name
-      hires <- input$resolution == 2
+      # m <- map_name_calc(world2, input$resolution)
+      # hires <- input$resolution == 2
+      #
+      # browser()
+      # m <- if_else(hires, "Hires", "")
+      # m <- if_else(world2, paste0("world2", m), paste0("world", m))
 
-      m <- if_else(hires, "Hires", "")
-      m <- if_else(world2, paste0("world2", m), paste0("world", m))
-
-      #regions.rm and regions.rm.hires are created in server file
-      reg.toplot <- if (world2 & hires) {
-        regions.rm.hires
-      } else if (world2 & !hires) {
-        regions.rm
-      } else {
-        NULL
-      }
+      # #regions.rm and regions.rm.hires are created in server file
+      # reg.toplot <- if (world2 & hires) {
+      #   regions.rm.hires
+      # } else if (world2 & !hires) {
+      #   regions.rm
+      # } else {
+      #   NULL
+      # }
 
       # Save as reactive values
-      cruz.map.range$lon.range <- c(lon.min, lon.max)
+      cruz.map.range$lon.range <- lon.range
       cruz.map.range$lat.range <- c(lat.min, lat.max)
       cruz.map.range$world2 <- world2
-      cruz.map.range$map.name <- list(m, reg.toplot)
+      cruz.map.range$map.name <- map_name_calc(world2, input$resolution)
 
       # Reset map brush, in case
       session$resetBrush("map_brush")
     }, ignoreNULL = FALSE, priority = 9)
 
 
-    output$map_range_message <- renderUI({
-      HTML(req(map.range.message()))
-    })
+    # output$map_range_message <- renderUI({
+    #   HTML(req(map.range.message()))
+    # })
 
     ### Return values
     list(
-      cruz.map.range = cruz.map.range
+      map_range = cruz.map.range,
+      inputsave <- reactive(reactiveValuesToList(input))
     )
   })
 }
