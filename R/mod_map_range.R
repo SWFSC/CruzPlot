@@ -19,8 +19,7 @@ mod_map_range_ui <- function(id) {
   ns <- NS(id)
 
   ### Set default values for map
-  start.ll <- data.frame(X = c(-135, -117, 29, 52, 1))
-  start.tick <- list(interval = 5, lon = -135, lat = 30)
+  start.ll <- data.frame(X = c(-135, -117, 29, 52, 1))  
 
   # tagList(
   tabPanel(

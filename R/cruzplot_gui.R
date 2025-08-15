@@ -96,7 +96,8 @@ cruzplot_gui <- function(...) {
             ),
             tabBox(
               title = "Map", width = 6, id = "tabset1",
-              mod_map_range_ui("map_range")
+              mod_map_range_ui("map_range"), 
+              mod_map_elements_ui("map_elements")
               # tabPanel("bib", h5("test"))
             )
           )
@@ -137,6 +138,7 @@ cruzplot_gui <- function(...) {
     map.range.list <- mod_map_range_server("map_range", map.range.update, plot1.brush)
     cruz.map.range <- map.range.list[["map_range"]]
 
+    mod_map_elements_server("map_elements", cruz.map.range)
 
     #----------------------------------------------------------------------------
     ### App 'environment' save/load
