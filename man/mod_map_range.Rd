@@ -8,7 +8,7 @@
 \usage{
 mod_map_range_ui(id)
 
-mod_map_range_server(id)
+mod_map_range_server(id, vals.update, brush)
 }
 \arguments{
 \item{id}{character used to specify namespace, see [shiny::NS()]}

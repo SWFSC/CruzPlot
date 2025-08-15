@@ -6,12 +6,15 @@
 \alias{mod_plot_server}
 \title{PLot module}
 \usage{
-mod_plot_ui(id)
+mod_plot_ui(id, enable_brush = FALSE)
 
 mod_plot_server(id, height, cruz.map.range, res = 72)
 }
 \arguments{
 \item{id}{character used to specify namespace, see [shiny::NS()]}
+
+\item{enable_brush}{boolean indicating if the plotOutput should include
+`brush = ns("map_brush")`}
 
 \item{height}{reactive representing the height of the plot, in pixels.
 Passed directly to [shiny::renderPlot()]}
@@ -22,8 +25,11 @@ first element of the list output of [mod_map_range_server()]}
 \item{res}{Plot resolution. Passed directly to [shiny::renderPlot()]}
 }
 \value{
-* `mod_plot_ui` returns the plot UI, here simply a [shiny::plotOutput()] object
-* `mod_plot_server` returns an empty list
+`mod_plot_ui` returns the plot UI, here simply a [shiny::plotOutput()] object
+
+`mod_plot_server` returns a named list:
+* 'brush': a reactive of `input$map_brush`. 
+  If `enable_brush` is `FALSE`, then this value will be `NULL`
 }
 \description{
 Shiny module for creating the crzplot plot

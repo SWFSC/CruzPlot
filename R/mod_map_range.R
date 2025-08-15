@@ -22,109 +22,124 @@ mod_map_range_ui <- function(id) {
   start.ll <- data.frame(X = c(-135, -117, 29, 52, 1))
   start.tick <- list(interval = 5, lon = -135, lat = 30)
 
-  tagList(
-    tabPanel(
-      title = "Range",
-      fluidRow(
-        box(
-          title = "Map range", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-          helpText(
-            "For longitude values, please use the range -180 to 180.",
-            "For instance, use left and right longitudes of 130 and -110, respectively,",
-            "for a map of the northern Pacific.", tags$br(),
-            "Click the 'Replot map' button after changing map range values,",
-            "or if the map isn't properly sized in the window.", tags$br(),
-            "In addition, users can automatically change the map range input values",
-            "by clicking and holding to draw a box on map, although users still must click 'Replot map'.",
-            "To clear the box, click within the plot outside of the box."
-          ),
-          fluidRow( #Separate to keep input boxes in line even if labels spill over
-            column(3, tags$h5("Left longitude")),
-            column(3, tags$h5("Right longitude")),
-            column(3, tags$h5("Bottom latitude")),
-            column(3, tags$h5("Top latitude"))
-          ),
-          fluidRow(
-            column(3, numericInput(ns("lon_left"), NULL, value = start.ll$X[1])),
-            column(3, numericInput(ns("lon_right"), NULL, value = start.ll$X[2])),
-            column(3, numericInput(ns("lat_bot"), NULL, value = start.ll$X[3])),
-            column(3, numericInput(ns("lat_top"), NULL, value = start.ll$X[4]))
-          ),
-          fluidRow(
-            column(
-              width = 3,
-              selectInput(
-                ns("resolution"), label = tags$h5("Resolution"),
-                choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5]
-              )
-            ),
-            column(3, tags$br(), tags$br(), actionButton(ns("map_replot"), "Replot map"))
-          ),
-          # tags$span(htmlOutput(ns("map_range_message")), style = "color: red;"),
-          tags$h5("Set the map range to a default study area and replot:"),
-          actionButton(ns("map_replot_cce"), "CCE"),
-          actionButton(ns("map_replot_cce2"), "Extended CCE"),
-          actionButton(ns("map_replot_etp"), "ETP"),
-          actionButton(ns("map_replot_hawaii"), "Hawaii"),
-          actionButton(ns("map_replot_hawaiimain"), "Main Hawaiian Islands"),
-          actionButton(ns("map_replot_marianas"), "Marianas")
+  # tagList(
+  tabPanel(
+    title = "Range",
+    fluidRow(
+      box(
+        title = "Map range", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+        helpText(
+          "For longitude values, please use the range -180 to 180.",
+          "For instance, use left and right longitudes of 130 and -110,",
+          "respectively, for a map of the northern Pacific.",
+          tags$br(), tags$br(),
+          "Click the 'Replot map' button after changing map range values,",
+          "or if the map isn't properly sized in the window.",
+          tags$br(), tags$br(),
+          "In addition, users can automatically change the map range input values",
+          "by clicking and holding to draw a box on map.",
+          "Users still must click 'Replot map'.",
+          "To clear the box, click within the plot, outside of the box."
         ),
-        # box(
-        #   title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        #   checkboxInput("bar", "Plot scale bar", value = FALSE),
-        #   conditionalPanel(
-        #     condition = "input.bar",
-        #     helpText(
-        #       "Provide the coordinates for the left edge of the scale bar.",
-        #       "The coordinates must have the same range as the map range coordinates."
-        #     ),
-        #     fluidRow(
-        #       column(4, uiOutput("scale_lon_uiOut_numeric")),
-        #       column(4, uiOutput("scale_lat_uiOut_numeric")),
-        #       column(4, numericInput("scale_width", tags$h5("Width of bar"), value = 2, min = 1, max = 6, step = 1)),
-        #     ),
-        #     fluidRow(
-        #       column(
-        #         width = 4,
-        #         radioButtons(
-        #           "scale_units", tags$h5("Scale bar units"),
-        #           choices = list("Kilometers" = 1, "Nautical miles" = 2),
-        #           selected = 2
-        #         )
-        #       ),
-        #       column(4, uiOutput("out_scale_len"))
-        #     )
-        #   )
-        # ),
-        # box(
-        #   title = "Coastline", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        #   checkboxInput("coast", label = "Use coastline file", value = FALSE),
-        #   conditionalPanel(
-        #     condition = "input.coast",
-        #     helpText(
-        #       "Map limits will automatically be updated to the extent of the",
-        #       "coastline file. Note: CruzPlot can only process coastline files",
-        #       "with points are between -180 and 0"
-        #     ),
-        #     fileInput("coast_file", label = tags$h5("Coastline file"), width = "50%")
-        #   )
-        # )
-      )
+        fluidRow( #Separate to keep input boxes in line even if labels spill over
+          column(3, tags$h5("Left longitude")),
+          column(3, tags$h5("Right longitude")),
+          column(3, tags$h5("Bottom latitude")),
+          column(3, tags$h5("Top latitude"))
+        ),
+        fluidRow(
+          column(3, numericInput(ns("lon_left"), NULL, value = start.ll$X[1])),
+          column(3, numericInput(ns("lon_right"), NULL, value = start.ll$X[2])),
+          column(3, numericInput(ns("lat_bot"), NULL, value = start.ll$X[3])),
+          column(3, numericInput(ns("lat_top"), NULL, value = start.ll$X[4]))
+        ),
+        fluidRow(
+          column(
+            width = 3,
+            selectInput(
+              ns("resolution"), label = tags$h5("Resolution"),
+              choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5]
+            )
+          ),
+          column(3, tags$br(), tags$br(), actionButton(ns("map_replot"), "Replot map"))
+        ),
+        # tags$span(htmlOutput(ns("map_range_message")), style = "color: red;"),
+        tags$h5("Set the map range to a default study area and replot:"),
+        actionButton(ns("map_replot_cce"), "CCE"),
+        actionButton(ns("map_replot_cce2"), "Extended CCE"),
+        actionButton(ns("map_replot_etp"), "ETP"),
+        actionButton(ns("map_replot_hawaii"), "Hawaii"),
+        actionButton(ns("map_replot_hawaiimain"), "Main Hawaiian Islands"),
+        actionButton(ns("map_replot_marianas"), "Marianas")
+      ),
+      # box(
+      #   title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+      #   checkboxInput("bar", "Plot scale bar", value = FALSE),
+      #   conditionalPanel(
+      #     condition = "input.bar",
+      #     helpText(
+      #       "Provide the coordinates for the left edge of the scale bar.",
+      #       "The coordinates must have the same range as the map range coordinates."
+      #     ),
+      #     fluidRow(
+      #       column(4, uiOutput("scale_lon_uiOut_numeric")),
+      #       column(4, uiOutput("scale_lat_uiOut_numeric")),
+      #       column(4, numericInput("scale_width", tags$h5("Width of bar"), value = 2, min = 1, max = 6, step = 1)),
+      #     ),
+      #     fluidRow(
+      #       column(
+      #         width = 4,
+      #         radioButtons(
+      #           "scale_units", tags$h5("Scale bar units"),
+      #           choices = list("Kilometers" = 1, "Nautical miles" = 2),
+      #           selected = 2
+      #         )
+      #       ),
+      #       column(4, uiOutput("out_scale_len"))
+      #     )
+      #   )
+      # ),
+      # box(
+      #   title = "Coastline", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+      #   checkboxInput("coast", label = "Use coastline file", value = FALSE),
+      #   conditionalPanel(
+      #     condition = "input.coast",
+      #     helpText(
+      #       "Map limits will automatically be updated to the extent of the",
+      #       "coastline file. Note: CruzPlot can only process coastline files",
+      #       "with points are between -180 and 0"
+      #     ),
+      #     fileInput("coast_file", label = tags$h5("Coastline file"), width = "50%")
+      #   )
+      # )
     )
   )
+  # )
 }
 
 
 #' @name mod_map_range
 #' @export
-mod_map_range_server  <- function(id) {
+mod_map_range_server  <- function(id, vals.update, brush) {
   moduleServer(id, function(input, output, session) {
     cruz.map.range <- reactiveValues(
       lon.range = NULL,
       lat.range = NULL,
+      res = NULL,
       world2 = NULL,
       map.name = list()
     )
+
+    # Update widgets
+    observeEvent(vals.update$lon.range, {
+      if (length(names(vals.update)) > 0) {
+        updateNumericInput(session, "lon_left", value = vals.update$lon.range[1])
+        updateNumericInput(session, "lon_right", value = vals.update$lon.range[2])
+        updateNumericInput(session, "lat_bot", value = vals.update$lat.range[1])
+        updateNumericInput(session, "lat_top", value = vals.update$lat.range[2])
+        updateSelectInput(session, "resolution", selected = vals.update$res)
+      }
+    })
 
     # Countries to be removed for world2 map
     # Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
@@ -192,6 +207,7 @@ mod_map_range_server  <- function(id) {
       cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])
       cruz.map.range$world2 <- world2
       cruz.map.range$map.name <- map_name_calc(world2, res)
+      cruz.map.range$res <- "1"
     }
 
     ### CCE
@@ -245,45 +261,63 @@ mod_map_range_server  <- function(id) {
 
     ###############################################################################
     # Use brush to fill inputs with new map range
-    observeEvent(input$map_brush, {
-      req(cruz.map.range$lon.range, cruz.map.range$lat.range)
-
-      if (isTruthy(input$map_brush)) {
-        z <- input$map_brush
-        z.coords <- round(c(z$xmin, z$xmax, z$ymin, z$ymax), 1)
-        lon.left <- if_else(z.coords[1] > 180, z.coords[1] - 360, z.coords[1])
-        lon.right <- if_else(z.coords[2] > 180, z.coords[2] - 360, z.coords[2])
-
-        updateNumericInput(session, "lon_left", value = lon.left)
-        updateNumericInput(session, "lon_right", value = lon.right)
-        updateNumericInput(session, "lat_bot", value = z.coords[3])
-        updateNumericInput(session, "lat_top", value = z.coords[4])
-
-      } else {
-        lon.range <- cruz.map.range$lon.range
-        lat.range <- cruz.map.range$lat.range
-
-        lon.range <- if_else(lon.range > 180, lon.range - 360, lon.range)
-
-        updateNumericInput(session, "lon_left", value = lon.range[1])
-        updateNumericInput(session, "lon_right", value = lon.range[2])
-        updateNumericInput(session, "lat_bot", value = lat.range[1])
-        updateNumericInput(session, "lat_top", value = lat.range[2])
-      }
-    }, ignoreNULL = FALSE)
+    # observeEvent(brush, {
+    #   browser()
+    #   z <- brush()
+    #   if (isTruthy(z)) {
+    #     z.coords <- round(c(z$xmin, z$xmax, z$ymin, z$ymax), 1)
+    #     lon.left <- if_else(z.coords[1] > 180, z.coords[1] - 360, z.coords[1])
+    #     lon.right <- if_else(z.coords[2] > 180, z.coords[2] - 360, z.coords[2])
+    #
+    #     updateNumericInput(session, "lon_left", value = lon.left)
+    #     updateNumericInput(session, "lon_right", value = lon.right)
+    #     updateNumericInput(session, "lat_bot", value = z.coords[3])
+    #     updateNumericInput(session, "lat_top", value = z.coords[4])
+    #
+    #   } else {
+    #     lon.range <- cruz.map.range$lon.range
+    #     lat.range <- cruz.map.range$lat.range
+    #
+    #     lon.range <- if_else(lon.range > 180, lon.range - 360, lon.range)
+    #
+    #     updateNumericInput(session, "lon_left", value = lon.range[1])
+    #     updateNumericInput(session, "lon_right", value = lon.range[2])
+    #     updateNumericInput(session, "lat_bot", value = lat.range[1])
+    #     updateNumericInput(session, "lat_top", value = lat.range[2])
+    #   }
+    # }, ignoreNULL = TRUE)
 
 
     ###############################################################################
     # Series of steps/actions triggered by input$map_replot
-    # map.range.message <- reactiveVal(NULL)
-
     observeEvent(input$map_replot, {
-      lon.min <- input$lon_left
-      lon.max <- input$lon_right
-      lat.min <- input$lat_bot
-      lat.max <- input$lat_top
+      if (isTruthy(brush())) {
+        # If the map range got a truthy brush object, then use it
+        z <- brush()
+        z.coords <- round(c(z$xmin, z$xmax, z$ymin, z$ymax), 1)
+        lon.left <- if_else(z.coords[1] > 180, z.coords[1] - 360, z.coords[1])
+        lon.right <- if_else(z.coords[2] > 180, z.coords[2] - 360, z.coords[2])
+        lat.min <- z.coords[3]
+        lat.max <- z.coords[4]
+
+        updateNumericInput(session, "lon_left", value = lon.left)
+        updateNumericInput(session, "lon_right", value = lon.right)
+        updateNumericInput(session, "lat_bot", value = lat.min)
+        updateNumericInput(session, "lat_top", value = lat.max)
+
+        # Reset map brush, in case
+        session$resetBrush(z$brushId)
+
+      } else {
+        # Otherwise use inputs
+        lon.left <- input$lon_left
+        lon.right <- input$lon_right
+        lat.min <- input$lat_bot
+        lat.max <- input$lat_top
+      }
 
       # # Checks that inputs are numbers
+      # map.range.message <- reactiveVal(NULL)
       # vals.bad <- c("", "-", "+", NA)
       # m1 <- if ((lon.min %in% vals.bad) | !between(lon.min, -180, 180))
       #   "The left longtiude must be a number between -180 and 180" else NULL
@@ -300,39 +334,15 @@ mod_map_range_server  <- function(id) {
       # req(is.null(m.all))
 
       # Determine if world2 map should be used and thus if lons need to be rescaled
-      world2 <- world2_calc(lon.min, lon.max)
-      # browser()
-      lon.range <- lon_range_world2(c(lon.min, lon.max), world2)
-      # if (world2) {
-      #   lon.min <- ifelse(lon.min < 0, 360 + lon.min, lon.min)
-      #   lon.max <- ifelse(lon.max < 0, 360 + lon.max, lon.max)
-      # }
-
-      # Get map name
-      # m <- map_name_calc(world2, input$resolution)
-      # hires <- input$resolution == 2
-      #
-      # browser()
-      # m <- if_else(hires, "Hires", "")
-      # m <- if_else(world2, paste0("world2", m), paste0("world", m))
-
-      # #regions.rm and regions.rm.hires are created in server file
-      # reg.toplot <- if (world2 & hires) {
-      #   regions.rm.hires
-      # } else if (world2 & !hires) {
-      #   regions.rm
-      # } else {
-      #   NULL
-      # }
+      world2 <- world2_calc(lon.left, lon.right)
+      lon.range <- lon_range_world2(c(lon.left, lon.right), world2)
 
       # Save as reactive values
       cruz.map.range$lon.range <- lon.range
       cruz.map.range$lat.range <- c(lat.min, lat.max)
       cruz.map.range$world2 <- world2
       cruz.map.range$map.name <- map_name_calc(world2, input$resolution)
-
-      # Reset map brush, in case
-      session$resetBrush("map_brush")
+      cruz.map.range$res <- "1"
     }, ignoreNULL = FALSE, priority = 9)
 
 
