@@ -125,7 +125,7 @@ mod_map_range_server  <- function(id, vals.update, brush) {
     cruz.map.range <- reactiveValues(
       lon.range = NULL,
       lat.range = NULL,
-      res = NULL,
+      # res = NULL,
       world2 = NULL,
       map.name = list()
     )
@@ -137,15 +137,16 @@ mod_map_range_server  <- function(id, vals.update, brush) {
         updateNumericInput(session, "lon_right", value = vals.update$lon.range[2])
         updateNumericInput(session, "lat_bot", value = vals.update$lat.range[1])
         updateNumericInput(session, "lat_top", value = vals.update$lat.range[2])
-        updateSelectInput(session, "resolution", selected = vals.update$res)
+        res <- if_else(str_detect(vals.update$map.name[[1]], "Hires"), "2", "1")
+        updateSelectInput(session, "resolution", selected = res)
       }
     })
 
     # Countries to be removed for world2 map
-    # Reference: http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
+    # http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
     remove <- c(
-      "UK:Great Britain", "France", "Spain", "Algeria", "Mali", "Burkina Faso",
-      "Ghana", "Togo"
+      "UK:Great Britain", "France", "Spain", "Algeria", "Mali", 
+      "Burkina Faso",      "Ghana", "Togo"
     )
     mapnames <- map("world2", plot = FALSE)$names
     mapnames.hires <- map("mapdata::world2Hires", plot = FALSE)$names
@@ -154,9 +155,10 @@ mod_map_range_server  <- function(id, vals.update, brush) {
     # regions.rm.hires <- mapnames.hires[!(mapnames.hires %in% remove)]
 
     ###############################################################################
-    # Update map range when default study area buttons are clicked
-    world2_calc <- function(lon.min, lon.max) {
-      (lon.max < lon.min) & (lon.min > 0) & (lon.max < 0)
+    # TODO: Move these functions into their own R file
+
+    world2_calc <- function(lon1, lon2) {
+      (lon2 < lon1) & (lon1 > 0) & (lon2 < 0)
     }
 
     map_name_calc <- function(world2, res) {
@@ -181,15 +183,15 @@ mod_map_range_server  <- function(id, vals.update, brush) {
     }
 
     lon_range_world2 <- function(lon.range, world2) {
-      lon.min <- lon.range[1]
-      lon.max <- lon.range[2]
+      lon1 <- lon.range[1]
+      lon2 <- lon.range[2]
 
       if (world2) {
-        lon.min <- ifelse(lon.min < 0, 360 + lon.min, lon.min)
-        lon.max <- ifelse(lon.max < 0, 360 + lon.max, lon.max)
+        lon1 <- ifelse(lon1 < 0, 360 + lon1, lon1)
+        lon2 <- ifelse(lon2 < 0, 360 + lon2, lon2)
       }
 
-      c(lon.min, lon.max)
+      c(lon1, lon2)
     }
 
 
@@ -207,9 +209,11 @@ mod_map_range_server  <- function(id, vals.update, brush) {
       cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])
       cruz.map.range$world2 <- world2
       cruz.map.range$map.name <- map_name_calc(world2, res)
-      cruz.map.range$res <- "1"
+      # cruz.map.range$res <- "1"
     }
 
+    # TODO: Make these part of the function input, to be able to customize
+    # Update map range when default study area buttons are clicked
     ### CCE
     observeEvent(input$map_replot_cce, {
       ll.vals <- c(-135, -117, 29, 52)
@@ -260,35 +264,6 @@ mod_map_range_server  <- function(id, vals.update, brush) {
 
 
     ###############################################################################
-    # Use brush to fill inputs with new map range
-    # observeEvent(brush, {
-    #   browser()
-    #   z <- brush()
-    #   if (isTruthy(z)) {
-    #     z.coords <- round(c(z$xmin, z$xmax, z$ymin, z$ymax), 1)
-    #     lon.left <- if_else(z.coords[1] > 180, z.coords[1] - 360, z.coords[1])
-    #     lon.right <- if_else(z.coords[2] > 180, z.coords[2] - 360, z.coords[2])
-    #
-    #     updateNumericInput(session, "lon_left", value = lon.left)
-    #     updateNumericInput(session, "lon_right", value = lon.right)
-    #     updateNumericInput(session, "lat_bot", value = z.coords[3])
-    #     updateNumericInput(session, "lat_top", value = z.coords[4])
-    #
-    #   } else {
-    #     lon.range <- cruz.map.range$lon.range
-    #     lat.range <- cruz.map.range$lat.range
-    #
-    #     lon.range <- if_else(lon.range > 180, lon.range - 360, lon.range)
-    #
-    #     updateNumericInput(session, "lon_left", value = lon.range[1])
-    #     updateNumericInput(session, "lon_right", value = lon.range[2])
-    #     updateNumericInput(session, "lat_bot", value = lat.range[1])
-    #     updateNumericInput(session, "lat_top", value = lat.range[2])
-    #   }
-    # }, ignoreNULL = TRUE)
-
-
-    ###############################################################################
     # Series of steps/actions triggered by input$map_replot
     observeEvent(input$map_replot, {
       if (isTruthy(brush())) {
@@ -297,23 +272,23 @@ mod_map_range_server  <- function(id, vals.update, brush) {
         z.coords <- round(c(z$xmin, z$xmax, z$ymin, z$ymax), 1)
         lon.left <- if_else(z.coords[1] > 180, z.coords[1] - 360, z.coords[1])
         lon.right <- if_else(z.coords[2] > 180, z.coords[2] - 360, z.coords[2])
-        lat.min <- z.coords[3]
-        lat.max <- z.coords[4]
+        lat.bot <- z.coords[3]
+        lat.top <- z.coords[4]
 
         updateNumericInput(session, "lon_left", value = lon.left)
         updateNumericInput(session, "lon_right", value = lon.right)
-        updateNumericInput(session, "lat_bot", value = lat.min)
-        updateNumericInput(session, "lat_top", value = lat.max)
+        updateNumericInput(session, "lat_bot", value = lat.bot)
+        updateNumericInput(session, "lat_top", value = lat.top)
 
         # Reset map brush, in case
         session$resetBrush(z$brushId)
 
       } else {
-        # Otherwise use inputs
+        # Otherwise use input widgets
         lon.left <- input$lon_left
         lon.right <- input$lon_right
-        lat.min <- input$lat_bot
-        lat.max <- input$lat_top
+        lat.bot <- input$lat_bot
+        lat.top <- input$lat_top
       }
 
       # # Checks that inputs are numbers
@@ -339,10 +314,10 @@ mod_map_range_server  <- function(id, vals.update, brush) {
 
       # Save as reactive values
       cruz.map.range$lon.range <- lon.range
-      cruz.map.range$lat.range <- c(lat.min, lat.max)
+      cruz.map.range$lat.range <- c(lat.bot, lat.top)
       cruz.map.range$world2 <- world2
       cruz.map.range$map.name <- map_name_calc(world2, input$resolution)
-      cruz.map.range$res <- "1"
+      # cruz.map.range$res <- "1"
     }, ignoreNULL = FALSE, priority = 9)
 
 

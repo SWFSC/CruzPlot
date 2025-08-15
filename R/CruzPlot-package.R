@@ -16,7 +16,7 @@
 #' @importFrom shinydashboard box dashboardBody tabItems tabItem dashboardHeader
 #'   dashboardPage dashboardSidebar sidebarMenu menuItem tabBox
 #' @importFrom shinyjs useShinyjs extendShinyjs js
-#' @importFrom stringr str_sub str_to_upper
+#' @importFrom stringr str_detect str_sub str_to_upper
 #' @importFrom utils packageVersion
 #'
 "_PACKAGE"

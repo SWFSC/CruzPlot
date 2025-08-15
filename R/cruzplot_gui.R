@@ -174,7 +174,6 @@ cruzplot_gui <- function(...) {
         )
       )
 
-
       withProgress(message = "Loading saved data", value = 0.5, {
         load(file.load$datapath)
         files.list <- list("cruz.list.save", "cruz.map.range.save", "input.save")
