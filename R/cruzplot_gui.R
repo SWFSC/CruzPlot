@@ -2,10 +2,10 @@
 #'
 #' Open the CruzPlot utility program, an R Shiny application
 #'
-#' @param ... passed directly to [shiny::ShinyApp()]
+#' @param ... passed directly to [shiny::shinyApp()]
 #'
-#' @examples
-#' if (interactive()) cruzplot_gui()
+#' @examplesIf interactive()
+#' cruzplot_gui()
 #'
 #' # To have Shiny listen on a specifc port
 #' cruzplot_gui(options = list(browser = TRUE, port = 6305))
@@ -100,8 +100,8 @@ cruzplot_gui <- function(...) {
             ),
             tabBox(
               title = "Map", width = 6, id = "tabset1",
-              mod_map_range_ui("map_range")
-              # mod_map_elements_ui("map_elements")
+              mod_map_range_ui("map_range"),
+              mod_map_elements_ui("map_elements")
             )
           )
         )
@@ -161,7 +161,7 @@ cruzplot_gui <- function(...) {
     map.range.list <- mod_map_range_server("map_range", app_state, plot1.list$brush)
     map_range <- map.range.list[["map_range"]]
 
-    # map_elements <- mod_map_elements_server("map_elements", app_state)
+    map_elements <- mod_map_elements_server("map_elements", app_state, map_range)
 
     #----------------------------------------------------------------------------
     ### App 'environment' save/load
@@ -218,6 +218,7 @@ cruzplot_gui <- function(...) {
           # map.range.update[[i]] <- cruz.map.range.save[[i]]
         }
         incProgress(0.35)
+        browser()
 
         # Update widgets on the main page, not in a module
         updateNumericInput(session, "plot_height", value = app_state$plot_height)

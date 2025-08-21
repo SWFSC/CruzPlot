@@ -7,15 +7,16 @@
 cruzplot_gui(...)
 }
 \arguments{
-\item{...}{passed directly to [shiny::ShinyApp()]}
+\item{...}{passed directly to \code{\link[shiny:shinyApp]{shiny::shinyApp()}}}
 }
 \description{
 Open the CruzPlot utility program, an R Shiny application
 }
 \examples{
-if (interactive()) cruzplot_gui()
+\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+cruzplot_gui()
 
 # To have Shiny listen on a specifc port
 cruzplot_gui(options = list(browser = TRUE, port = 6305))
-
+\dontshow{\}) # examplesIf}
 }

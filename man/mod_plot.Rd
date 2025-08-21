@@ -11,27 +11,26 @@ mod_plot_ui(id, enable_brush = FALSE)
 mod_plot_server(id, height, map_range, map_elements)
 }
 \arguments{
-\item{id}{character used to specify namespace, see [shiny::NS()]}
+\item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
 
 \item{enable_brush}{boolean indicating if the plotOutput should include
-`brush = ns("map_brush")`}
+\code{brush = ns("map_brush")}}
 
-\item{height}{a reactive of the height of the plot, in pixels.
-Passed to [shiny::renderPlot()]}
+\item{map_range}{output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 
-\item{map_range}{the reactive output of [mod_map_range()]}
-
-\item{map_elements}{the reactive output of [map_elements()]}
+\item{map_elements}{output of \code{\link[=mod_map_elements_server]{mod_map_elements_server()}}}
 }
 \value{
-`mod_plot_ui` returns the plot UI, here simply a [shiny::plotOutput()] object
+\code{mod_plot_ui} returns the plot UI, here simply a \code{\link[shiny:plotOutput]{shiny::plotOutput()}} object
 
-`mod_plot_server` returns a named list:
-* 'brush': a reactive of `input$map_brush`.
-  If `enable_brush` is `FALSE`, then this value will be `NULL`
+\code{mod_plot_server} returns a named list:
+\itemize{
+\item 'brush': a reactive of \code{input$map_brush}.
+If \code{enable_brush} is \code{FALSE}, then this value will be \code{NULL}
+}
 }
 \description{
-Shiny module for creating or saving the shiny app plot
+Shiny module for creating the crzplot plot
 }
 \details{
 Additional details...

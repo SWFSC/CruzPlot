@@ -15,34 +15,35 @@ mod_map_range_ui(
 mod_map_range_server(id, app_state, brush = NULL)
 }
 \arguments{
-\item{id}{character used to specify namespace, see [shiny::NS()]}
+\item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
 
 \item{start_vals}{A named list of 5 starting values:
-left and right longitude (`lon_left` and `lon_right`),
-bottom and top latitude (`lat_bot` and `lat_top`),
-and map resolution (`resolution`)}
+left and right longitude (\code{lon_left} and \code{lon_right}),
+bottom and top latitude (\code{lat_bot} and \code{lat_top}),
+and map resolution (\code{resolution})}
 
-\item{app_state}{A [shiny::reactiveValues()] object that serves as the shared,
+\item{app_state}{A \code{\link[shiny:reactiveValues]{shiny::reactiveValues()}} object that serves as the shared,
 central state for the entire application. This object is initialized in the
 main server and passed down to each module, enabling communication and
 synchronization between them. Any changes made to this object in one
 module will be immediately visible in all others.
 See details for keys specific to this function.}
 
-\item{brush}{Either `NULL` (default), or the brush from [mod_plot()]}
+\item{brush}{Either \code{NULL} (default), or the brush from \code{\link[=mod_plot]{mod_plot()}}}
 }
 \value{
-A list with the following elements:
-
-* `map_range`: a reactive, containing the values needed by [mod_plot_server()].
-Specifically: `lon.range`, a vector of the left and right longitudes;
-`lat.range`, a vector of the bottom and top latitudes;
-`world2`, a logical indicating if the map is using the world2 protocol
+\code{mod_map_range_server} returns a list with the following elements:
+\itemize{
+\item \code{map_range}: a reactive, containing the values needed by \code{\link[=mod_plot_server]{mod_plot_server()}}.
+Specifically: \code{lon.range}, a vector of the left and right longitudes;
+\code{lat.range}, a vector of the bottom and top latitudes;
+\code{world2}, a logical indicating if the map is using the world2 protocol
 (lons 0-360);
- `map.name`, a list of 1) the map name, passed directly to the `database`
- argument of [maps::map()], and 2) the regions to plot,
- passed directly to the `regions` argument of [maps::map()]
- (see TODO for more details)
+\code{map.name}, a list of 1) the map name, passed directly to the \code{database}
+argument of \code{\link[maps:map]{maps::map()}}, and 2) the regions to plot,
+passed directly to the \code{regions} argument of \code{\link[maps:map]{maps::map()}}
+(see TODO for more details)
+}
 }
 \description{
 Shiny module for map range

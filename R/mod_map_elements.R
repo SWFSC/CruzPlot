@@ -1,10 +1,11 @@
 #' Map elements module
 #'
-#' Shiny module for map elements, beyond the range
+#' Shiny module for map elements
 #'
 #' @name mod_map_elements
 #'
 #' @inheritParams mod_map_range
+#' @inheritParams mod_plot
 #'
 #' @details
 #' Additional details...
@@ -113,7 +114,7 @@ mod_map_elements_ui <- function(id) {
       # Gridlines
       box(
         title = "Grid", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE, height = 385,
-        checkboxInput(ns("grid"), label = "Include grid lines at major tick marks", value = FALSE),
+        checkboxInput(ns("grid"), label = "Include grid lines at major tick marks", value = TRUE),
         conditionalPanel(
           condition = "input.grid", ns = ns,
           fluidRow(
@@ -138,77 +139,107 @@ mod_map_elements_ui <- function(id) {
 
 #' @name mod_map_elements
 #' @export
-mod_map_elements_server  <- function(id, app_state) {
+mod_map_elements_server  <- function(id, app_state, map_range) {
   moduleServer(id, function(input, output, session) {
-    # #--------------------------------------------------------------------------
-    # # Processing for Tick tab of Create and Save Map tab
-    # #   update: major tick interval, start of longitude tick labels, start of latitude tick labels
-    # #   cruzMapTickLonBool() returns boolean list of whether bottom and top tick marks and tick labels are drawn, respectively
-    # #   cruzMapTickLatBool() returns boolean list of whether left and right tick marks and tick labels are drawn, respectively
-    # #   cruzMapTickLon() returns labels for longitude tick marks
-    # #   cruzMapTickLat() returns labels for latitude tick marks
-    # #   cruzMapTickParam() returns list of tick length, font, and scale
-
-    cruz.tick <- reactiveValues(
-      tick_interval_major = NULL,
-      label_lon_start = NULL,
-      label_lat_start = NULL
-    )
-
-    observeEvent(input$tick_interval_major, {
-      app_state$tick_interval_major <- input$tick_interval_major
-      cruz.tick$tick_interval_major <- input$tick_interval_major
-    })
-
-    observeEvent(input$label_lon_start, {
-      app_state$label_lon_start <- input$label_lon_start
-      cruz.tick$label_lon_start <- input$label_lon_start
-    })
-
-    observeEvent(input$label_lat_start, {
-      app_state$label_lat_start <- input$label_lat_start
-      cruz.tick$label_lat_start <- input$label_lat_start
-    })
-
+    # Reactively save all input values to app_state
+    # Can't use reactiveValuesToList(input), because it triggers too soon
     observe({
-      print("obs")
-      app_state$tick <- input$tick
-      app_state$tick_left <- input$tick_left
-      app_state$tick_right <- input$tick_right
-      app_state$tick_bot <- input$tick_bot
-      app_state$tick_top <- input$tick_top
-      # app_state$tick_interval_major <- input$tick_interval_major
-      app_state$tick_style <- input$tick_style
-      app_state$tick_interval_minor <- input$tick_interval_minor
-      app_state$tick_length <- input$tick_length
-
-      app_state$tick_left_lab <- input$tick_left_lab
-      app_state$tick_right_lab <- input$tick_right_lab
-      app_state$tick_bot_lab <- input$tick_bot_lab
-      app_state$tick_top_lab <- input$tick_top_lab
-      # app_state$label_lon_start <- input$label_lon_start
-      # app_state$label_lat_start <- input$label_lat_start
+      app_state$bar <- input$bar
+      app_state$grid <- input$grid
+      app_state$grid_col <- input$grid_col
+      app_state$grid_lty <- input$grid_lty
+      app_state$grid_lwd <- input$grid_lwd
+      app_state$label_lat_start <- input$label_lat_start
+      app_state$label_lon_start <- input$label_lon_start
       app_state$label_tick_font <- input$label_tick_font
       app_state$label_tick_size <- input$label_tick_size
+      app_state$scale_units <- input$scale_units
+      app_state$scale_width <- input$scale_width
+      app_state$tick <- input$tick
+      app_state$tick_bot <- input$tick_bot
+      app_state$tick_bot_lab <- input$tick_bot_lab
+      app_state$tick_interval_major <- input$tick_interval_major
+      app_state$tick_interval_minor <- input$tick_interval_minor
+      app_state$tick_left <- input$tick_left
+      app_state$tick_left_lab <- input$tick_left_lab
+      app_state$tick_length <- input$tick_length
+      app_state$tick_right <- input$tick_right
+      app_state$tick_right_lab <- input$tick_right_lab
+      app_state$tick_style <- input$tick_style
+      app_state$tick_top <- input$tick_top
+      app_state$tick_top_lab <- input$tick_top_lab
     })
+    # })
 
-    # TODO: observeEvent for the different inputs
+    # When app_state changes, aka env loaded, update widgets
+    observeEvent(reactiveValuesToList(app_state), {
+      input.list.names <- names(reactiveValuesToList(input))
+
+      input.checkbox <- c(
+        "bar", "tick", "grid",
+        "tick_left", "tick_right", "tick_bot", "tick_top",
+        "tick_left_lab", "tick_right_lab", "tick_bot_lab", "tick_top_lab"
+      )
+      input.numeric <- c(
+        "label_lat_start", "label_lon_start","label_tick_size",
+        "tick_interval_major", "tick_interval_minor", "tick_length",
+        "grid_lwd", "scale_width"
+      )
+      input.select <- c(
+        "grid_col", "grid_lty", "label_tick_font", "tick_style"
+      )
+      input.radio <- c("scale_units")
+
+      for (i in input.list.names) {
+        if (i %in% input.checkbox) {
+          # browser()
+          updateCheckboxInput(session, i, value = app_state[[i]])
+        } else if (i %in% input.numeric) {
+          updateNumericInput(session, i, value = app_state[[i]])
+        } else if (i %in% input.select) {
+          updateSelectInput(session, i, selected = app_state[[i]])
+        } else if (i %in% input.radio) {
+          updateRadioButtons(session, i, selected = app_state[[i]])
+        } else {
+          stop("Value not found")
+        }
+      }
+    }, ignoreInit = TRUE, priority = 1)
+
+
+    #---------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
+    #---------------------------------------------------------------------------
+    ### Ticks
+
+    ############################################################################
+    cruz.tick <- reactiveValues(
+      tick.interval.major = NULL,
+      label.lon.start = NULL,
+      label.lat.start = NULL
+    )
+
+    # Processing for Tick piece
+    #   update: major tick interval, start of longitude tick labels, start of latitude tick labels
+    #   cruzMapTickLonBool() returns boolean list of whether bottom and top tick marks and tick labels are drawn, respectively
+    #   cruzMapTickLatBool() returns boolean list of whether left and right tick marks and tick labels are drawn, respectively
+    #   cruzMapTickLon() returns labels for longitude tick marks
+    #   cruzMapTickLat() returns labels for latitude tick marks
+    #   cruzMapTickParam() returns list of tick length, font, and scale
+
 
     ###############################################################################
     #  Return list of longitude values of major tick marks/grid lines and minor tick marks
     cruzMapIntervalLon <- reactive({
-      print("cruzMapIntervalLon")
-      lon.range <- req(app_state$lon.range)
-      lon.start <- req(cruz.tick$label_lon_start)
-      tick.maj <- req(cruz.tick$tick_interval_major)
+      lon.range <- req(map_range()$lon.range)
+      tick.maj <- req(cruz.tick$tick.interval.major)
       tick.min <- input$tick_interval_minor
+      lon.start <- req(cruz.tick$label.lon.start)
 
-      if (app_state$world2) {
-        req(all(lon.range > 0))
+      if (map_range()$world2) {
         lon.start <- ifelse(lon.start < 0, lon.start + 360, lon.start)
       }
 
-      req(lon.start <= lon.range[2])
       tick.lon <- list(label.loc = seq(lon.start, lon.range[2], by = tick.maj))
       temp.tick <- rev(seq(lon.start, lon.range[1], by = -tick.maj))
       tick.lon$maj <- sort(unique(c(tick.lon$label.loc, temp.tick)))
@@ -222,11 +253,10 @@ mod_map_elements_server  <- function(id, app_state) {
 
     # Return list of latitude values of major tick marks/grid lines and minor tick marks
     cruzMapIntervalLat <- reactive({
-      print("cruzMapIntervalLat")
-      lat.range <- req(app_state$lat.range)
-      tick.maj <- req(cruz.tick$tick_interval_major)
+      lat.range <- req(map_range()$lat.range)
+      tick.maj <- req(cruz.tick$tick.interval.major)
       tick.min <- input$tick_interval_minor
-      lat.start <- req(cruz.tick$label_lat_start)
+      lat.start <- req(cruz.tick$label.lat.start)
 
       tick.lat <- list(label.loc = seq(lat.start, lat.range[2], by = tick.maj))
       temp.tick <- rev(seq(lat.start, lat.range[1], by = -tick.maj))
@@ -240,86 +270,81 @@ mod_map_elements_server  <- function(id, app_state) {
     })
 
 
-    # ###############################################################################
-    # # Update reactiveValues cruz.tick at start (cruz.tick's = NULL) and
-    # #    if inputs change and are different from cruz.tick
+    ###############################################################################
+    # Update reactiveValues cruz.tick at start (cruz.tick's = NULL) and
+    #    if inputs change and are different from cruz.tick
 
-    # observe({
-    #   req(input$tick_interval_major)
+    observe({
+      req(input$tick_interval_major)
 
-    #   in.tick.interval.major <- input$tick_interval_major
-    #   isolate({
-    #     if (cruz.tick$tick.interval.major != in.tick.interval.major)
-    #       cruz.tick$tick.interval.major <- in.tick.interval.major
-    #   })
-    # })
+      in.tick.interval.major <- input$tick_interval_major
+      isolate({
+        if (req(cruz.tick$tick.interval.major) != in.tick.interval.major)
+          cruz.tick$tick.interval.major <- in.tick.interval.major
+      })
+    })
 
-    # observe({
-    #   req(input$label_lon_start)
+    observe({
+      req(input$label_lon_start)
 
-    #   in.label.lon.start <- as.numeric(input$label_lon_start)
-    #   isolate({
-    #     if (cruz.tick$label.lon.start != in.label.lon.start)
-    #       cruz.tick$label.lon.start <- in.label.lon.start
-    #   })
-    # })
+      in.label.lon.start <- as.numeric(input$label_lon_start)
+      isolate({
+        if (req(cruz.tick$label.lon.start) != in.label.lon.start)
+          cruz.tick$label.lon.start <- in.label.lon.start
+      })
+    })
 
-    # observe({
-    #   req(input$label_lat_start)
+    observe({
+      req(input$label_lat_start)
 
-    #   in.label.lat.start <- as.numeric(input$label_lat_start)
-    #   isolate({
-    #     if (cruz.tick$label.lat.start != in.label.lat.start)
-    #       cruz.tick$label.lat.start <- in.label.lat.start
-    #   })
-    # })
+      in.label.lat.start <- as.numeric(input$label_lat_start)
+      isolate({
+        if (req(cruz.tick$label.lat.start) != in.label.lat.start)
+          cruz.tick$label.lat.start <- in.label.lat.start
+      })
+    })
 
     ###############################################################################
     # Update inputs
 
     # Tick major interval
     observe({
-      print("Tick major interval")
-      lon.range <- app_state$lon.range
-      lat.range <- app_state$lat.range
+      lon.range <- req(map_range()$lon.range)
+      lat.range <- req(map_range()$lat.range)
       tick.val <- cruzTickUpdate(lon.range, lat.range)
 
-      updateNumericInput(session, "tick_interval_major", value = tick.val)
-      app_state$tick_interval_major <- tick.val
-      cruz.tick$tick_interval_major <- tick.val
+      updateNumericInput(session, "tick.interval.major", value = tick.val)
+      cruz.tick$tick.interval.major <- tick.val
     }, priority = 2)
 
     # Tick label longitude start
     observe({
-      print("label longitude start")
-      b <- app_state$tick_interval_major
+      b <- req(cruz.tick$tick.interval.major)
       if (b != 0 && !is.na(b)) {
-        lon.range <- app_state$lon.range
+        lon.range <- req(map_range()$lon.range)
         lon.start <- cruzTickStart(lon.range, b)
 
-        updateTextInput(session, "label_lon_start", value = paste(lon.start))
-        app_state$label_lon_start <- lon.start
-        cruz.tick$label_lon_start <- lon.start
+        updateTextInput(session, "label.lon.start", value = paste(lon.start))
+        cruz.tick$label.lon.start <- lon.start
       }
     }, priority = 1)
 
     # Tick label latitude start
     observe({
-      b <- app_state$tick_interval_major
+      b <- req(cruz.tick$tick.interval.major)
       if (b != 0 && !is.na(b)) {
-        lat.range <- app_state$lat.range
+        lat.range <- req(map_range()$lat.range)
         lat.start <- cruzTickStart(lat.range, b)
 
-        updateTextInput(session, "label_lat_start", value = paste(lat.start))
-        app_state$label_lat_start <- lat.start
-        cruz.tick$label_lat_start <- lat.start
+        updateTextInput(session, "label.lat.start", value = paste(lat.start))
+        cruz.tick$label.lat.start <- lat.start
       }
     }, priority = 1)
 
     ###############################################################################
     # Reactive functions
 
-    # Plot longitude tick marks
+    # Plot longtiude tick marks
     cruzMapTickLonBool <- reactive({
       bot <- c(input$tick_bot, input$tick_bot_lab)
       top <- c(input$tick_top, input$tick_top_lab)
@@ -333,9 +358,8 @@ mod_map_elements_server  <- function(id, app_state) {
       list(left = left, right = right)
     })
 
-    # Plot longitude tick labels
+    # Plot longtiude tick labels
     cruzMapTickLonLab <- reactive({
-      print("cruzMapTickLonLab")
       tick.lab.loc <- cruzMapIntervalLon()$label.loc
       format <- input$tick_style
 
@@ -355,7 +379,6 @@ mod_map_elements_server  <- function(id, app_state) {
 
     # Plot latitude tick labels
     cruzMapTickLatLab <- reactive({
-      print("cruzMapTickLatLab")
       tick.lab.loc <- cruzMapIntervalLat()$label.loc
       format <- input$tick_style
 
@@ -371,8 +394,9 @@ mod_map_elements_server  <- function(id, app_state) {
       tick.lab
     })
 
+    ###############################################################################
+
     cruzMapTickParam <- reactive({
-      print("cruzMapTickParam")
       tick.len <- input$tick_length
       lab.font <- font.family.vals[as.numeric(input$label_tick_font)]
       lab.scale <- input$label_tick_size
@@ -380,50 +404,59 @@ mod_map_elements_server  <- function(id, app_state) {
     })
 
 
-    ###########################################################################
-    # Add things to app_state that are needed by plot module
-    observe({
-      print("app-state")
-      app_state$tick.lon.bool <- cruzMapTickLonBool()
-      app_state$tick.lat.bool <- cruzMapTickLatBool()
-
+    cruzMapTickLon <- reactive({
       tick.lon <- cruzMapIntervalLon()
       tick.lon$label <- cruzMapTickLonLab()
-      app_state$tick.lon <- tick.lon
 
+      tick.lon
+    })
+
+    cruzMapTickLat <- reactive({
       tick.lat <- cruzMapIntervalLat()
       tick.lat$label <- cruzMapTickLatLab()
-      app_state$tick.lat <- tick.lat
 
-      app_state$tick.param <- cruzMapTickParam()
+      tick.lat
     })
 
 
     #--------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
     ### Grid
-    # Update app_state with new input values
-    observe({
-      app_state$grid <- input$grid
-      app_state$grid_col <- input$grid_col
-      app_state$grid_lwd <- input$grid_lwd
-      app_state$grid_lty <- input$grid_lty
+    # # Save inputs to app_state
+    # observe({
+    #   app_state$grid <- input$grid
+    #   app_state$grid_col <- input$grid_col
+    #   app_state$grid_lwd <- input$grid_lwd
+    #   app_state$grid_lty <- input$grid_lty
+    # })
+    #
+    # # # Update input values if app_state changes, meaning a workspace was loaded
+    # # observeEvent(app_state$grid, {
+    # #   updateCheckboxInput(session, "grid", value = app_state$grid)
+    # # })
+    # # observeEvent(app_state$grid_col, {
+    # #   updateSelectInput(session, "grid_col", selected = app_state$grid_col)
+    # # })
+    # # observeEvent(app_state$grid_lwd, {
+    # #   updateNumericInput(session, "grid_lwd", value = app_state$grid_lwd)
+    # # })
+    # # observeEvent(app_state$grid_lty, {
+    # #   updateSelectInput(session, "grid_lty", selected = app_state$grid_lty)
+    # # })
+    #
+    # # Reactive to return
+    cruzMapGrid <- reactive({
+      list(
+        col = input$grid_col,
+        lwd = input$grid_lwd,
+        lty = input$grid_lty
+      )
     })
 
-    # Update input values if app_state changes, meaning a workspace was loaded
-    observeEvent(app_state$grid, {
-      updateCheckboxInput(session, "grid", value = app_state$grid)
-    })
-    observeEvent(app_state$grid_col, {
-      updateSelectInput(session, "grid_col", selected = app_state$grid_col)
-    })
-    observeEvent(app_state$grid_lwd, {
-      updateNumericInput(session, "grid_lwd", value = app_state$grid_lwd)
-    })
-    observeEvent(app_state$grid_lty, {
-      updateSelectInput(session, "grid_lty", selected = app_state$grid_lty)
-    })
 
-
+    #--------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
     #--------------------------------------------------------------------------
     ### Scale bar
     # TODO next
@@ -585,6 +618,19 @@ mod_map_elements_server  <- function(id, app_state) {
 
     #--------------------------------------------------------------------------
     ### Return values
-    list()
+    list(
+      tick_list = list(
+        tick = reactive(input$tick),
+        cruzMapTickLonBool = cruzMapTickLonBool,
+        cruzMapTickLatBool = cruzMapTickLatBool,
+        cruzMapTickLon = cruzMapTickLon,
+        cruzMapTickLat = cruzMapTickLat,
+        cruzMapTickParam = cruzMapTickParam
+      ),
+      grid_list = list(
+        grid = reactive(input$grid),
+        cruzMapGrid = cruzMapGrid
+      )
+    )
   })
 }

@@ -30,9 +30,11 @@ fopr either the latitude or longitude}
 \item{lat.range}{numeric vector with two elements: the left and right latitude values}
 }
 \value{
-* cruzTickMinor: minor tick locations
-* cruzTickStart: start location based on lat/lon input and length of tick interval
-* cruzTickUpdate: Returns default starter value for major tick interval, based on the longitude and latitude range
+\itemize{
+\item cruzTickMinor: minor tick locations
+\item cruzTickStart: start location based on lat/lon input and length of tick interval
+\item cruzTickUpdate: Returns default starter value for major tick interval, based on the longitude and latitude range
+}
 }
 \description{
 Tick calculations

@@ -20,7 +20,7 @@
 #' @details
 #' Additional details...
 #'
-#' @returns A list with the following elements:
+#' @returns `mod_map_range_server` returns a list with the following elements:
 #'
 #' * `map_range`: a reactive, containing the values needed by [mod_plot_server()].
 #' Specifically: `lon.range`, a vector of the left and right longitudes;
@@ -122,13 +122,6 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       lat_top = NULL,
       resolution = NULL
     )
-
-    # observeEvent(input$lon_left, ll_vals$lon_left <- input$lon_left)
-    # observeEvent(input$lon_right, ll_vals$lon_right <- input$lon_right)
-    # observeEvent(input$lat_bot, ll_vals$lat_bot <- input$lat_bot)
-    # observeEvent(input$lat_top, ll_vals$lat_top <- input$lat_top)
-    # observeEvent(input$resolution, ll_vals$resolution <- input$resolution)
-
 
     ### Update inputs if app_state changes
     observeEvent(app_state$lon_left, {
@@ -254,12 +247,6 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       app_state$lon_right <- ll.vals[2]
       app_state$lat_bot <- ll.vals[3]
       app_state$lat_top <- ll.vals[4]
-
-      # lon.range <- lon_range_world2(c(ll.vals[1], ll.vals[2]), world2)
-      # map_range$lon.range <- lon.range
-      # map_range$lat.range <- c(ll.vals[3], ll.vals[4])
-      # map_range$world2 <- world2
-      # map_range$map.name <- map_name_calc(world2, res)
     }
 
     # TODO: Make these part of the function input, to be able to customize
@@ -299,8 +286,6 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       default_range_set(ll.vals, input$resolution)
     }, priority = 11)
 
-    observe(print(paste("replot", input$map_replot)))
-
 
     # ###############################################################################
     # # Update params as necessary
@@ -317,14 +302,7 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
     ###############################################################################
     # Series of steps/actions triggered by input$map_replot
 
-
     observeEvent(input$map_replot, {
-      print("map_replot")
-      # # if (input$lon_left != app_state$lon_left) {
-      # #   lon.left <- app_state$lon_left
-      # # } else {
-      # #
-      # # }
       lon.left <- input$lon_left
       lon.right <- input$lon_right
       lat.bot <- input$lat_bot
@@ -337,18 +315,6 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       ll_vals$lat_top <- lat.top
       ll_vals$resolution <- res
 
-      # browser()
-
-
-
-      # # Only update app_state when the map is plotted
-      # if ("lon_left" %in% names(app_state)) {
-      #   if (lon.left != app_state$lon_left) app_state$lon_left <- lon.left
-      #   if (lon.right != app_state$lon_right) app_state$lon_right <- lon.right
-      #   if (lat.bot != app_state$lat_bot) app_state$lat_bot <- lat.bot
-      #   if (lat.top != app_state$lat_top) app_state$lat_top <- lat.top
-      #   if (res != app_state$resolution) app_state$resolution <- res
-      # } else {
       app_state$lon_left <- lon.left
       app_state$lon_right <- lon.right
       app_state$lat_bot <- lat.bot
@@ -372,16 +338,10 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       #
       # map.range.message(if (is.null(m.all)) m.all else paste(m.all, collapse = "<br/>"))
       # req(is.null(m.all))
-
-      # Determine if world2 map should be used and thus if lons need to be rescaled
-
-
-
     }, ignoreNULL = FALSE)
 
 
     # When ll_vals reactiveValues changes, then update the reactive output
-    # observe({
     cruzMapRange <- reactive({
       lon.left <- req(ll_vals$lon_left)
       lon.right <- req(ll_vals$lon_right)
@@ -396,12 +356,6 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
         world2 <- world2_calc(lon.left, lon.right)
         lon.range <- lon_range_world2(c(lon.left, lon.right), world2)
 
-        # # Save as reactive values
-        # map_range$lon.range <- lon.range
-        # map_range$lat.range <- c(lat.bot, lat.top)
-        # map_range$world2 <- world2
-        # map_range$map.name <- map_name_calc(world2, res)
-
         # Save as reactive values
         list(
           lon.range = lon.range,
@@ -411,11 +365,6 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
         )
       })
     })
-    # }, priority = -9)
-
-
-
-
 
 
     # output$map_range_message <- renderUI({
