@@ -6,21 +6,34 @@
 \alias{mod_map_range_server}
 \title{Map range module}
 \usage{
-mod_map_range_ui(id)
+mod_map_range_ui(
+  id,
+  start_vals = list(lon_left = -135, lon_right = -117, lat_bot = 29, lat_top = 52, res =
+    1)
+)
 
-mod_map_range_server(id, vals.update, brush)
+mod_map_range_server(id, app_state, brush)
 }
 \arguments{
 \item{id}{character used to specify namespace, see [shiny::NS()]}
+
+\item{start_vals}{A named list of 5 starting values:
+left and right longitude (`lon_left` and `lon_right`), 
+bottom and top latitude (`lat_bot` and `lat_top`), 
+and map resolution (`res`)}
+
+\item{app_state}{A [shiny::reactiveValues()] object that serves as the shared,
+central state for the entire application. This object is initialized in the
+main server and passed down to each module, enabling communication and
+synchronization between them. Any changes made to this object in one
+module will be immediately visible in all others.
+See details for keys specific to this function.}
 }
 \value{
-The server function returns a list of
-  1) the cruz.map.range reactiveValues object and
-  2) a reactive of the module's input object, converted to a list via
-  [shiny::reactiveValuesToList()]
+An empty list
 }
 \description{
-Shiny module for defining map ranges
+Shiny module for map ranges
 }
 \details{
 Additional details...

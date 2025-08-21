@@ -1,25 +1,35 @@
 #' Map range module
 #'
-#' Shiny module for defining map ranges
+#' Shiny module for map ranges
 #'
 #' @name mod_map_range
 #'
-#' @param id character used to specify namespace, see [shiny::NS()]
+#' @inheritParams mod_plot
+#' @param start_vals A named list of 5 starting values:
+#'   left and right longitude (`lon_left` and `lon_right`), 
+#'   bottom and top latitude (`lat_bot` and `lat_top`), 
+#'   and map resolution (`res`)
 #'
 #' @details
 #' Additional details...
 #'
-#' @returns The server function returns a list of
-#'   1) the cruz.map.range reactiveValues object and
-#'   2) a reactive of the module's input object, converted to a list via
-#'   [shiny::reactiveValuesToList()]
+#' @returns An empty list
 #'
 #' @export
-mod_map_range_ui <- function(id) {
+mod_map_range_ui <- function(
+  id, 
+  start_vals = list(
+    lon_left = -135, 
+    lon_right = -117, 
+    lat_bot = 29, 
+    lat_top = 52, 
+    res = 1
+  )
+) {
   ns <- NS(id)
 
   ### Set default values for map
-  start.ll <- data.frame(X = c(-135, -117, 29, 52, 1))  
+  # start.ll <- data.frame(X = c(-135, -117, 29, 52, 1))
 
   # tagList(
   tabPanel(
@@ -47,17 +57,17 @@ mod_map_range_ui <- function(id) {
           column(3, tags$h5("Top latitude"))
         ),
         fluidRow(
-          column(3, numericInput(ns("lon_left"), NULL, value = start.ll$X[1])),
-          column(3, numericInput(ns("lon_right"), NULL, value = start.ll$X[2])),
-          column(3, numericInput(ns("lat_bot"), NULL, value = start.ll$X[3])),
-          column(3, numericInput(ns("lat_top"), NULL, value = start.ll$X[4]))
+          column(3, numericInput(ns("lon_left"), NULL, value = start_vals[["lon_left"]])),
+          column(3, numericInput(ns("lon_right"), NULL, value = start_vals[["lon_right"]])),
+          column(3, numericInput(ns("lat_bot"), NULL, value = start_vals[["lat_bot"]])),
+          column(3, numericInput(ns("lat_top"), NULL, value = start_vals[["lat_top"]]))
         ),
         fluidRow(
           column(
             width = 3,
             selectInput(
               ns("resolution"), label = tags$h5("Resolution"),
-              choices = list("Low" = 1, "High" = 2), selected = start.ll$X[5]
+              choices = list("Low" = 1, "High" = 2), selected = start_vals[["res"]]
             )
           ),
           column(3, tags$br(), tags$br(), actionButton(ns("map_replot"), "Replot map"))
@@ -119,39 +129,35 @@ mod_map_range_ui <- function(id) {
 
 #' @name mod_map_range
 #' @export
-mod_map_range_server  <- function(id, vals.update, brush) {
+mod_map_range_server <- function(id, app_state, brush) {
   moduleServer(id, function(input, output, session) {
-    cruz.map.range <- reactiveValues(
-      lon.range = NULL,
-      lat.range = NULL,
-      # res = NULL,
-      world2 = NULL,
-      map.name = list()
-    )
+    ### Update widgets. Ok without if checks, because these app_state elements
+    # are only updated on the click
+    observeEvent(app_state$lon.range, {
+      updateNumericInput(session, "lon_left", value = app_state$lon.range[1])
+      updateNumericInput(session, "lon_right", value = app_state$lon.range[2])
+    })
 
-    # Update widgets
-    observeEvent(vals.update$lon.range, {
-      if (length(names(vals.update)) > 0) {
-        updateNumericInput(session, "lon_left", value = vals.update$lon.range[1])
-        updateNumericInput(session, "lon_right", value = vals.update$lon.range[2])
-        updateNumericInput(session, "lat_bot", value = vals.update$lat.range[1])
-        updateNumericInput(session, "lat_top", value = vals.update$lat.range[2])
-        res <- if_else(str_detect(vals.update$map.name[[1]], "Hires"), "2", "1")
-        updateSelectInput(session, "resolution", selected = res)
-      }
+    observeEvent(app_state$lat.range, {
+      updateNumericInput(session, "lat_bot", value = app_state$lat.range[1])
+      updateNumericInput(session, "lat_top", value = app_state$lat.range[2])
+    })
+
+    observeEvent(app_state$map.name, {
+      res <- if_else(str_detect(app_state$map.name[[1]], "Hires"), "2", "1")
+      updateSelectInput(session, "resolution", selected = res)
     })
 
     # Countries to be removed for world2 map
     # http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
     remove <- c(
-      "UK:Great Britain", "France", "Spain", "Algeria", "Mali", 
+      "UK:Great Britain", "France", "Spain", "Algeria", "Mali",
       "Burkina Faso",      "Ghana", "Togo"
     )
     mapnames <- map("world2", plot = FALSE)$names
     mapnames.hires <- map("mapdata::world2Hires", plot = FALSE)$names
     regions.rm <- base::setdiff(mapnames, remove)
     regions.rm.hires <- base::setdiff(mapnames.hires, remove)
-    # regions.rm.hires <- mapnames.hires[!(mapnames.hires %in% remove)]
 
     ###############################################################################
     # TODO: Move these functions into their own R file
@@ -194,6 +200,7 @@ mod_map_range_server  <- function(id, vals.update, brush) {
     }
 
 
+    # Update map range when default study area buttons are clicked
     default_range_set <- function(ll.vals, res) {
       world2 <- world2_calc(ll.vals[1], ll.vals[2])
 
@@ -204,15 +211,14 @@ mod_map_range_server  <- function(id, vals.update, brush) {
 
       lon.range <- lon_range_world2(c(ll.vals[1], ll.vals[2]), world2)
 
-      cruz.map.range$lon.range <- lon.range
-      cruz.map.range$lat.range <- c(ll.vals[3], ll.vals[4])
-      cruz.map.range$world2 <- world2
-      cruz.map.range$map.name <- map_name_calc(world2, res)
+      app_state$lon.range <- lon.range
+      app_state$lat.range <- c(ll.vals[3], ll.vals[4])
+      app_state$world2 <- world2
+      app_state$map.name <- map_name_calc(world2, res)
       # cruz.map.range$res <- "1"
     }
 
     # TODO: Make these part of the function input, to be able to customize
-    # Update map range when default study area buttons are clicked
     ### CCE
     observeEvent(input$map_replot_cce, {
       ll.vals <- c(-135, -117, 29, 52)
@@ -253,8 +259,8 @@ mod_map_range_server  <- function(id, vals.update, brush) {
     ###############################################################################
     # Update params as necessary
     cruzMapParam <- reactive({
-      cruz.map.range$lon.range
-      cruz.map.range$lat.range
+      app_state$lon.range
+      app_state$lat.range
       param.unit <- par("usr")
       param.inch <- par("pin")
 
@@ -312,11 +318,10 @@ mod_map_range_server  <- function(id, vals.update, brush) {
       lon.range <- lon_range_world2(c(lon.left, lon.right), world2)
 
       # Save as reactive values
-      cruz.map.range$lon.range <- lon.range
-      cruz.map.range$lat.range <- c(lat.bot, lat.top)
-      cruz.map.range$world2 <- world2
-      cruz.map.range$map.name <- map_name_calc(world2, input$resolution)
-      # cruz.map.range$res <- "1"
+      app_state$lon.range <- lon.range
+      app_state$lat.range <- c(lat.bot, lat.top)
+      app_state$world2 <- world2
+      app_state$map.name <- map_name_calc(world2, input$resolution)
     }, ignoreNULL = FALSE, priority = 9)
 
 
@@ -324,10 +329,11 @@ mod_map_range_server  <- function(id, vals.update, brush) {
     #   HTML(req(map.range.message()))
     # })
 
-    ### Return values
-    list(
-      map_range = cruz.map.range,
-      inputsave <- reactive(reactiveValuesToList(input))
-    )
+    # ### Return values
+    list()
+    # list(
+    #   app_state = app_state
+    #   # inputsave <- reactive(reactiveValuesToList(input))
+    # )
   })
 }

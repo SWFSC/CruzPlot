@@ -4,11 +4,11 @@
 \alias{mod_plot}
 \alias{mod_plot_ui}
 \alias{mod_plot_server}
-\title{PLot module}
+\title{Plot module}
 \usage{
 mod_plot_ui(id, enable_brush = FALSE)
 
-mod_plot_server(id, height, cruz.map.range, res = 72)
+mod_plot_server(id, app_state)
 }
 \arguments{
 \item{id}{character used to specify namespace, see [shiny::NS()]}
@@ -16,19 +16,18 @@ mod_plot_server(id, height, cruz.map.range, res = 72)
 \item{enable_brush}{boolean indicating if the plotOutput should include
 `brush = ns("map_brush")`}
 
-\item{height}{reactive representing the height of the plot, in pixels.
-Passed directly to [shiny::renderPlot()]}
-
-\item{cruz.map.range}{reactiveValues object; intended to be the
-first element of the list output of [mod_map_range_server()]}
-
-\item{res}{Plot resolution. Passed directly to [shiny::renderPlot()]}
+\item{app_state}{A [shiny::reactiveValues()] object that serves as the shared,
+central state for the entire application. This object is initialized in the
+main server and passed down to each module, enabling communication and
+synchronization between them. Any changes made to this object in one
+module will be immediately visible in all others.
+See details for keys specific to this function.}
 }
 \value{
 `mod_plot_ui` returns the plot UI, here simply a [shiny::plotOutput()] object
 
 `mod_plot_server` returns a named list:
-* 'brush': a reactive of `input$map_brush`. 
+* 'brush': a reactive of `input$map_brush`.
   If `enable_brush` is `FALSE`, then this value will be `NULL`
 }
 \description{
