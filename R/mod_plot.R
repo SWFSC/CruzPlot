@@ -5,12 +5,6 @@
 #' @name mod_plot
 #'
 #' @param id character used to specify namespace, see [shiny::NS()]
-#' @param app_state A [shiny::reactiveValues()] object that serves as the shared,
-#'   central state for the entire application. This object is initialized in the
-#'   main server and passed down to each module, enabling communication and
-#'   synchronization between them. Any changes made to this object in one
-#'   module will be immediately visible in all others.
-#'   See details for keys specific to this function.
 #' @param enable_brush boolean indicating if the plotOutput should include
 #'   `brush = ns("map_brush")`
 #'
@@ -40,7 +34,12 @@ mod_plot_ui <- function(id, enable_brush = FALSE) {
 
 #' @name mod_plot
 #' @export
-mod_plot_server  <- function(id, app_state) {
+mod_plot_server  <- function(
+    id,
+    height,
+    map_range,
+    map_elements
+) {
   moduleServer(id, function(input, output, session) {
 
     ###########################################################################
@@ -56,10 +55,10 @@ mod_plot_server  <- function(id, app_state) {
 
       #------------------------------------------------------------------------
       ### Map range
-      lon.range <- req(app_state$lon.range)
-      lat.range <- req(app_state$lat.range)
-      req(is.logical(app_state$world2))
-      world2 <- app_state$world2
+      lon.range <- req(map_range$lon.range)
+      lat.range <- req(map_range$lat.range)
+      req(is.logical(map_range$world2))
+      world2 <- map_range$world2
       stopifnot("world2 param is not a logical" = inherits(world2, "logical"))
 
       vals.bad <- c("", "-", "+", NA)
@@ -97,7 +96,7 @@ mod_plot_server  <- function(id, app_state) {
         )
       }
 
-      map.name <- app_state$map.name
+      map.name <- map_range$map.name
       map(map.name[[1]], regions = map.name[[2]],
           xlim = lon.range[1:2], ylim = lat.range[1:2],
           fill = TRUE, col = "yellow",
@@ -107,83 +106,83 @@ mod_plot_server  <- function(id, app_state) {
       #------------------------------------------------------------------------
       # Map elements
 
-      ### Ticks
-      req(is.logical(app_state$tick))
-      if (app_state$tick) {
-        # browser()
-        tick.lon <- req(app_state$tick.lon)
-        tick.lat <- req(app_state$tick.lat)
-        tick.lon.bool <- req(app_state$tick.lon.bool)
-        tick.lat.bool <- req(app_state$tick.lat.bool)
-        tick.param <- req(app_state$tick.param)
-
-        print("tick draw")
-        # browser()
-        # Draw major and minor tick marks
-        if (tick.lon.bool$bot[1]) {
-          axis(1, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-              tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
-              family = tick.param$font)
-          axis(1, at = tick.lon$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
-              tcl = par("tcl") *0.4*tick.param$len)
-        }
-        if (tick.lat.bool$left[1]) {
-          axis(2, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-              tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
-              family = tick.param$font)
-          axis(2, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
-              tcl = par("tcl") * 0.4*tick.param$len)
-        }
-        if (tick.lon.bool$top[1]) {
-          axis(3, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-              tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
-              family = tick.param$font)
-          axis(3, at = tick.lon$min, labels = FALSE, lwd = 0,  lwd.ticks = 1,
-              tcl = par("tcl") * 0.4*tick.param$len)
-        }
-        if (tick.lat.bool$right[1]) {
-          axis(4, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-              tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
-              family = tick.param$font)
-          axis(4, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
-              tcl = par("tcl") * 0.4*tick.param$len)
-        }
-
-        # Draw tick labels
-        if (tick.lon.bool$bot[2])
-          axis(1, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
-              cex.axis = tick.param$scale, family = tick.param$font)
-        if (tick.lat.bool$left[2])
-          axis(2, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
-              las = 1, cex.axis = tick.param$scale, family = tick.param$font)
-        if (tick.lon.bool$top[2])
-          axis(3, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
-              cex.axis = tick.param$scale, family = tick.param$font)
-        if (tick.lat.bool$right[2])
-          axis(4, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
-              las = 1, cex.axis = tick.param$scale, family = tick.param$font)
-      }
-
-      ### Grid
-      req(is.logical(app_state$grid))
-      if (app_state$grid) {
-        tick.lon <- req(app_state$tick.lon)
-        tick.lat <- req(app_state$tick.lat)
-        abline(
-          # v = -125,
-          v = tick.lon$maj,
-          col = app_state$grid_col,
-          lwd = app_state$grid_lwd,
-          lty = as.numeric(app_state$grid_lty)
-        )
-        abline(
-          # h = 35,
-          h = tick.lat$maj,
-          col = app_state$grid_col,
-          lwd = app_state$grid_lwd,
-          lty = as.numeric(app_state$grid_lty)
-        )
-      }
+      # ### Ticks
+      # req(is.logical(app_state$tick))
+      # if (app_state$tick) {
+      #   # browser()
+      #   tick.lon <- req(app_state$tick.lon)
+      #   tick.lat <- req(app_state$tick.lat)
+      #   tick.lon.bool <- req(app_state$tick.lon.bool)
+      #   tick.lat.bool <- req(app_state$tick.lat.bool)
+      #   tick.param <- req(app_state$tick.param)
+      #
+      #   print("tick draw")
+      #   # browser()
+      #   # Draw major and minor tick marks
+      #   if (tick.lon.bool$bot[1]) {
+      #     axis(1, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+      #         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+      #         family = tick.param$font)
+      #     axis(1, at = tick.lon$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+      #         tcl = par("tcl") *0.4*tick.param$len)
+      #   }
+      #   if (tick.lat.bool$left[1]) {
+      #     axis(2, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+      #         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+      #         family = tick.param$font)
+      #     axis(2, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+      #         tcl = par("tcl") * 0.4*tick.param$len)
+      #   }
+      #   if (tick.lon.bool$top[1]) {
+      #     axis(3, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+      #         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+      #         family = tick.param$font)
+      #     axis(3, at = tick.lon$min, labels = FALSE, lwd = 0,  lwd.ticks = 1,
+      #         tcl = par("tcl") * 0.4*tick.param$len)
+      #   }
+      #   if (tick.lat.bool$right[1]) {
+      #     axis(4, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+      #         tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+      #         family = tick.param$font)
+      #     axis(4, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+      #         tcl = par("tcl") * 0.4*tick.param$len)
+      #   }
+      #
+      #   # Draw tick labels
+      #   if (tick.lon.bool$bot[2])
+      #     axis(1, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
+      #         cex.axis = tick.param$scale, family = tick.param$font)
+      #   if (tick.lat.bool$left[2])
+      #     axis(2, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
+      #         las = 1, cex.axis = tick.param$scale, family = tick.param$font)
+      #   if (tick.lon.bool$top[2])
+      #     axis(3, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
+      #         cex.axis = tick.param$scale, family = tick.param$font)
+      #   if (tick.lat.bool$right[2])
+      #     axis(4, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
+      #         las = 1, cex.axis = tick.param$scale, family = tick.param$font)
+      # }
+      #
+      # ### Grid
+      # req(is.logical(app_state$grid))
+      # if (app_state$grid) {
+      #   tick.lon <- req(app_state$tick.lon)
+      #   tick.lat <- req(app_state$tick.lat)
+      #   abline(
+      #     # v = -125,
+      #     v = tick.lon$maj,
+      #     col = app_state$grid_col,
+      #     lwd = app_state$grid_lwd,
+      #     lty = as.numeric(app_state$grid_lty)
+      #   )
+      #   abline(
+      #     # h = 35,
+      #     h = tick.lat$maj,
+      #     col = app_state$grid_col,
+      #     lwd = app_state$grid_lwd,
+      #     lty = as.numeric(app_state$grid_lty)
+      #   )
+      # }
 
       # ### Scale bar
       # if (app_state$bar) {
@@ -203,7 +202,7 @@ mod_plot_server  <- function(id, app_state) {
       ### ...
     })
 
-    height = reactive(app_state$plot_height)
+    # height = reactive(app_state$plot_height)
     output$plot1 <- renderPlot({
       plotMap()
     }, height = height, units = "px", res = 72)

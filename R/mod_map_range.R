@@ -4,25 +4,33 @@
 #'
 #' @name mod_map_range
 #'
-#' @inheritParams mod_plot
+#' @param id character used to specify namespace, see [shiny::NS()]
 #' @param start_vals A named list of 5 starting values:
-#'   left and right longitude (`lon_left` and `lon_right`), 
-#'   bottom and top latitude (`lat_bot` and `lat_top`), 
+#'   left and right longitude (`lon_left` and `lon_right`),
+#'   bottom and top latitude (`lat_bot` and `lat_top`),
 #'   and map resolution (`res`)
+#' @param app_state A [shiny::reactiveValues()] object that serves as the shared,
+#'   central state for the entire application. This object is initialized in the
+#'   main server and passed down to each module, enabling communication and
+#'   synchronization between them. Any changes made to this object in one
+#'   module will be immediately visible in all others.
+#'   See details for keys specific to this function.
+#' @param brush Either `NULL` (default), or the brush from [mod_plot()]
 #'
 #' @details
 #' Additional details...
 #'
-#' @returns An empty list
+#' @returns A list with the following elements:
+#' * `map_range`: reactive values with relevant map_range elements
 #'
 #' @export
 mod_map_range_ui <- function(
-  id, 
+  id,
   start_vals = list(
-    lon_left = -135, 
-    lon_right = -117, 
-    lat_bot = 29, 
-    lat_top = 52, 
+    lon_left = -135,
+    lon_right = -117,
+    lat_bot = 29,
+    lat_top = 52,
     res = 1
   )
 ) {
@@ -129,24 +137,56 @@ mod_map_range_ui <- function(
 
 #' @name mod_map_range
 #' @export
-mod_map_range_server <- function(id, app_state, brush) {
+mod_map_range_server <- function(id, app_state, brush = NULL) {
   moduleServer(id, function(input, output, session) {
-    ### Update widgets. Ok without if checks, because these app_state elements
-    # are only updated on the click
-    observeEvent(app_state$lon.range, {
-      updateNumericInput(session, "lon_left", value = app_state$lon.range[1])
-      updateNumericInput(session, "lon_right", value = app_state$lon.range[2])
+    map_range <- reactiveValues(
+      lon.range = NULL,
+      lat.range = NULL,
+      world2 = NULL,
+      map.name = list()
+    )
+
+    # ### Update widgets. Ok without if checks, because these app_state elements
+    # # are only updated on the click
+    # observeEvent(app_state$lon.range, {
+    #   updateNumericInput(session, "lon_left", value = app_state$lon.range[1])
+    #   updateNumericInput(session, "lon_right", value = app_state$lon.range[2])
+    # })
+    #
+    # observeEvent(app_state$lat.range, {
+    #   updateNumericInput(session, "lat_bot", value = app_state$lat.range[1])
+    #   updateNumericInput(session, "lat_top", value = app_state$lat.range[2])
+    # })
+    #
+    # observeEvent(app_state$map.name, {
+    #   res <- if_else(str_detect(app_state$map.name[[1]], "Hires"), "2", "1")
+    #   updateSelectInput(session, "resolution", selected = res)
+    # })
+
+    observe({
+      app_state$lon_left <- input$lon_left
+      app_state$lon_right <- input$lon_right
+      app_state$lat_bot <- input$lat_bot
+      app_state$lat_top <- input$lat_top
+      app_state$res <- input$res
     })
 
-    observeEvent(app_state$lat.range, {
-      updateNumericInput(session, "lat_bot", value = app_state$lat.range[1])
-      updateNumericInput(session, "lat_top", value = app_state$lat.range[2])
+    observeEvent(app_state$lon_left, {
+      updateNumericInput(session, "lon_left", value = app_state$lon_left)
+    })
+    observeEvent(app_state$lon_right, {
+      updateNumericInput(session, "lon_right", value = app_state$lon_right)
+    })
+    observeEvent(app_state$lat_bot, {
+      updateNumericInput(session, "lat_bot", value = app_state$lat_bot)
+    })
+    observeEvent(app_state$lat_top, {
+      updateNumericInput(session, "lat_top", value = app_state$lat_top)
+    })
+    observeEvent(app_state$res, {
+      updateSelectInput(session, "res", selected = app_state$res)
     })
 
-    observeEvent(app_state$map.name, {
-      res <- if_else(str_detect(app_state$map.name[[1]], "Hires"), "2", "1")
-      updateSelectInput(session, "resolution", selected = res)
-    })
 
     # Countries to be removed for world2 map
     # http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
@@ -158,6 +198,9 @@ mod_map_range_server <- function(id, app_state, brush) {
     mapnames.hires <- map("mapdata::world2Hires", plot = FALSE)$names
     regions.rm <- base::setdiff(mapnames, remove)
     regions.rm.hires <- base::setdiff(mapnames.hires, remove)
+
+    ###############################################################################
+    # TODO: brush needs to update input
 
     ###############################################################################
     # TODO: Move these functions into their own R file
@@ -211,10 +254,10 @@ mod_map_range_server <- function(id, app_state, brush) {
 
       lon.range <- lon_range_world2(c(ll.vals[1], ll.vals[2]), world2)
 
-      app_state$lon.range <- lon.range
-      app_state$lat.range <- c(ll.vals[3], ll.vals[4])
-      app_state$world2 <- world2
-      app_state$map.name <- map_name_calc(world2, res)
+      map_range$lon.range <- lon.range
+      map_range$lat.range <- c(ll.vals[3], ll.vals[4])
+      map_range$world2 <- world2
+      map_range$map.name <- map_name_calc(world2, res)
       # cruz.map.range$res <- "1"
     }
 
@@ -256,16 +299,16 @@ mod_map_range_server <- function(id, app_state, brush) {
     }, priority = 11)
 
 
-    ###############################################################################
-    # Update params as necessary
-    cruzMapParam <- reactive({
-      app_state$lon.range
-      app_state$lat.range
-      param.unit <- par("usr")
-      param.inch <- par("pin")
-
-      list(param.unit = param.unit, param.inch = param.inch)
-    })
+    # ###############################################################################
+    # # Update params as necessary
+    # cruzMapParam <- reactive({
+    #   app_state$lon.range
+    #   app_state$lat.range
+    #   param.unit <- par("usr")
+    #   param.inch <- par("pin")
+    #
+    #   list(param.unit = param.unit, param.inch = param.inch)
+    # })
 
 
     ###############################################################################
@@ -318,10 +361,10 @@ mod_map_range_server <- function(id, app_state, brush) {
       lon.range <- lon_range_world2(c(lon.left, lon.right), world2)
 
       # Save as reactive values
-      app_state$lon.range <- lon.range
-      app_state$lat.range <- c(lat.bot, lat.top)
-      app_state$world2 <- world2
-      app_state$map.name <- map_name_calc(world2, input$resolution)
+      map_range$lon.range <- lon.range
+      map_range$lat.range <- c(lat.bot, lat.top)
+      map_range$world2 <- world2
+      map_range$map.name <- map_name_calc(world2, input$resolution)
     }, ignoreNULL = FALSE, priority = 9)
 
 
@@ -329,11 +372,9 @@ mod_map_range_server <- function(id, app_state, brush) {
     #   HTML(req(map.range.message()))
     # })
 
-    # ### Return values
-    list()
-    # list(
-    #   app_state = app_state
-    #   # inputsave <- reactive(reactiveValuesToList(input))
-    # )
+    ### Return values
+    list(
+      map_range = map_range
+    )
   })
 }

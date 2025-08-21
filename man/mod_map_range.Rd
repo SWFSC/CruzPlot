@@ -12,14 +12,14 @@ mod_map_range_ui(
     1)
 )
 
-mod_map_range_server(id, app_state, brush)
+mod_map_range_server(id, app_state, brush = NULL)
 }
 \arguments{
 \item{id}{character used to specify namespace, see [shiny::NS()]}
 
 \item{start_vals}{A named list of 5 starting values:
-left and right longitude (`lon_left` and `lon_right`), 
-bottom and top latitude (`lat_bot` and `lat_top`), 
+left and right longitude (`lon_left` and `lon_right`),
+bottom and top latitude (`lat_bot` and `lat_top`),
 and map resolution (`res`)}
 
 \item{app_state}{A [shiny::reactiveValues()] object that serves as the shared,
@@ -28,9 +28,12 @@ main server and passed down to each module, enabling communication and
 synchronization between them. Any changes made to this object in one
 module will be immediately visible in all others.
 See details for keys specific to this function.}
+
+\item{brush}{Either `NULL` (default), or the brush from [mod_plot()]}
 }
 \value{
-An empty list
+A list with the following elements:
+* `map_range`: reactive values with relevant map_range elements
 }
 \description{
 Shiny module for map ranges

@@ -89,7 +89,7 @@ cruzplot_gui <- function(...) {
           h3("Current App State"),
           p("This panel shows the values stored in the central 'app_state' object."),
           verbatimTextOutput("current_state_display")
-        ), 
+        ),
         tabItem(
           tabName = "createmap",
           fluidRow(
@@ -100,8 +100,8 @@ cruzplot_gui <- function(...) {
             ),
             tabBox(
               title = "Map", width = 6, id = "tabset1",
-              mod_map_range_ui("map_range"),
-              mod_map_elements_ui("map_elements")
+              mod_map_range_ui("map_range")
+              # mod_map_elements_ui("map_elements")
             )
           )
         )
@@ -127,16 +127,17 @@ cruzplot_gui <- function(...) {
     #----------------------------------------------------------------------------
     ### Create app state reactive
     app_state <- reactiveValues(
-      # plot_height = NULL, 
+      # plot_height = NULL,
       # lon.range = NULL,
       # lat.range = NULL,
       # world2 = NULL,
-      # map.name = list(), 
-      # grid = NULL, 
-      # grid_col = NULL, 
-      # grid_lwd = NULL, 
+      # map.name = list(),
+      # grid = NULL,
+      # grid_col = NULL,
+      # grid_lwd = NULL,
       # grid_lty = NULL
     )
+    map_range <- map_elements <- reactiveValues()
 
     observeEvent(input$plot_height, {
       app_state$plot_height <- input$plot_height
@@ -150,17 +151,17 @@ cruzplot_gui <- function(...) {
 
     #----------------------------------------------------------------------------
     ### Plot
+    h <- reactive(input$plot_height)
     # plot_height <- reactive(input$plot_height)
-    plot1.list <- mod_plot_server("plot1", app_state) #, plot_height)
-    # plot1.brush <- plot1.list$brush
-    mod_plot_server("plot2", app_state)
+    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements)
+    mod_plot_server("plot2", h, map_range, map_elements)
 
     #----------------------------------------------------------------------------
     ### Map tab
-    mod_map_range_server("map_range", app_state, plot1.list$brush)
-    # cruz.map.range <- map.range.list[["map_range"]]
+    map.range.list <- mod_map_range_server("map_range", app_state, plot1.list$brush)
+    map_range <- map.range.list[["map_range"]]
 
-    mod_map_elements_server("map_elements", app_state)
+    # map_elements <- mod_map_elements_server("map_elements", app_state)
 
     #----------------------------------------------------------------------------
     ### App 'environment' save/load
@@ -193,7 +194,7 @@ cruzplot_gui <- function(...) {
       validate(
         need(
           (identical(str_to_upper(str_sub(file.load$name, -6)), ".RDATA")
-            & file.load$type == ""),
+           & file.load$type == ""),
           "Error: Please load a file with the extension '.RDATA'"
         )
       )

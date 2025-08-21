@@ -8,20 +8,13 @@
 \usage{
 mod_plot_ui(id, enable_brush = FALSE)
 
-mod_plot_server(id, app_state)
+mod_plot_server(id, height, map_range, map_elements)
 }
 \arguments{
 \item{id}{character used to specify namespace, see [shiny::NS()]}
 
 \item{enable_brush}{boolean indicating if the plotOutput should include
 `brush = ns("map_brush")`}
-
-\item{app_state}{A [shiny::reactiveValues()] object that serves as the shared,
-central state for the entire application. This object is initialized in the
-main server and passed down to each module, enabling communication and
-synchronization between them. Any changes made to this object in one
-module will be immediately visible in all others.
-See details for keys specific to this function.}
 }
 \value{
 `mod_plot_ui` returns the plot UI, here simply a [shiny::plotOutput()] object

@@ -4,7 +4,7 @@
 #'
 #' @name mod_map_elements
 #'
-#' @inheritParams mod_plot
+#' @inheritParams mod_map_range
 #'
 #' @details
 #' Additional details...
