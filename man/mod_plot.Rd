@@ -15,6 +15,13 @@ mod_plot_server(id, height, map_range, map_elements)
 
 \item{enable_brush}{boolean indicating if the plotOutput should include
 `brush = ns("map_brush")`}
+
+\item{height}{a reactive of the height of the plot, in pixels.
+Passed to [shiny::renderPlot()]}
+
+\item{map_range}{the reactive output of [mod_map_range()]}
+
+\item{map_elements}{the reactive output of [map_elements()]}
 }
 \value{
 `mod_plot_ui` returns the plot UI, here simply a [shiny::plotOutput()] object
@@ -24,7 +31,7 @@ mod_plot_server(id, height, map_range, map_elements)
   If `enable_brush` is `FALSE`, then this value will be `NULL`
 }
 \description{
-Shiny module for creating the crzplot plot
+Shiny module for creating or saving the shiny app plot
 }
 \details{
 Additional details...

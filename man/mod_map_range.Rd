@@ -8,8 +8,8 @@
 \usage{
 mod_map_range_ui(
   id,
-  start_vals = list(lon_left = -135, lon_right = -117, lat_bot = 29, lat_top = 52, res =
-    1)
+  start_vals = list(lon_left = -135, lon_right = -117, lat_bot = 29, lat_top = 52,
+    resolution = 1)
 )
 
 mod_map_range_server(id, app_state, brush = NULL)
@@ -20,7 +20,7 @@ mod_map_range_server(id, app_state, brush = NULL)
 \item{start_vals}{A named list of 5 starting values:
 left and right longitude (`lon_left` and `lon_right`),
 bottom and top latitude (`lat_bot` and `lat_top`),
-and map resolution (`res`)}
+and map resolution (`resolution`)}
 
 \item{app_state}{A [shiny::reactiveValues()] object that serves as the shared,
 central state for the entire application. This object is initialized in the
@@ -33,10 +33,19 @@ See details for keys specific to this function.}
 }
 \value{
 A list with the following elements:
-* `map_range`: reactive values with relevant map_range elements
+
+* `map_range`: a reactive, containing the values needed by [mod_plot_server()].
+Specifically: `lon.range`, a vector of the left and right longitudes;
+`lat.range`, a vector of the bottom and top latitudes;
+`world2`, a logical indicating if the map is using the world2 protocol
+(lons 0-360);
+ `map.name`, a list of 1) the map name, passed directly to the `database`
+ argument of [maps::map()], and 2) the regions to plot,
+ passed directly to the `regions` argument of [maps::map()]
+ (see TODO for more details)
 }
 \description{
-Shiny module for map ranges
+Shiny module for map range
 }
 \details{
 Additional details...

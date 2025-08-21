@@ -1,12 +1,16 @@
 #' Plot module
 #'
-#' Shiny module for creating the crzplot plot
+#' Shiny module for creating or saving the shiny app plot
 #'
 #' @name mod_plot
 #'
 #' @param id character used to specify namespace, see [shiny::NS()]
 #' @param enable_brush boolean indicating if the plotOutput should include
 #'   `brush = ns("map_brush")`
+#' @param height a reactive of the height of the plot, in pixels.
+#'   Passed to [shiny::renderPlot()]
+#' @param map_range the reactive output of [mod_map_range()]
+#' @param map_elements the reactive output of [map_elements()]
 #'
 #' @details
 #' Additional details...
@@ -51,14 +55,15 @@ mod_plot_server  <- function(
       # oldpar <- par(no.readonly = TRUE)
       # on.exit(par(oldpar))
 
-
-
       #------------------------------------------------------------------------
       ### Map range
-      lon.range <- req(map_range$lon.range)
-      lat.range <- req(map_range$lat.range)
-      req(is.logical(map_range$world2))
-      world2 <- map_range$world2
+      stopifnot(is.reactive(map_range()))
+      map.range <- map_range()
+
+      lon.range <- req(map.range$lon.range)
+      lat.range <- req(map.range$lat.range)
+      req(is.logical(map.range$world2))
+      world2 <- map.range$world2
       stopifnot("world2 param is not a logical" = inherits(world2, "logical"))
 
       vals.bad <- c("", "-", "+", NA)
@@ -96,7 +101,7 @@ mod_plot_server  <- function(
         )
       }
 
-      map.name <- map_range$map.name
+      map.name <- map.range$map.name
       map(map.name[[1]], regions = map.name[[2]],
           xlim = lon.range[1:2], ylim = lat.range[1:2],
           fill = TRUE, col = "yellow",

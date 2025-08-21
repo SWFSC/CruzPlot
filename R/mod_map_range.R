@@ -1,6 +1,6 @@
 #' Map range module
 #'
-#' Shiny module for map ranges
+#' Shiny module for map range
 #'
 #' @name mod_map_range
 #'
@@ -8,7 +8,7 @@
 #' @param start_vals A named list of 5 starting values:
 #'   left and right longitude (`lon_left` and `lon_right`),
 #'   bottom and top latitude (`lat_bot` and `lat_top`),
-#'   and map resolution (`res`)
+#'   and map resolution (`resolution`)
 #' @param app_state A [shiny::reactiveValues()] object that serves as the shared,
 #'   central state for the entire application. This object is initialized in the
 #'   main server and passed down to each module, enabling communication and
@@ -21,18 +21,27 @@
 #' Additional details...
 #'
 #' @returns A list with the following elements:
-#' * `map_range`: reactive values with relevant map_range elements
+#'
+#' * `map_range`: a reactive, containing the values needed by [mod_plot_server()].
+#' Specifically: `lon.range`, a vector of the left and right longitudes;
+#' `lat.range`, a vector of the bottom and top latitudes;
+#' `world2`, a logical indicating if the map is using the world2 protocol
+#' (lons 0-360);
+#'  `map.name`, a list of 1) the map name, passed directly to the `database`
+#'  argument of [maps::map()], and 2) the regions to plot,
+#'  passed directly to the `regions` argument of [maps::map()]
+#'  (see TODO for more details)
 #'
 #' @export
 mod_map_range_ui <- function(
-  id,
-  start_vals = list(
-    lon_left = -135,
-    lon_right = -117,
-    lat_bot = 29,
-    lat_top = 52,
-    res = 1
-  )
+    id,
+    start_vals = list(
+      lon_left = -135,
+      lon_right = -117,
+      lat_bot = 29,
+      lat_top = 52,
+      resolution = 1
+    )
 ) {
   ns <- NS(id)
 
@@ -88,47 +97,7 @@ mod_map_range_ui <- function(
         actionButton(ns("map_replot_hawaii"), "Hawaii"),
         actionButton(ns("map_replot_hawaiimain"), "Main Hawaiian Islands"),
         actionButton(ns("map_replot_marianas"), "Marianas")
-      ),
-      # box(
-      #   title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-      #   checkboxInput("bar", "Plot scale bar", value = FALSE),
-      #   conditionalPanel(
-      #     condition = "input.bar",
-      #     helpText(
-      #       "Provide the coordinates for the left edge of the scale bar.",
-      #       "The coordinates must have the same range as the map range coordinates."
-      #     ),
-      #     fluidRow(
-      #       column(4, uiOutput("scale_lon_uiOut_numeric")),
-      #       column(4, uiOutput("scale_lat_uiOut_numeric")),
-      #       column(4, numericInput("scale_width", tags$h5("Width of bar"), value = 2, min = 1, max = 6, step = 1)),
-      #     ),
-      #     fluidRow(
-      #       column(
-      #         width = 4,
-      #         radioButtons(
-      #           "scale_units", tags$h5("Scale bar units"),
-      #           choices = list("Kilometers" = 1, "Nautical miles" = 2),
-      #           selected = 2
-      #         )
-      #       ),
-      #       column(4, uiOutput("out_scale_len"))
-      #     )
-      #   )
-      # ),
-      # box(
-      #   title = "Coastline", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-      #   checkboxInput("coast", label = "Use coastline file", value = FALSE),
-      #   conditionalPanel(
-      #     condition = "input.coast",
-      #     helpText(
-      #       "Map limits will automatically be updated to the extent of the",
-      #       "coastline file. Note: CruzPlot can only process coastline files",
-      #       "with points are between -180 and 0"
-      #     ),
-      #     fileInput("coast_file", label = tags$h5("Coastline file"), width = "50%")
-      #   )
-      # )
+      )
     )
   )
   # )
@@ -146,65 +115,77 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       map.name = list()
     )
 
-    # ### Update widgets. Ok without if checks, because these app_state elements
-    # # are only updated on the click
-    # observeEvent(app_state$lon.range, {
-    #   updateNumericInput(session, "lon_left", value = app_state$lon.range[1])
-    #   updateNumericInput(session, "lon_right", value = app_state$lon.range[2])
-    # })
-    #
-    # observeEvent(app_state$lat.range, {
-    #   updateNumericInput(session, "lat_bot", value = app_state$lat.range[1])
-    #   updateNumericInput(session, "lat_top", value = app_state$lat.range[2])
-    # })
-    #
-    # observeEvent(app_state$map.name, {
-    #   res <- if_else(str_detect(app_state$map.name[[1]], "Hires"), "2", "1")
-    #   updateSelectInput(session, "resolution", selected = res)
-    # })
+    ll_vals <- reactiveValues(
+      lon_left = NULL,
+      lon_right = NULL,
+      lat_bot = NULL,
+      lat_top = NULL,
+      resolution = NULL
+    )
 
-    observe({
-      app_state$lon_left <- input$lon_left
-      app_state$lon_right <- input$lon_right
-      app_state$lat_bot <- input$lat_bot
-      app_state$lat_top <- input$lat_top
-      app_state$res <- input$res
-    })
+    # observeEvent(input$lon_left, ll_vals$lon_left <- input$lon_left)
+    # observeEvent(input$lon_right, ll_vals$lon_right <- input$lon_right)
+    # observeEvent(input$lat_bot, ll_vals$lat_bot <- input$lat_bot)
+    # observeEvent(input$lat_top, ll_vals$lat_top <- input$lat_top)
+    # observeEvent(input$resolution, ll_vals$resolution <- input$resolution)
 
+
+    ### Update inputs if app_state changes
     observeEvent(app_state$lon_left, {
-      updateNumericInput(session, "lon_left", value = app_state$lon_left)
+      if (input$lon_left != app_state$lon_left) {
+        ll_vals$lon_left <- app_state$lon_left
+        updateNumericInput(session, "lon_left", value = app_state$lon_left)
+      }
     })
     observeEvent(app_state$lon_right, {
-      updateNumericInput(session, "lon_right", value = app_state$lon_right)
+      if (input$lon_right != app_state$lon_right) {
+        ll_vals$lon_right <- app_state$lon_right
+        updateNumericInput(session, "lon_right", value = app_state$lon_right)
+      }
     })
     observeEvent(app_state$lat_bot, {
-      updateNumericInput(session, "lat_bot", value = app_state$lat_bot)
+      if (input$lat_bot != app_state$lat_bot) {
+        ll_vals$lat_bot <- app_state$lat_bot
+        updateNumericInput(session, "lat_bot", value = app_state$lat_bot)
+      }
     })
     observeEvent(app_state$lat_top, {
-      updateNumericInput(session, "lat_top", value = app_state$lat_top)
+      if (input$lat_top != app_state$lat_top) {
+        ll_vals$lat_top <- app_state$lat_top
+        updateNumericInput(session, "lat_top", value = app_state$lat_top)
+      }
     })
-    observeEvent(app_state$res, {
-      updateSelectInput(session, "res", selected = app_state$res)
+    observeEvent(app_state$resolution, {
+      if (input$resolution != app_state$resolution) {
+        ll_vals$resolution <- app_state$resolution
+        updateSelectInput(session, "resolution", selected = app_state$resolution)
+      }
     })
 
-
-    # Countries to be removed for world2 map
-    # http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
-    remove <- c(
-      "UK:Great Britain", "France", "Spain", "Algeria", "Mali",
-      "Burkina Faso",      "Ghana", "Togo"
-    )
-    mapnames <- map("world2", plot = FALSE)$names
-    mapnames.hires <- map("mapdata::world2Hires", plot = FALSE)$names
-    regions.rm <- base::setdiff(mapnames, remove)
-    regions.rm.hires <- base::setdiff(mapnames.hires, remove)
 
     ###############################################################################
-    # TODO: brush needs to update input
+    # Update inputs via brush
+
+    observeEvent(brush(), {
+      z <- req(brush())
+      z.coords <- round(c(z$xmin, z$xmax, z$ymin, z$ymax), 1)
+      lon.left <- if_else(z.coords[1] > 180, z.coords[1] - 360, z.coords[1])
+      lon.right <- if_else(z.coords[2] > 180, z.coords[2] - 360, z.coords[2])
+      lat.bot <- z.coords[3]
+      lat.top <- z.coords[4]
+
+      c(lon.left, lon.right, lat.bot, lat.top)
+
+
+      updateNumericInput(session, "lon_left", value = lon.left)
+      updateNumericInput(session, "lon_right", value = lon.right)
+      updateNumericInput(session, "lat_bot", value = lat.bot)
+      updateNumericInput(session, "lat_top", value = lat.top)
+
+    }, ignoreNULL = TRUE)
 
     ###############################################################################
     # TODO: Move these functions into their own R file
-
     world2_calc <- function(lon1, lon2) {
       (lon2 < lon1) & (lon1 > 0) & (lon2 < 0)
     }
@@ -219,10 +200,21 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
         if_else(hires, "mapdata::worldHires", "world")
       }
 
+      # Countries to be removed for world2 map
+      # http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html
+      remove <- c(
+        "UK:Great Britain", "France", "Spain", "Algeria", "Mali",
+        "Burkina Faso", "Ghana", "Togo"
+      )
+      mapnames <- map("world2", plot = FALSE)$names
+      mapnames.hires <- map("mapdata::world2Hires", plot = FALSE)$names
+      # regions.rm <- base::setdiff(mapnames, remove)
+      # regions.rm.hires <- base::setdiff(mapnames.hires, remove)
+
       reg.toplot <- if (world2 & hires) {
-        regions.rm.hires
+        base::setdiff(mapnames.hires, remove)
       } else if (world2 & !hires) {
-        regions.rm
+        base::setdiff(mapnames, remove)
       } else {
         NULL
       }
@@ -251,14 +243,23 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       updateNumericInput(session, "lon_right", value = ll.vals[2])
       updateNumericInput(session, "lat_bot", value = ll.vals[3])
       updateNumericInput(session, "lat_top", value = ll.vals[4])
+      # session$sendInputMessage("map_replot", list(value = input$map_replot + 1))
 
-      lon.range <- lon_range_world2(c(ll.vals[1], ll.vals[2]), world2)
+      ll_vals$lon_left <- ll.vals[1]
+      ll_vals$lon_right <- ll.vals[2]
+      ll_vals$lat_bot <-  ll.vals[3]
+      ll_vals$lat_top <- ll.vals[4]
 
-      map_range$lon.range <- lon.range
-      map_range$lat.range <- c(ll.vals[3], ll.vals[4])
-      map_range$world2 <- world2
-      map_range$map.name <- map_name_calc(world2, res)
-      # cruz.map.range$res <- "1"
+      app_state$lon_left <- ll.vals[1]
+      app_state$lon_right <- ll.vals[2]
+      app_state$lat_bot <- ll.vals[3]
+      app_state$lat_top <- ll.vals[4]
+
+      # lon.range <- lon_range_world2(c(ll.vals[1], ll.vals[2]), world2)
+      # map_range$lon.range <- lon.range
+      # map_range$lat.range <- c(ll.vals[3], ll.vals[4])
+      # map_range$world2 <- world2
+      # map_range$map.name <- map_name_calc(world2, res)
     }
 
     # TODO: Make these part of the function input, to be able to customize
@@ -298,6 +299,8 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       default_range_set(ll.vals, input$resolution)
     }, priority = 11)
 
+    observe(print(paste("replot", input$map_replot)))
+
 
     # ###############################################################################
     # # Update params as necessary
@@ -313,31 +316,45 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
 
     ###############################################################################
     # Series of steps/actions triggered by input$map_replot
+
+
     observeEvent(input$map_replot, {
-      if (isTruthy(brush())) {
-        # If the map range got a truthy brush object, then use it
-        z <- brush()
-        z.coords <- round(c(z$xmin, z$xmax, z$ymin, z$ymax), 1)
-        lon.left <- if_else(z.coords[1] > 180, z.coords[1] - 360, z.coords[1])
-        lon.right <- if_else(z.coords[2] > 180, z.coords[2] - 360, z.coords[2])
-        lat.bot <- z.coords[3]
-        lat.top <- z.coords[4]
+      print("map_replot")
+      # # if (input$lon_left != app_state$lon_left) {
+      # #   lon.left <- app_state$lon_left
+      # # } else {
+      # #
+      # # }
+      lon.left <- input$lon_left
+      lon.right <- input$lon_right
+      lat.bot <- input$lat_bot
+      lat.top <- input$lat_top
+      res <- input$resolution
 
-        updateNumericInput(session, "lon_left", value = lon.left)
-        updateNumericInput(session, "lon_right", value = lon.right)
-        updateNumericInput(session, "lat_bot", value = lat.bot)
-        updateNumericInput(session, "lat_top", value = lat.top)
+      ll_vals$lon_left <- lon.left
+      ll_vals$lon_right <- lon.right
+      ll_vals$lat_bot <- lat.bot
+      ll_vals$lat_top <- lat.top
+      ll_vals$resolution <- res
 
-        # Reset map brush, in case
-        session$resetBrush(z$brushId)
+      # browser()
 
-      } else {
-        # Otherwise use input widgets
-        lon.left <- input$lon_left
-        lon.right <- input$lon_right
-        lat.bot <- input$lat_bot
-        lat.top <- input$lat_top
-      }
+
+
+      # # Only update app_state when the map is plotted
+      # if ("lon_left" %in% names(app_state)) {
+      #   if (lon.left != app_state$lon_left) app_state$lon_left <- lon.left
+      #   if (lon.right != app_state$lon_right) app_state$lon_right <- lon.right
+      #   if (lat.bot != app_state$lat_bot) app_state$lat_bot <- lat.bot
+      #   if (lat.top != app_state$lat_top) app_state$lat_top <- lat.top
+      #   if (res != app_state$resolution) app_state$resolution <- res
+      # } else {
+      app_state$lon_left <- lon.left
+      app_state$lon_right <- lon.right
+      app_state$lat_bot <- lat.bot
+      app_state$lat_top <- lat.top
+      app_state$resolution <- res
+      # }
 
       # # Checks that inputs are numbers
       # map.range.message <- reactiveVal(NULL)
@@ -357,15 +374,48 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       # req(is.null(m.all))
 
       # Determine if world2 map should be used and thus if lons need to be rescaled
-      world2 <- world2_calc(lon.left, lon.right)
-      lon.range <- lon_range_world2(c(lon.left, lon.right), world2)
 
-      # Save as reactive values
-      map_range$lon.range <- lon.range
-      map_range$lat.range <- c(lat.bot, lat.top)
-      map_range$world2 <- world2
-      map_range$map.name <- map_name_calc(world2, input$resolution)
-    }, ignoreNULL = FALSE, priority = 9)
+
+
+    }, ignoreNULL = FALSE)
+
+
+    # When ll_vals reactiveValues changes, then update the reactive output
+    # observe({
+    cruzMapRange <- reactive({
+      lon.left <- req(ll_vals$lon_left)
+      lon.right <- req(ll_vals$lon_right)
+      lat.bot <- req(ll_vals$lat_bot)
+      lat.top <- req(ll_vals$lat_top)
+      res <- req(ll_vals$resolution)
+
+      isolate({
+        # Reset map brush, if necessary
+        if (isTruthy(brush())) session$resetBrush(brush()$brushId)
+
+        world2 <- world2_calc(lon.left, lon.right)
+        lon.range <- lon_range_world2(c(lon.left, lon.right), world2)
+
+        # # Save as reactive values
+        # map_range$lon.range <- lon.range
+        # map_range$lat.range <- c(lat.bot, lat.top)
+        # map_range$world2 <- world2
+        # map_range$map.name <- map_name_calc(world2, res)
+
+        # Save as reactive values
+        list(
+          lon.range = lon.range,
+          lat.range = c(lat.bot, lat.top),
+          world2 = world2,
+          map.name = map_name_calc(world2, res)
+        )
+      })
+    })
+    # }, priority = -9)
+
+
+
+
 
 
     # output$map_range_message <- renderUI({
@@ -374,7 +424,7 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
 
     ### Return values
     list(
-      map_range = map_range
+      map_range = cruzMapRange
     )
   })
 }
