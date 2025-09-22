@@ -109,8 +109,6 @@ mod_plot_server  <- function(
       # Map elements
 
       ### Tick marks and labels
-      print("here0")
-      browser()
       tick_list <- map_elements$tick_list
       tick.lon.bool <- tick_list$cruzMapTickLonBool()
       tick.lat.bool <- tick_list$cruzMapTickLatBool()
@@ -118,9 +116,7 @@ mod_plot_server  <- function(
       tick.lat <- tick_list$cruzMapTickLat()
       tick.param <- tick_list$cruzMapTickParam()
 
-      print("here1")
       if (tick_list$tick()) {
-        print("here2")
         # Draw major and minor tick marks
         if (tick.lon.bool$bot[1]) {
           axis(1, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
@@ -167,20 +163,16 @@ mod_plot_server  <- function(
       }
 
       ### Grid
-      print("here3")
       grid_list <- map_elements$grid_list
       grid.param <- grid_list$cruzMapGrid()
       if (grid_list$grid()) {
-        print("grid")
         abline(
-          # v = -125,
           v = tick.lon$maj,
           col = grid.param$col,
           lwd = grid.param$lwd,
           lty = as.numeric(grid.param$lty)
         )
         abline(
-          # h = 35,
           h = tick.lat$maj,
           col = grid.param$col,
           lwd = grid.param$lwd,
@@ -189,7 +181,9 @@ mod_plot_server  <- function(
       }
 
       # ### Scale bar
-      # if (app_state$bar) {
+      # scale_bar_list = map_elements$scale_bar_list
+      # scale.bar <- scale_bar_list$cruzMapScaleBar()
+      # if (scale_bar_list$bar()) {
       #   lines(
       #     c(scale.bar$x1, scale.bar$x2),
       #     c(scale.bar$y, scale.bar$y),
@@ -197,7 +191,7 @@ mod_plot_server  <- function(
       #   )
       #   text(
       #     mean(c(scale.bar$x1, scale.bar$x2)),
-      #     scale.bar$y-0.04*abs(lat.range[2]-lat.range[1]),
+      #     scale.bar$y - 0.04 * abs(lat.range[2]-lat.range[1]),
       #     paste(scale.bar$len, scale.bar$units.str)
       #   )
       # }

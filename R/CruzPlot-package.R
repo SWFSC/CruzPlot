@@ -11,6 +11,7 @@
 #'
 #' @import shiny
 #' @importFrom dplyr between if_else
+#' @importFrom geosphere destPoint
 #' @importFrom graphics par
 #' @importFrom maps map
 #' @importFrom shinydashboard box dashboardBody tabItems tabItem dashboardHeader

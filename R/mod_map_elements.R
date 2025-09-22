@@ -21,34 +21,34 @@ mod_map_elements_ui <- function(id) {
   tabPanel(
     title = "Elements",
     fluidRow(
-      # Scale bar
-      box(
-        title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        checkboxInput(ns("bar"), "Plot scale bar", value = FALSE),
-        conditionalPanel(
-          condition = "input.bar", ns = ns,
-          helpText(
-            "Provide the coordinates for the left edge of the scale bar.",
-            "The coordinates must have the same range as the map range coordinates."
-          ),
-          fluidRow(
-            column(4, uiOutput(ns("scale_lon_uiOut_numeric"))),
-            column(4, uiOutput(ns("scale_lat_uiOut_numeric"))),
-            column(4, numericInput(ns("scale_width"), tags$h5("Width of bar"), value = 2, min = 1, max = 6, step = 1)),
-          ),
-          fluidRow(
-            column(
-              width = 4,
-              radioButtons(
-                ns("scale_units"), tags$h5("Scale bar units"),
-                choices = list("Kilometers" = 1, "Nautical miles" = 2),
-                selected = 2
-              )
-            ),
-            column(4, uiOutput(ns("out_scale_len")))
-          )
-        )
-      ),
+      # # Scale bar
+      # box(
+      #   title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+      #   checkboxInput(ns("bar"), "Plot scale bar", value = TRUE),
+      #   conditionalPanel(
+      #     condition = "input.bar", ns = ns,
+      #     helpText(
+      #       "Provide the coordinates for the left edge of the scale bar.",
+      #       "The coordinates must have the same range as the map range coordinates."
+      #     ),
+      #     fluidRow(
+      #       column(4, uiOutput(ns("scale_lon_uiOut_numeric"))),
+      #       column(4, uiOutput(ns("scale_lat_uiOut_numeric"))),
+      #       column(4, numericInput(ns("scale_width"), tags$h5("Width of bar"), value = 2, min = 1, max = 6, step = 1)),
+      #     ),
+      #     fluidRow(
+      #       column(
+      #         width = 4,
+      #         radioButtons(
+      #           ns("scale_units"), tags$h5("Scale bar units"),
+      #           choices = list("Kilometers" = 1, "Nautical miles" = 2),
+      #           selected = 2
+      #         )
+      #       ),
+      #       column(4, uiOutput(ns("out_scale_len")))
+      #     )
+      #   )
+      # ),
       # Ticks & Labels
       box(
         title = "Ticks & Labels", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
@@ -154,6 +154,9 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
       app_state$label_tick_font <- input$label_tick_font
       app_state$label_tick_size <- input$label_tick_size
       app_state$scale_units <- input$scale_units
+      app_state$scale_lon <- input$scale_lon
+      app_state$scale_lat <- input$scale_lat
+      app_state$scale_len <- input$scale_len
       app_state$scale_width <- input$scale_width
       app_state$tick <- input$tick
       app_state$tick_bot <- input$tick_bot
@@ -183,7 +186,8 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
       input.numeric <- c(
         "label_lat_start", "label_lon_start","label_tick_size",
         "tick_interval_major", "tick_interval_minor", "tick_length",
-        "grid_lwd", "scale_width"
+        "grid_lwd",
+        "scale_lon", "scale_lat", "scale_width", "scale_len"
       )
       input.select <- c(
         "grid_col", "grid_lty", "label_tick_font", "tick_style"
@@ -201,7 +205,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
         } else if (i %in% input.radio) {
           updateRadioButtons(session, i, selected = app_state[[i]])
         } else {
-          stop("Value not found")
+          stop("Input value not found:", i)
         }
       }
     }, ignoreInit = TRUE, priority = 1)
@@ -240,6 +244,11 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
         lon.start <- ifelse(lon.start < 0, lon.start + 360, lon.start)
       }
 
+      # browser()
+      validate(
+        need(lon.start <= lon.range[2], "Invalid tick lon start 2"),
+        need(lon.start >= lon.range[1], "Invalid tick lon start 1")
+      )
       tick.lon <- list(label.loc = seq(lon.start, lon.range[2], by = tick.maj))
       temp.tick <- rev(seq(lon.start, lon.range[1], by = -tick.maj))
       tick.lon$maj <- sort(unique(c(tick.lon$label.loc, temp.tick)))
@@ -274,35 +283,23 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
     # Update reactiveValues cruz.tick at start (cruz.tick's = NULL) and
     #    if inputs change and are different from cruz.tick
 
-    observe({
-      req(input$tick_interval_major)
+    observeEvent(input$tick_interval_major, {
+      if (req(cruz.tick$tick.interval.major) != input$tick_interval_major){
+        cruz.tick$tick.interval.major <- input$tick_interval_major
+      }
+    }, ignoreNULL = TRUE)
 
-      in.tick.interval.major <- input$tick_interval_major
-      isolate({
-        if (req(cruz.tick$tick.interval.major) != in.tick.interval.major)
-          cruz.tick$tick.interval.major <- in.tick.interval.major
-      })
-    })
+    observeEvent(input$label_lon_start, {
+      if (req(cruz.tick$label.lon.start) != input$label_lon_start){
+        cruz.tick$label.lon.start <-input$label_lon_start
+      }
+    }, ignoreNULL = TRUE)
 
-    observe({
-      req(input$label_lon_start)
-
-      in.label.lon.start <- as.numeric(input$label_lon_start)
-      isolate({
-        if (req(cruz.tick$label.lon.start) != in.label.lon.start)
-          cruz.tick$label.lon.start <- in.label.lon.start
-      })
-    })
-
-    observe({
-      req(input$label_lat_start)
-
-      in.label.lat.start <- as.numeric(input$label_lat_start)
-      isolate({
-        if (req(cruz.tick$label.lat.start) != in.label.lat.start)
-          cruz.tick$label.lat.start <- in.label.lat.start
-      })
-    })
+    observeEvent(input$label_lat_start, {
+      if (req(cruz.tick$label.lat.start) != input$label_lat_start) {
+        cruz.tick$label.lat.start <- input$label_lat_start
+      }
+    }, ignoreNULL = TRUE)
 
     ###############################################################################
     # Update inputs
@@ -313,7 +310,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
       lat.range <- req(map_range()$lat.range)
       tick.val <- cruzTickUpdate(lon.range, lat.range)
 
-      updateNumericInput(session, "tick.interval.major", value = tick.val)
+      updateNumericInput(session, "tick_interval_major", value = tick.val)
       cruz.tick$tick.interval.major <- tick.val
     }, priority = 2)
 
@@ -324,7 +321,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
         lon.range <- req(map_range()$lon.range)
         lon.start <- cruzTickStart(lon.range, b)
 
-        updateTextInput(session, "label.lon.start", value = paste(lon.start))
+        updateTextInput(session, "label_lon_start", value = paste(lon.start))
         cruz.tick$label.lon.start <- lon.start
       }
     }, priority = 1)
@@ -336,7 +333,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
         lat.range <- req(map_range()$lat.range)
         lat.start <- cruzTickStart(lat.range, b)
 
-        updateTextInput(session, "label.lat.start", value = paste(lat.start))
+        updateTextInput(session, "label_lat_start", value = paste(lat.start))
         cruz.tick$label.lat.start <- lat.start
       }
     }, priority = 1)
@@ -423,29 +420,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
     #--------------------------------------------------------------------------
     #--------------------------------------------------------------------------
     ### Grid
-    # # Save inputs to app_state
-    # observe({
-    #   app_state$grid <- input$grid
-    #   app_state$grid_col <- input$grid_col
-    #   app_state$grid_lwd <- input$grid_lwd
-    #   app_state$grid_lty <- input$grid_lty
-    # })
-    #
-    # # # Update input values if app_state changes, meaning a workspace was loaded
-    # # observeEvent(app_state$grid, {
-    # #   updateCheckboxInput(session, "grid", value = app_state$grid)
-    # # })
-    # # observeEvent(app_state$grid_col, {
-    # #   updateSelectInput(session, "grid_col", selected = app_state$grid_col)
-    # # })
-    # # observeEvent(app_state$grid_lwd, {
-    # #   updateNumericInput(session, "grid_lwd", value = app_state$grid_lwd)
-    # # })
-    # # observeEvent(app_state$grid_lty, {
-    # #   updateSelectInput(session, "grid_lty", selected = app_state$grid_lty)
-    # # })
-    #
-    # # Reactive to return
+    # Reactive to return
     cruzMapGrid <- reactive({
       list(
         col = input$grid_col,
@@ -455,50 +430,62 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
     })
 
 
-    #--------------------------------------------------------------------------
-    #--------------------------------------------------------------------------
-    #--------------------------------------------------------------------------
-    ### Scale bar
-    # TODO next
+    # #--------------------------------------------------------------------------
+    # #--------------------------------------------------------------------------
+    # #--------------------------------------------------------------------------
+    # ### Scale bar
+    #
+    # # Processing for Scale bar section of Map range tab of Create and Save Map tab
+    # #   update: scale bar longitude, length, and latitude
+    # #   cruzMapScaleBar() returns a list of the scale bar coordinates and parameters
+    # cruz.scale <- reactiveValues(
+    #   scale.lon = NULL,
+    #   scale.lat = NULL,
+    #   scale.len = NULL
+    # )
+    #
+    #
     # ###############################################################################
     # ### Update reactiveValues cruz.scale if inputs change and are different
-    # observe({
-    #   req(input$scale_lon)
-    #   isolate({
-    #     if (!isTRUE(all.equal(cruz.scale$scale.lon, input$scale_lon)))
-    #       cruz.scale$scale.lon <- input$scale_lon
-    #   })
+    # observeEvent(input$scale_lon, {
+    #   if (!isTRUE(all.equal(cruz.scale$scale.lon, input$scale_lon))) {
+    #     cruz.scale$scale.lon <- input$scale_lon
+    #   }
     # })
-
-    # observe({
-    #   req(input$scale_lat)
-    #   isolate({
-    #     if (!isTRUE(all.equal(cruz.scale$scale.lat, input$scale_lat)))
-    #       cruz.scale$scale.lat <- input$scale_lat
-    #   })
-    # })
-
-    # observe({
-    #   req(input$scale_len)
-    #   isolate({
-    #     if (cruz.scale$scale.len != input$scale_len)
-    #       cruz.scale$scale.len <- input$scale_len
-    #   })
-    # })
-
-
+    #
+    # observeEvent(input$scale_lat, {
+    #   if (!isTRUE(all.equal(cruz.scale$scale.lat, input$scale_lat))) {
+    #     cruz.scale$scale.lat <- input$scale_lat
+    #   }
+    # }, ignoreNULL = TRUE)
+    #
+    # observeEvent(input$scale_len, {
+    #   if (cruz.scale$scale.len != input$scale_len) {
+    #     cruz.scale$scale.len <- input$scale_len
+    #   }
+    # }, ignoreNULL = TRUE)
+    #
+    #
     # ###############################################################################
     # # Calculate new default scale bar lon/lat/len if map dimensions change
     # #    Update both reactiveVals and widgets
-
+    #
     # output$scale_lon_uiOut_numeric <- renderUI({
-    #   numericInput("scale_lon", tags$h5("Longitude"), value = cruz.scale$scale.lon)
+    #   numericInput(
+    #     session$ns("scale_lon"),
+    #     tags$h5("Longitude"),
+    #     value = cruz.scale$scale.lon
+    #   )
     # })
-
+    #
     # output$scale_lat_uiOut_numeric <- renderUI({
-    #   numericInput("scale_lat", tags$h5("Latitude"), value = cruz.scale$scale.lat)
+    #   numericInput(
+    #     session$ns("scale_lat"),
+    #     tags$h5("Latitude"),
+    #     value = cruz.scale$scale.lat
+    #   )
     # })
-
+    #
     # observeEvent(input$scale_units, {
     #   cruz.scale$scale.len <- if (input$scale_units == 1) {
     #     base::signif(cruz.scale$scale.len * 1.852, 2)
@@ -506,68 +493,83 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
     #     base::signif(cruz.scale$scale.len / 1.852, 2)
     #   }
     # })
-
+    #
     # output$out_scale_len <- renderUI({
     #   title.new <- ifelse(input$scale_units == 1, "Length in km", "Length in nmi")
-    #   numericInput("scale_len", tags$h5(title.new), value = cruz.scale$scale.len)
+    #   numericInput(
+    #     session$ns("scale_len"),
+    #     tags$h5(title.new),
+    #     value = cruz.scale$scale.len
+    #   )
     # })
-
-
+    #
+    # # observe(print(cruz.scale$scale.lon))
+    #
+    #
     # ### Calculate scale bar default start position if map range changes
     # observe({
-    #   lon.range <- cruz.map.range$lon.range
-    #   lat.range <- cruz.map.range$lat.range
-
-    #   isolate({
-    #     x <- cruz.scale$scale.lon
-    #     y <- cruz.scale$scale.lat
-
-    #     if (!isTruthy(x) | !isTruthy(y)) {
-    #       bar.in.range <- TRUE
-    #     } else {
-    #       x <- ifelse(cruz.map.range$world2, x + 360, x)
-    #       bar.in.range <- between(x, lon.range[1], lon.range[2]) &
-    #         between(y, lat.range[1], lat.range[2])
-    #     }
-
-    #     # If scale bar is off or bar is out of current map range
-    #     if (!input$bar | !bar.in.range) {
-    #       lon.diff <- abs(lon.range[2] - lon.range[1])
-    #       lat.diff <- abs(lat.range[2] - lat.range[1])
-
-    #       # Scale bar longitude start
-    #       lon.new <- 0.1 * lon.diff + lon.range[1]
-    #       lon.new <- ifelse(lon.new > 180, lon.new - 360, lon.new)
-
-    #       # Scale bar latitude start
-    #       lat.new <- 0.1 * lat.diff + lat.range[1]
-
-    #       # Set reactiveValues
-    #       cruz.scale$scale.lon <- lon.new
-    #       cruz.scale$scale.lat <- lat.new
-    #     }
-    #   })
+    #   # TODO
+    #   lon.range <-  req(map_range()$lon.range)
+    #   lat.range <- req(map_range()$lat.range)
+    #
+    #
+    #   cruz.scale$scale.lon <- lon.range[1] + 2
+    #   cruz.scale$scale.lat <- lat.range[1] + 2
+    #
+    #   # # browser()
+    #   # isolate({
+    #   #   print("here0")
+    #   #   x <- cruz.scale$scale.lon
+    #   #   y <- cruz.scale$scale.lat
+    #   #
+    #   #   if (!isTruthy(x) | !isTruthy(y)) {
+    #   #     bar.in.range <- TRUE
+    #   #   } else {
+    #   #     x <- ifelse(map_range()$world2, x + 360, x)
+    #   #     bar.in.range <- between(x, lon.range[1], lon.range[2]) &
+    #   #       between(y, lat.range[1], lat.range[2])
+    #   #   }
+    #   #
+    #   #   # If scale bar is off or bar is out of current map range
+    #   #   print("here1")
+    #   #   if (!input$bar | !bar.in.range) {
+    #   #     lon.diff <- abs(lon.range[2] - lon.range[1])
+    #   #     lat.diff <- abs(lat.range[2] - lat.range[1])
+    #   #
+    #   #     # Scale bar longitude start
+    #   #     lon.new <- 0.1 * lon.diff + lon.range[1]
+    #   #     lon.new <- ifelse(lon.new > 180, lon.new - 360, lon.new)
+    #   #
+    #   #     # Scale bar latitude start
+    #   #     lat.new <- 0.1 * lat.diff + lat.range[1]
+    #   #
+    #   #     print("here2")
+    #   #     # Set reactiveValues
+    #   #     cruz.scale$scale.lon <- lon.new
+    #   #     cruz.scale$scale.lat <- lat.new
+    #   #   }
+    #   # })
     # }, priority = 1) #Must run before observe() for bar length
-
+    #
     # ### After getting start position, get the default scale bar length
     # ###   Separate observe() so that lat/lon update isn't run if scale units change
-    # ###   Only update length if scale bar is not alrady on
+    # ###   Only update length if scale bar is not already on
     # observe({
     #   if (!input$bar) {
-    #     lon.range <- cruz.map.range$lon.range
-    #     cruz.map.range$lat.range
+    #     lon.range <- req(map_range()$lon.range)
+    #     req(map_range()$lat.range)
     #     isolate({
     #       lon.pos <- cruz.scale$scale.lon
     #       lat.pos <- cruz.scale$scale.lat
     #       scale.units <- input$scale_units
     #     })
-
+    #
     #     # Scale bar length; suppressWarnings() for if world2
     #     lon.range.m <- suppressWarnings(geosphere::distVincentyEllipsoid(
     #       c(lon.range[1], lat.pos), c(lon.range[2], lat.pos)
     #     ))
     #     len.new.km <- lon.range.m * 0.2 / 1000
-
+    #
     #     # Scale units
     #     if (scale.units == 1) {
     #       len.new <- base::signif(len.new.km, 2)
@@ -577,37 +579,40 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
     #       len.new <- base::signif((len.new.km / 1.852), 2)
     #       title.new <- "Length in nmi"
     #     }
-
+    #
     #     cruz.scale$scale.len <- len.new
     #   }
     # })
-
-
+    #
+    #
     # ###############################################################################
     # ### Put all scale bar values in list for plotting
     # cruzMapScaleBar <- reactive({
-    #   isolate(world2 <- cruz.map.range$world2)
-    #   scale.lon <- cruz.scale$scale.lon
-    #   scale.lat <- cruz.scale$scale.lat
-    #   scale.len <- cruz.scale$scale.len
+    #   isolate({
+    #     req(is.logical(map_range()$world2))
+    #     world2 <- map_range()$world2
+    #   })
+    #   scale.lon <- req(cruz.scale$scale.lon)
+    #   scale.lat <- req(cruz.scale$scale.lat)
+    #   scale.len <- req(cruz.scale$scale.len)
     #   scale.lwd <- input$scale_width
     #   scale.units <- input$scale_units
-
+    #
     #   scale.units.str <- ifelse(scale.units == 1, "km", "nmi")
-
+    #
     #   # Determine length of scale bar in meters
     #   scale.len.m <- if (scale.units == 1) {
     #     scale.len * 1000
     #   } else if (scale.units == 2) {
     #     scale.len * 1.852 * 1000
     #   }
-
+    #
     #   scale.x1 <- ifelse((world2 && scale.lon < 0), scale.lon + 360, scale.lon)
     #   scale.x2 <- geosphere::destPoint(c(scale.lon, scale.lat), 90, scale.len.m)[1]
     #   scale.x2 <- ifelse((world2 && scale.x2 < 0), scale.x2 + 360, scale.x2)
-
+    #
     #   scale.y <- scale.lat
-
+    #
     #   list(
     #     x1 = scale.x1, x2 = scale.x2, y = scale.y,
     #     lwd = scale.lwd, len = scale.len, units.str = scale.units.str
@@ -627,6 +632,10 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
         cruzMapTickLat = cruzMapTickLat,
         cruzMapTickParam = cruzMapTickParam
       ),
+      # scale_bar_list = list(
+      #   bar = reactive(input$bar),
+      #   cruzMapScaleBar = cruzMapScaleBar
+      # ),
       grid_list = list(
         grid = reactive(input$grid),
         cruzMapGrid = cruzMapGrid
