@@ -171,8 +171,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
       app_state$tick_style <- input$tick_style
       app_state$tick_top <- input$tick_top
       app_state$tick_top_lab <- input$tick_top_lab
-    })
-    # })
+    }, priority = 10)
 
     # When app_state changes, aka env loaded, update widgets
     observeEvent(reactiveValuesToList(app_state), {
@@ -199,6 +198,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
           # browser()
           updateCheckboxInput(session, i, value = app_state[[i]])
         } else if (i %in% input.numeric) {
+          # if (i == "tick_interval_major") browser()
           updateNumericInput(session, i, value = app_state[[i]])
         } else if (i %in% input.select) {
           updateSelectInput(session, i, selected = app_state[[i]])
@@ -244,7 +244,6 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
         lon.start <- ifelse(lon.start < 0, lon.start + 360, lon.start)
       }
 
-      # browser()
       validate(
         need(lon.start <= lon.range[2], "Invalid tick lon start 2"),
         need(lon.start >= lon.range[1], "Invalid tick lon start 1")
@@ -283,8 +282,6 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
     # Update reactiveValues cruz.tick at start (cruz.tick's = NULL) and
     #    if inputs change and are different from cruz.tick
     observeEvent(input$tick_interval_major, {
-      print("here")
-      print(input$tick_interval_major)
       if (req(cruz.tick$tick.interval.major) != input$tick_interval_major){
         cruz.tick$tick.interval.major <- input$tick_interval_major
       }
@@ -310,35 +307,34 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
       lon.range <- req(map_range()$lon.range)
       lat.range <- req(map_range()$lat.range)
       tick.val <- cruzTickUpdate(lon.range, lat.range)
-      print("Tick major interval")
-      print(tick.val)
 
       updateNumericInput(session, "tick_interval_major", value = tick.val)
+      app_state$tick_interval_major <- tick.val
       cruz.tick$tick.interval.major <- tick.val
     }, priority = 2)
 
     # Tick label longitude start
     observe({
-      print("Tick label longitude start")
       b <- req(cruz.tick$tick.interval.major)
       if (b != 0 && !is.na(b)) {
         lon.range <- req(map_range()$lon.range)
         lon.start <- cruzTickStart(lon.range, b)
 
-        updateTextInput(session, "label_lon_start", value = paste(lon.start))
+        updateNumericInput(session, "label_lon_start", value = lon.start)
+        app_state$label_lon_start <- lon.start
         cruz.tick$label.lon.start <- lon.start
       }
     }, priority = 1)
 
     # Tick label latitude start
     observe({
-      print("Tick label latitude start")
       b <- req(cruz.tick$tick.interval.major)
       if (b != 0 && !is.na(b)) {
         lat.range <- req(map_range()$lat.range)
         lat.start <- cruzTickStart(lat.range, b)
 
-        updateTextInput(session, "label_lat_start", value = paste(lat.start))
+        updateNumericInput(session, "label_lat_start", value = lat.start)
+        app_state$label_lat_start <- lat.start
         cruz.tick$label.lat.start <- lat.start
       }
     }, priority = 1)
@@ -657,6 +653,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
     #--------------------------------------------------------------------------
     ### Return values
     list(
+      # input = input,
       tick_list = list(
         tick = reactive(input$tick),
         cruzMapTickLonBool = cruzMapTickLonBool,

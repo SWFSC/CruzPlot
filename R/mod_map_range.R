@@ -373,6 +373,7 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
 
     ### Return values
     list(
+      # input = input,
       map_range = cruzMapRange
     )
   })

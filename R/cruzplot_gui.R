@@ -173,6 +173,8 @@ cruzplot_gui <- function(...) {
       content = function(file) {
         withProgress(message = "Saving app data", value = 0.3, {
           # cruz.list.save <- list() #reactiveValuesToList(cruz.list)
+
+          # browser()
           app_state_save <- reactiveValuesToList(app_state)
           incProgress(0.7)
           save(app_state_save, file = file)
@@ -218,7 +220,6 @@ cruzplot_gui <- function(...) {
           # map.range.update[[i]] <- cruz.map.range.save[[i]]
         }
         incProgress(0.35)
-        browser()
 
         # Update widgets on the main page, not in a module
         updateNumericInput(session, "plot_height", value = app_state$plot_height)
