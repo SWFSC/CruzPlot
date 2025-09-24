@@ -372,11 +372,50 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
 
         world2 <- world2_calc(lon.left, lon.right)
         lon.range <- lon_range_world2(c(lon.left, lon.right), world2)
+        lat.range = c(lat.bot, lat.top)
+
+        ### Validate
+        stopifnot("world2 param is not a logical" = inherits(world2, "logical"))
+
+        vals.bad <- c("", "_", "+", NA)
+        validate( #lats
+          need(
+            all(!(lat.range %in% vals.bad) & between(lat.range, -90, 90)),
+            "The latitudes must be a number between -90 and 90"
+          )
+        )
+
+        if ((0 <= lon.range[1] & 0 <= lon.range[2]) || (lon.range[1] < 0 & lon.range[2] < 0))
+          validate( #lons
+            need(
+              lon.range[1] < lon.range[2],
+              paste(
+                "Left longitude must be less than right longitude,",
+                "unless left longitude is positive and right longitude",
+                "is negative (Pacific-centered map)"
+              )
+            )
+          )
+        if (world2) {
+          validate(
+            need(
+              all(!(lon.range %in% vals.bad) & between(lon.range, 0, 360)),
+              "The longtiudes must be a number between -180 and 180"
+            )
+          )
+        } else {
+          validate(
+            need(
+              all(!(lon.range %in% vals.bad) & between(lon.range, -180, 180)),
+              "The longtiudes must be a number between -180 and 180"
+            )
+          )
+        }
 
         # Save as reactive values
         list(
           lon.range = lon.range,
-          lat.range = c(lat.bot, lat.top),
+          lat.range = lat.range,
           world2 = world2,
           map.name = map_name_calc(world2, res)
         )
@@ -388,6 +427,8 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
     #   HTML(req(map.range.message()))
     # })
 
+    ###############################################################################
+    ### Prepare values to save app state
     to_save <- reactive({
       list(
         save_widget("lon_left", "numeric"),

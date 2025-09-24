@@ -151,10 +151,7 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       for (item in load_state()) {
         if (item$type == "reactive") {
           # # Only reactive values are scale bar
-          # print("reactive")
-          # print(item)
           cruz.scale[[item$id]] <- item$value
-          # browser()
           # stop("Invalid map_elements state - please report as an issue")
         } else {
           update_widget(item, session)
@@ -176,9 +173,11 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     )
 
     # Processing for Tick piece
-    #   update: major tick interval, start of longitude tick labels, start of latitude tick labels
-    #   cruzMapTickLonBool() returns boolean list of whether bottom and top tick marks and tick labels are drawn, respectively
-    #   cruzMapTickLatBool() returns boolean list of whether left and right tick marks and tick labels are drawn, respectively
+    #   update: major tick interval, start of longitude and latitude tick labels
+    #   cruzMapTickLonBool() returns boolean list of whether bottom
+    #     and top tick marks and tick labels are drawn, respectively
+    #   cruzMapTickLatBool() returns boolean list of whether left
+    #     and right tick marks and tick labels are drawn, respectively
     #   cruzMapTickLon() returns labels for longitude tick marks
     #   cruzMapTickLat() returns labels for latitude tick marks
     #   cruzMapTickParam() returns list of tick length, font, and scale
@@ -187,18 +186,53 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     #  Return list of longitude values of major tick marks/grid lines and minor tick marks
     cruzMapIntervalLon <- reactive({
       lon.range <- req(map_range()$lon.range)
-      tick.maj <- req(cruz.tick$tick.interval.major)
+      lon.start <- cruz.tick$label.lon.start
+      tick.maj <- cruz.tick$tick.interval.major
       tick.min <- input$tick_interval_minor
-      lon.start <- req(cruz.tick$label.lon.start)
 
-      if (map_range()$world2) {
+      world2 <- map_range()$world2
+
+      validate(
+        need(cruz.tick$tick.interval.major, "Please enter a valid major tick interval value"),
+        need(input$tick_interval_minor, "Please enter a valid minor tick interval value"),
+        need(cruz.tick$tick.interval.major > 0, "Please enter a major tick interval value greater than zero"),
+        need(input$tick_interval_minor >= 0, "Please enter a minor tick interval value greater than or equal to zero"),
+        need(lon.start, "Please enter a valid longitude tick label start value"),
+      )
+
+      if (world2) {
         lon.start <- ifelse(lon.start < 0, lon.start + 360, lon.start)
       }
 
-      validate(
-        need(lon.start <= lon.range[2], "Invalid tick lon start 2"),
-        need(lon.start >= lon.range[1], "Invalid tick lon start 1")
-      )
+      # Check that actual longitude values are valid given map rnages
+      if (!world2) {
+        validate(
+          need(lon.range[1] <= as.numeric(lon.start),
+               message = "Start of longitude tick labels must be after left longitude value"),
+          need(lon.range[2] >= as.numeric(lon.start),
+               message = "Start of longitude tick labels must be before right longitude value")
+        )
+      } else { #world2
+        validate(
+          need(as.numeric(lon.start) != 0,
+               message = "Please use '180' rather than '0' for the start of longitude tick labels")
+        )
+        if (as.numeric(lon.start) < 0)
+        {
+          validate(
+            need((as.numeric(lon.start) + 180) <= lon.range[2],
+                 message = "Start of longitude tick labels must be before right longitude value")
+          )
+        }
+        if (as.numeric(lon.start) > 0)
+        {
+          validate(
+            need(lon.range[1] <= (as.numeric(lon.start)),
+                 message = "Start of longitude tick labels must be after left longitude value")
+          )
+        }
+      }
+
       tick.lon <- list(label.loc = seq(lon.start, lon.range[2], by = tick.maj))
       temp.tick <- rev(seq(lon.start, lon.range[1], by = -tick.maj))
       tick.lon$maj <- sort(unique(c(tick.lon$label.loc, temp.tick)))
@@ -215,7 +249,18 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       lat.range <- req(map_range()$lat.range)
       tick.maj <- req(cruz.tick$tick.interval.major)
       tick.min <- input$tick_interval_minor
-      lat.start <- req(cruz.tick$label.lat.start)
+      lat.start <- cruz.tick$label.lat.start
+
+      # Check that actual latitude values are valid given map ranges
+      validate(
+        need(cruz.tick$label.lat.start, "Please enter a valid latitude tick label start value"),
+      )
+      validate(
+        need(lat.range[1] <= cruz.tick$label.lat.start,
+             message = "Start of latitude tick labels must be greater than bottom latitude value"),
+        need(lat.range[2] >= cruz.tick$label.lat.start,
+             message = "Start of latitude tick labels must be less than top latitude value")
+      )
 
       tick.lat <- list(label.loc = seq(lat.start, lat.range[2], by = tick.maj))
       temp.tick <- rev(seq(lat.start, lat.range[1], by = -tick.maj))
@@ -233,19 +278,21 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     # Update reactiveValues cruz.tick at start (cruz.tick's = NULL) and
     #    if inputs change and are different from cruz.tick
     observeEvent(input$tick_interval_major, {
-      if (req(cruz.tick$tick.interval.major) != input$tick_interval_major){
+      if (!isTRUE(all.equal(cruz.tick$tick.interval.major, input$tick_interval_major))) {
         cruz.tick$tick.interval.major <- input$tick_interval_major
       }
     }, ignoreNULL = TRUE)
 
     observeEvent(input$label_lon_start, {
-      if (req(cruz.tick$label.lon.start) != input$label_lon_start){
+      # if (req(cruz.tick$label.lon.start) != input$label_lon_start){
+      if (!isTRUE(all.equal(cruz.tick$label.lon.start, input$label_lon_start))) {
         cruz.tick$label.lon.start <-input$label_lon_start
       }
     }, ignoreNULL = TRUE)
 
     observeEvent(input$label_lat_start, {
-      if (req(cruz.tick$label.lat.start) != input$label_lat_start) {
+      # if (req(cruz.tick$label.lat.start) != input$label_lat_start) {
+      if (!isTRUE(all.equal(cruz.tick$label.lat.start, input$label_lat_start))) {
         cruz.tick$label.lat.start <- input$label_lat_start
       }
     }, ignoreNULL = TRUE)
@@ -309,6 +356,14 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       tick.len <- input$tick_length
       lab.font <- font.family.vals[as.numeric(input$label_tick_font)]
       lab.scale <- input$label_tick_size
+
+      validate(
+        need(input$label_tick_size, "Please enter a valid tick label size value"),
+        need(input$label_tick_size >= 0, "Please enter a tick label size value greater than or equal to zero"),
+        need(input$tick_length, "Please enter a valid tick length value"),
+        need(input$tick_length >= 0, "Please enter a tick length value greater than or equal to zero")
+      )
+
       list(len = tick.len, font = lab.font, scale = lab.scale)
     })
 
@@ -355,6 +410,9 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     })
 
 
+
+
+
     #--------------------------------------------------------------------------
     #--------------------------------------------------------------------------
     #--------------------------------------------------------------------------
@@ -374,9 +432,9 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     #--------------------------------------------------------------------------
     ### Scale bar
 
-    # Processing for Scale bar section of Map range tab of Create and Save Map tab
+    # Processing for Scale bar section
     #   update: scale bar longitude, length, and latitude
-    #   cruzMapScaleBar() returns a list of the scale bar coordinates and parameters
+    #   cruzMapScaleBar() returns a list of the scale bar coordinates and params
 
     # If these are NULL to start, then the scale bar must start off
     cruz.scale <- reactiveValues(
@@ -384,26 +442,12 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       scale.lat = NULL,
       scale.len = NULL
     )
-    observe({
-      print("obs")
-      print(cruz.scale$scale.lon)
-      print(cruz.scale$scale.lat)
-      print(cruz.scale$scale.len)
-    })
-
-    observe({
-      print("obs2")
-      print(input$scale.lon)
-      print(input$scale.lat)
-      print(input$scale.len)
-    })
 
 
     ###############################################################################
     ### Update reactiveValues cruz.scale if inputs change and are different
     observeEvent(input$scale_lon, {
       if (!isTRUE(all.equal(cruz.scale$scale.lon, input$scale_lon))) {
-        print("scale_lon")
         cruz.scale$scale.lon <- input$scale_lon
       }
     })
@@ -415,8 +459,8 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     }, ignoreNULL = TRUE)
 
     observeEvent(input$scale_len, {
-      if (cruz.scale$scale.len != input$scale_len) {
-        # if (!isTRUE(all.equal(cruz.scale$scale.len, input$scale_len))) {
+      # if (cruz.scale$scale.len != input$scale_len) {
+      if (!isTRUE(all.equal(cruz.scale$scale.len, input$scale_len))) {
         cruz.scale$scale.len <- input$scale_len
       }
     }, ignoreNULL = TRUE)
@@ -425,7 +469,6 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     ###############################################################################
     # Calculate new default scale bar lon/lat/len if map dimensions change
     output$scale_lon_uiOut_numeric <- renderUI({
-      print("scale_lon_uiOut_numeric")
       numericInput(
         session$ns("scale_lon"),
         tags$h5("Longitude"),
@@ -499,9 +542,7 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     ###   Separate observe() so that lat/lon update isn't run if scale units change
     ###   Only update length if scale bar is not alrady on
     observe({
-      print("hi1")
       if (!input$bar) {
-        print("hi2")
         lon.range <- req(map_range()$lon.range)
         req(map_range()$lat.range)
         isolate({
@@ -540,9 +581,17 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
         req(is.logical(map_range()$world2))
         world2 <- map_range()$world2
       })
-      scale.lon <- req(cruz.scale$scale.lon)
-      scale.lat <- req(cruz.scale$scale.lat)
-      scale.len <- req(cruz.scale$scale.len)
+
+      validate(
+        need(cruz.scale$scale.lon, "Please provide a valid scale bar longitude value"),
+        need(cruz.scale$scale.lat, "Please provide a valid scale bar latitude value"),
+        need(input$scale_width, "Please provide a valid scale bar width value"),
+        need(cruz.scale$scale.len, "Please provide a valid scale bar length value"),
+      )
+
+      scale.lon <- cruz.scale$scale.lon
+      scale.lat <- cruz.scale$scale.lat
+      scale.len <- cruz.scale$scale.len
       scale.lwd <- input$scale_width
       scale.units <- input$scale_units
 
@@ -561,7 +610,7 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
 
       scale.y <- scale.lat
 
-      list(
+      scale.bar <- list(
         x1 = scale.x1,
         x2 = scale.x2,
         y = scale.y,
@@ -569,9 +618,30 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
         len = scale.len,
         units.str = scale.units.str
       )
+
+      # Validate
+      lon.range <- map_range()$lon.range
+      lat.range <- map_range()$lat.range
+
+      validate(
+        need(lon.range[1] <= scale.bar$x1,
+             "Start of scale bar must be after left longitude value"),
+        need(lon.range[2] >= scale.bar$x2,
+             paste("End of scale bar must be before right longitude value -",
+                   "please extend the map range or decrease the scale bar length")),
+        need(lat.range[1] <= scale.bar$y,
+             "Scale bar latitude must be greater than bottom latitude value"),
+        need(lat.range[2] >= scale.bar$y,
+             "Scale bar latitude must be less than top latitude value")
+      )
+
+      scale.bar
     })
 
     #--------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
+    # Prepare values to save app state
     to_save <- reactive({
       list(
         save_widget("grid", "check"),
@@ -607,9 +677,6 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       )
     })
 
-
-
-    #--------------------------------------------------------------------------
     ### Return values
     list(
       to_save = to_save,

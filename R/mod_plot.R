@@ -61,42 +61,6 @@ mod_plot_server  <- function(
       lat.range <- req(map_range()$lat.range)
       req(is.logical(map_range()$world2))
       world2 <- map_range()$world2
-      stopifnot("world2 param is not a logical" = inherits(world2, "logical"))
-
-      vals.bad <- c("", "-", "+", NA)
-      validate( #lats
-        need(
-          all(!(lat.range %in% vals.bad) & between(lat.range, -90, 90)),
-          "The latitudes must be a number between -90 and 90"
-        )
-      )
-
-      if ((0 <= lon.range[1] & 0 <= lon.range[2]) || (lon.range[1] < 0 & lon.range[2] < 0))
-        validate( #lons
-          need(
-            lon.range[1] < lon.range[2],
-            paste(
-              "Left longitude must be less than right longitude,",
-              "unless left longitude is positive and right longitude",
-              "is negative (Pacific-centered map)"
-            )
-          )
-        )
-      if (world2) {
-        validate(
-          need(
-            all(!(lon.range %in% vals.bad) & between(lon.range, 0, 360)),
-            "The longtiudes must be a number between -180 and 180"
-          )
-        )
-      } else {
-        validate(
-          need(
-            all(!(lon.range %in% vals.bad) & between(lon.range, -180, 180)),
-            "The longtiudes must be a number between -180 and 180"
-          )
-        )
-      }
 
       map.name <- map_range()$map.name
       map(map.name[[1]], regions = map.name[[2]],
@@ -110,13 +74,15 @@ mod_plot_server  <- function(
 
       ### Tick marks and labels
       tick_list <- map_elements$tick_list
-      tick.lon.bool <- tick_list$cruzMapTickLonBool()
-      tick.lat.bool <- tick_list$cruzMapTickLatBool()
-      tick.lon <- tick_list$cruzMapTickLon()
-      tick.lat <- tick_list$cruzMapTickLat()
-      tick.param <- tick_list$cruzMapTickParam()
 
       if (tick_list$tick()) {
+        # Assigned inside here, so validate are only triggered when relevant
+        tick.lon.bool <- tick_list$cruzMapTickLonBool()
+        tick.lat.bool <- tick_list$cruzMapTickLatBool()
+        tick.lon <- tick_list$cruzMapTickLon()
+        tick.lat <- tick_list$cruzMapTickLat()
+        tick.param <- tick_list$cruzMapTickParam()
+
         # Draw major and minor tick marks
         if (tick.lon.bool$bot[1]) {
           axis(1, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
@@ -164,8 +130,11 @@ mod_plot_server  <- function(
 
       ### Grid
       grid_list <- map_elements$grid_list
-      grid.param <- grid_list$cruzMapGrid()
       if (grid_list$grid()) {
+        grid.param <- grid_list$cruzMapGrid()
+        tick.lon <- tick_list$cruzMapTickLon()
+        tick.lat <- tick_list$cruzMapTickLat()
+
         abline(
           v = tick.lon$maj,
           col = grid.param$col,
@@ -182,22 +151,9 @@ mod_plot_server  <- function(
 
       ### Scale bar
       scale_bar_list = map_elements$scale_bar_list
-      scale.bar <- scale_bar_list$cruzMapScaleBar()
       if (scale_bar_list$bar()) {
-        # Validate
-        validate(
-          need(lon.range[1] <= scale.bar$x1,
-               "Start of scale bar must be after left longitude value"),
-          need(lon.range[2] >= (scale.bar$x2),
-               paste("End of scale bar must be before right longitude value -",
-                     "please extend the map range or decrease the scale bar length")),
-          need(lat.range[1] <= scale.bar$y,
-               "Scale bar latitude must be greater than bottom latitude value"),
-          need(lat.range[2] >= scale.bar$y,
-               "Scale bar latitude must be less than top latitude value")
-        )
+        scale.bar <- scale_bar_list$cruzMapScaleBar()
 
-        # Draw
         lines(
           c(scale.bar$x1, scale.bar$x2),
           c(scale.bar$y, scale.bar$y),
