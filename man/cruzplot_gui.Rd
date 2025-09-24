@@ -13,7 +13,7 @@ cruzplot_gui(...)
 Open the CruzPlot utility program, an R Shiny application
 }
 \examples{
-\dontshow{if (interactive()) (if (getRversion() >= "3.4") withAutoprint else force)(\{ # examplesIf}
+\dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 cruzplot_gui()
 
 # To have Shiny listen on a specifc port

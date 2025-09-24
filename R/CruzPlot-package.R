@@ -12,7 +12,7 @@
 #' @import shiny
 #' @importFrom dplyr between if_else
 #' @importFrom geosphere destPoint
-#' @importFrom graphics par
+#' @importFrom graphics abline axis par
 #' @importFrom maps map
 #' @importFrom shinydashboard box dashboardBody tabItems tabItem dashboardHeader
 #'   dashboardPage dashboardSidebar sidebarMenu menuItem tabBox

@@ -1,8 +1,8 @@
 #' Tick calculations
 #'
-#' Tick calculations
+#' CruzPlot functions for tick-realted calculations
 #'
-#' @name cruzTick
+#' @name tick
 #'
 #' @param deg.range numeric vector of the range of figure
 #' @param lon.range numeric vector with two elements: the left and right longitude values
@@ -32,7 +32,7 @@ cruzTickMinor <- function (deg.range, maj.ticks, tick.maj.interval, n=2) {
 }
 
 
-#' @name cruzTick
+#' @name tick
 #' @export
 cruzTickStart <- function(l.range, tick.maj.interval) {
   l.start <- ifelse(
@@ -46,7 +46,7 @@ cruzTickStart <- function(l.range, tick.maj.interval) {
 }
 
 
-#' @name cruzTick
+#' @name tick
 #' @export
 cruzTickUpdate <- function(lon.range, lat.range) {
   lon.diff <- abs(lon.range[2] - lon.range[1])

@@ -106,7 +106,7 @@ mod_map_range_ui <- function(
 
 #' @name mod_map_range
 #' @export
-mod_map_range_server <- function(id, app_state, brush = NULL) {
+mod_map_range_server <- function(id, load_state, brush = NULL) {
   moduleServer(id, function(input, output, session) {
     map_range <- reactiveValues(
       lon.range = NULL,
@@ -123,37 +123,54 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       resolution = NULL
     )
 
-    ### Update inputs if app_state changes
-    observeEvent(app_state$lon_left, {
-      if (input$lon_left != app_state$lon_left) {
-        ll_vals$lon_left <- app_state$lon_left
-        updateNumericInput(session, "lon_left", value = app_state$lon_left)
+
+    observeEvent(load_state(), {
+      for (item in load_state()) {
+        if (item$type == "reactive") {
+          ll_vals[[item$id]] <- item$value
+        } else {
+          update_widget(item, session)
+          # switch(
+          #   item$type,
+          #   "text" = updateTextInput(session, item$id, value = item$value),
+          #   "numeric" = updateNumericInput(session, item$id, value = item$value),
+          #   "select" = updateSelectInput(session, item$id, selected = item$value)
+          # )
+        }
       }
-    })
-    observeEvent(app_state$lon_right, {
-      if (input$lon_right != app_state$lon_right) {
-        ll_vals$lon_right <- app_state$lon_right
-        updateNumericInput(session, "lon_right", value = app_state$lon_right)
-      }
-    })
-    observeEvent(app_state$lat_bot, {
-      if (input$lat_bot != app_state$lat_bot) {
-        ll_vals$lat_bot <- app_state$lat_bot
-        updateNumericInput(session, "lat_bot", value = app_state$lat_bot)
-      }
-    })
-    observeEvent(app_state$lat_top, {
-      if (input$lat_top != app_state$lat_top) {
-        ll_vals$lat_top <- app_state$lat_top
-        updateNumericInput(session, "lat_top", value = app_state$lat_top)
-      }
-    })
-    observeEvent(app_state$resolution, {
-      if (input$resolution != app_state$resolution) {
-        ll_vals$resolution <- app_state$resolution
-        updateSelectInput(session, "resolution", selected = app_state$resolution)
-      }
-    })
+    }, priority = 1) #, ignoreInit = TRUE)
+
+    # ### Update inputs if app_state changes
+    # observeEvent(app_state$lon_left, {
+    #   if (input$lon_left != app_state$lon_left) {
+    #     ll_vals$lon_left <- app_state$lon_left
+    #     updateNumericInput(session, "lon_left", value = app_state$lon_left)
+    #   }
+    # })
+    # observeEvent(app_state$lon_right, {
+    #   if (input$lon_right != app_state$lon_right) {
+    #     ll_vals$lon_right <- app_state$lon_right
+    #     updateNumericInput(session, "lon_right", value = app_state$lon_right)
+    #   }
+    # })
+    # observeEvent(app_state$lat_bot, {
+    #   if (input$lat_bot != app_state$lat_bot) {
+    #     ll_vals$lat_bot <- app_state$lat_bot
+    #     updateNumericInput(session, "lat_bot", value = app_state$lat_bot)
+    #   }
+    # })
+    # observeEvent(app_state$lat_top, {
+    #   if (input$lat_top != app_state$lat_top) {
+    #     ll_vals$lat_top <- app_state$lat_top
+    #     updateNumericInput(session, "lat_top", value = app_state$lat_top)
+    #   }
+    # })
+    # observeEvent(app_state$resolution, {
+    #   if (input$resolution != app_state$resolution) {
+    #     ll_vals$resolution <- app_state$resolution
+    #     updateSelectInput(session, "resolution", selected = app_state$resolution)
+    #   }
+    # })
 
 
     ###############################################################################
@@ -243,10 +260,10 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       ll_vals$lat_bot <-  ll.vals[3]
       ll_vals$lat_top <- ll.vals[4]
 
-      app_state$lon_left <- ll.vals[1]
-      app_state$lon_right <- ll.vals[2]
-      app_state$lat_bot <- ll.vals[3]
-      app_state$lat_top <- ll.vals[4]
+      # app_state$lon_left <- ll.vals[1]
+      # app_state$lon_right <- ll.vals[2]
+      # app_state$lat_bot <- ll.vals[3]
+      # app_state$lat_top <- ll.vals[4]
     }
 
     # TODO: Make these part of the function input, to be able to customize
@@ -315,11 +332,11 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
       ll_vals$lat_top <- lat.top
       ll_vals$resolution <- res
 
-      app_state$lon_left <- lon.left
-      app_state$lon_right <- lon.right
-      app_state$lat_bot <- lat.bot
-      app_state$lat_top <- lat.top
-      app_state$resolution <- res
+      # app_state$lon_left <- lon.left
+      # app_state$lon_right <- lon.right
+      # app_state$lat_bot <- lat.bot
+      # app_state$lat_top <- lat.top
+      # app_state$resolution <- res
       # }
 
       # # Checks that inputs are numbers
@@ -371,9 +388,23 @@ mod_map_range_server <- function(id, app_state, brush = NULL) {
     #   HTML(req(map.range.message()))
     # })
 
+    to_save <- reactive({
+      list(
+        save_widget("lon_left", "numeric"),
+        save_widget("lon_right", "numeric"),
+        save_widget("lat_bot", "numeric"),
+        save_widget("lat_top", "numeric"),
+        save_widget("resolution", "select"),
+        save_widget("lon_left", "reactive", ll_vals$lon_left),
+        save_widget("lon_right", "reactive", ll_vals$lon_right),
+        save_widget("lat_bot", "reactive", ll_vals$lat_bot),
+        save_widget("lat_top", "reactive", ll_vals$lat_top)
+      )
+    })
+
     ### Return values
     list(
-      # input = input,
+      to_save = to_save,
       map_range = cruzMapRange
     )
   })

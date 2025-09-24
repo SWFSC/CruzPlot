@@ -125,28 +125,31 @@ cruzplot_gui <- function(...) {
 
 
     #----------------------------------------------------------------------------
-    ### Create app state reactive
-    app_state <- reactiveValues(
-      # plot_height = NULL,
-      # lon.range = NULL,
-      # lat.range = NULL,
-      # world2 = NULL,
-      # map.name = list(),
-      # grid = NULL,
-      # grid_col = NULL,
-      # grid_lwd = NULL,
-      # grid_lty = NULL
-    )
+    # ### Create app state reactive
+    # app_state <- reactiveValues(
+    #   # plot_height = NULL,
+    #   # lon.range = NULL,
+    #   # lat.range = NULL,
+    #   # world2 = NULL,
+    #   # map.name = list(),
+    #   # grid = NULL,
+    #   # grid_col = NULL,
+    #   # grid_lwd = NULL,
+    #   # grid_lty = NULL
+    # )
     map_range <- map_elements <- reactiveValues()
 
-    observeEvent(input$plot_height, {
-      app_state$plot_height <- input$plot_height
-    })
+    load_state_map_range <- reactiveVal()
+    load_state_map_elements <- reactiveVal()
 
-    # observe({ print(reactiveValuesToList(app_state)) })
-    output$current_state_display <- renderPrint({
-      reactiveValuesToList(app_state)
-    })
+    # observeEvent(input$plot_height, {
+    #   app_state$plot_height <- input$plot_height
+    # })
+
+    # # observe({ print(reactiveValuesToList(app_state)) })
+    # output$current_state_display <- renderPrint({
+    #   reactiveValuesToList(app_state)
+    # })
 
 
     #----------------------------------------------------------------------------
@@ -158,10 +161,10 @@ cruzplot_gui <- function(...) {
 
     #----------------------------------------------------------------------------
     ### Map tab
-    map.range.list <- mod_map_range_server("map_range", app_state, plot1.list$brush)
+    map.range.list <- mod_map_range_server("map_range", load_state_map_range, plot1.list$brush)
     map_range <- map.range.list[["map_range"]]
 
-    map_elements <- mod_map_elements_server("map_elements", app_state, map_range)
+    map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range)
 
     #----------------------------------------------------------------------------
     ### App 'environment' save/load
@@ -174,8 +177,12 @@ cruzplot_gui <- function(...) {
         withProgress(message = "Saving app data", value = 0.3, {
           # cruz.list.save <- list() #reactiveValuesToList(cruz.list)
 
-          # browser()
-          app_state_save <- reactiveValuesToList(app_state)
+          # app_state_save <- reactiveValuesToList(app_state)
+          app_state_save <- list(
+            plot_height = input$plot_height,
+            map_range = map.range.list$to_save(),
+            map_elements = map_elements$to_save()
+          )
           incProgress(0.7)
           save(app_state_save, file = file)
 
@@ -214,15 +221,16 @@ cruzplot_gui <- function(...) {
         rm(files.list)
         incProgress(0.4)
 
-        # Update all of app_state
-        for (i in names(app_state_save)) {
-          app_state[[i]] <- app_state_save[[i]]
-          # map.range.update[[i]] <- cruz.map.range.save[[i]]
-        }
+        # 'reset' the reactiveVals, in case we're loading the same file
+        load_state_map_range(NULL)
+        load_state_map_elements(NULL)
+
+        load_state_map_range(app_state_save[["map_range"]])
+        load_state_map_elements(app_state_save[["map_elements"]])
         incProgress(0.35)
 
         # Update widgets on the main page, not in a module
-        updateNumericInput(session, "plot_height", value = app_state$plot_height)
+        updateNumericInput(session, "plot_height", value = app_state_save$plot_height)
         incProgress(0.05)
       })
 

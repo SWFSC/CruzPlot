@@ -10,7 +10,9 @@
 #' @details
 #' Additional details...
 #'
-#' @returns An empty list
+#' @returns The UI function returns a [shiny::tabPanel()] object
+#' The server function returns a named list, as follows:
+#' - 
 #'
 #' @export
 mod_map_elements_ui <- function(id) {
@@ -139,76 +141,99 @@ mod_map_elements_ui <- function(id) {
 
 #' @name mod_map_elements
 #' @export
-mod_map_elements_server  <- function(id, app_state, map_range) {
+mod_map_elements_server  <- function(id, load_state, map_range) {
   moduleServer(id, function(input, output, session) {
-    # Reactively save all input values to app_state
-    # Can't use reactiveValuesToList(input), because it triggers too soon
-    observe({
-      app_state$bar <- input$bar
-      app_state$grid <- input$grid
-      app_state$grid_col <- input$grid_col
-      app_state$grid_lty <- input$grid_lty
-      app_state$grid_lwd <- input$grid_lwd
-      app_state$label_lat_start <- input$label_lat_start
-      app_state$label_lon_start <- input$label_lon_start
-      app_state$label_tick_font <- input$label_tick_font
-      app_state$label_tick_size <- input$label_tick_size
-      app_state$scale_units <- input$scale_units
-      app_state$scale_lon <- input$scale_lon
-      app_state$scale_lat <- input$scale_lat
-      app_state$scale_len <- input$scale_len
-      app_state$scale_width <- input$scale_width
-      app_state$tick <- input$tick
-      app_state$tick_bot <- input$tick_bot
-      app_state$tick_bot_lab <- input$tick_bot_lab
-      app_state$tick_interval_major <- input$tick_interval_major
-      app_state$tick_interval_minor <- input$tick_interval_minor
-      app_state$tick_left <- input$tick_left
-      app_state$tick_left_lab <- input$tick_left_lab
-      app_state$tick_length <- input$tick_length
-      app_state$tick_right <- input$tick_right
-      app_state$tick_right_lab <- input$tick_right_lab
-      app_state$tick_style <- input$tick_style
-      app_state$tick_top <- input$tick_top
-      app_state$tick_top_lab <- input$tick_top_lab
-    }, priority = 10)
+    stopifnot(
+      is.reactive(load_state),
+      is.reactive(map_range)
+    )
 
-    # When app_state changes, aka env loaded, update widgets
-    observeEvent(reactiveValuesToList(app_state), {
-      input.list.names <- names(reactiveValuesToList(input))
-
-      input.checkbox <- c(
-        "bar", "tick", "grid",
-        "tick_left", "tick_right", "tick_bot", "tick_top",
-        "tick_left_lab", "tick_right_lab", "tick_bot_lab", "tick_top_lab"
-      )
-      input.numeric <- c(
-        "label_lat_start", "label_lon_start","label_tick_size",
-        "tick_interval_major", "tick_interval_minor", "tick_length",
-        "grid_lwd",
-        "scale_lon", "scale_lat", "scale_width", "scale_len"
-      )
-      input.select <- c(
-        "grid_col", "grid_lty", "label_tick_font", "tick_style"
-      )
-      input.radio <- c("scale_units")
-
-      for (i in input.list.names) {
-        if (i %in% input.checkbox) {
-          # browser()
-          updateCheckboxInput(session, i, value = app_state[[i]])
-        } else if (i %in% input.numeric) {
-          # if (i == "tick_interval_major") browser()
-          updateNumericInput(session, i, value = app_state[[i]])
-        } else if (i %in% input.select) {
-          updateSelectInput(session, i, selected = app_state[[i]])
-        } else if (i %in% input.radio) {
-          updateRadioButtons(session, i, selected = app_state[[i]])
+    # TODO
+    observeEvent(load_state(), {
+      for (item in load_state()) {
+        if (item$type == "reactive") {
+          stop("Invalid map_elements state - please report as an issue")
         } else {
-          stop("Input value not found:", i)
+          update_widget(item, session)
+          # switch(
+          #   item$type,
+          #   "text" = updateTextInput(session, item$id, value = item$value),
+          #   "numeric" = updateNumericInput(session, item$id, value = item$value),
+          #   "select" = updateSelectInput(session, item$id, selected = item$value),
+          #   "check" = updateCheckboxInput(session, item$id, value = item$value)
+          # )
         }
       }
-    }, ignoreInit = TRUE, priority = 1)
+    }, priority = 1) #, ignoreInit = TRUE)
+
+    # # Reactively save all input values to app_state
+    # # Can't use reactiveValuesToList(input), because it triggers too soon
+    # observe({
+    #   app_state$bar <- input$bar
+    #   app_state$grid <- input$grid
+    #   app_state$grid_col <- input$grid_col
+    #   app_state$grid_lty <- input$grid_lty
+    #   app_state$grid_lwd <- input$grid_lwd
+    #   app_state$label_lat_start <- input$label_lat_start
+    #   app_state$label_lon_start <- input$label_lon_start
+    #   app_state$label_tick_font <- input$label_tick_font
+    #   app_state$label_tick_size <- input$label_tick_size
+    #   app_state$scale_units <- input$scale_units
+    #   app_state$scale_lon <- input$scale_lon
+    #   app_state$scale_lat <- input$scale_lat
+    #   app_state$scale_len <- input$scale_len
+    #   app_state$scale_width <- input$scale_width
+    #   app_state$tick <- input$tick
+    #   app_state$tick_bot <- input$tick_bot
+    #   app_state$tick_bot_lab <- input$tick_bot_lab
+    #   app_state$tick_interval_major <- input$tick_interval_major
+    #   app_state$tick_interval_minor <- input$tick_interval_minor
+    #   app_state$tick_left <- input$tick_left
+    #   app_state$tick_left_lab <- input$tick_left_lab
+    #   app_state$tick_length <- input$tick_length
+    #   app_state$tick_right <- input$tick_right
+    #   app_state$tick_right_lab <- input$tick_right_lab
+    #   app_state$tick_style <- input$tick_style
+    #   app_state$tick_top <- input$tick_top
+    #   app_state$tick_top_lab <- input$tick_top_lab
+    # }, priority = 10)
+    #
+    # # When app_state changes, aka env loaded, update widgets
+    # observeEvent(reactiveValuesToList(app_state), {
+    #   input.list.names <- names(reactiveValuesToList(input))
+    #
+    #   input.checkbox <- c(
+    #     "bar", "tick", "grid",
+    #     "tick_left", "tick_right", "tick_bot", "tick_top",
+    #     "tick_left_lab", "tick_right_lab", "tick_bot_lab", "tick_top_lab"
+    #   )
+    #   input.numeric <- c(
+    #     "label_lat_start", "label_lon_start","label_tick_size",
+    #     "tick_interval_major", "tick_interval_minor", "tick_length",
+    #     "grid_lwd",
+    #     "scale_lon", "scale_lat", "scale_width", "scale_len"
+    #   )
+    #   input.select <- c(
+    #     "grid_col", "grid_lty", "label_tick_font", "tick_style"
+    #   )
+    #   input.radio <- c("scale_units")
+    #
+    #   for (i in input.list.names) {
+    #     if (i %in% input.checkbox) {
+    #       # browser()
+    #       updateCheckboxInput(session, i, value = app_state[[i]])
+    #     } else if (i %in% input.numeric) {
+    #       # if (i == "tick_interval_major") browser()
+    #       updateNumericInput(session, i, value = app_state[[i]])
+    #     } else if (i %in% input.select) {
+    #       updateSelectInput(session, i, selected = app_state[[i]])
+    #     } else if (i %in% input.radio) {
+    #       updateRadioButtons(session, i, selected = app_state[[i]])
+    #     } else {
+    #       stop("Input value not found:", i)
+    #     }
+    #   }
+    # }, ignoreInit = TRUE, priority = 1)
 
 
     #---------------------------------------------------------------------------
@@ -309,7 +334,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
       tick.val <- cruzTickUpdate(lon.range, lat.range)
 
       updateNumericInput(session, "tick_interval_major", value = tick.val)
-      app_state$tick_interval_major <- tick.val
+      # app_state$tick_interval_major <- tick.val
       cruz.tick$tick.interval.major <- tick.val
     }, priority = 2)
 
@@ -321,7 +346,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
         lon.start <- cruzTickStart(lon.range, b)
 
         updateNumericInput(session, "label_lon_start", value = lon.start)
-        app_state$label_lon_start <- lon.start
+        # app_state$label_lon_start <- lon.start
         cruz.tick$label.lon.start <- lon.start
       }
     }, priority = 1)
@@ -334,7 +359,7 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
         lat.start <- cruzTickStart(lat.range, b)
 
         updateNumericInput(session, "label_lat_start", value = lat.start)
-        app_state$label_lat_start <- lat.start
+        # app_state$label_lat_start <- lat.start
         cruz.tick$label.lat.start <- lat.start
       }
     }, priority = 1)
@@ -648,12 +673,45 @@ mod_map_elements_server  <- function(id, app_state, map_range) {
     #   )
     # })
 
+    #--------------------------------------------------------------------------
+    to_save <- reactive({
+      list(
+        save_widget("grid", "check"),
+        save_widget("grid_col", "select"),
+        save_widget("grid_lty", "select"),
+        save_widget("grid_lwd", "numeric"),
+        save_widget("label_lat_start", "numeric"),
+        save_widget("label_lon_start", "numeric"),
+        save_widget("label_tick_font", "select"),
+        save_widget("label_tick_size", "numeric"),
+        # save_widget("bar", "checkbox"),
+        # save_widget("scale_units", "reactive"),
+        # save_widget("scale_lon", "reactive"),
+        # save_widget("scale_lat", "reactive"),
+        # save_widget("scale_len", "reactive"),
+        # save_widget("scale_width", "reactive"),
+        save_widget("tick", "check"),
+        save_widget("tick_bot", "check"),
+        save_widget("tick_bot_lab", "check"),
+        save_widget("tick_top", "check"),
+        save_widget("tick_top_lab", "check"),
+        save_widget("tick_left", "check"),
+        save_widget("tick_left_lab", "check"),
+        save_widget("tick_right", "check"),
+        save_widget("tick_right_lab", "check"),
+        save_widget("tick_interval_major", "numeric"),
+        save_widget("tick_interval_minor", "numeric"),
+        save_widget("tick_length", "numeric"),
+        save_widget("tick_style", "select")
+      )
+    })
+
 
 
     #--------------------------------------------------------------------------
     ### Return values
     list(
-      # input = input,
+      to_save = to_save,
       tick_list = list(
         tick = reactive(input$tick),
         cruzMapTickLonBool = cruzMapTickLonBool,
