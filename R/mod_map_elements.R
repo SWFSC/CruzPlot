@@ -146,23 +146,21 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       is.reactive(map_range)
     )
 
-    # TODO
+    # Load map_elements state
     observeEvent(load_state(), {
       for (item in load_state()) {
         if (item$type == "reactive") {
-          stop("Invalid map_elements state - please report as an issue")
+          # # Only reactive values are scale bar
+          # print("reactive")
+          # print(item)
+          cruz.scale[[item$id]] <- item$value
+          # browser()
+          # stop("Invalid map_elements state - please report as an issue")
         } else {
           update_widget(item, session)
-          # switch(
-          #   item$type,
-          #   "text" = updateTextInput(session, item$id, value = item$value),
-          #   "numeric" = updateNumericInput(session, item$id, value = item$value),
-          #   "select" = updateSelectInput(session, item$id, selected = item$value),
-          #   "check" = updateCheckboxInput(session, item$id, value = item$value)
-          # )
         }
       }
-    }, priority = 1) #, ignoreInit = TRUE)
+    }, priority = 10) #, ignoreInit = TRUE)
 
 
     #---------------------------------------------------------------------------
@@ -386,12 +384,26 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       scale.lat = NULL,
       scale.len = NULL
     )
+    observe({
+      print("obs")
+      print(cruz.scale$scale.lon)
+      print(cruz.scale$scale.lat)
+      print(cruz.scale$scale.len)
+    })
+
+    observe({
+      print("obs2")
+      print(input$scale.lon)
+      print(input$scale.lat)
+      print(input$scale.len)
+    })
 
 
     ###############################################################################
     ### Update reactiveValues cruz.scale if inputs change and are different
     observeEvent(input$scale_lon, {
       if (!isTRUE(all.equal(cruz.scale$scale.lon, input$scale_lon))) {
+        print("scale_lon")
         cruz.scale$scale.lon <- input$scale_lon
       }
     })
@@ -413,6 +425,7 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     ###############################################################################
     # Calculate new default scale bar lon/lat/len if map dimensions change
     output$scale_lon_uiOut_numeric <- renderUI({
+      print("scale_lon_uiOut_numeric")
       numericInput(
         session$ns("scale_lon"),
         tags$h5("Longitude"),
@@ -486,7 +499,9 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     ###   Separate observe() so that lat/lon update isn't run if scale units change
     ###   Only update length if scale bar is not alrady on
     observe({
+      print("hi1")
       if (!input$bar) {
+        print("hi2")
         lon.range <- req(map_range()$lon.range)
         req(map_range()$lat.range)
         isolate({
@@ -567,12 +582,15 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
         save_widget("label_lon_start", "numeric"),
         save_widget("label_tick_font", "select"),
         save_widget("label_tick_size", "numeric"),
-        # save_widget("bar", "checkbox"),
-        # save_widget("scale_units", "reactive"),
-        # save_widget("scale_lon", "reactive"),
-        # save_widget("scale_lat", "reactive"),
-        # save_widget("scale_len", "reactive"),
-        # save_widget("scale_width", "reactive"),
+        save_widget("bar", "check"),
+        save_widget("scale_units", "radio"),
+        save_widget("scale.lon", "reactive", cruz.scale$scale.lon),
+        save_widget("scale.lat", "reactive", cruz.scale$scale.lat),
+        save_widget("scale.len", "reactive", cruz.scale$scale.len),
+        save_widget("scale_lon", "numeric"),
+        save_widget("scale_lat", "numeric"),
+        save_widget("scale_len", "numeric"),
+        save_widget("scale_width", "numeric"),
         save_widget("tick", "check"),
         save_widget("tick_bot", "check"),
         save_widget("tick_bot_lab", "check"),
