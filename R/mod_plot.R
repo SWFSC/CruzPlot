@@ -180,27 +180,40 @@ mod_plot_server  <- function(
         )
       }
 
-      # ### Scale bar
-      # scale_bar_list = map_elements$scale_bar_list
-      # scale.bar <- scale_bar_list$cruzMapScaleBar()
-      # if (scale_bar_list$bar()) {
-      #   lines(
-      #     c(scale.bar$x1, scale.bar$x2),
-      #     c(scale.bar$y, scale.bar$y),
-      #     lwd = scale.bar$lwd
-      #   )
-      #   text(
-      #     mean(c(scale.bar$x1, scale.bar$x2)),
-      #     scale.bar$y - 0.04 * abs(lat.range[2]-lat.range[1]),
-      #     paste(scale.bar$len, scale.bar$units.str)
-      #   )
-      # }
+      ### Scale bar
+      scale_bar_list = map_elements$scale_bar_list
+      scale.bar <- scale_bar_list$cruzMapScaleBar()
+      if (scale_bar_list$bar()) {
+        # Validate
+        validate(
+          need(lon.range[1] <= scale.bar$x1,
+               "Start of scale bar must be after left longitude value"),
+          need(lon.range[2] >= (scale.bar$x2),
+               paste("End of scale bar must be before right longitude value -",
+                     "please extend the map range or decrease the scale bar length")),
+          need(lat.range[1] <= scale.bar$y,
+               "Scale bar latitude must be greater than bottom latitude value"),
+          need(lat.range[2] >= scale.bar$y,
+               "Scale bar latitude must be less than top latitude value")
+        )
+
+        # Draw
+        lines(
+          c(scale.bar$x1, scale.bar$x2),
+          c(scale.bar$y, scale.bar$y),
+          lwd = scale.bar$lwd
+        )
+        text(
+          mean(c(scale.bar$x1, scale.bar$x2)),
+          scale.bar$y - 0.04 * abs(lat.range[2]-lat.range[1]),
+          paste(scale.bar$len, scale.bar$units.str)
+        )
+      }
 
 
       ### ...
     })
 
-    # height = reactive(app_state$plot_height)
     output$plot1 <- renderPlot({
       plotMap()
     }, height = height, units = "px", res = 72)
