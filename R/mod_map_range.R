@@ -48,7 +48,6 @@ mod_map_range_ui <- function(
   ### Set default values for map
   # start.ll <- data.frame(X = c(-135, -117, 29, 52, 1))
 
-  # tagList(
   tabPanel(
     title = "Range",
     fluidRow(
@@ -100,7 +99,6 @@ mod_map_range_ui <- function(
       )
     )
   )
-  # )
 }
 
 

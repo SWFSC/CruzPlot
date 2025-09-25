@@ -101,7 +101,8 @@ cruzplot_gui <- function(...) {
             tabBox(
               title = "Map", width = 6, id = "tabset1",
               mod_map_range_ui("map_range"),
-              mod_map_elements_ui("map_elements")
+              mod_map_elements_ui("map_elements")[[1]], 
+              mod_map_elements_ui("map_elements")[[2]]
             )
           )
         )

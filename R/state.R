@@ -56,13 +56,24 @@ save_widget <- function(id, type, value = NULL, input = NULL) {
       value <- input[[id]]
     }
   }
+
+  error_message <- function(type) {
+    r.type <- case_when(
+      type %in% c("text", "select", "radio") ~ "character", 
+      type %in% c("numeric") ~ "numeric", 
+      type %in% c("check") ~ "logical", 
+      .default = "error - unknown"
+    )
+
+    paste0("Given the type (", type, "), 'value' must be a", r.type)
+  }
   
   if (type %in% c("text", "select", "radio")) {
-    if (!is.character(value)) stop("Given the type (", type, "), 'value' must be a character")
+    if (!is.character(value)) error_message(type)
   } else if (type %in% c("numeric")) {
-    if (!is.numeric(value)) stop("Given the type (", type, "), 'value' must be a numeric")
+    if (!is.numeric(value)) error_message(type)
   } else if (type %in% c("check")) {
-    if (!is.logical(value)) stop("Given the type (", type, "), 'value' must be a logical")
+    if (!is.logical(value)) error_message(type)
   } else if (type %in% c("reactive")) {
     # Nothing to check
   } else{

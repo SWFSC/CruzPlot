@@ -53,21 +53,81 @@ mod_plot_server  <- function(
       # oldpar <- par(no.readonly = TRUE)
       # on.exit(par(oldpar))
 
-
-
       #------------------------------------------------------------------------
-      ### Map range
+      ### Map range and labels
       lon.range <- req(map_range()$lon.range)
       lat.range <- req(map_range()$lat.range)
       req(is.logical(map_range()$world2))
       world2 <- map_range()$world2
-
       map.name <- map_range()$map.name
-      map(map.name[[1]], regions = map.name[[2]],
-          xlim = lon.range[1:2], ylim = lat.range[1:2],
-          fill = TRUE, col = "yellow",
-          # add = TRUE
+
+      param.unit <- par("usr")
+      param.inch <- par("pin")
+      
+      title.info <- map_elements$label_list$cruzMapLabelTitle()
+      axes.info <- map_elements$label_list$cruzMapLabelAxes()
+
+      # map(map.name[[1]], regions = map.name[[2]],
+      #     xlim = lon.range[1:2], ylim = lat.range[1:2],
+      #     fill = TRUE, col = "yellow",
+      #     # add = TRUE
+      # )
+
+      # cruzMapParam <- reactive({
+      #   map_range()$lon.range
+      #   map_range()$lat.range
+      #   param.unit <- par("usr")
+      #   param.inch <- par("pin")
+      
+      #   list(param.unit = param.unit, param.inch = param.inch)
+      # })
+
+      ### Window
+      mar1 <- ifelse(nchar(axes.info$lab.lon) > 0, 7, 3)
+      mar2 <- ifelse(nchar(axes.info$lab.lat) > 0, 7, 5)
+      mar3 <- ifelse(nchar(title.info$lab)    > 0, 7, 2)
+
+      x.try <- try(map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
+                      mar = c(mar1, mar2, mar3, 4)),
+                  silent = TRUE)
+      validate(need(x.try, "Error - there must be some land in the map area"))
+
+      x.1 <- map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
+                mar = c(mar1, mar2, mar3, 4))
+      param <- param.unit #cruzMapParam()$param.unit
+
+      ### Water
+      rect(param[1], param[3], param[2], param[4], col = "blue") #map.water.col[[1]])
+
+      ### Land
+      map(
+        map.name[[1]], regions = map.name[[2]],
+        xlim = lon.range[1:2], ylim = lat.range[1:2],
+        fill = TRUE, col = "tan", add = TRUE 
       )
+      # if (input$coast) {
+      #   # Coastline
+      #   validate(
+      #     need(isTruthy(map.coastline),
+      #         message = "Please input a valid coastline file")
+      #   )
+
+      #   polygon(x = map.coastline$lon, y = map.coastline$lat, col = map.land.col)
+      #   lines(x = map.coastline$lon, y = map.coastline$lat)
+
+      # } else {
+      #   # Default from maps package
+      #   map(map.name[[1]], regions = map.name[[2]],
+      #       xlim = lon.range[1:2], ylim = lat.range[1:2],
+      #       fill = TRUE, col = map.land.col, add = TRUE)
+      # }
+
+      ### Rivers and Lakes
+      # if (input$color_lakes_rivers)
+      #   map(map.river, col = map.water.col[[1]], add = TRUE)
+
+      graphics::box()
+
 
       #------------------------------------------------------------------------
       # Map elements
@@ -166,8 +226,24 @@ mod_plot_server  <- function(
         )
       }
 
+      ### Map labels - assigned at the top, because needed for map boundaries
+      # Title
+      if (!is.null(title.info$lab)) {
+        title(main = title.info$lab, line = 3, family = title.info$fam,
+              cex.main = title.info$cex)
+      }
 
-      ### ...
+      # Longitude axis
+      if (!is.null(axes.info$lab.lon)) {
+        title(xlab = axes.info$lab.lon, family = axes.info$fam,
+              cex.lab = axes.info$cex)
+      }
+      # Latitude axis
+      if (!is.null(axes.info$lab.lat)) {
+        title(ylab = axes.info$lab.lat, family = axes.info$fam,
+              cex.lab = axes.info$cex, line = 4)
+      }
+      
     })
 
     output$plot1 <- renderPlot({

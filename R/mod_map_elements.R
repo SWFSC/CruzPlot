@@ -19,121 +19,143 @@ mod_map_elements_ui <- function(id) {
   ns <- NS(id)
   start.tick <- list(interval = 5, lon = -135, lat = 30)
 
-  # tagList(
-  tabPanel(
-    title = "Elements",
-    fluidRow(
-      # Scale bar
-      box(
-        title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        checkboxInput(ns("bar"), "Plot scale bar", value = FALSE),
-        conditionalPanel(
-          condition = "input.bar", ns = ns,
-          helpText(
-            "Provide the coordinates for the left edge of the scale bar.",
-            "The coordinates must be within the map range coordinates.",
-            "To automatically reset the scale bar for new map range coordiantes,",
-            "check and uncheck the scale bar checkbox. "
-          ),
-          fluidRow(
-            column(4, uiOutput(ns("scale_lon_uiOut_numeric"))),
-            column(4, uiOutput(ns("scale_lat_uiOut_numeric"))),
-            column(4, numericInput(ns("scale_width"), tags$h5("Width of bar"), value = 2, min = 1, max = 6, step = 1)),
-          ),
-          fluidRow(
-            column(
-              width = 4,
-              radioButtons(
-                ns("scale_units"), tags$h5("Scale bar units"),
-                choices = list("Kilometers" = 1, "Nautical miles" = 2),
-                selected = 2
-              )
+  tagList(
+    tabPanel(
+      title = "Elements",
+      fluidRow(
+        # Scale bar
+        box(
+          title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+          checkboxInput(ns("bar"), "Plot scale bar", value = FALSE),
+          conditionalPanel(
+            condition = "input.bar", ns = ns,
+            helpText(
+              "Provide the coordinates for the left edge of the scale bar.",
+              "The coordinates must be within the map range coordinates.",
+              "To automatically reset the scale bar for new map range coordiantes,",
+              "check and uncheck the scale bar checkbox. "
             ),
-            column(4, uiOutput(ns("out_scale_len")))
+            fluidRow(
+              column(4, uiOutput(ns("scale_lon_uiOut_numeric"))),
+              column(4, uiOutput(ns("scale_lat_uiOut_numeric"))),
+              column(4, numericInput(ns("scale_width"), tags$h5("Width of bar"), value = 2, min = 1, max = 6, step = 1)),
+            ),
+            fluidRow(
+              column(
+                width = 4,
+                radioButtons(
+                  ns("scale_units"), tags$h5("Scale bar units"),
+                  choices = list("Kilometers" = 1, "Nautical miles" = 2),
+                  selected = 2
+                )
+              ),
+              column(4, uiOutput(ns("out_scale_len")))
+            )
           )
-        )
-      ),
-      # Ticks & Labels
-      box(
-        title = "Ticks & Labels", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-        checkboxInput(ns("tick"), label = "Plot tick marks and/or their labels", value = TRUE),
-        conditionalPanel(
-          condition = "input.tick", ns = ns,
-          fluidRow(
-            box(
-              title = "Tick Marks", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 437,
-              fluidRow(
-                column(
-                  width = 6,
-                  checkboxInput(ns("tick_left"), label = "Left", value = TRUE),
-                  checkboxInput(ns("tick_bot"), label = "Bottom", value = TRUE),
-                  numericInput(
-                    ns("tick_interval_major"), label = tags$h5("Degrees between each major tick"),
-                    value = start.tick$interval, min = 0, max = 45, step = 5
+        ),
+        # Ticks & Labels
+        box(
+          title = "Ticks & Labels", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+          checkboxInput(ns("tick"), label = "Plot tick marks and/or their labels", value = TRUE),
+          conditionalPanel(
+            condition = "input.tick", ns = ns,
+            fluidRow(
+              box(
+                title = "Tick Marks", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 437,
+                fluidRow(
+                  column(
+                    width = 6,
+                    checkboxInput(ns("tick_left"), label = "Left", value = TRUE),
+                    checkboxInput(ns("tick_bot"), label = "Bottom", value = TRUE),
+                    numericInput(
+                      ns("tick_interval_major"), label = tags$h5("Degrees between each major tick"),
+                      value = start.tick$interval, min = 0, max = 45, step = 5
+                    ),
+                    selectInput(
+                      ns("tick_style"), label = tags$h5("Tick label style"),
+                      choices = list("120" = 1, "120W" = 2, "120\u00B0" = 3, "120\u00B0W" = 4),
+                      selected = 4
+                    )
                   ),
-                  selectInput(
-                    ns("tick_style"), label = tags$h5("Tick label style"),
-                    choices = list("120" = 1, "120W" = 2, "120\u00B0" = 3, "120\u00B0W" = 4),
-                    selected = 4
-                  )
-                ),
-                column(
-                  width = 6,
-                  checkboxInput(ns("tick_right"), label = "Right", value = TRUE),
-                  checkboxInput(ns("tick_top"), label = "Top", value = TRUE),
-                  numericInput(
-                    ns("tick_interval_minor"), label = tags$h5("Minor ticks between each major tick"),
-                    value = 4, min = 0, max = 45, step = 1
-                  ),
-                  numericInput(
-                    ns("tick_length"), label = tags$h5("Tick length"),
-                    value = 1.0, min = 0, max = 2.5, step = 0.1
+                  column(
+                    width = 6,
+                    checkboxInput(ns("tick_right"), label = "Right", value = TRUE),
+                    checkboxInput(ns("tick_top"), label = "Top", value = TRUE),
+                    numericInput(
+                      ns("tick_interval_minor"), label = tags$h5("Minor ticks between each major tick"),
+                      value = 4, min = 0, max = 45, step = 1
+                    ),
+                    numericInput(
+                      ns("tick_length"), label = tags$h5("Tick length"),
+                      value = 1.0, min = 0, max = 2.5, step = 0.1
+                    )
                   )
                 )
-              )
-            ),
-            box(
-              title = "Labels", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 437,
-              fluidRow(
-                column(
-                  width = 6,
-                  checkboxInput(ns("tick_left_lab"), "Left", value = TRUE),
-                  checkboxInput(ns("tick_bot_lab"), "Bottom", value = TRUE),
-                  numericInput(ns("label_lon_start"), tags$h5("Start longitude tick labels at"), value = as.character(start.tick$lon)),
-                  selectInput(ns("label_tick_font"), tags$h5("Tick label font"), choices = font.family, selected = 1)
-                ),
-                column(
-                  width = 6,
-                  checkboxInput(ns("tick_right_lab"), "Right", value = TRUE),
-                  checkboxInput(ns("tick_top_lab"), "Top", value = TRUE),
-                  numericInput(ns("label_lat_start"), tags$h5("Start latitude tick labels at"), value = as.character(start.tick$lat)),
-                  numericInput(ns("label_tick_size"), tags$h5("Tick label size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
+              ),
+              box(
+                title = "Labels", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, #height = 437,
+                fluidRow(
+                  column(
+                    width = 6,
+                    checkboxInput(ns("tick_left_lab"), "Left", value = TRUE),
+                    checkboxInput(ns("tick_bot_lab"), "Bottom", value = TRUE),
+                    numericInput(ns("label_lon_start"), tags$h5("Start longitude tick labels at"), value = as.character(start.tick$lon)),
+                    selectInput(ns("label_tick_font"), tags$h5("Tick label font"), choices = font.family, selected = 1)
+                  ),
+                  column(
+                    width = 6,
+                    checkboxInput(ns("tick_right_lab"), "Right", value = TRUE),
+                    checkboxInput(ns("tick_top_lab"), "Top", value = TRUE),
+                    numericInput(ns("label_lat_start"), tags$h5("Start latitude tick labels at"), value = as.character(start.tick$lat)),
+                    numericInput(ns("label_tick_size"), tags$h5("Tick label size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
+                  )
                 )
               )
             )
           )
+        ),
+        # Gridlines
+        box(
+          title = "Grid", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE, #height = 385,
+          checkboxInput(ns("grid"), label = "Include grid lines at major tick marks", value = TRUE),
+          conditionalPanel(
+            condition = "input.grid", ns = ns,
+            fluidRow(
+              column(3, selectInput(ns("grid_col"), label = tags$h5("Line color"),
+                                    choices = cruz.palette.color, selected = "black")),
+              column(3, numericInput(ns("grid_lwd"), label = tags$h5("Line width"),
+                                    value = 1, min = 1, max = 6, step = 1)),
+              column(3, selectInput(ns("grid_lty"), label = tags$h5("Line type"),
+                                    choices = cruz.line.type, selected = 1))
+            )
+          )
         )
-      ),
-      # Map Labels
-      # Gridlines
-      box(
-        title = "Grid", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE, height = 385,
-        checkboxInput(ns("grid"), label = "Include grid lines at major tick marks", value = TRUE),
-        conditionalPanel(
-          condition = "input.grid", ns = ns,
+      )
+    ), 
+    # Map Labels
+    tabPanel(
+      title = "Map Labels",
+      fluidRow(
+        box(
+          title = "Title", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 315,
+          textInput(ns("label_title"), tags$h5("Map title"), value = ""),
           fluidRow(
-            column(3, selectInput(ns("grid_col"), label = tags$h5("Line color"),
-                                  choices = cruz.palette.color, selected = "black")),
-            column(3, numericInput(ns("grid_lwd"), label = tags$h5("Line width"),
-                                   value = 1, min = 1, max = 6, step = 1)),
-            column(3, selectInput(ns("grid_lty"), label = tags$h5("Line type"),
-                                  choices = cruz.line.type, selected = 1))
+            column(6, selectInput(ns("label_title_font"), label = tags$h5("Title font"), choices = font.family, selected = 1)),
+            column(6, numericInput(ns("label_title_size"), label = tags$h5("Title size"), value = 1.5, min = 0.1, max = 3, step = 0.1))
+          )
+        ),
+        box(
+          title = "Axis labels", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 402,
+          textInput(ns("label_axis_lon"), tags$h5("Longitude axis label"), value = ""),
+          textInput(ns("label_axis_lat"), tags$h5("Latitude axis label"), value = ""),
+          fluidRow(
+            column(6, selectInput(ns("label_axis_font"), label = tags$h5("Axis label font"), choices = font.family, selected = 1)),
+            column(6, numericInput(ns("label_axis_size"), label = tags$h5("Axis label size"), value = 1.2, min = 0.1, max = 3, step = 0.1))
           )
         )
       )
     )
   )
-  # )
 }
 
 
@@ -638,29 +660,68 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       scale.bar
     })
 
+
+    #--------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
+    #--------------------------------------------------------------------------
+    # Map labels
+    # Return title label, font, and size
+    cruzMapLabelTitle <- reactive({
+      lab <- input$label_title
+      fam <- font.family.vals[as.numeric(input$label_title_font)]
+      cex <- input$label_title_size
+      
+      validate(
+        need(!is.na(input$label_title_size), "Please enter a valid title size value"), 
+        need(input$label_title_size > 0, "Please enter a title size greater than zero")
+      )
+
+      list(lab = lab, fam = fam, cex = cex)
+    })
+
+    #	Return axes labels (lon and lat), font, and size
+    cruzMapLabelAxes <- reactive({
+      lab.lon <- input$label_axis_lon
+      lab.lat <- input$label_axis_lat
+      fam <- font.family.vals[as.numeric(input$label_axis_font)]
+      cex <- input$label_axis_size
+
+      validate(
+        need(!is.na(input$label_axis_size), "Please enter a valid axis label size value"), 
+        need(input$label_axis_size > 0, "Please enter an axis label size greater than zero")
+      )
+
+      list(lab.lon = lab.lon, lab.lat = lab.lat, fam = fam, cex = cex)
+    })
+
+
     #--------------------------------------------------------------------------
     #--------------------------------------------------------------------------
     #--------------------------------------------------------------------------
     # Prepare values to save app state
     to_save <- reactive({
-      list(
-        save_widget("grid", "check"),
-        save_widget("grid_col", "select"),
-        save_widget("grid_lty", "select"),
-        save_widget("grid_lwd", "numeric"),
+      # Only save bar reactive values if bar is on
+      bar.tosave <- if (input$bar) {
+        list(          
+          save_widget("scale_lon", "numeric"),
+          save_widget("scale_lat", "numeric"),
+          save_widget("scale_len", "numeric"),
+          save_widget("scale.lon", "reactive", cruz.scale$scale.lon),
+          save_widget("scale.lat", "reactive", cruz.scale$scale.lat),
+          save_widget("scale.len", "reactive", cruz.scale$scale.len)
+        )
+      } else {
+        NULL
+      }
+
+      y <- c(bar.tosave, list(
         save_widget("label_lat_start", "numeric"),
         save_widget("label_lon_start", "numeric"),
         save_widget("label_tick_font", "select"),
         save_widget("label_tick_size", "numeric"),
         save_widget("bar", "check"),
+        save_widget("scale_width", "numeric"), 
         save_widget("scale_units", "radio"),
-        save_widget("scale.lon", "reactive", cruz.scale$scale.lon),
-        save_widget("scale.lat", "reactive", cruz.scale$scale.lat),
-        save_widget("scale.len", "reactive", cruz.scale$scale.len),
-        save_widget("scale_lon", "numeric"),
-        save_widget("scale_lat", "numeric"),
-        save_widget("scale_len", "numeric"),
-        save_widget("scale_width", "numeric"),
         save_widget("tick", "check"),
         save_widget("tick_bot", "check"),
         save_widget("tick_bot_lab", "check"),
@@ -673,8 +734,19 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
         save_widget("tick_interval_major", "numeric"),
         save_widget("tick_interval_minor", "numeric"),
         save_widget("tick_length", "numeric"),
-        save_widget("tick_style", "select")
-      )
+        save_widget("tick_style", "select"), 
+        save_widget("label_title", "text"), 
+        save_widget("label_title_font", "select"), 
+        save_widget("label_title_size", "numeric"), 
+        save_widget("label_axis_lon", "text"), 
+        save_widget("label_axis_lat", "text"), 
+        save_widget("label_axis_font", "select"), 
+        save_widget("label_axis_size", "numeric"), 
+        save_widget("grid", "check"),
+        save_widget("grid_col", "select"),
+        save_widget("grid_lty", "select"),
+        save_widget("grid_lwd", "numeric")
+      ))
     })
 
     ### Return values
@@ -695,6 +767,10 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       grid_list = list(
         grid = reactive(input$grid),
         cruzMapGrid = cruzMapGrid
+      ), 
+      label_list = list(
+        cruzMapLabelTitle = cruzMapLabelTitle, 
+        cruzMapLabelAxes = cruzMapLabelAxes
       )
     )
   })

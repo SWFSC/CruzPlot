@@ -10,7 +10,7 @@
 #' @seealso \url{https://swfsc.github.io/CruzPlot/}
 #'
 #' @import shiny
-#' @importFrom dplyr between if_else
+#' @importFrom dplyr between case_when if_else
 #' @importFrom geosphere destPoint
 #' @importFrom graphics abline axis par
 #' @importFrom maps map
