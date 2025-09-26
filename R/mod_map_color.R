@@ -127,18 +127,18 @@ mod_map_color_server  <- function(id, load_state, map_range) {
 
     ### River values, if selected
     cruzMapRivers <- reactive({
-      req(is.logical(map_range()$world2))
-      world2 <- map_range()$world2
-
-      if (!requireNamespace("mapdata", quietly = TRUE)) {
-        validate("The package mapdata is not installed. You cannot plot lakes and rivers.")
-      }
-
-      rivs <- map("mapdata::rivers", plot = FALSE)
-      if (world2) rivs$x <- ifelse(rivs$x < 0, rivs$x+360, rivs$x)
-
       if (input$map_rivers) {
+        rivs.try <- try(mapdata::riversMapEnv, silent = TRUE)
+        validate(
+          need(x.try, "Error - please install the mapdata package to use rivers maps")
+        )
+        rivs <- map("mapdata::rivers", plot = FALSE)
+        
+        req(is.logical(map_range()$world2))
+        if (map_range()$world2) rivs$x <- ifelse(rivs$x < 0, rivs$x+360, rivs$x)
+
         rivs
+        
       } else {
         NULL
       }
