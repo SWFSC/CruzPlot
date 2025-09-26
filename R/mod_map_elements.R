@@ -24,8 +24,8 @@ mod_map_elements_ui <- function(id) {
       title = "Elements",
       fluidRow(
         # Scale bar
-        box(
-          title = "Scale bar", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+        box_cruz(
+          title = "Scale bar", width = 12, 
           checkboxInput(ns("bar"), "Plot scale bar", value = FALSE),
           conditionalPanel(
             condition = "input.bar", ns = ns,
@@ -54,14 +54,14 @@ mod_map_elements_ui <- function(id) {
           )
         ),
         # Ticks & Labels
-        box(
-          title = "Ticks & Labels", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+        box_cruz(
+          title = "Ticks & Labels", width = 12, 
           checkboxInput(ns("tick"), label = "Plot tick marks and/or their labels", value = TRUE),
           conditionalPanel(
             condition = "input.tick", ns = ns,
             fluidRow(
               box(
-                title = "Tick Marks", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 437,
+                title = "Tick Marks", solidHeader = FALSE, width = 6, collapsible = TRUE,
                 fluidRow(
                   column(
                     width = 6,
@@ -93,7 +93,7 @@ mod_map_elements_ui <- function(id) {
                 )
               ),
               box(
-                title = "Labels", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, #height = 437,
+                title = "Labels", solidHeader = FALSE, width = 6, collapsible = TRUE,
                 fluidRow(
                   column(
                     width = 6,
@@ -115,8 +115,8 @@ mod_map_elements_ui <- function(id) {
           )
         ),
         # Gridlines
-        box(
-          title = "Grid", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE, #height = 385,
+        box_cruz(
+          title = "Grid", width = 12, 
           checkboxInput(ns("grid"), label = "Include grid lines at major tick marks", value = TRUE),
           conditionalPanel(
             condition = "input.grid", ns = ns,
@@ -134,18 +134,18 @@ mod_map_elements_ui <- function(id) {
     ), 
     # Map Labels
     tabPanel(
-      title = "Map Labels",
+      title = "Labels",
       fluidRow(
-        box(
-          title = "Title", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 315,
+        box_cruz(
+          title = "Title", width = 6, 
           textInput(ns("label_title"), tags$h5("Map title"), value = ""),
           fluidRow(
             column(6, selectInput(ns("label_title_font"), label = tags$h5("Title font"), choices = font.family, selected = 1)),
             column(6, numericInput(ns("label_title_size"), label = tags$h5("Title size"), value = 1.5, min = 0.1, max = 3, step = 0.1))
           )
         ),
-        box(
-          title = "Axis labels", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE, height = 402,
+        box_cruz(
+          title = "Axis labels", width = 6, 
           textInput(ns("label_axis_lon"), tags$h5("Longitude axis label"), value = ""),
           textInput(ns("label_axis_lat"), tags$h5("Latitude axis label"), value = ""),
           fluidRow(
@@ -154,7 +154,70 @@ mod_map_elements_ui <- function(id) {
           )
         )
       )
-    )
+    ), 
+  #   tabPanel(
+  #     title = "Color",
+  #     fluidRow(
+  #       box(
+  #         title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+  #         helpText("This color style selection will affect the palette options for all color selections in CruzPlot"),
+  #         tags$br(),
+  #         radioButtons(ns("color_style"), label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
+  #                       selected = 1)
+  #       ),
+  #       box(
+  #         title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+  #         fluidRow(
+  #           column(6, checkboxInput(ns("color_land_all"), label = "Color all land", value = TRUE)),
+  #           column(
+  #             width = 6,
+  #             conditionalPanel(
+  #               condition = "input.color_land_all", ns = ns, 
+  #               selectInput(ns("color_land"), label = tags$h5("Land color"), 
+  #               choices = cruz.palette.color, selected = "bisque1")
+  #             )
+  #           )
+  #         )
+  #       )
+  #     ),
+  #     fluidRow(
+  #       box(
+  #         title = "Water", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+  #         checkboxInput(na("color_lakes_rivers"), label = "Color lakes and rivers", value = FALSE),
+  #         selectInput(na("color_water"), label = tags$h5("Water (background) color"),
+  #                     choices = cruz.palette.color, selected = "white"),
+  #         radioButtons(ns("color_water_style"), label = tags$h5("Ocean color style"),
+  #                       choices = list("Single color" = 1, "Depth (bathymetric) shading" = 2),
+  #                       selected = 1),
+  #         conditionalPanel(
+  #           condition = "input.color_water_style==2", ns = ns, 
+  #           helpText("Load a CSV file with exactly 3 columns: latitude, longitude, and depth"),
+  #           fileInput(ns("depth_file"), tags$h5("Bathymetric CSV file"), accept = ".csv"),
+  #           textOutput(ns("bathy_load_text")),
+  #           tags$span(textOutput(ns("bathy_message_text")), style = "color: blue;")
+  #         )
+  #       ),
+  #       box(
+  #         title = "Download bathymetric data", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+  #         helpText("Download bathymetric data from NOAA website (see the documentation for",
+  #                   tags$a(href = "https://CRAN.R-project.org/package=marmap",
+  #                         "marmap function 'getNOAA.bathy'"),
+  #                   "for more details).",
+  #                   "The coordinates of the downloaded data will be the same as the current map range.",
+  #                   "After downloading, you must load the CSV file into CruzPlot in the 'Water: Ocean color style' section"),
+  #         numericInput(
+  #           ns("depth_res"), 
+  #           tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"),
+  #           value = 10, 
+  #           min = 0, 
+  #           max = 60, 
+  #           step = 5),
+  #         uiOutput(ns("depth_download_button"),
+  #         uiOutput(ns("depth_download_message"))
+  #       )
+  #     )
+  #   )
+  # )
   )
 }
 

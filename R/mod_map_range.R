@@ -51,8 +51,8 @@ mod_map_range_ui <- function(
   tabPanel(
     title = "Range",
     fluidRow(
-      box(
-        title = "Map range", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
+      box_cruz(
+        title = "Map range", width = 12, 
         helpText(
           "For longitude values, please use the range -180 to 180.",
           "For instance, use left and right longitudes of 130 and -110,",
