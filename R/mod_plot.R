@@ -114,13 +114,17 @@ mod_plot_server  <- function(
       ### Water
       rect(param[1], param[3], param[2], param[4], col = map.water.col[[1]])
 
-      # # Depth
-      # map.depth <- map.water.col[[2]]
-      # if (isTruthy(map.depth))
-      #   plot(map.depth, image = TRUE, land = TRUE, add = TRUE,
-      #       axes = FALSE, xlab = NA, ylab = NA, lwd = 0.0,
-      #       bpal = list(c(0, max(map.depth), "grey"),
-      #                   c(min(map.depth), 0, bathy.col)))
+      # Depth
+      map.depth <- map.water.col[[2]]
+      if (isTruthy(map.depth))
+        plot(
+          map.depth, image = TRUE, land = TRUE, add = TRUE,
+          axes = FALSE, xlab = NA, ylab = NA, lwd = 0.0,
+          bpal = list(
+            c(0, max(map.depth), "grey"), 
+            c(min(map.depth), 0, bathy.col)
+          )
+        )
 
       ### Land
       map(

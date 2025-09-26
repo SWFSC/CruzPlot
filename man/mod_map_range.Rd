@@ -46,6 +46,8 @@ Specifically:
 \item \code{map.name}, a list of 1) the map name, passed directly to the \code{database}
 argument of \code{\link[maps:map]{maps::map()}}, and 2) the regions to plot,
 passed directly to the \code{regions} argument of \code{\link[maps:map]{maps::map()}}
+\item \code{latlon_input}: the input lat/lon values, for functions that need the
+map range in \verb{[-180, 180]} coordinates
 }
 }
 }

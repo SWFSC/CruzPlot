@@ -149,23 +149,24 @@ mod_map_color_server  <- function(id, load_state, map_range) {
       ifelse(input$color_land_all == TRUE, input$color_land, "white")
     })
 
-    # ### Load bathymetry data
-    # cruzMapBathyLoad <- eventReactive(input$depth_file, {
-    #   req(input$depth_file)
-    #   file.in <- input$depth_file
+    ### Load bathymetry data
+    output$bathy_load_text <- renderText(cruzMapBathyLoad())
+    cruzMapBathyLoad <- eventReactive(input$depth_file, {
+      req(input$depth_file)
+      file.in <- input$depth_file
 
-    #   cruz.list$bathy.xyz <- NULL
-    #   bathy.xyz <- read.csv(file.in$datapath)
+      cruz.list$bathy.xyz <- NULL
+      bathy.xyz <- read.csv(file.in$datapath)
 
-    #   validate(
-    #     need(ncol(bathy.xyz) >= 3,
-    #         "The bathymetric CSV file must contain at least 3 columns")
-    #   )
+      validate(
+        need(ncol(bathy.xyz) >= 3,
+            "The bathymetric CSV file must contain at least 3 columns")
+      )
 
-    #   cruz.list$bathy.xyz <- bathy.xyz
+      cruz.list$bathy.xyz <- bathy.xyz
 
-    #   NULL
-    # })
+      NULL
+    })
 
     ### Get color value and bathymetry data for water color
     cruzMapColorWater <- reactive({
@@ -173,7 +174,6 @@ mod_map_color_server  <- function(id, load_state, map_range) {
         bathy <- NULL
 
       } else { #if (input$color_water_style == 2) {
-        validate ("not implemented yet")
         bathy.xyz <- cruz.list$bathy.xyz
         validate(need(bathy.xyz, "Please load a CSV file with bathymetric data"))
 
@@ -227,15 +227,19 @@ mod_map_color_server  <- function(id, load_state, map_range) {
       validate(need(isTRUE(all.equal(v.val %% 1, 0)), v.mess))
       validate(need(between(v.val, 0, 60), v.mess))
 
-      downloadButton("depth_download", "Download bathymetric file")
+      downloadButton(session$ns("depth_download"), "Download bathymetric file")
     })
 
     ### Message indicating if download using marmap::getNOAA.bathy failed
     output$depth_download_message <- renderUI({
       if (cruz.list$bathy.download) {
         validate(
-          paste("CruzPlot was not able to resolve host: gis.ngdc.noaa.gov.",
-                "Please check your internet connection and try again")
+          paste(
+            "CruzPlot was not able to download data using marmap::getNOAA.bathy.",
+            "Please check your internet connection, and try again.", 
+            "If this problem persists and you are able to use the function", 
+            "yourself, please report this as an issue."
+          )
         )
       } else {
         NULL
@@ -270,23 +274,20 @@ mod_map_color_server  <- function(id, load_state, map_range) {
 
       content = function(file) {
         cruz.list$bathy.download <- FALSE
-        lon.range <- req(map_range()$lon.range)
-        lat.range <- req(map_range()$lat.range)
+        ll <- req(map_range()$latlon_input)
         world2 <- map_range()$world2
 
         # getNOAA.bathy() operates on -180 to 180 scale; use user inputs not lon.range
         bathy <- try(marmap::getNOAA.bathy(
-          lon1 = input$lon_left, lon2 = input$lon_right,
-          lat1 = lat.range[1], lat2 = lat.range[2],
+          lon1 = ll[1], lon2 = ll[2], lat1 = ll[3], lat2 = ll[4],
           resolution = input$depth_res, antimeridian = world2,
           keep = FALSE
         ), silent = TRUE)
 
         if (!isTruthy(bathy)) cruz.list$bathy.download <- TRUE
-        validate(need(bathy, "Download did not work"))
+        validate(need(bathy, "Download failed"))
 
         write.csv(marmap::as.xyz(bathy), file = file, row.names = FALSE)
-
       }
     )
 
@@ -304,8 +305,7 @@ mod_map_color_server  <- function(id, load_state, map_range) {
         save_widget("color_water", "select"),
         save_widget("color_water_style", "radio"), 
         save_widget("depth_res", "numeric"), 
-        save_widget("bathy.xyz", "reactive", cruz.list$bathy.xyz), 
-        save_widget("bathy.download", "reactive", cruz.list$bathy.download)
+        save_widget("bathy.xyz", "reactive", cruz.list$bathy.xyz)
       )
     })
 

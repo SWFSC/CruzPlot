@@ -35,6 +35,8 @@
 #'   - `map.name`, a list of 1) the map name, passed directly to the `database`
 #'     argument of [maps::map()], and 2) the regions to plot,
 #'     passed directly to the `regions` argument of [maps::map()]
+#'   - `latlon_input`: the input lat/lon values, for functions that need the 
+#'     map range in `[-180, 180]` coordinates
 #'
 #' @export
 mod_map_range_ui <- function(
@@ -421,17 +423,22 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
           )
         }
 
-        # TODO: Try mapdata
+        ll <- c(input$lon_left, input$lon_right, input$lat_bot, input$lat_top)
 
         # Save as reactive values
         list(
           lon.range = lon.range,
           lat.range = lat.range,
           world2 = world2,
-          map.name = map_name_calc(world2, res)
+          map.name = map_name_calc(world2, res), 
+          latlon_input = ll
         )
       })
     })
+
+    latlon_input <- reactive(
+      c(input$lon_left, input$lon_right, input$lat_bot, input$lat_top)
+    )
 
 
     # output$map_range_message <- renderUI({
@@ -457,7 +464,8 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
     ### Return values
     list(
       to_save = to_save,
-      map_range = cruzMapRange
+      map_range = cruzMapRange, 
+      latlon_input = latlon_input
     )
   })
 }
