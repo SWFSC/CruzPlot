@@ -379,6 +379,13 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
         ### Validate
         stopifnot("world2 param is not a logical" = inherits(world2, "logical"))
 
+        if (res == "2") {          
+          x.try <- try(mapdata::worldHiresMapEnv, silent = TRUE)
+          validate(
+            need(x.try, "Error - please install the mapdata package to use hires maps")
+          )
+        }
+
         vals.bad <- c("", "_", "+", NA)
         validate( #lats
           need(

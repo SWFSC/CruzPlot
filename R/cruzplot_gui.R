@@ -140,13 +140,13 @@ cruzplot_gui <- function(...) {
     map_range <- map.range.list[["map_range"]]
 
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range)
-    map_color <- mod_map_color_server("map_color", load_state_map_elements, map_range)
+    map_color <- mod_map_color_server("map_color", load_state_map_color, map_range)
 
     #----------------------------------------------------------------------------
     ### Plots
     h <- reactive(input$plot_height)
     # plot_height <- reactive(input$plot_height)
-    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements)
+    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color)
     mod_plot_server("plot2", h, map_range, map_elements, map_color)
 
 
@@ -187,8 +187,7 @@ cruzplot_gui <- function(...) {
       file.load <- req(input$load_app_envir_file)
       validate(
         need(
-          (identical(str_to_upper(str_sub(file.load$name, -6)), ".RDATA")
-           & file.load$type == ""),
+          (identical(str_to_upper(str_sub(file.load$name, -6)), ".RDATA") & file.load$type == ""),
           "Error: Please load a file with the extension '.RDATA'"
         )
       )

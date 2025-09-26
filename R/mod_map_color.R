@@ -17,7 +17,11 @@
 #' The server function returns a list with the following named elements:
 #' - `to_save`: a list of values to be saved in an 'app state' file. 
 #'   See [cruzplot_gui()] for more info. 
-#' - todo
+#' - `color_lakes_rivers`: a reactive indicating if lakes and rivers 
+#'   should be plotted
+#' - `cruzMapColorLand`: a reactive function for the land color
+#' - `cruzMapRivers`: a reactive function for plotting rivers and lakes
+#' - `cruzMapColorWater`: a reactive function for plotting water color
 #'
 #' @export
 mod_map_color_ui <- function(id) {
@@ -51,7 +55,7 @@ mod_map_color_ui <- function(id) {
     fluidRow(
       box(
         title = "Water", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
-        checkboxInput(ns("color_lakes_rivers"), label = "Color lakes and rivers", value = FALSE),
+        checkboxInput(ns("map_rivers"), label = "Color major lakes and rivers", value = FALSE),
         selectInput(ns("color_water"), label = tags$h5("Water (background) color"),
                     choices = cruz.palette.color, selected = "white"),
         radioButtons(ns("color_water_style"), label = tags$h5("Ocean color style"),
@@ -98,19 +102,6 @@ mod_map_color_server  <- function(id, load_state, map_range) {
       is.reactive(map_range)
     )
 
-    # Load map_color state
-    observeEvent(load_state(), {
-      for (item in load_state()) {
-        if (item$type == "reactive") {
-          # # # Only reactive values are scale bar
-          # cruz.list[[item$id]] <- item$value
-          stop("Invalid map_color state - please report as an issue")
-        } else {
-          update_widget(item, session)
-        }
-      }
-    }, priority = 10) #, ignoreInit = TRUE)
-
     # Stored reactiveValues for the module
     cruz.list <- reactiveValues(
       # Bathymetric data, converted to CSV file xyz coordinates
@@ -119,18 +110,38 @@ mod_map_color_server  <- function(id, load_state, map_range) {
       bathy.download = FALSE
     )
 
+    # Load map_color state
+    observeEvent(load_state(), {
+      for (item in load_state()) {
+        if (item$type == "reactive") {
+          cruz.list[[item$id]] <- item$value
+          # stop("Invalid map_color state - please report as an issue")
+        } else {
+          update_widget(item, session)
+        }
+      }
+    }, priority = 10) #, ignoreInit = TRUE)
+
     #--------------------------------------------------------------------------
     # Color
 
-    ### River values
-    cruzMapRiver <- reactive({
+    ### River values, if selected
+    cruzMapRivers <- reactive({
       req(is.logical(map_range()$world2))
       world2 <- map_range()$world2
 
-      rivs <- map("rivers", plot = FALSE)
+      if (!requireNamespace("mapdata", quietly = TRUE)) {
+        validate("The package mapdata is not installed. You cannot plot lakes and rivers.")
+      }
+
+      rivs <- map("mapdata::rivers", plot = FALSE)
       if (world2) rivs$x <- ifelse(rivs$x < 0, rivs$x+360, rivs$x)
 
-      rivs
+      if (input$map_rivers) {
+        rivs
+      } else {
+        NULL
+      }
     })
 
     ### Land
@@ -289,23 +300,21 @@ mod_map_color_server  <- function(id, load_state, map_range) {
         save_widget("color_style", "radio"),
         save_widget("color_land_all", "check"),
         save_widget("color_land", "select"),
-        save_widget("color_lakes_rivers", "check"),
+        save_widget("map_rivers", "check"),
         save_widget("color_water", "select"),
         save_widget("color_water_style", "radio"), 
         save_widget("depth_res", "numeric"), 
         save_widget("bathy.xyz", "reactive", cruz.list$bathy.xyz), 
-        save_widget("bathy.download", "reactive", cruz.list$bathy.download), 
+        save_widget("bathy.download", "reactive", cruz.list$bathy.download)
       )
     })
 
     ### Return values
     list(
       to_save = to_save,
-      color = list(
-        cruzMapColorLand = cruzMapColorLand, 
-        cruzMapRiver = cruzMapRiver, 
-        cruzMapColorWater = cruzMapColorWater
-      )
+      cruzMapColorLand = cruzMapColorLand, 
+      cruzMapRivers = cruzMapRivers, 
+      cruzMapColorWater = cruzMapColorWater
     )
   })
 }

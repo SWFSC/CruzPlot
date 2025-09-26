@@ -2,8 +2,10 @@ Package: CruzPlot
 Title: Plot Shipboard DAS Data
 Version: 2.0.0.9000
 Authors@R: 
-    c(person("Sam", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov", comment = c(ORCID = "0000-0001-6071-8186")), 
-      person("Tim", "Gerrodette", role = c("aut")))
+    c(
+        person("Sam", "Woodman", role = c("aut", "cre"), email = "sam.woodman@noaa.gov", comment = c(ORCID = "0000-0001-6071-8186")), 
+        person("Tim", "Gerrodette", role = c("aut"))
+    )
 Description: A utility program oriented to create maps, plot data, 
     and do basic data summaries of DAS data files. 
     These files are typically, but do not have to be 
@@ -14,7 +16,6 @@ BugReports: https://github.com/SWFSC/CruzPlot/issues/
 Depends: R (>= 4.0.0)
 Imports: 
     dplyr,
-    DT,
     geosphere,
     mapdata,
     marmap,
@@ -22,8 +23,7 @@ Imports:
     shiny, 
     shinydashboard,
     shinyjs,
-    stringr, 
-    swfscDAS (>= 0.3.0)
+    stringr
 Suggests:
     httr, 
     testthat

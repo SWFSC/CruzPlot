@@ -27,7 +27,11 @@ The server function returns a list with the following named elements:
 \itemize{
 \item \code{to_save}: a list of values to be saved in an 'app state' file.
 See \code{\link[=cruzplot_gui]{cruzplot_gui()}} for more info.
-\item todo
+\item \code{color_lakes_rivers}: a reactive indicating if lakes and rivers
+should be plotted
+\item \code{cruzMapColorLand}: a reactive function for the land color
+\item \code{cruzMapRivers}: a reactive function for plotting rivers and lakes
+\item \code{cruzMapColorWater}: a reactive function for plotting water color
 }
 }
 \description{

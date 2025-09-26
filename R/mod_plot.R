@@ -66,13 +66,14 @@ mod_plot_server  <- function(
       lat.range <- req(map_range()$lat.range)
       req(is.logical(map_range()$world2))
       world2 <- map_range()$world2
-      map.name <- map_range()$map.name
 
-      param.unit <- par("usr")
-      param.inch <- par("pin")
+      map.name <- map_range()$map.name
+      map.water.col <- map_color$cruzMapColorWater()
+      map.land.col <- map_color$cruzMapColorLand()
       
       title.info <- map_elements$label_list$cruzMapLabelTitle()
       axes.info <- map_elements$label_list$cruzMapLabelAxes()
+
 
       # map(map.name[[1]], regions = map.name[[2]],
       #     xlim = lon.range[1:2], ylim = lat.range[1:2],
@@ -89,6 +90,7 @@ mod_plot_server  <- function(
       #   list(param.unit = param.unit, param.inch = param.inch)
       # })
 
+      #------------------------------------------------------------------------
       ### Window
       mar1 <- ifelse(nchar(axes.info$lab.lon) > 0, 7, 3)
       mar2 <- ifelse(nchar(axes.info$lab.lat) > 0, 7, 5)
@@ -101,16 +103,30 @@ mod_plot_server  <- function(
 
       x.1 <- map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
                 mar = c(mar1, mar2, mar3, 4))
+
+      param.unit <- par("usr")
+      param.inch <- par("pin")
       param <- param.unit #cruzMapParam()$param.unit
 
+      #------------------------------------------------------------------------
+      # Water and Land
+
       ### Water
-      rect(param[1], param[3], param[2], param[4], col = "blue") #map.water.col[[1]])
+      rect(param[1], param[3], param[2], param[4], col = map.water.col[[1]])
+
+      # # Depth
+      # map.depth <- map.water.col[[2]]
+      # if (isTruthy(map.depth))
+      #   plot(map.depth, image = TRUE, land = TRUE, add = TRUE,
+      #       axes = FALSE, xlab = NA, ylab = NA, lwd = 0.0,
+      #       bpal = list(c(0, max(map.depth), "grey"),
+      #                   c(min(map.depth), 0, bathy.col)))
 
       ### Land
       map(
         map.name[[1]], regions = map.name[[2]],
         xlim = lon.range[1:2], ylim = lat.range[1:2],
-        fill = TRUE, col = "tan", add = TRUE 
+        fill = TRUE, col = map.land.col, add = TRUE 
       )
       # if (input$coast) {
       #   # Coastline
@@ -130,8 +146,9 @@ mod_plot_server  <- function(
       # }
 
       ### Rivers and Lakes
-      # if (input$color_lakes_rivers)
-      #   map(map.river, col = map.water.col[[1]], add = TRUE)
+      map.rivers <- map_color$cruzMapRivers()
+      if (!is.null(map.rivers))
+        map(map_color$cruzMapRivers(), col = map.water.col[[1]], add = TRUE)
 
       graphics::box()
 
@@ -152,47 +169,71 @@ mod_plot_server  <- function(
 
         # Draw major and minor tick marks
         if (tick.lon.bool$bot[1]) {
-          axis(1, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-               tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
-               family = tick.param$font)
-          axis(1, at = tick.lon$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
-               tcl = par("tcl") *0.4*tick.param$len)
+          axis(
+            1, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+            tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+            family = tick.param$font
+          )
+          axis(
+            1, at = tick.lon$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+            tcl = par("tcl") *0.4*tick.param$len
+          )
         }
         if (tick.lat.bool$left[1]) {
-          axis(2, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-               tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
-               family = tick.param$font)
-          axis(2, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
-               tcl = par("tcl") * 0.4*tick.param$len)
+          axis(
+            2, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+            tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+            family = tick.param$font
+          )
+          axis(
+            2, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+            tcl = par("tcl") * 0.4*tick.param$len
+          )
         }
         if (tick.lon.bool$top[1]) {
-          axis(3, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-               tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
-               family = tick.param$font)
-          axis(3, at = tick.lon$min, labels = FALSE, lwd = 0,  lwd.ticks = 1,
-               tcl = par("tcl") * 0.4*tick.param$len)
+          axis(
+            3, at = tick.lon$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+            tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+            family = tick.param$font
+          )
+          axis(
+            3, at = tick.lon$min, labels = FALSE, lwd = 0,  lwd.ticks = 1,
+            tcl = par("tcl") * 0.4*tick.param$len
+          )
         }
         if (tick.lat.bool$right[1]) {
-          axis(4, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
-               tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
-               family = tick.param$font)
-          axis(4, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
-               tcl = par("tcl") * 0.4*tick.param$len)
+          axis(
+            4, at = tick.lat$maj, labels = FALSE, tick = TRUE, lwd = 0, lwd.ticks = 1,
+            tcl = par("tcl") *tick.param$len, cex.axis = tick.param$scale,
+            family = tick.param$font
+          )
+          axis(
+            4, at = tick.lat$min, labels = FALSE, lwd = 0, lwd.ticks = 1,
+            tcl = par("tcl") * 0.4*tick.param$len
+          )
         }
 
         # Draw tick labels
         if (tick.lon.bool$bot[2])
-          axis(1, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
-               cex.axis = tick.param$scale, family = tick.param$font)
+          axis(
+            1, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
+            cex.axis = tick.param$scale, family = tick.param$font
+          )
         if (tick.lat.bool$left[2])
-          axis(2, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
-               las = 1, cex.axis = tick.param$scale, family = tick.param$font)
+          axis(
+            2, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
+            las = 1, cex.axis = tick.param$scale, family = tick.param$font
+          )
         if (tick.lon.bool$top[2])
-          axis(3, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
-               cex.axis = tick.param$scale, family = tick.param$font)
+          axis(
+            3, at = tick.lon$label.loc, labels = tick.lon$label, tick = FALSE,
+            cex.axis = tick.param$scale, family = tick.param$font
+          )
         if (tick.lat.bool$right[2])
-          axis(4, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
-               las = 1, cex.axis = tick.param$scale, family = tick.param$font)
+          axis(
+            4, at = tick.lat$label.loc, labels = tick.lat$label, tick = FALSE,
+            las = 1, cex.axis = tick.param$scale, family = tick.param$font
+          )
       }
 
       ### Grid
