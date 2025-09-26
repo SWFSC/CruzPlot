@@ -102,7 +102,8 @@ cruzplot_gui <- function(...) {
               title = "Map", width = 6, id = "tabset1",
               mod_map_range_ui("map_range"),
               mod_map_elements_ui("map_elements")[[1]], 
-              mod_map_elements_ui("map_elements")[[2]]
+              mod_map_elements_ui("map_elements")[[2]], 
+              mod_map_color_ui("map_color")
             )
           )
         )
@@ -126,39 +127,12 @@ cruzplot_gui <- function(...) {
 
 
     #----------------------------------------------------------------------------
-    # ### Create app state reactive
-    # app_state <- reactiveValues(
-    #   # plot_height = NULL,
-    #   # lon.range = NULL,
-    #   # lat.range = NULL,
-    #   # world2 = NULL,
-    #   # map.name = list(),
-    #   # grid = NULL,
-    #   # grid_col = NULL,
-    #   # grid_lwd = NULL,
-    #   # grid_lty = NULL
-    # )
-    map_range <- map_elements <- reactiveValues()
-
+    ### 'Initialize' reactives
+    # map_range <- map_elements <- reactiveValues()
     load_state_map_range <- reactiveVal()
     load_state_map_elements <- reactiveVal()
+    load_state_map_color <- reactiveVal()
 
-    # observeEvent(input$plot_height, {
-    #   app_state$plot_height <- input$plot_height
-    # })
-
-    # # observe({ print(reactiveValuesToList(app_state)) })
-    # output$current_state_display <- renderPrint({
-    #   reactiveValuesToList(app_state)
-    # })
-
-
-    #----------------------------------------------------------------------------
-    ### Plot
-    h <- reactive(input$plot_height)
-    # plot_height <- reactive(input$plot_height)
-    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements)
-    mod_plot_server("plot2", h, map_range, map_elements)
 
     #----------------------------------------------------------------------------
     ### Map tab
@@ -166,6 +140,15 @@ cruzplot_gui <- function(...) {
     map_range <- map.range.list[["map_range"]]
 
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range)
+    map_color <- mod_map_color_server("map_color", load_state_map_elements, map_range)
+
+    #----------------------------------------------------------------------------
+    ### Plots
+    h <- reactive(input$plot_height)
+    # plot_height <- reactive(input$plot_height)
+    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements)
+    mod_plot_server("plot2", h, map_range, map_elements, map_color)
+
 
     #----------------------------------------------------------------------------
     ### App 'environment' save/load
@@ -182,7 +165,8 @@ cruzplot_gui <- function(...) {
           app_state_save <- list(
             plot_height = input$plot_height,
             map_range = map.range.list$to_save(),
-            map_elements = map_elements$to_save()
+            map_elements = map_elements$to_save(), 
+            map_color = map_color$to_save()
           )
           incProgress(0.7)
           save(app_state_save, file = file)
@@ -225,13 +209,15 @@ cruzplot_gui <- function(...) {
         # 'reset' the reactiveVals, in case we're loading the same file
         load_state_map_range(NULL)
         load_state_map_elements(NULL)
+        load_state_map_color(NULL)
 
         load_state_map_range(app_state_save[["map_range"]])
         load_state_map_elements(app_state_save[["map_elements"]])
+        load_state_map_color(app_state_save[["map_color"]])
         incProgress(0.35)
 
         # Update widgets on the main page, not in a module
-        updateNumericInput(session, "plot_height", value = app_state_save$plot_height)
+        updateNumericInput(session, "plot_height", value = app_state_save[["plot_height"]])
         incProgress(0.05)
       })
 

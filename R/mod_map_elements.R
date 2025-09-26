@@ -1,6 +1,7 @@
-#' Map elements module
+#' Map elements
 #'
-#' Shiny module for map elements
+#' Shiny module for map elements: scale bar, ticks, 
+#' grid lines, title, and axis labels
 #'
 #' @name mod_map_elements
 #'
@@ -8,11 +9,23 @@
 #' @inheritParams mod_plot
 #'
 #' @details
-#' Additional details...
+#' This modukle handles the map elements of scale bar, ticks and their labels, 
+#' grid lines, map title, and axis labels. It uses the map range values
+#' to generate default values, and validate tick and scale bar parameters
 #'
-#' @returns The UI function returns a [shiny::tabPanel()] object
-#' The server function returns a named list, as follows:
-#' -
+#' @returns 
+#' The UI function returns a [shiny::tagList()] object, 
+#' which contains two [shiny::tabPanel()] objects. 
+#' These objects are for map elements and labels, respectively
+#' 
+#' The server function returns a list with the following named elements:
+#' - `to_save`: a list of values to be saved in an 'app state' file. 
+#'   See [cruzplot_gui()] for more info. 
+#' - `tick_list`: a list of the various reactives needed for plotting tick marks and labels
+#' - `scale_bar_list`: a list of the various reactives needed for plotting the scale bar
+#' - `grid_list`: a list of the various reactives needed for plotting grid lines
+#' - `label_list`: a list of the various reactives needed for plotting map label
+#'   (title and axis labels)
 #'
 #' @export
 mod_map_elements_ui <- function(id) {
@@ -154,70 +167,7 @@ mod_map_elements_ui <- function(id) {
           )
         )
       )
-    ), 
-  #   tabPanel(
-  #     title = "Color",
-  #     fluidRow(
-  #       box(
-  #         title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
-  #         helpText("This color style selection will affect the palette options for all color selections in CruzPlot"),
-  #         tags$br(),
-  #         radioButtons(ns("color_style"), label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
-  #                       selected = 1)
-  #       ),
-  #       box(
-  #         title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
-  #         fluidRow(
-  #           column(6, checkboxInput(ns("color_land_all"), label = "Color all land", value = TRUE)),
-  #           column(
-  #             width = 6,
-  #             conditionalPanel(
-  #               condition = "input.color_land_all", ns = ns, 
-  #               selectInput(ns("color_land"), label = tags$h5("Land color"), 
-  #               choices = cruz.palette.color, selected = "bisque1")
-  #             )
-  #           )
-  #         )
-  #       )
-  #     ),
-  #     fluidRow(
-  #       box(
-  #         title = "Water", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
-  #         checkboxInput(na("color_lakes_rivers"), label = "Color lakes and rivers", value = FALSE),
-  #         selectInput(na("color_water"), label = tags$h5("Water (background) color"),
-  #                     choices = cruz.palette.color, selected = "white"),
-  #         radioButtons(ns("color_water_style"), label = tags$h5("Ocean color style"),
-  #                       choices = list("Single color" = 1, "Depth (bathymetric) shading" = 2),
-  #                       selected = 1),
-  #         conditionalPanel(
-  #           condition = "input.color_water_style==2", ns = ns, 
-  #           helpText("Load a CSV file with exactly 3 columns: latitude, longitude, and depth"),
-  #           fileInput(ns("depth_file"), tags$h5("Bathymetric CSV file"), accept = ".csv"),
-  #           textOutput(ns("bathy_load_text")),
-  #           tags$span(textOutput(ns("bathy_message_text")), style = "color: blue;")
-  #         )
-  #       ),
-  #       box(
-  #         title = "Download bathymetric data", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
-  #         helpText("Download bathymetric data from NOAA website (see the documentation for",
-  #                   tags$a(href = "https://CRAN.R-project.org/package=marmap",
-  #                         "marmap function 'getNOAA.bathy'"),
-  #                   "for more details).",
-  #                   "The coordinates of the downloaded data will be the same as the current map range.",
-  #                   "After downloading, you must load the CSV file into CruzPlot in the 'Water: Ocean color style' section"),
-  #         numericInput(
-  #           ns("depth_res"), 
-  #           tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"),
-  #           value = 10, 
-  #           min = 0, 
-  #           max = 60, 
-  #           step = 5),
-  #         uiOutput(ns("depth_download_button"),
-  #         uiOutput(ns("depth_download_message"))
-  #       )
-  #     )
-  #   )
-  # )
+    )
   )
 }
 

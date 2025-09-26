@@ -22,32 +22,39 @@ left and right longitude (\code{lon_left} and \code{lon_right}),
 bottom and top latitude (\code{lat_bot} and \code{lat_top}),
 and map resolution (\code{resolution})}
 
-\item{brush}{Either \code{NULL} (default), or the brush from \code{\link[=mod_plot]{mod_plot()}}}
+\item{load_state}{A \code{\link[shiny:reactiveValues]{shiny::reactiveValues()}} object that allows for a
+saved 'app state' to be loaded for this module. The main function
+saves the state, using the 'to_save' output list, and then loads
+those values into the \code{load_state} object when a saved app state is loaded}
 
-\item{app_state}{A \code{\link[shiny:reactiveValues]{shiny::reactiveValues()}} object that serves as the shared,
-central state for the entire application. This object is initialized in the
-main server and passed down to each module, enabling communication and
-synchronization between them. Any changes made to this object in one
-module will be immediately visible in all others.
-See details for keys specific to this function.}
+\item{brush}{Either \code{NULL} (default), or the brush from \code{\link[=mod_plot]{mod_plot()}}}
 }
 \value{
-\code{mod_map_range_server} returns a list with the following elements:
+The UI function returns a \code{\link[shiny:tabPanel]{shiny::tabPanel()}} object
+
+The server function returns a list with the following named elements:
 \itemize{
+\item \code{to_save}: a list of values to be saved in an 'app state' file.
+See \code{\link[=cruzplot_gui]{cruzplot_gui()}} for more info.
 \item \code{map_range}: a reactive, containing the values needed by \code{\link[=mod_plot_server]{mod_plot_server()}}.
-Specifically: \code{lon.range}, a vector of the left and right longitudes;
-\code{lat.range}, a vector of the bottom and top latitudes;
-\code{world2}, a logical indicating if the map is using the world2 protocol
+Specifically:
+\itemize{
+\item \code{lon.range}, a vector of the left and right longitudes, respectively;
+\item \code{lat.range}, a vector of the bottom and top latitudes, respectively;
+\item \code{world2}, a logical indicating if the map is using the world2 protocol
 (lons 0-360);
-\code{map.name}, a list of 1) the map name, passed directly to the \code{database}
+\item \code{map.name}, a list of 1) the map name, passed directly to the \code{database}
 argument of \code{\link[maps:map]{maps::map()}}, and 2) the regions to plot,
 passed directly to the \code{regions} argument of \code{\link[maps:map]{maps::map()}}
-(see TODO for more details)
+}
 }
 }
 \description{
 Shiny module for map range
 }
 \details{
-Additional details...
+This module handles strictly the map range: lat/lon boundaries,
+and map resolution. It provides some convenience action buttons.
+Its returned values (the map range) are used by many other modules
+for setting bounds, etc.
 }

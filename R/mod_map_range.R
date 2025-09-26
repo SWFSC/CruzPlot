@@ -9,28 +9,32 @@
 #'   left and right longitude (`lon_left` and `lon_right`),
 #'   bottom and top latitude (`lat_bot` and `lat_top`),
 #'   and map resolution (`resolution`)
-#' @param app_state A [shiny::reactiveValues()] object that serves as the shared,
-#'   central state for the entire application. This object is initialized in the
-#'   main server and passed down to each module, enabling communication and
-#'   synchronization between them. Any changes made to this object in one
-#'   module will be immediately visible in all others.
-#'   See details for keys specific to this function.
+#' @param load_state A [shiny::reactiveValues()] object that allows for a 
+#' saved 'app state' to be loaded for this module. The main function
+#' saves the state, using the 'to_save' output list, and then loads
+#' those values into the `load_state` object when a saved app state is loaded
 #' @param brush Either `NULL` (default), or the brush from [mod_plot()]
 #'
 #' @details
-#' Additional details...
+#' This module handles strictly the map range: lat/lon boundaries, 
+#' and map resolution. It provides some convenience action buttons.
+#' Its returned values (the map range) are used by many other modules 
+#' for setting bounds, etc.
 #'
-#' @returns `mod_map_range_server` returns a list with the following elements:
-#'
-#' * `map_range`: a reactive, containing the values needed by [mod_plot_server()].
-#' Specifically: `lon.range`, a vector of the left and right longitudes;
-#' `lat.range`, a vector of the bottom and top latitudes;
-#' `world2`, a logical indicating if the map is using the world2 protocol
-#' (lons 0-360);
-#'  `map.name`, a list of 1) the map name, passed directly to the `database`
-#'  argument of [maps::map()], and 2) the regions to plot,
-#'  passed directly to the `regions` argument of [maps::map()]
-#'  (see TODO for more details)
+#' @returns The UI function returns a [shiny::tabPanel()] object
+#' 
+#' The server function returns a list with the following named elements:
+#' - `to_save`: a list of values to be saved in an 'app state' file. 
+#'   See [cruzplot_gui()] for more info. 
+#' - `map_range`: a reactive, containing the values needed by [mod_plot_server()].
+#'     Specifically: 
+#'   - `lon.range`, a vector of the left and right longitudes, respectively;
+#'   - `lat.range`, a vector of the bottom and top latitudes, respectively;
+#'   - `world2`, a logical indicating if the map is using the world2 protocol
+#'     (lons 0-360);
+#'   - `map.name`, a list of 1) the map name, passed directly to the `database`
+#'     argument of [maps::map()], and 2) the regions to plot,
+#'     passed directly to the `regions` argument of [maps::map()]
 #'
 #' @export
 mod_map_range_ui <- function(
@@ -409,6 +413,8 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
             )
           )
         }
+
+        # TODO: Try mapdata
 
         # Save as reactive values
         list(

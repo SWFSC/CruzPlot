@@ -5,12 +5,12 @@
 \alias{box_cruz}
 \title{CruzPlot wrapper}
 \usage{
-box_cruz(title, width = 6, ...)
+box_cruz(title, width, ...)
 }
 \arguments{
 \item{title}{see \code{\link[shinydashboard:box]{shinydashboard::box()}}}
 
-\item{width}{see \code{\link[shinydashboard:box]{shinydashboard::box()}}; default is 6}
+\item{width}{see \code{\link[shinydashboard:box]{shinydashboard::box()}}}
 
 \item{...}{arguments passed directly to wrapped function}
 }

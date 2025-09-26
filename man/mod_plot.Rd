@@ -8,7 +8,7 @@
 \usage{
 mod_plot_ui(id, enable_brush = FALSE)
 
-mod_plot_server(id, height, map_range, map_elements)
+mod_plot_server(id, height, map_range, map_elements, map_color)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
@@ -16,9 +16,13 @@ mod_plot_server(id, height, map_range, map_elements)
 \item{enable_brush}{boolean indicating if the plotOutput should include
 \code{brush = ns("map_brush")}}
 
+\item{height}{a reactive indicating the map height, in pixels}
+
 \item{map_range}{output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 
 \item{map_elements}{output of \code{\link[=mod_map_elements_server]{mod_map_elements_server()}}}
+
+\item{map_color}{output of \code{\link[=mod_map_color_server]{mod_map_color_server()}}}
 }
 \value{
 \code{mod_plot_ui} returns the plot UI, here simply a \code{\link[shiny:plotOutput]{shiny::plotOutput()}} object
@@ -30,8 +34,12 @@ If \code{enable_brush} is \code{FALSE}, then this value will be \code{NULL}
 }
 }
 \description{
-Shiny module for creating the crzplot plot
+Shiny module for creating the CruzPlot map/plot
 }
 \details{
-Additional details...
+This module takes in map ranges/elements/etc,
+as well as other data to plot.
+It does not perform any validation;
+validation is expected to happen in individual modules,
+where the values are generated
 }

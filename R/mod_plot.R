@@ -1,17 +1,23 @@
 #' Plot module
 #'
-#' Shiny module for creating the crzplot plot
+#' Shiny module for creating the CruzPlot map/plot
 #'
 #' @name mod_plot
 #'
 #' @param id character used to specify namespace, see [shiny::NS()]
 #' @param enable_brush boolean indicating if the plotOutput should include
 #'   `brush = ns("map_brush")`
+#' @param height a reactive indicating the map height, in pixels
 #' @param map_range output of [mod_map_range_server()]
 #' @param map_elements output of [mod_map_elements_server()]
+#' @param map_color output of [mod_map_color_server()]
 #'
 #' @details
-#' Additional details...
+#' This module takes in map ranges/elements/etc, 
+#' as well as other data to plot. 
+#' It does not perform any validation; 
+#' validation is expected to happen in individual modules, 
+#' where the values are generated
 #'
 #' @returns
 #' `mod_plot_ui` returns the plot UI, here simply a [shiny::plotOutput()] object
@@ -40,7 +46,8 @@ mod_plot_server  <- function(
     id,
     height,
     map_range,
-    map_elements
+    map_elements, 
+    map_color
 ) {
   moduleServer(id, function(input, output, session) {
 

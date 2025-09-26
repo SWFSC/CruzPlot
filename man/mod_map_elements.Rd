@@ -4,7 +4,7 @@
 \alias{mod_map_elements}
 \alias{mod_map_elements_ui}
 \alias{mod_map_elements_server}
-\title{Map elements module}
+\title{Map elements}
 \usage{
 mod_map_elements_ui(id)
 
@@ -13,16 +13,35 @@ mod_map_elements_server(id, load_state, map_range)
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
 
+\item{load_state}{A \code{\link[shiny:reactiveValues]{shiny::reactiveValues()}} object that allows for a
+saved 'app state' to be loaded for this module. The main function
+saves the state, using the 'to_save' output list, and then loads
+those values into the \code{load_state} object when a saved app state is loaded}
+
 \item{map_range}{output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 }
 \value{
-\subsection{The UI function returns a \code{\link[shiny:tabPanel]{shiny::tabPanel()}} object
-The server function returns a named list, as follows:}{
+The UI function returns a \code{\link[shiny:reexports]{shiny::tagList()}} object,
+which contains two \code{\link[shiny:tabPanel]{shiny::tabPanel()}} objects.
+These objects are for map elements and labels, respectively
+
+The server function returns a list with the following named elements:
+\itemize{
+\item \code{to_save}: a list of values to be saved in an 'app state' file.
+See \code{\link[=cruzplot_gui]{cruzplot_gui()}} for more info.
+\item \code{tick_list}: a list of the various reactives needed for plotting tick marks and labels
+\item \code{scale_bar_list}: a list of the various reactives needed for plotting the scale bar
+\item \code{grid_list}: a list of the various reactives needed for plotting grid lines
+\item \code{label_list}: a list of the various reactives needed for plotting map label
+(title and axis labels)
 }
 }
 \description{
-Shiny module for map elements
+Shiny module for map elements: scale bar, ticks,
+grid lines, title, and axis labels
 }
 \details{
-Additional details...
+This modukle handles the map elements of scale bar, ticks and their labels,
+grid lines, map title, and axis labels. It uses the map range values
+to generate default values, and validate tick and scale bar parameters
 }
