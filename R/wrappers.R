@@ -9,7 +9,7 @@
 #' @param ... arguments passed directly to wrapped function
 #'
 #' @details
-#' `box_cruz` is a wrapper function around [shinydashboard::box()]
+#' `cruz_box` is a wrapper function around [shinydashboard::box()]
 #' with the following set arguments:
 #' - status = "warning" 
 #' - solidHeader = FALSE
@@ -18,7 +18,7 @@
 #' @returns The output of the respective wrapped function
 #'
 #' @export
-box_cruz <- function(title, width, ...) {
+cruz_box <- function(title, width, ...) {
   shinydashboard::box(
     title = title, 
     width = width, 

@@ -30,15 +30,15 @@ mod_map_color_ui <- function(id) {
   tabPanel(
     title = "Color",
     fluidRow(
-      box(
-        title = "Color style", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+      cruz_box(
+        title = "Color style", width = 6,
         helpText("This color style selection will affect the palette options for all color selections in CruzPlot"),
         tags$br(),
         radioButtons(ns("color_style"), label = NULL, choices = list("Color" = 1, "Gray scale" = 2),
                       selected = 1)
       ),
-      box(
-        title = "Land", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+      cruz_box(
+        title = "Land", width = 6,
         fluidRow(
           column(6, checkboxInput(ns("color_land_all"), label = "Color all land", value = TRUE)),
           column(
@@ -53,8 +53,8 @@ mod_map_color_ui <- function(id) {
       )
     ),
     fluidRow(
-      box(
-        title = "Water", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+      cruz_box(
+        title = "Water", width = 6,
         checkboxInput(ns("map_rivers"), label = "Color major lakes and rivers", value = FALSE),
         selectInput(ns("color_water"), label = tags$h5("Water (background) color"),
                     choices = cruz.palette.color, selected = "white"),
@@ -69,8 +69,8 @@ mod_map_color_ui <- function(id) {
           tags$span(textOutput(ns("bathy_message_text")), style = "color: blue;")
         )
       ),
-      box(
-        title = "Download bathymetric data", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
+      cruz_box(
+        title = "Download bathymetric data", width = 6,
         helpText("Download bathymetric data from NOAA website (see the documentation for",
                   tags$a(href = "https://CRAN.R-project.org/package=marmap",
                         "marmap function 'getNOAA.bathy'"),

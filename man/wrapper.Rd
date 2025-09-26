@@ -2,10 +2,10 @@
 % Please edit documentation in R/wrappers.R
 \name{wrapper}
 \alias{wrapper}
-\alias{box_cruz}
+\alias{cruz_box}
 \title{CruzPlot wrapper}
 \usage{
-box_cruz(title, width, ...)
+cruz_box(title, width, ...)
 }
 \arguments{
 \item{title}{see \code{\link[shinydashboard:box]{shinydashboard::box()}}}
@@ -21,7 +21,7 @@ The output of the respective wrapped function
 CruzPlot wrapper functions
 }
 \details{
-\code{box_cruz} is a wrapper function around \code{\link[shinydashboard:box]{shinydashboard::box()}}
+\code{cruz_box} is a wrapper function around \code{\link[shinydashboard:box]{shinydashboard::box()}}
 with the following set arguments:
 \itemize{
 \item status = "warning"

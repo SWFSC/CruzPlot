@@ -37,7 +37,7 @@ mod_map_elements_ui <- function(id) {
       title = "Elements",
       fluidRow(
         # Scale bar
-        box_cruz(
+        cruz_box(
           title = "Scale bar", width = 12, 
           checkboxInput(ns("bar"), "Plot scale bar", value = FALSE),
           conditionalPanel(
@@ -67,7 +67,7 @@ mod_map_elements_ui <- function(id) {
           )
         ),
         # Ticks & Labels
-        box_cruz(
+        cruz_box(
           title = "Ticks & Labels", width = 12, 
           checkboxInput(ns("tick"), label = "Plot tick marks and/or their labels", value = TRUE),
           conditionalPanel(
@@ -128,7 +128,7 @@ mod_map_elements_ui <- function(id) {
           )
         ),
         # Gridlines
-        box_cruz(
+        cruz_box(
           title = "Grid", width = 12, 
           checkboxInput(ns("grid"), label = "Include grid lines at major tick marks", value = TRUE),
           conditionalPanel(
@@ -149,7 +149,7 @@ mod_map_elements_ui <- function(id) {
     tabPanel(
       title = "Labels",
       fluidRow(
-        box_cruz(
+        cruz_box(
           title = "Title", width = 6, 
           textInput(ns("label_title"), tags$h5("Map title"), value = ""),
           fluidRow(
@@ -157,7 +157,7 @@ mod_map_elements_ui <- function(id) {
             column(6, numericInput(ns("label_title_size"), label = tags$h5("Title size"), value = 1.5, min = 0.1, max = 3, step = 0.1))
           )
         ),
-        box_cruz(
+        cruz_box(
           title = "Axis labels", width = 6, 
           textInput(ns("label_axis_lon"), tags$h5("Longitude axis label"), value = ""),
           textInput(ns("label_axis_lat"), tags$h5("Latitude axis label"), value = ""),
