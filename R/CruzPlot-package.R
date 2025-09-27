@@ -13,12 +13,13 @@
 #' @importFrom dplyr between case_when if_else
 #' @importFrom geosphere destPoint
 #' @importFrom graphics abline axis par lines rect text title
+#' @importFrom grDevices gray palette dev.off jpeg pdf png
 #' @importFrom maps map
 #' @importFrom shinydashboard box dashboardBody tabItems tabItem dashboardHeader
 #'   dashboardPage dashboardSidebar sidebarMenu menuItem tabBox
 #' @importFrom shinyjs useShinyjs extendShinyjs js
-#' @importFrom stringr str_detect str_sub str_to_upper
-#' @importFrom utils globalVariables packageVersion write.csv
+#' @importFrom stringr str_detect str_glue str_sub str_to_upper
+#' @importFrom utils globalVariables packageVersion read.csv write.csv
 #'
 "_PACKAGE"
 

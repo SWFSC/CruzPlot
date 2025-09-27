@@ -208,11 +208,11 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
       # Calculate values that are stored in cruz.map.range#map.name\
       hires <- (res == 2)
 
-      map.name <- if (world2) {
-        if_else(hires, "mapdata::world2Hires", "world2")
-      } else {
+      map.name <- if_else(
+        world2, 
+        if_else(hires, "mapdata::world2Hires", "world2"), 
         if_else(hires, "mapdata::worldHires", "world")
-      }
+      )
 
       # Countries to be removed for world2 map
       # http://www.codedisqus.com/0yzeqXgekP/plot-map-of-pacific-with-filled-countries.html

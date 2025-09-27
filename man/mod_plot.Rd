@@ -41,5 +41,7 @@ This module takes in map ranges/elements/etc,
 as well as other data to plot.
 It does not perform any validation;
 validation is expected to happen in individual modules,
-where the values are generated
+where the values are generated.
+
+It also provides functionality for downloading the plot.
 }

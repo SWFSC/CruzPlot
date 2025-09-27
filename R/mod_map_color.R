@@ -258,16 +258,15 @@ mod_map_color_server  <- function(id, load_state, map_range) {
       filename = function() {
         lon.range <- req(map_range()$lon.range)
         lat.range <- req(map_range()$lat.range)
+        res <- input$depth_res
 
         # Defaults maramp file name: "marmap_coord_-135;29;-117;52_res_10.csv"
-        paste0(
-          paste(
-            "marmap_coord",
-            paste(lon.range[1], lon.range[2], lat.range[1], lat.range[2], 
-                  sep = ";"),
-            "res", input$depth_res,
-            sep = "_"),
-          ".csv"
+        str_glue(
+          "marmap_coord_{lon1};{lon2};{lat1};{lat2}_res_{res}.csv", 
+          lon1 = lon.range[1], 
+          lon2 = lon.range[2], 
+          lat1 = lat.range[1], 
+          lat2 = lat.range[2]
         )
       },
 
