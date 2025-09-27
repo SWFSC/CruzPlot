@@ -36,7 +36,7 @@ cruzplot_gui <- function(...) {
       sidebarMenu(
         id = "tabs",
         menuItem("Create and Save Map", tabName = "createmap", icon = icon("th", lib = "font-awesome")),
-        menuItem("App State", tabName = "appstate", icon = icon("th", lib = "font-awesome")),
+        # menuItem("App State", tabName = "appstate", icon = icon("th", lib = "font-awesome")),
         # menuItem("Plot DAS Data", tabName = "DASplot", icon = icon("th")),
         # menuItem("Plot Non-DAS Data", tabName = "nonDASplot", icon = icon("th")),
         # menuItem(HTML(paste0("Color and Formatting", "<br/>", "Options")), tabName = "dispColor", icon = icon("th")),
@@ -49,8 +49,20 @@ cruzplot_gui <- function(...) {
           textOutput("load_app_text"),
           downloadButton("save_app_envir", "Save workspace", style = "color: black")
         ),
-        tags$br(), tags$br(), tags$br(),
+        tags$br(), tags$br(), #tags$br(),
         numericInput("plot_height", "Map height (pixels)", value = 600, min = 0, step = 100),
+        
+        # cruz_box(
+        #   title = "Color style", width = 6,
+        #   helpText("This color style selection will affect the palette options for all color selections in CruzPlot"),
+        #   tags$br(),
+        selectInput(
+          "color_style", 
+          "App-wide color style", 
+          choices = list("Color" = 1, "Gray scale" = 2),
+          selected = 1
+        ), 
+        # ),
         tags$br(),
         actionButton("stop", "Close CruzPlot"),
         column(12, tags$h5(paste0("CruzPlot v", packageVersion("CruzPlot"))))
@@ -84,12 +96,12 @@ cruzplot_gui <- function(...) {
                                 });
                             ')),
       tabItems(
-        tabItem(
-          tabName = "appstate",
-          h3("Current App State"),
-          p("This panel shows the values stored in the central 'app_state' object."),
-          verbatimTextOutput("current_state_display")
-        ),
+        # tabItem(
+        #   tabName = "appstate",
+        #   h3("Current App State"),
+        #   p("This panel shows the values stored in the central 'app_state' object."),
+        #   verbatimTextOutput("current_state_display")
+        # ),
         tabItem(
           tabName = "createmap",
           fluidRow(
@@ -115,14 +127,56 @@ cruzplot_gui <- function(...) {
   ##### server
   server <- function(input, output, session) {
     #----------------------------------------------------------------------------
-    ### Quit GUI
+    ### Sidebar options (except load/save)
+
+    # Quit app
     session$onSessionEnded(function() {
       stopApp(returnValue = "CruzPlot was closed")
     })
-
     observeEvent(input$stop, {
       js$closeWindow()
       stopApp(returnValue = "CruzPlot was closed")
+    })
+
+    # Plot height
+    h <- reactive(input$plot_height)
+
+    # Color style
+    observeEvent(input$color_style, {
+      if (input$color_style == 1) {
+        palette("default")
+        c.pal <- cruz.palette.color
+        # updateSelectInput(session, "planned_transects_color", choices = c.pal, selected = "grey")
+        updateSelectInput(session, NS("map_color")("color_land"), choices = c.pal, selected = "bisque1")
+        updateSelectInput(session, NS("map_color")("color_water"), choices = c.pal, selected = "white")
+        updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = "black")
+        # updateSelectInput(session, "das_symbol_color", choices = c.pal, selected = "black")
+        # updateTextInput(session, "das_symbol_color_mult", value = "Black")
+        # updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = "black")
+        # updateSelectInput(session, "das_effort_det_bft_col", choices = c.pal, selected = eff.bft.default)
+        # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
+        # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
+        # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
+        # updateSelectInput(session, "ndas_line_col", choices = c.pal, selected = "black")
+        # updateSelectInput(session, "ndas_pt_col", choices = c.pal, selected = "black")
+
+      } else if (input$color_style == 2) {
+        palette(gray(0:5/5))
+        c.pal <- cruz.palette.gray
+        # updateSelectInput(session, "planned_transects_color", choices = c.pal, selected = "grey")
+        updateSelectInput(session, NS("map_color")("color_land"), choices = c.pal, selected = 4)
+        updateSelectInput(session, NS("map_color")("color_water"), choices = c.pal, selected = 0)
+        updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = 1)
+        # updateSelectInput(session, "das_symbol_color", choices = c.pal, selected = 1)
+        # updateTextInput(session, "das_symbol_color_mult", value = "Black")
+        # updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = 1)
+        # updateSelectInput(session, "das_effort_det_bft_col", choices = c.pal, selected = 1)
+        # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
+        # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = 1)
+        # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = 1)
+        # updateSelectInput(session, "ndas_line_col", choices = c.pal, selected = 1)
+        # updateSelectInput(session, "ndas_pt_col", choices = c.pal, selected = 1)
+      }
     })
 
 
@@ -144,7 +198,6 @@ cruzplot_gui <- function(...) {
 
     #----------------------------------------------------------------------------
     ### Plots
-    h <- reactive(input$plot_height)
     # plot_height <- reactive(input$plot_height)
     plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color)
     mod_plot_server("plot2", h, map_range, map_elements, map_color)
@@ -164,6 +217,7 @@ cruzplot_gui <- function(...) {
           # app_state_save <- reactiveValuesToList(app_state)
           app_state_save <- list(
             plot_height = input$plot_height,
+            color_style = input$color_style,
             map_range = map.range.list$to_save(),
             map_elements = map_elements$to_save(), 
             map_color = map_color$to_save()
@@ -217,6 +271,7 @@ cruzplot_gui <- function(...) {
 
         # Update widgets on the main page, not in a module
         updateNumericInput(session, "plot_height", value = app_state_save[["plot_height"]])
+        updateSelectInput(session, "color_style", selected = app_state_save[["color_style"]])
         incProgress(0.05)
       })
 
