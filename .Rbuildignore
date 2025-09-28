@@ -13,3 +13,5 @@
 ^\.github$
 ^CRAN-SUBMISSION$
 ^data-raw$
+^rsconnect$
+^app\.R$

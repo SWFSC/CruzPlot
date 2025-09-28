@@ -5,6 +5,7 @@
 #' @name mod_display_format
 #'
 #' @inheritParams mod_plot
+#' @param tab_name passed to `tabName` argument of [shinydashboard::tabItem()]
 #'
 #' @details
 #' This module displays the app color and format options, including: 
@@ -15,11 +16,11 @@
 #' The server function returns nothing
 #'
 #' @export
-mod_display_format_ui <- function(id) {
+mod_display_format_ui <- function(id, tab_name) {
   ns <- NS(id)
 
   tabItem(
-    tabName = "dispColor",
+    tabName = tab_name,
     fluidRow(
       box(
         title = "Color/Format Options", status = "primary", solidHeader = TRUE,  width = 12,

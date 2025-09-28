@@ -6,12 +6,14 @@
 \alias{mod_display_format_server}
 \title{Display format module}
 \usage{
-mod_display_format_ui(id)
+mod_display_format_ui(id, tab_name)
 
 mod_display_format_server(id)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
+
+\item{tab_name}{passed to \code{tabName} argument of \code{\link[shinydashboard:tabItem]{shinydashboard::tabItem()}}}
 }
 \value{
 The UI function returns a \code{\link[shinydashboard:tabItem]{shinydashboard::tabItem()}} object

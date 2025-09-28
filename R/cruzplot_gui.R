@@ -20,6 +20,24 @@ cruzplot_gui <- function(...) {
   options("digits" = 5) #for proper display of sighting and effort coordinates
   jscode <- "shinyjs.closeWindow = function() { window.close(); }"
 
+
+  # 1. Find the full path to the 'www' directory inside the installed package.
+  #    Using system.file() is the only reliable way to do this.
+  www_dir <- system.file("www", package = "CruzPlot")
+
+  # 2. Register this path with Shiny, giving it a URL prefix of "myfiles".
+  #    The browser will now know that "myfiles/" points to your www_dir.
+  shiny::addResourcePath(
+    prefix = "www",
+    directoryPath = www_dir
+  )
+
+  # When the app stops, unregister the path. This is good practice.
+  on.exit(shiny::removeResourcePath("www"), add = TRUE)
+
+
+
+
   ###############################################################################
   ##### UI
   ui.new.line <- function() helpText(HTML("<br/>"))
@@ -39,9 +57,12 @@ cruzplot_gui <- function(...) {
         # menuItem("App State", tabName = "appstate", icon = icon("th", lib = "font-awesome")),
         # menuItem("Plot DAS Data", tabName = "DASplot", icon = icon("th")),
         # menuItem("Plot Non-DAS Data", tabName = "nonDASplot", icon = icon("th")),
-        menuItem(HTML(paste0("Color and Formatting", "<br/>", "Options")), tabName = "dispColor", icon = icon("th")),
+        menuItem(
+          HTML(paste0("Color and Formatting", "<br/>", "Options")), 
+          tabName = "display_format", icon = icon("th")
+        ),
         menuItem("Species Information", tabName = "dispSp", icon = icon("th")),
-        menuItem("CruzPlot Manual", tabName = "dispManual", icon = icon("th")),
+        menuItem("CruzPlot Manual", tabName = "display_manual", icon = icon("th")),
         tags$br(),
         fileInput("load_app_envir_file", "Load workspace"),
         column(
@@ -107,7 +128,18 @@ cruzplot_gui <- function(...) {
             )
           )
         ), 
-        mod_display_format_ui("display_format")
+        mod_display_format_ui("display_format", tab_name = "display_format"), 
+        tabItem(
+          tabName = "display_manual",
+          tags$h5("The height of the manual window is controlled by the 'Map height' input in the sidebar. ",
+                  "If the manual opens in a separate window, you can click 'Open in Browser' to display manual in-app"),
+          tags$iframe(
+            style = "height:600px; width:100%",
+            # src = system.file("www/CruzPlot_Manual_app.pdf", package = "CruzPlot", mustWork = TRUE)
+            src = "www/CruzPlot_Manual_app.pdf"
+          )
+          # uiOutput("manual_out")
+        )
       )
     )
   )
@@ -170,15 +202,13 @@ cruzplot_gui <- function(...) {
 
 
     #----------------------------------------------------------------------------
-    ### 'Initialize' reactives
-    # map_range <- map_elements <- reactiveValues()
+    ### Map tab
+    # 'Initialize' reactives
     load_state_map_range <- reactiveVal()
     load_state_map_elements <- reactiveVal()
     load_state_map_color <- reactiveVal()
 
-
-    #----------------------------------------------------------------------------
-    ### Map tab
+    # Run the modules
     map.range.list <- mod_map_range_server("map_range", load_state_map_range, plot1.list$brush)
     map_range <- map.range.list[["map_range"]]
 
@@ -186,8 +216,18 @@ cruzplot_gui <- function(...) {
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range)
 
     #----------------------------------------------------------------------------
-    ### Display tabs
+    ### Dashboard-level display tabs
     mod_display_format_server("display_format")
+
+    output$manual_out <- renderUI({
+      style.txt <- paste0("height:", input$plot_height, "px; width:100%; scrolling=yes")
+      # tags$iframe(style = style.txt, src = "CruzPlot_Manual_app.pdf")
+      tags$iframe(
+        style = style.txt, 
+        # src = system.file("app/www/CruzPlot_Manual_app.pdf", package = "CruzPlot")
+        src = "CruzPlot_Manual_app.pdf"
+      )
+    })
     
     #----------------------------------------------------------------------------
     ### Plots
@@ -205,9 +245,6 @@ cruzplot_gui <- function(...) {
 
       content = function(file) {
         withProgress(message = "Saving app data", value = 0.3, {
-          # cruz.list.save <- list() #reactiveValuesToList(cruz.list)
-
-          # app_state_save <- reactiveValuesToList(app_state)
           app_state_save <- list(
             plot_height = input$plot_height,
             color_style = input$color_style,
@@ -215,12 +252,9 @@ cruzplot_gui <- function(...) {
             map_elements = map_elements$to_save(), 
             map_color = map_color$to_save()
           )
-          incProgress(0.7)
+          incProgress(0.6)
           save(app_state_save, file = file)
-
-          # input.save <- reactiveValuesToList(input)
-          # incProgress(0.2)
-          # save(app_state_save, input.save, file = file)
+          incProgress(0.1)
         })
       }
     )
@@ -252,7 +286,7 @@ cruzplot_gui <- function(...) {
         rm(files.list)
         incProgress(0.4)
 
-        # 'reset' the reactiveVals, in case we're loading the same file
+        # 'reset' the reactiveVals, in case loading a file of the same name
         load_state_map_range(NULL)
         load_state_map_elements(NULL)
         load_state_map_color(NULL)
