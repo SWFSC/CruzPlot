@@ -20,22 +20,12 @@ cruzplot_gui <- function(...) {
   options("digits" = 5) #for proper display of sighting and effort coordinates
   jscode <- "shinyjs.closeWindow = function() { window.close(); }"
 
-
-  # 1. Find the full path to the 'www' directory inside the installed package.
-  #    Using system.file() is the only reliable way to do this.
-  www_dir <- system.file("www", package = "CruzPlot")
-
-  # 2. Register this path with Shiny, giving it a URL prefix of "myfiles".
-  #    The browser will now know that "myfiles/" points to your www_dir.
+  # Tell the Shiny app where to find the www path, for eg the manual
   shiny::addResourcePath(
-    prefix = "www",
-    directoryPath = www_dir
+    "www", system.file("app/www", package = "CruzPlot")
   )
-
-  # When the app stops, unregister the path. This is good practice.
-  on.exit(shiny::removeResourcePath("www"), add = TRUE)
-
-
+  # # If the below line is included, the pdf won't be displayed in the app
+  # on.exit(shiny::removeResourcePath("www"), add = TRUE)
 
 
   ###############################################################################
