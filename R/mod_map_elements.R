@@ -134,12 +134,12 @@ mod_map_elements_ui <- function(id) {
           conditionalPanel(
             condition = "input.grid", ns = ns,
             fluidRow(
+              column(3, selectInput(ns("grid_lty"), label = tags$h5("Line type"),
+                                    choices = cruz.line.type, selected = 1)), 
               column(3, selectInput(ns("grid_col"), label = tags$h5("Line color"),
                                     choices = cruz.palette.color, selected = "black")),
               column(3, numericInput(ns("grid_lwd"), label = tags$h5("Line width"),
-                                    value = 1, min = 1, max = 6, step = 1)),
-              column(3, selectInput(ns("grid_lty"), label = tags$h5("Line type"),
-                                    choices = cruz.line.type, selected = 1))
+                                    value = 1, min = 1, max = 6, step = 1))              
             )
           )
         )

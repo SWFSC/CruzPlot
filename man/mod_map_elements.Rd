@@ -18,7 +18,8 @@ saved 'app state' to be loaded for this module. The main function
 saves the state, using the 'to_save' output list, and then loads
 those values into the \code{load_state} object when a saved app state is loaded}
 
-\item{map_range}{output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
+\item{map_range}{a reactive; the element named 'map_range'
+from the output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 }
 \value{
 The UI function returns a \code{\link[shiny:reexports]{shiny::tagList()}} object,

@@ -16,6 +16,7 @@ BugReports: https://github.com/SWFSC/CruzPlot/issues/
 Depends: R (>= 4.0.0)
 Imports: 
     dplyr,
+    DT, 
     geosphere,
     mapdata,
     marmap,

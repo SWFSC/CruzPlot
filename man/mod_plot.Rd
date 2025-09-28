@@ -8,7 +8,7 @@
 \usage{
 mod_plot_ui(id, enable_brush = FALSE)
 
-mod_plot_server(id, height, map_range, map_elements, map_color)
+mod_plot_server(id, height, map_range, map_elements, map_color, nondas)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
@@ -18,11 +18,14 @@ mod_plot_server(id, height, map_range, map_elements, map_color)
 
 \item{height}{a reactive indicating the map height, in pixels}
 
-\item{map_range}{output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
+\item{map_range}{a reactive; the element named 'map_range'
+from the output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 
-\item{map_elements}{output of \code{\link[=mod_map_elements_server]{mod_map_elements_server()}}}
+\item{map_elements}{a list; the output of \code{\link[=mod_map_elements_server]{mod_map_elements_server()}}}
 
-\item{map_color}{output of \code{\link[=mod_map_color_server]{mod_map_color_server()}}}
+\item{map_color}{a list; the output of \code{\link[=mod_map_color_server]{mod_map_color_server()}}}
+
+\item{nondas}{a list; the output of \code{\link[=mod_nondas_server]{mod_nondas_server()}}}
 }
 \value{
 \code{mod_plot_ui} returns the plot UI, here simply a \code{\link[shiny:plotOutput]{shiny::plotOutput()}} object

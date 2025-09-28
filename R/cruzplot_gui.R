@@ -24,7 +24,7 @@ cruzplot_gui <- function(...) {
   shiny::addResourcePath(
     "www", system.file("app/www", package = "CruzPlot")
   )
-  # # If the below line is included, the pdf won't be displayed in the app
+  # # If the below line is included, the pdf won't display in the app
   # on.exit(shiny::removeResourcePath("www"), add = TRUE)
 
 
@@ -43,10 +43,10 @@ cruzplot_gui <- function(...) {
     dashboardSidebar(
       sidebarMenu(
         id = "tabs",
-        menuItem("Create and Save Map", tabName = "createmap", icon = icon("th", lib = "font-awesome")),
+        menuItem("Create Map", tabName = "createmap", icon = icon("th", lib = "font-awesome")),
         # menuItem("App State", tabName = "appstate", icon = icon("th", lib = "font-awesome")),
         # menuItem("Plot DAS Data", tabName = "DASplot", icon = icon("th")),
-        # menuItem("Plot Non-DAS Data", tabName = "nonDASplot", icon = icon("th")),
+        menuItem("Plot Non-DAS Data", tabName = "nondas", icon = icon("th")),
         menuItem(
           HTML(paste0("Color and Formatting", "<br/>", "Options")), 
           tabName = "display_format", icon = icon("th")
@@ -118,17 +118,29 @@ cruzplot_gui <- function(...) {
             )
           )
         ), 
+        tabItem(
+          tabName = "nondas",
+          fluidRow(
+            box(status = "primary", width = 6, mod_plot_ui("plot_ndas")), 
+            mod_nondas_ui("nondas")            
+          )
+        ), 
         mod_display_format_ui("display_format", tab_name = "display_format"), 
         tabItem(
           tabName = "display_manual",
-          tags$h5("The height of the manual window is controlled by the 'Map height' input in the sidebar. ",
-                  "If the manual opens in a separate window, you can click 'Open in Browser' to display manual in-app"),
+          tags$h5(
+            "The manual can be downloaded through the below window, or from the GitHub repo", 
+            tags$a(
+              "at this link",
+              # TODO: change link to production, and update manual to 2.0
+              href = "https://github.com/SWFSC/CruzPlot/blob/modules/inst/app/www/CruzPlot_Manual_app.pdf",
+              target = "_blank"
+            )
+          ), 
           tags$iframe(
             style = "height:600px; width:100%",
-            # src = system.file("www/CruzPlot_Manual_app.pdf", package = "CruzPlot", mustWork = TRUE)
             src = "www/CruzPlot_Manual_app.pdf"
           )
-          # uiOutput("manual_out")
         )
       )
     )
@@ -168,8 +180,8 @@ cruzplot_gui <- function(...) {
         # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
         # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
         # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
-        # updateSelectInput(session, "ndas_line_col", choices = c.pal, selected = "black")
-        # updateSelectInput(session, "ndas_pt_col", choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("nondas")("ndas_line_col"), choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("nondas")("ndas_pt_col"), choices = c.pal, selected = "black")
 
       } else if (input$color_style == 2) {
         palette(gray(0:5/5))
@@ -185,8 +197,8 @@ cruzplot_gui <- function(...) {
         # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
         # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = 1)
         # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = 1)
-        # updateSelectInput(session, "ndas_line_col", choices = c.pal, selected = 1)
-        # updateSelectInput(session, "ndas_pt_col", choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("nondas")("ndas_line_col"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("nondas")("ndas_pt_col"), choices = c.pal, selected = 1)
       }
     })
 
@@ -197,6 +209,7 @@ cruzplot_gui <- function(...) {
     load_state_map_range <- reactiveVal()
     load_state_map_elements <- reactiveVal()
     load_state_map_color <- reactiveVal()
+    load_state_nondas <- reactiveVal()
 
     # Run the modules
     map.range.list <- mod_map_range_server("map_range", load_state_map_range, plot1.list$brush)
@@ -204,26 +217,19 @@ cruzplot_gui <- function(...) {
 
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range)
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range)
+    
+    nondas <- mod_nondas_server("nondas", load_state_nondas)
 
     #----------------------------------------------------------------------------
     ### Dashboard-level display tabs
     mod_display_format_server("display_format")
-
-    output$manual_out <- renderUI({
-      style.txt <- paste0("height:", input$plot_height, "px; width:100%; scrolling=yes")
-      # tags$iframe(style = style.txt, src = "CruzPlot_Manual_app.pdf")
-      tags$iframe(
-        style = style.txt, 
-        # src = system.file("app/www/CruzPlot_Manual_app.pdf", package = "CruzPlot")
-        src = "CruzPlot_Manual_app.pdf"
-      )
-    })
     
     #----------------------------------------------------------------------------
     ### Plots
     # plot_height <- reactive(input$plot_height)
-    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color)
-    mod_plot_server("plot2", h, map_range, map_elements, map_color)
+    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas)
+    mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas)
+    mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas)
 
 
     #----------------------------------------------------------------------------
@@ -236,11 +242,12 @@ cruzplot_gui <- function(...) {
       content = function(file) {
         withProgress(message = "Saving app data", value = 0.3, {
           app_state_save <- list(
-            plot_height = input$plot_height,
-            color_style = input$color_style,
             map_range = map.range.list$to_save(),
             map_elements = map_elements$to_save(), 
-            map_color = map_color$to_save()
+            map_color = map_color$to_save(), 
+            nondas = nondas$to_save(),             
+            color_style = input$color_style, 
+            plot_height = input$plot_height
           )
           incProgress(0.6)
           save(app_state_save, file = file)
@@ -280,10 +287,12 @@ cruzplot_gui <- function(...) {
         load_state_map_range(NULL)
         load_state_map_elements(NULL)
         load_state_map_color(NULL)
+        load_state_nondas(NULL)
 
         load_state_map_range(app_state_save[["map_range"]])
         load_state_map_elements(app_state_save[["map_elements"]])
         load_state_map_color(app_state_save[["map_color"]])
+        load_state_nondas(app_state_save[["nondas"]])
         incProgress(0.35)
 
         # Update widgets on the main page, not in a module

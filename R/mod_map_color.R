@@ -101,6 +101,7 @@ mod_map_color_server  <- function(id, load_state, map_range) {
       is.reactive(map_range)
     )
 
+    #--------------------------------------------------------------------------~
     # Stored reactiveValues for the module
     cruz.list <- reactiveValues(
       # Bathymetric data, converted to CSV file xyz coordinates
@@ -114,12 +115,11 @@ mod_map_color_server  <- function(id, load_state, map_range) {
       for (item in load_state()) {
         if (item$type == "reactive") {
           cruz.list[[item$id]] <- item$value
-          # stop("Invalid map_color state - please report as an issue")
         } else {
           update_widget(item, session)
         }
       }
-    }, priority = 10) #, ignoreInit = TRUE)
+    }, priority = 10)
 
     #--------------------------------------------------------------------------
     # Color
@@ -149,7 +149,6 @@ mod_map_color_server  <- function(id, load_state, map_range) {
     })
 
     ### Load bathymetry data
-    output$bathy_load_text <- renderText(cruzMapBathyLoad())
     cruzMapBathyLoad <- eventReactive(input$depth_file, {
       req(input$depth_file)
       file.in <- input$depth_file
@@ -166,6 +165,17 @@ mod_map_color_server  <- function(id, load_state, map_range) {
 
       NULL
     })
+
+    output$bathy_load_text <- renderText(cruzMapBathyLoad())
+
+    output$bathy_message_text <- renderText({
+      if (isTruthy(cruz.list$bathy.xyz)) {
+        "A bathymetry file is loaded"
+      } else {
+        NULL
+      }
+    })
+
 
     ### Get color value and bathymetry data for water color
     cruzMapColorWater <- reactive({
@@ -214,7 +224,7 @@ mod_map_color_server  <- function(id, load_state, map_range) {
       list(input$color_water, bathy)
     })
 
-    ###############################################################################
+    #--------------------------------------------------------------------------
     # Download bathymetric data
 
     ### Download button for downloading bathymetric file
@@ -291,9 +301,7 @@ mod_map_color_server  <- function(id, load_state, map_range) {
 
 
     #--------------------------------------------------------------------------
-    #--------------------------------------------------------------------------
-    #--------------------------------------------------------------------------
-    # Prepare values to save app state
+    ### Prepare values to save app state
     to_save <- reactive({
       list(
         save_widget("color_style", "radio"),

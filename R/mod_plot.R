@@ -8,9 +8,11 @@
 #' @param enable_brush boolean indicating if the plotOutput should include
 #'   `brush = ns("map_brush")`
 #' @param height a reactive indicating the map height, in pixels
-#' @param map_range output of [mod_map_range_server()]
-#' @param map_elements output of [mod_map_elements_server()]
-#' @param map_color output of [mod_map_color_server()]
+#' @param map_range a reactive; the element named 'map_range' 
+#'   from the output of [mod_map_range_server()]
+#' @param map_elements a list; the output of [mod_map_elements_server()]
+#' @param map_color a list; the output of [mod_map_color_server()]
+#' @param nondas a list; the output of [mod_nondas_server()]
 #'
 #' @details
 #' This module takes in map ranges/elements/etc, 
@@ -89,7 +91,8 @@ mod_plot_server  <- function(
     height,
     map_range,
     map_elements, 
-    map_color
+    map_color, 
+    nondas
 ) {
   moduleServer(id, function(input, output, session) {
     lon_range_req <- reactive(req(map_range()$lon.range))
@@ -340,6 +343,35 @@ mod_plot_server  <- function(
         if (!is.null(axes.info$lab.lat)) {
           title(ylab = axes.info$lab.lat, family = axes.info$fam,
                 cex.lab = axes.info$cex, line = 4)
+        }
+
+
+        #----------------------------------------------------------------------
+        ### Non-DAS data
+        if (nondas$ndas_plot()) {
+          data.ndas <- nondas$cruzNonDas()
+
+          # Plot lines
+          data.ndas.l <- data.ndas[[1]]
+          if (length(data.ndas.l) > 0) {
+            for(i in seq_along(data.ndas.l)) {
+              data.ndas.l.curr <- data.ndas.l[[i]]
+              lines(x = data.ndas.l.curr$x, y = data.ndas.l.curr$y,
+                    lty = data.ndas.l.curr$type, col = data.ndas.l.curr$col,
+                    lwd = data.ndas.l.curr$lwd)
+            }
+          }
+
+          # Plot points
+          data.ndas.p <- data.ndas[[2]]
+          if (length(data.ndas.p) > 0) {
+            for(j in seq_along(data.ndas.p)) {
+              data.ndas.p.curr <- data.ndas.p[[j]]
+              points(x = data.ndas.p.curr$x, y = data.ndas.p.curr$y,
+                    pch = data.ndas.p.curr$type, col = data.ndas.p.curr$col,
+                    cex = data.ndas.p.curr$cex, lwd = data.ndas.p.curr$lwd)
+            }
+          }
         }
       }
     })
