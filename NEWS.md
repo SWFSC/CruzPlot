@@ -1,8 +1,8 @@
 # CruzPlot 2.0.0 (dev)
 
-* Provide a more information error message when CruzPlot cannot load a DAS file (#6)
+* CruzPlot now provides a more information error message when it cannot load a DAS file (#6)
 
-* Modularize CruzPlot shiny app (in progress) (#7)
+* Modularized the CruzPlot shiny app (in progress) (#7)
 
 
 # CruzPlot 1.4.9

@@ -39,9 +39,9 @@ cruzplot_gui <- function(...) {
         # menuItem("App State", tabName = "appstate", icon = icon("th", lib = "font-awesome")),
         # menuItem("Plot DAS Data", tabName = "DASplot", icon = icon("th")),
         # menuItem("Plot Non-DAS Data", tabName = "nonDASplot", icon = icon("th")),
-        # menuItem(HTML(paste0("Color and Formatting", "<br/>", "Options")), tabName = "dispColor", icon = icon("th")),
-        # menuItem("Species Information", tabName = "dispSp", icon = icon("th")),
-        # menuItem("CruzPlot Manual", tabName = "dispManual", icon = icon("th")),
+        menuItem(HTML(paste0("Color and Formatting", "<br/>", "Options")), tabName = "dispColor", icon = icon("th")),
+        menuItem("Species Information", tabName = "dispSp", icon = icon("th")),
+        menuItem("CruzPlot Manual", tabName = "dispManual", icon = icon("th")),
         tags$br(),
         fileInput("load_app_envir_file", "Load workspace"),
         column(
@@ -51,18 +51,12 @@ cruzplot_gui <- function(...) {
         ),
         tags$br(), tags$br(), #tags$br(),
         numericInput("plot_height", "Map height (pixels)", value = 600, min = 0, step = 100),
-        
-        # cruz_box(
-        #   title = "Color style", width = 6,
-        #   helpText("This color style selection will affect the palette options for all color selections in CruzPlot"),
-        #   tags$br(),
         selectInput(
           "color_style", 
           "App-wide color style", 
           choices = list("Color" = 1, "Gray scale" = 2),
           selected = 1
         ), 
-        # ),
         tags$br(),
         actionButton("stop", "Close CruzPlot"),
         column(12, tags$h5(paste0("CruzPlot v", packageVersion("CruzPlot"))))
@@ -96,12 +90,6 @@ cruzplot_gui <- function(...) {
                                 });
                             ')),
       tabItems(
-        # tabItem(
-        #   tabName = "appstate",
-        #   h3("Current App State"),
-        #   p("This panel shows the values stored in the central 'app_state' object."),
-        #   verbatimTextOutput("current_state_display")
-        # ),
         tabItem(
           tabName = "createmap",
           fluidRow(
@@ -118,7 +106,8 @@ cruzplot_gui <- function(...) {
               mod_map_color_ui("map_color")
             )
           )
-        )
+        ), 
+        mod_display_format_ui("display_format")
       )
     )
   )
@@ -196,6 +185,10 @@ cruzplot_gui <- function(...) {
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range)
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range)
 
+    #----------------------------------------------------------------------------
+    ### Display tabs
+    mod_display_format_server("display_format")
+    
     #----------------------------------------------------------------------------
     ### Plots
     # plot_height <- reactive(input$plot_height)
