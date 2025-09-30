@@ -22,11 +22,11 @@
 #' 
 #' It also provides functionality for downloading the plot.
 #'
-#' @returns
-#' `mod_plot_ui` returns a [shinydashboard::tabBox()] of 
-#' the [shiny::plotOutput()] object, and the UI to save the plot. 
+#' @returns `mod_plot_ui` returns a [shiny::tagList()] with a 
+#' [shinydashboard::tabBox()] of the [shiny::plotOutput()] object, 
+#' and the UI to save the plot. 
 #'
-#' `mod_plot_server` returns a named list:
+#' `mod_plot_server` returns a named list with the following elements:
 #' * 'brush': a reactive of `input$map_brush`.
 #'   If `enable_brush` is `FALSE`, then this value will be `NULL`
 #'
@@ -39,23 +39,17 @@ mod_plot_ui <- function(id, enable_brush = FALSE) {
       width = 6, 
       tabPanel(
         title = "Display",
-        # fluidRow(
-        #   box(
-        #     status = "primary", width = 12,
         if (enable_brush) {
           plotOutput(ns("plotmap"), height = "auto", brush = ns("map_brush"))
         } else {
           plotOutput(ns("plotmap"), height = "auto")
         }
-        #   )
-        # )
       ), 
       tabPanel(
         title = "Save",
         fluidRow(
           cruz_box(
-          # box(
-            title = "Save map", width = 12, #status = "primary", 
+            title = "Save map", width = 12, 
             fluidRow(
               column(3, radioButtons(ns("download_format"), label = tags$h5("File format"),
                                       choices = list("JPEG" = 1, "PDF" = 2, "PNG" = 3),
