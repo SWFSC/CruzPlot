@@ -110,7 +110,7 @@ mod_map_range_ui <- function(
           condition = "input.coast", ns = ns, 
           helpText("Map limits will automatically be updated to the extent of the",
                     "coastline file. Note: the app can only process coastline files",
-                    "with points between -180 and 0"),
+                    "with points between -180 and 0. "),
           fileInput("coast_file", label = tags$h5("Coastline file"), width = "50%"), 
           textOutput(ns("coast_load_text")),
         )

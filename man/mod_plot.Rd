@@ -27,7 +27,8 @@ mod_plot_server(id, height, map_range, map_elements, map_color, nondas)
 \item{nondas}{a list; the output of \code{\link[=mod_nondas_server]{mod_nondas_server()}}}
 }
 \value{
-\code{mod_plot_ui} returns the plot UI, here simply a \code{\link[shiny:plotOutput]{shiny::plotOutput()}} object
+\code{mod_plot_ui} returns a \code{\link[shinydashboard:tabBox]{shinydashboard::tabBox()}} of
+the \code{\link[shiny:plotOutput]{shiny::plotOutput()}} object, and the UI to save the plot.
 
 \code{mod_plot_server} returns a named list:
 \itemize{

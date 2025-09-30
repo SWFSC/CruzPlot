@@ -104,19 +104,13 @@ cruzplot_gui <- function(...) {
         tabItem(
           tabName = "createmap",
           fluidRow(
-          #   tabBox(
-          #     width = 6, 
-          #     box(
-          #       status = "primary", width = 6,
-          #       conditionalPanel("input.tabset1 == 'Range'", mod_plot_ui("plot1", TRUE)),
-          #       conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2"))
-          #     )
-          # ),
-            box(
-              status = "primary", width = 6,
-              conditionalPanel("input.tabset1 == 'Range'", mod_plot_ui("plot1", TRUE)),
-              conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2"))
-            ),
+            conditionalPanel("input.tabset1 == 'Range'", mod_plot_ui("plot1", TRUE)),
+            conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2")), 
+            # box(
+            #   status = "primary", width = 6,
+            #   conditionalPanel("input.tabset1 == 'Range'", mod_plot_ui("plot1", TRUE)),
+            #   conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2"))
+            # ),
             tabBox(
               title = "Map", width = 6, id = "tabset1",
               mod_map_range_ui("map_range"),
@@ -129,7 +123,7 @@ cruzplot_gui <- function(...) {
         tabItem(
           tabName = "nondas",
           fluidRow(
-            box(status = "primary", width = 6, mod_plot_ui("plot_ndas")), 
+            mod_plot_ui("plot_ndas"), 
             mod_nondas_ui("nondas")            
           )
         ), 

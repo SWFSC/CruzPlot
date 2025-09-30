@@ -23,7 +23,8 @@
 #' It also provides functionality for downloading the plot.
 #'
 #' @returns
-#' `mod_plot_ui` returns the plot UI, here simply a [shiny::plotOutput()] object
+#' `mod_plot_ui` returns a [shinydashboard::tabBox()] of 
+#' the [shiny::plotOutput()] object, and the UI to save the plot. 
 #'
 #' `mod_plot_server` returns a named list:
 #' * 'brush': a reactive of `input$map_brush`.
@@ -34,49 +35,63 @@ mod_plot_ui <- function(id, enable_brush = FALSE) {
   ns <- NS(id)
 
   tagList(
-    if (enable_brush) {
-      plotOutput(ns("plotmap"), height = "auto", brush = ns("map_brush"))
-    } else {
-      plotOutput(ns("plotmap"), height = "auto")
-    }, 
-    tags$br(), tags$br(), 
-    fluidRow(
-      cruz_box(
-        title = "Save map", width = 12,
+    tabBox(
+      width = 6, 
+      tabPanel(
+        title = "Display",
+        # fluidRow(
+        #   box(
+        #     status = "primary", width = 12,
+        if (enable_brush) {
+          plotOutput(ns("plotmap"), height = "auto", brush = ns("map_brush"))
+        } else {
+          plotOutput(ns("plotmap"), height = "auto")
+        }
+        #   )
+        # )
+      ), 
+      tabPanel(
+        title = "Save",
         fluidRow(
-          column(3, radioButtons(ns("download_format"), label = tags$h5("File format"),
-                                  choices = list("JPEG" = 1, "PDF" = 2, "PNG" = 3),
-                                  selected = 3)),
-          column(
-            width = 8,
+          cruz_box(
+          # box(
+            title = "Save map", width = 12, #status = "primary", 
             fluidRow(
-              column(6, radioButtons(ns("download_dim"), tags$h5("File dimensions"),
-                                      choices = list("Use dimensions of plot window" = 1, "Specify dimensions" = 2),
-                                      selected = 1)),
-              column(6, numericInput(ns("download_res"), tags$h5("Resolution (ppi)"),
-                                      value = 300, step = 50, min = 0))
-            ),
-            conditionalPanel(
-              condition = "input.download_dim == 1", ns = ns, 
-              helpText("Downloaded map will have the same dimensions as the displayed map")
-            ),
-            conditionalPanel(
-              condition = "input.download_dim == 2", ns = ns, 
-              fluidRow(
-                column(6, numericInput(ns("download_width"), tags$h5("File width (inches)"),
-                                        value = 10, step = 1, min = 0)),
-                column(6, numericInput(ns("download_height"), tags$h5("File height (inches)"),
-                                        value = 10, step = 1, min = 0))
+              column(3, radioButtons(ns("download_format"), label = tags$h5("File format"),
+                                      choices = list("JPEG" = 1, "PDF" = 2, "PNG" = 3),
+                                      selected = 3)),
+              column(
+                width = 8,
+                fluidRow(
+                  column(6, radioButtons(ns("download_dim"), tags$h5("File dimensions"),
+                                          choices = list("Use dimensions of plot window" = 1, "Specify dimensions" = 2),
+                                          selected = 1)),
+                  column(6, numericInput(ns("download_res"), tags$h5("Resolution (ppi)"),
+                                          value = 300, step = 50, min = 0))
+                ),
+                conditionalPanel(
+                  condition = "input.download_dim == 1", ns = ns, 
+                  helpText("Downloaded map will have the same dimensions as the displayed map")
+                ),
+                conditionalPanel(
+                  condition = "input.download_dim == 2", ns = ns, 
+                  fluidRow(
+                    column(6, numericInput(ns("download_width"), tags$h5("File width (inches)"),
+                                            value = 10, step = 1, min = 0)),
+                    column(6, numericInput(ns("download_height"), tags$h5("File height (inches)"),
+                                            value = 10, step = 1, min = 0))
+                  )
+                )
               )
-            )
+            ),
+            conditionalPanel(
+              condition = "input.download_format != 1", ns = ns, 
+              checkboxInput(ns("background_transparent"), "Make plot background transparent",
+                            value = FALSE)
+            ),
+            uiOutput(ns("downloadMap_button"))
           )
-        ),
-        conditionalPanel(
-          condition = "input.download_format != 1", ns = ns, 
-          checkboxInput(ns("background_transparent"), "Make plot background transparent",
-                        value = FALSE)
-        ),
-        uiOutput(ns("downloadMap_button"))
+        )
       )
     )
   )
