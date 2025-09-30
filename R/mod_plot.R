@@ -23,7 +23,7 @@
 #' It also provides functionality for downloading the plot.
 #' 
 #' The `nondas` list is a named list:
-#' - `ptln`: the output of [mod_ndas_ptln_server()] (non-DAS point/line data)
+#' - `shape`: the output of [mod_ndas_shape_server()] (non-DAS point/line data)
 #' - `planned`: the output of [mod_ndas_planned_server()] (planned transects)
 #'
 #' @returns `mod_plot_ui` returns a [shiny::tagList()] with a 
@@ -116,7 +116,7 @@ mod_plot_server  <- function(
     })
     plot.res <- 72
 
-    ptln <- nondas$ptln
+    shape <- nondas$shape
     planned <- nondas$planned
 
     ###########################################################################
@@ -368,8 +368,8 @@ mod_plot_server  <- function(
 
         #----------------------------------------------------------------------
         ### Non-DAS point/line data
-        if (ptln$ndas_plot()) {
-          data.ndas <- ptln$cruzNonDas()
+        if (shape$ndas_plot()) {
+          data.ndas <- shape$cruzNonDas()
 
           # Plot lines
           data.ndas.l <- data.ndas[[1]]

@@ -2,7 +2,7 @@
 #'
 #' Shiny module for non-DAS point and line data
 #'
-#' @name mod_ndas_ptln
+#' @name mod_ndas_shape
 #'
 #' @inheritParams mod_map_range
 #' 
@@ -21,7 +21,7 @@
 #' - `cruzNonDas`: a list of the non-DAS data to plot
 #' 
 #' @export
-mod_ndas_ptln_ui <- function(id) {
+mod_ndas_shape_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
@@ -138,9 +138,9 @@ mod_ndas_ptln_ui <- function(id) {
 }
 
 
-#' @name mod_ndas_ptln
+#' @name mod_ndas_shape
 #' @export
-mod_ndas_ptln_server  <- function(id, load_state) {
+mod_ndas_shape_server  <- function(id, load_state) {
   moduleServer(id, function(input, output, session) {
     stopifnot(
       is.reactive(load_state)

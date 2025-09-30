@@ -125,8 +125,8 @@ cruzplot_gui <- function(...) {
             mod_plot_ui("plot_ndas"), 
             tabBox(
               title = "Non-DAS", id = "tabset2", width = 6,
-              mod_ndas_planned_ui("planned"), 
-              mod_ndas_ptln_ui("ptln")
+              mod_ndas_planned_ui("ndas_planned"), 
+              mod_ndas_shape_ui("ndas_shape")
             )
           )
         ), 
@@ -174,7 +174,6 @@ cruzplot_gui <- function(...) {
       if (input$color_style == 1) {
         palette("default")
         c.pal <- cruz.palette.color
-        updateSelectInput(session, NS("planned")("planned_transects_color"), choices = c.pal, selected = "grey")
         updateSelectInput(session, NS("map_color")("color_land"), choices = c.pal, selected = "bisque1")
         updateSelectInput(session, NS("map_color")("color_water"), choices = c.pal, selected = "white")
         updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = "black")
@@ -185,13 +184,13 @@ cruzplot_gui <- function(...) {
         # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
         # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
         # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
-        updateSelectInput(session, NS("ptln")("ndas_line_col"), choices = c.pal, selected = "black")
-        updateSelectInput(session, NS("ptln")("ndas_pt_col"), choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("ndas_planned")("color"), choices = c.pal, selected = "grey")
+        updateSelectInput(session, NS("ndas_shape")("ndas_line_col"), choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("ndas_shape")("ndas_pt_col"), choices = c.pal, selected = "black")
 
       } else if (input$color_style == 2) {
         palette(gray(0:5/5))
         c.pal <- cruz.palette.gray
-        updateSelectInput(session, NS("planned")("planned_transects_color"), choices = c.pal, selected = "grey")
         updateSelectInput(session, NS("map_color")("color_land"), choices = c.pal, selected = 4)
         updateSelectInput(session, NS("map_color")("color_water"), choices = c.pal, selected = 0)
         updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = 1)
@@ -202,8 +201,9 @@ cruzplot_gui <- function(...) {
         # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
         # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = 1)
         # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = 1)
-        updateSelectInput(session, NS("ptln")("ndas_line_col"), choices = c.pal, selected = 1)
-        updateSelectInput(session, NS("ptln")("ndas_pt_col"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("ndas_planned")("color"), choices = c.pal, selected = "grey")
+        updateSelectInput(session, NS("ndas_shape")("ndas_line_col"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("ndas_shape")("ndas_pt_col"), choices = c.pal, selected = 1)
       }
     })
 
@@ -214,7 +214,7 @@ cruzplot_gui <- function(...) {
     load_state_map_range <- reactiveVal()
     load_state_map_elements <- reactiveVal()
     load_state_map_color <- reactiveVal()
-    load_state_ndas_ptln <- reactiveVal()
+    load_state_ndas_shape <- reactiveVal()
     load_state_ndas_planned <- reactiveVal()
 
     # Run the modules
@@ -225,8 +225,8 @@ cruzplot_gui <- function(...) {
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range_config)
     
     nondas <- list(
-      ptln = mod_ndas_ptln_server("ptln", load_state_ndas_ptln), 
-      planned = mod_ndas_planned_server("planned", load_state_ndas_planned)
+      shape = mod_ndas_shape_server("ndas_shape", load_state_ndas_shape), 
+      planned = mod_ndas_planned_server("ndas_planned", load_state_ndas_planned)
     )
 
     #----------------------------------------------------------------------------
@@ -255,8 +255,8 @@ cruzplot_gui <- function(...) {
             map_range = map_range$to_save(),
             map_elements = map_elements$to_save(), 
             map_color = map_color$to_save(), 
-            ptln = nondas$ptln$to_save(),             
-            planned = nondas$planned$to_save(),             
+            ndas_shape = nondas$shape$to_save(),             
+            ndas_planned = nondas$planned$to_save(),             
             color_style = input$color_style, 
             plot_height = input$plot_height
           )
@@ -298,14 +298,14 @@ cruzplot_gui <- function(...) {
         load_state_map_range(NULL)
         load_state_map_elements(NULL)
         load_state_map_color(NULL)
-        load_state_ndas_ptln(NULL)
+        load_state_ndas_shape(NULL)
         load_state_ndas_planned(NULL)
 
         load_state_map_range(app_state_save[["map_range"]])
         load_state_map_elements(app_state_save[["map_elements"]])
         load_state_map_color(app_state_save[["map_color"]])
-        load_state_ndas_ptln(app_state_save[["ptln"]])
-        load_state_ndas_planned(app_state_save[["planned"]])
+        load_state_ndas_shape(app_state_save[["ndas_shape"]])
+        load_state_ndas_planned(app_state_save[["ndas_planned"]])
         incProgress(0.35)
 
         # Update widgets on the main page, not in a module

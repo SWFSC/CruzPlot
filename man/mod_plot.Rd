@@ -51,7 +51,7 @@ It also provides functionality for downloading the plot.
 
 The \code{nondas} list is a named list:
 \itemize{
-\item \code{ptln}: the output of \code{\link[=mod_ndas_ptln_server]{mod_ndas_ptln_server()}} (non-DAS point/line data)
+\item \code{shape}: the output of \code{\link[=mod_ndas_shape_server]{mod_ndas_shape_server()}} (non-DAS point/line data)
 \item \code{planned}: the output of \code{\link[=mod_ndas_planned_server]{mod_ndas_planned_server()}} (planned transects)
 }
 }
