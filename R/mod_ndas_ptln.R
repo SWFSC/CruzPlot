@@ -1,8 +1,8 @@
-#' Non-DAS data module
+#' Non-DAS point and line module
 #'
-#' Shiny module for non-DAS data
+#' Shiny module for non-DAS point and line data
 #'
-#' @name mod_nondas
+#' @name mod_ndas_ptln
 #'
 #' @inheritParams mod_map_range
 #' 
@@ -14,10 +14,10 @@
 #' The server function returns a list with the following named elements:
 #' - `to_save`: a list of values to be saved in an 'app state' file. 
 #'   See [cruzplot_gui()] for more info. 
-#' - `color_lakes_rivers`: ...
+#' - `ctodoolor_lakes_rivers`: ...
 #' 
 #' @export
-mod_nondas_ui <- function(id) {
+mod_ndas_ptln_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
@@ -134,9 +134,9 @@ mod_nondas_ui <- function(id) {
 }
 
 
-#' @name mod_nondas
+#' @name mod_ndas_ptln
 #' @export
-mod_nondas_server  <- function(id, load_state) {
+mod_ndas_ptln_server  <- function(id, load_state) {
   moduleServer(id, function(input, output, session) {
     stopifnot(
       is.reactive(load_state)

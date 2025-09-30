@@ -125,8 +125,8 @@ cruzplot_gui <- function(...) {
             mod_plot_ui("plot_ndas"), 
             tabBox(
               title = "Non-DAS", id = "tabset2", width = 6,
-              mod_planned_ui("planned"), 
-              mod_nondas_ui("nondas")
+              mod_ndas_planned_ui("planned"), 
+              mod_ndas_ptln_ui("ptln")
             )
           )
         ), 
@@ -202,8 +202,8 @@ cruzplot_gui <- function(...) {
         # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
         # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = 1)
         # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = 1)
-        updateSelectInput(session, NS("nondas")("ndas_line_col"), choices = c.pal, selected = 1)
-        updateSelectInput(session, NS("nondas")("ndas_pt_col"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("ptln")("ndas_line_col"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("ptln")("ndas_pt_col"), choices = c.pal, selected = 1)
       }
     })
 
@@ -214,8 +214,8 @@ cruzplot_gui <- function(...) {
     load_state_map_range <- reactiveVal()
     load_state_map_elements <- reactiveVal()
     load_state_map_color <- reactiveVal()
-    load_state_nondas <- reactiveVal()
-    # TODO
+    load_state_ndas_ptln <- reactiveVal()
+    load_state_ndas_planned <- reactiveVal()
 
     # Run the modules
     map_range <- mod_map_range_server("map_range", load_state_map_range, plot1.list$brush)
@@ -224,8 +224,10 @@ cruzplot_gui <- function(...) {
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range_config)
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range_config)
     
-    nondas <- mod_nondas_server("nondas", load_state_nondas)
-    planned <- mod_planned_server("planned", load_state_nondas)
+    nondas <- list(
+      ptln = mod_ndas_ptln_server("ptln", load_state_ndas_ptln), 
+      planned = mod_ndas_planned_server("planned", load_state_ndas_planned)
+    )
 
     #----------------------------------------------------------------------------
     ### Dashboard-level display tabs
@@ -235,9 +237,9 @@ cruzplot_gui <- function(...) {
     ### Plots
     # TODO: do like the following for consistency?
     # try(do.call(odbc::dbConnect, purrr::compact(db.list)), silent = silent)
-    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas, planned)
-    mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas, planned)
-    mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas, planned)
+    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas)
+    mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas)
+    mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas)
 
 
     #----------------------------------------------------------------------------
@@ -253,7 +255,8 @@ cruzplot_gui <- function(...) {
             map_range = map_range$to_save(),
             map_elements = map_elements$to_save(), 
             map_color = map_color$to_save(), 
-            nondas = nondas$to_save(),             
+            ptln = nondas$ptln$to_save(),             
+            planned = nondas$planned$to_save(),             
             color_style = input$color_style, 
             plot_height = input$plot_height
           )
@@ -295,12 +298,14 @@ cruzplot_gui <- function(...) {
         load_state_map_range(NULL)
         load_state_map_elements(NULL)
         load_state_map_color(NULL)
-        load_state_nondas(NULL)
+        load_state_ndas_ptln(NULL)
+        load_state_ndas_planned(NULL)
 
         load_state_map_range(app_state_save[["map_range"]])
         load_state_map_elements(app_state_save[["map_elements"]])
         load_state_map_color(app_state_save[["map_color"]])
-        load_state_nondas(app_state_save[["nondas"]])
+        load_state_ndas_ptln(app_state_save[["ptln"]])
+        load_state_ndas_planned(app_state_save[["planned"]])
         incProgress(0.35)
 
         # Update widgets on the main page, not in a module

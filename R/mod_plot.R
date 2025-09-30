@@ -11,7 +11,7 @@
 #' @param map_range a list; the output of [mod_map_range_server()]
 #' @param map_elements a list; the output of [mod_map_elements_server()]
 #' @param map_color a list; the output of [mod_map_color_server()]
-#' @param nondas a list; the output of [mod_nondas_server()]
+#' @param nondas a list of the nondas module output(s). See Details
 #'
 #' @details
 #' This module takes in map ranges/elements/etc, 
@@ -21,6 +21,10 @@
 #' where the values are generated. 
 #' 
 #' It also provides functionality for downloading the plot.
+#' 
+#' The `nondas` list is a named list:
+#' - `ptln`: the output of [mod_ndas_ptln_server()] (non-DAS point/line data)
+#' - `planned`: the output of [mod_ndas_planned_server()] (planned transects)
 #'
 #' @returns `mod_plot_ui` returns a [shiny::tagList()] with a 
 #' [shinydashboard::tabBox()] of the [shiny::plotOutput()] object, 
@@ -100,8 +104,7 @@ mod_plot_server  <- function(
     map_range,
     map_elements, 
     map_color, 
-    nondas, 
-    planned
+    nondas
 ) {
   moduleServer(id, function(input, output, session) {
     lon_range_req <- reactive(req(map_range$config()$lon.range))
@@ -112,6 +115,9 @@ mod_plot_server  <- function(
       world2
     })
     plot.res <- 72
+
+    ptln <- nondas$ptln
+    planned <- nondas$planned
 
     ###########################################################################
     plotMap <- reactive({
@@ -362,9 +368,9 @@ mod_plot_server  <- function(
 
 
         #----------------------------------------------------------------------
-        ### Non-DAS data
-        if (nondas$ndas_plot()) {
-          data.ndas <- nondas$cruzNonDas()
+        ### Non-DAS point/line data
+        if (ptln$ndas_plot()) {
+          data.ndas <- ptln$cruzNonDas()
 
           # Plot lines
           data.ndas.l <- data.ndas[[1]]

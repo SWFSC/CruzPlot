@@ -2,7 +2,7 @@
 #'
 #' Shiny module for planned transects
 #'
-#' @name mod_planned
+#' @name mod_ndas_planned
 #'
 #' @inheritParams mod_map_range
 #' 
@@ -17,7 +17,7 @@
 #' - `todo`: ...
 #' 
 #' @export
-mod_planned_ui <- function(id) {
+mod_ndas_planned_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
@@ -25,10 +25,6 @@ mod_planned_ui <- function(id) {
     fluidRow(
       cruz_box(
         title = "Load planned transects", width = 12, 
-        # fluidRow(
-          # box(
-            # width = 12,
-            # tags$strong("Load planned transects"),
             fluidRow(
               column(
                 width = 6, 
@@ -57,9 +53,6 @@ mod_planned_ui <- function(id) {
           ),
           conditionalPanel(
             condition = "output.cruzMapPlannedTransects_Conditional", ns = ns, 
-            # box(
-            #   width = 12,
-            #   tags$strong("Plot loaded planned transects"),
             cruz_box(
               title = "Plot loaded planned transects", width = 12, 
               checkboxInput(ns("planned_transects_plot"), "Plot planned transect lines", value = FALSE),
@@ -106,9 +99,9 @@ mod_planned_ui <- function(id) {
 }
 
 
-#' @name mod_planned
+#' @name mod_ndas_planned
 #' @export
-mod_planned_server  <- function(id, load_state) {
+mod_ndas_planned_server  <- function(id, load_state) {
   moduleServer(id, function(input, output, session) {
     stopifnot(
       is.reactive(load_state)
@@ -117,14 +110,18 @@ mod_planned_server  <- function(id, load_state) {
     # Stored reactiveValues for the module
     cruz.list <- reactiveValues(
       planned.transects = NULL
+      # toplot = NULL, 
+      # toplot2 = NULL, 
+      # color = NULL, 
+      # lty = NULL
     )
 
     cruz.pt.load.toplot <- reactiveVal(NULL)
     cruz.pt.load.toplot2 <- reactiveVal(NULL)
     cruz.pt.load.color <- reactiveVal(NULL)
     cruz.pt.load.lty <- reactiveVal(NULL)
-    cruz.pt.load.tabs <- reactiveVal(FALSE)
-    cruz.pt.load.tabset1 <- reactiveVal(FALSE)
+    # cruz.pt.load.tabs <- reactiveVal(FALSE)
+    # cruz.pt.load.tabset1 <- reactiveVal(FALSE)
 
     # if (input.save$planned_transects_plot) {
     #   cruz.pt.load.toplot(input.save$planned_transects_toplot)
@@ -372,10 +369,13 @@ mod_planned_server  <- function(id, load_state) {
         cruz.pt.load.toplot(NULL)
       })
 
-      selectInput(session$ns("planned_transects_toplot"),
-                  tags$h5("Class(es) to plot"),
-                  choices = choices.list, selected = choices.sel,
-                  multiple = TRUE)
+      selectInput(
+        session$ns("planned_transects_toplot"),
+        tags$h5("Class(es) to plot"),
+        choices = choices.list, 
+        selected = choices.sel,
+        multiple = TRUE
+      )
     })
 
 
@@ -391,9 +391,13 @@ mod_planned_server  <- function(id, load_state) {
         cruz.pt.load.color(NULL)
       })
 
-      selectInput(session$ns("planned_transects_color"), tags$h5("Color(s)"),
-                  choices = cruz.palette.color, selected = choices.sel,
-                  multiple = TRUE)
+      selectInput(
+        session$ns("planned_transects_color"), 
+        tags$h5("Color(s)"),
+        choices = cruz.palette.color, 
+        selected = choices.sel,
+        multiple = TRUE
+      )
     })
 
 

@@ -8,15 +8,7 @@
 \usage{
 mod_plot_ui(id, enable_brush = FALSE)
 
-mod_plot_server(
-  id,
-  height,
-  map_range,
-  map_elements,
-  map_color,
-  nondas,
-  planned
-)
+mod_plot_server(id, height, map_range, map_elements, map_color, nondas)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
@@ -32,7 +24,7 @@ mod_plot_server(
 
 \item{map_color}{a list; the output of \code{\link[=mod_map_color_server]{mod_map_color_server()}}}
 
-\item{nondas}{a list; the output of \code{\link[=mod_nondas_server]{mod_nondas_server()}}}
+\item{nondas}{a list of the nondas module output(s). See Details}
 }
 \value{
 \code{mod_plot_ui} returns a \code{\link[shiny:reexports]{shiny::tagList()}} with a
@@ -56,4 +48,10 @@ validation is expected to happen in individual modules,
 where the values are generated.
 
 It also provides functionality for downloading the plot.
+
+The \code{nondas} list is a named list:
+\itemize{
+\item \code{ptln}: the output of \code{\link[=mod_ndas_ptln_server]{mod_ndas_ptln_server()}} (non-DAS point/line data)
+\item \code{planned}: the output of \code{\link[=mod_ndas_planned_server]{mod_ndas_planned_server()}} (planned transects)
+}
 }
