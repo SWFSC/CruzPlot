@@ -39,29 +39,29 @@ mod_ndas_planned_ui <- function(id) {
               ),
               column(
                 width = 6, 
-                fileInput(ns("planned_transects_file"), tags$h5("Load CSV file"), accept = ".csv")
+                fileInput(ns("file"), tags$h5("Load CSV file"), accept = ".csv")
               )
             ), 
             fluidRow(
-              column(3, uiOutput(ns("planned_transects_lon_uiOut_select"))),
-              column(3, uiOutput(ns("planned_transects_lat_uiOut_select"))),
-              column(3, uiOutput(ns("planned_transects_num_uiOut_select"))),
-              column(3, uiOutput(ns("planned_transects_class1_uiOut_select")))
+              column(3, uiOutput(ns("lon_uiOut_select"))),
+              column(3, uiOutput(ns("lat_uiOut_select"))),
+              column(3, uiOutput(ns("num_uiOut_select"))),
+              column(3, uiOutput(ns("class1_uiOut_select")))
             ),
             fluidRow(
-              column(3, uiOutput(ns("planned_transects_class2_uiOut_select"))),
-              column(3, offset = 1, tags$br(), tags$br(), uiOutput(ns("planned_transects_execute_uiOut_button"))),
-              column(5, tags$br(), tags$br(), textOutput(ns("planned_transects_text")))
+              column(3, uiOutput(ns("class2_uiOut_select"))),
+              column(3, offset = 1, tags$br(), tags$br(), uiOutput(ns("execute_uiOut_button"))),
+              column(5, tags$br(), tags$br(), textOutput(ns("text")))
             ),
-            tags$span(textOutput(ns("planned_transects_message")), style = "color: blue;"), 
+            tags$span(textOutput(ns("message")), style = "color: blue;"), 
           ),
           conditionalPanel(
             condition = "output.cruzMapPlannedTransects_Conditional", ns = ns, 
             cruz_box(
               title = "Plot loaded planned transects", width = 12, 
-              checkboxInput(ns("planned_transects_plot"), "Plot planned transect lines", value = FALSE),
+              checkboxInput(ns("plot"), "Plot planned transect lines", value = FALSE),
               conditionalPanel(
-                condition = "input.planned_transects_plot", ns = ns, 
+                condition = "input.plot", ns = ns, 
                 column(
                   width = 12, 
                   helpText(
@@ -76,13 +76,13 @@ mod_ndas_planned_ui <- function(id) {
                   width = 12,
                   ui_select_instructions(),
                   fluidRow(
-                    column(6, uiOutput(ns("planned_transects_toplot_uiOut_select"))),
-                    column(6, uiOutput(ns("planned_transects_color_uiOut_select")))
+                    column(6, uiOutput(ns("toplot_uiOut_select"))),
+                    column(6, uiOutput(ns("color_uiOut_select")))
                   ),
                   fluidRow(
-                    column(4, uiOutput(ns("planned_transects_toplot2_uiOut_select"))),
-                    column(4, uiOutput(ns("planned_transects_lty_uiOut_select"))),
-                    column(4, numericInput(ns("planned_transects_lwd"), tags$h5("Line width"),
+                    column(4, uiOutput(ns("toplot2_uiOut_select"))),
+                    column(4, uiOutput(ns("lty_uiOut_select"))),
+                    column(4, numericInput(ns("lwd"), tags$h5("Line width"),
                                             value = 1, min = 0, step = 1))
                   )
                 )
@@ -91,9 +91,9 @@ mod_ndas_planned_ui <- function(id) {
             # box(
             #   width = 12,
             #   tags$strong("Remove loaded planned transects"),
-            #   uiOutput("planned_transects_toremove_uiOut_select"),
-            #   uiOutput("planned_transects_toremove_execute_uiOut_button"),
-            #   textOutput("planned_transects_remove_text")
+            #   uiOutput("toremove_uiOut_select"),
+            #   uiOutput("toremove_execute_uiOut_button"),
+            #   textOutput("remove_text")
             # )
           # )
         # )
@@ -133,10 +133,10 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
 
     ###############################################################################
-    output$planned_transects_text <- renderText(planned_transects())
-    # output$planned_transects_remove_text <- renderText(planned_transects_remove())
+    output$text <- renderText(planned_transects())
+    # output$remove_text <- renderText(remove())
 
-    output$planned_transects_message <- renderText({
+    output$message <- renderText({
       req(cruz.list$planned.transects)
       "A planned transects file is loaded"
     })
@@ -156,13 +156,13 @@ mod_ndas_planned_server  <- function(id, load_state) {
     ### Turn plot checkbox on if planned transects are added
     observe({
       if (isTruthy(cruz.list$planned.transects))
-        updateCheckboxInput(session, "planned_transects_plot", value = TRUE)
+        updateCheckboxInput(session, "plot", value = TRUE)
     })
 
     ### Turn plot checkbox off if all planned transects are removed
     observe({
       if (is.null(cruz.list$planned.transects))
-        updateCheckboxInput(session, "planned_transects_plot", value = FALSE)
+        updateCheckboxInput(session, "plot", value = FALSE)
     })
 
     ###############################################################################
@@ -171,10 +171,10 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
     #----------------------------------------------------------
     ### Get names from loaded csv file
-    planned_transects_file_names <- reactive({
-      req(planned_transects_read_csv())
+    file_names <- reactive({
+      req(read_csv())
 
-      csv.names <- names(planned_transects_read_csv()[[2]])
+      csv.names <- names(read_csv()[[2]])
       choices.list <- seq_along(csv.names)
       names(choices.list) <- csv.names
 
@@ -182,43 +182,43 @@ mod_ndas_planned_server  <- function(id, load_state) {
     })
 
     ### Create ui inputs for selecting lon/lat columns
-    output$planned_transects_lon_uiOut_select <- renderUI({
+    output$lon_uiOut_select <- renderUI({
       selectInput(
-        session$ns("planned_transects_lon"), h5("Longitude column"),
-        choices = planned_transects_file_names(), selected = 1
+        session$ns("lon"), h5("Longitude column"),
+        choices = file_names(), selected = 1
       )
     })
 
-    output$planned_transects_lat_uiOut_select <- renderUI({
+    output$lat_uiOut_select <- renderUI({
       selectInput(
-        session$ns("planned_transects_lat"), h5("Latitude column"),
-        choices = planned_transects_file_names(), selected = 2
+        session$ns("lat"), h5("Latitude column"),
+        choices = file_names(), selected = 2
       )
     })
 
     ### Widgets for transect numbers
-    output$planned_transects_num_uiOut_select<- renderUI({
+    output$num_uiOut_select<- renderUI({
       selectInput(
-        session$ns("planned_transects_num"), h5("Transect number column"),
-        choices = planned_transects_file_names(), selected = 3
+        session$ns("num"), h5("Transect number column"),
+        choices = file_names(), selected = 3
       )
     })
 
     ### Widget for transect classes 1
-    output$planned_transects_class1_uiOut_select<- renderUI({
+    output$class1_uiOut_select<- renderUI({
       selectInput(
-        session$ns("planned_transects_class1"), h5("Transect class column"),
-        choices = planned_transects_file_names(), selected = 4
+        session$ns("class1"), h5("Transect class column"),
+        choices = file_names(), selected = 4
       )
     })
 
     ### Widget for transect classes 2
-    output$planned_transects_class2_uiOut_select<- renderUI({
-      choices.list <- planned_transects_file_names()
+    output$class2_uiOut_select<- renderUI({
+      choices.list <- file_names()
       choices.list <- c("N/A - No class 2 info" = 0, choices.list)
 
       selectInput(
-        session$ns("planned_transects_class2"), h5("Transect class 2 column"),
+        session$ns("class2"), h5("Transect class 2 column"),
         choices = choices.list, selected = 0
       )
     })
@@ -226,10 +226,10 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
     #----------------------------------------------------------
     ### Button to add selected transect data to CruzPlot
-    output$planned_transects_execute_uiOut_button <- renderUI({
-      req(planned_transects_read_csv())
+    output$execute_uiOut_button <- renderUI({
+      req(read_csv())
 
-      actionButton(session$ns("planned_transects_execute"), "Add data to CruzPlot")
+      actionButton(session$ns("execute"), "Add data to CruzPlot")
     })
 
 
@@ -238,10 +238,10 @@ mod_ndas_planned_server  <- function(id, load_state) {
     # Process transect file and data and output widget to select ones to plot
 
     ### Read csv file
-    planned_transects_read_csv <- reactive({
-      req(input$planned_transects_file)
+    read_csv <- reactive({
+      req(input$file)
 
-      file.all <- input$planned_transects_file
+      file.all <- input$file
       file.name <- file.all$name
       file.data <- try(read.csv(file.all$datapath, stringsAsFactors = FALSE),
                       silent = TRUE)
@@ -255,17 +255,17 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
 
     ### Add transect data to reactiveValue
-    planned_transects <- eventReactive(input$planned_transects_execute, {
+    planned_transects <- eventReactive(input$execute, {
       validate(
-        need(input$planned_transects_lon != input$planned_transects_lat,
+        need(input$lon != input$lat,
             "Error: The longitude column cannot be the same as the latitude column")
       )
 
-      x <- planned_transects_read_csv()[[2]] %>%
-        dplyr::select(lon = as.numeric(input$planned_transects_lon),
-                      lat = as.numeric(input$planned_transects_lat),
-                      num = as.numeric(input$planned_transects_num),
-                      class1 = as.numeric(input$planned_transects_class1))
+      x <- read_csv()[[2]] %>%
+        dplyr::select(lon = as.numeric(input$lon),
+                      lat = as.numeric(input$lat),
+                      num = as.numeric(input$num),
+                      class1 = as.numeric(input$class1))
 
       validate(
         need(all(dplyr::between(x$lon, -180, 180)),
@@ -278,10 +278,10 @@ mod_ndas_planned_server  <- function(id, load_state) {
             "Error: Planned transect 'class' column cannot have any NA values")
       )
 
-      if (as.numeric(input$planned_transects_class2) != 0) {
+      if (as.numeric(input$class2) != 0) {
         x <- cbind(
-          x, dplyr::select(planned_transects_read_csv()[[2]],
-                          class2 = as.numeric(input$planned_transects_class2))
+          x, dplyr::select(read_csv()[[2]],
+                          class2 = as.numeric(input$class2))
         )
         validate(
           need(!anyNA(x$class2),
@@ -301,21 +301,21 @@ mod_ndas_planned_server  <- function(id, load_state) {
     ###############################################################################
     # Processing loaded planned transects
 
-    planned_transects_class1 <- reactive({
+    class1 <- reactive({
       unique(cruz.list$planned.transects$class1)
     })
 
-    planned_transects_class2 <- reactive({
+    class2 <- reactive({
       unique(cruz.list$planned.transects$class2)
     })
 
 
     ###############################################################################
     ### Widgets for selecting planned transect class(es) to plot and their color
-    output$planned_transects_toplot_uiOut_select <- renderUI({
+    output$toplot_uiOut_select <- renderUI({
       req(cruz.list$planned.transects)
 
-      choices.list.names <- planned_transects_class1()
+      choices.list.names <- class1()
       choices.list <- seq_along(choices.list.names)
       names(choices.list) <- choices.list.names
 
@@ -329,17 +329,17 @@ mod_ndas_planned_server  <- function(id, load_state) {
       })
 
       selectInput(
-        session$ns("planned_transects_toplot"),
+        session$ns("toplot"),
         tags$h5("Class(es) to plot"),
         choices = choices.list, 
         selected = choices.sel,
         multiple = TRUE
       )
     })
-    outputOptions(output, "planned_transects_toplot_uiOut_select", suspendWhenHidden = FALSE)
+    outputOptions(output, "toplot_uiOut_select", suspendWhenHidden = FALSE)
 
 
-    output$planned_transects_color_uiOut_select <- renderUI({
+    output$color_uiOut_select <- renderUI({
       req(cruz.list$planned.transects)
 
       isolate({
@@ -352,22 +352,22 @@ mod_ndas_planned_server  <- function(id, load_state) {
       })
 
       selectInput(
-        session$ns("planned_transects_color"), 
+        session$ns("color"), 
         tags$h5("Color(s)"),
         choices = cruz.palette.color, 
         selected = choices.sel,
         multiple = TRUE
       )
     })
-    outputOptions(output, "planned_transects_color_uiOut_select", suspendWhenHidden = FALSE)
+    outputOptions(output, "color_uiOut_select", suspendWhenHidden = FALSE)
 
 
     #----------------------------------------------------------
     ### Widgets for selecting planned transect class 2(s) to plot and their lty
-    output$planned_transects_toplot2_uiOut_select <- renderUI({
+    output$toplot2_uiOut_select <- renderUI({
       req(cruz.list$planned.transects)
 
-      y <- planned_transects_class2()
+      y <- class2()
 
       if (anyNA(y)) {
         helpText("No class 2 column was selected, and thus you can only specify",
@@ -388,7 +388,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
         })
 
         selectInput(
-          session$ns("planned_transects_toplot2"), 
+          session$ns("toplot2"), 
           tags$h5("Class 2(s) to plot"),
           choices = choices.list, 
           selected = choices.sel,
@@ -396,12 +396,12 @@ mod_ndas_planned_server  <- function(id, load_state) {
         )
       }
     })
-    outputOptions(output, "planned_transects_toplot2_uiOut_select", suspendWhenHidden = FALSE)
+    outputOptions(output, "toplot2_uiOut_select", suspendWhenHidden = FALSE)
 
-    # output$planned_transects_lty_uiOut_message <- renderUI({
-    #   req(cruz.list$planned.transects, input$planned_transects_plot)
+    # output$lty_uiOut_message <- renderUI({
+    #   req(cruz.list$planned.transects, input$plot)
     #
-    #   if (!anyNA(planned_transects_class2())) {
+    #   if (!anyNA(class2())) {
     #     helpText("Select either one line type or the same number of line types as transect class 2s.",
     #              "When multiple line types are selected, the order in which transect class 2(s) are",
     #              "selected to be plotted corresponds to order of specified line type(s).")
@@ -410,11 +410,11 @@ mod_ndas_planned_server  <- function(id, load_state) {
     #   }
     # })
 
-    output$planned_transects_lty_uiOut_select <- renderUI({
+    output$lty_uiOut_select <- renderUI({
       req(cruz.list$planned.transects)
 
       input.lab <- ifelse(
-        anyNA(planned_transects_class2()), "Line type", "Line type(s)"
+        anyNA(class2()), "Line type", "Line type(s)"
       )
 
       isolate({
@@ -427,43 +427,43 @@ mod_ndas_planned_server  <- function(id, load_state) {
       })
 
       selectInput(
-        session$ns("planned_transects_lty"), 
+        session$ns("lty"), 
         tags$h5(input.lab),
         choices = cruz.line.type, 
         selected = choices.sel,
-        multiple = !anyNA(planned_transects_class2())
+        multiple = !anyNA(class2())
       )
     })
-    outputOptions(output, "planned_transects_lty_uiOut_select", suspendWhenHidden = FALSE)
+    outputOptions(output, "lty_uiOut_select", suspendWhenHidden = FALSE)
 
     ###############################################################################
     # Removing loaded transects
     #   Currently only allows one transect file to be loaded
 
     # ### Widget for selecting planned transect(s) to remove
-    # output$planned_transects_toremove_uiOut_select <- renderUI({
+    # output$toremove_uiOut_select <- renderUI({
     #   req(cruz.list$planned.transects)
     #
-    #   choices.list.names <- planned_transects_class1()
+    #   choices.list.names <- class1()
     #   choices.list <- seq_along(choices.list.names)
     #   names(choices.list) <- choices.list.names
     #
-    #   selectInput("planned_transects_toremove",
+    #   selectInput("toremove",
     #                  tags$h5("Select planned transect class(es) to remove"),
     #                  choices = choices.list, multiple = TRUE)
     # })
     #
-    # output$planned_transects_toremove_execute_uiOut_button <- renderUI({
+    # output$toremove_execute_uiOut_button <- renderUI({
     #   req(cruz.list$planned.transects)
     #
-    #   actionButton("planned_transects_toremove_execute", "Remove")
+    #   actionButton("toremove_execute", "Remove")
     # })
     #
     #
     # ### Remove selected transects
-    # planned_transects_remove <- eventReactive(input$planned_transects_toremove_execute, {
+    # remove <- eventReactive(input$toremove_execute, {
     #   req(cruz.list$planned.transects)
-    #   y <- as.numeric(input$planned_transects_toremove)
+    #   y <- as.numeric(input$toremove)
     #
     #   validate(
     #     need(length(y) != 0,
@@ -471,7 +471,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
     #   )
     #
     #   x <- cruz.list$planned.transects %>%
-    #     filter(!(class1 %in% planned_transects_class1()[y]))
+    #     filter(!(class1 %in% class1()[y]))
     #
     #   if (nrow(x) == 0) {
     #     cruz.list$planned.transects <- NULL
@@ -486,7 +486,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
     ###############################################################################
     ###############################################################################
     pltransect <- reactive({
-      if (input$planned_transects_plot) {
+      if (input$plot) {
         pltransect_list()
         } else {
           NULL
@@ -495,20 +495,20 @@ mod_ndas_planned_server  <- function(id, load_state) {
     
     pltransect_list <- reactive({     
       validate(
-        need(input$planned_transects_toplot,
+        need(input$toplot,
             "Please select at least one class of planned transects to plot")
       )
 
       #So that renderUI()'s can catch up
-      req(input$planned_transects_color, input$planned_transects_lty)
+      req(input$color, input$lty)
 
       # Get user inputs
       pltrans <- cruz.list$planned.transects
-      pltrans.which <- as.numeric(input$planned_transects_toplot)
-      pltrans.which2 <- as.numeric(input$planned_transects_toplot2)
-      pltrans.colors <- input$planned_transects_color
-      pltrans.lty <- as.numeric(input$planned_transects_lty)
-      pltrans.lwd <- input$planned_transects_lwd
+      pltrans.which <- as.numeric(input$toplot)
+      pltrans.which2 <- as.numeric(input$toplot2)
+      pltrans.colors <- input$color
+      pltrans.lty <- as.numeric(input$lty)
+      pltrans.lwd <- input$lwd
 
       # Process user inputs
       if (length(pltrans.colors) == 1) {
@@ -521,12 +521,12 @@ mod_ndas_planned_server  <- function(id, load_state) {
                   "1 or equal to than the number of selected planned transects"))
       )
 
-      pltrans.class1 <- planned_transects_class1()[pltrans.which]
+      pltrans.class1 <- class1()[pltrans.which]
       names(pltrans.colors) <- pltrans.class1
 
       pltrans <- dplyr::filter(pltrans, .data$class1 %in% pltrans.class1)
 
-      if (anyNA(planned_transects_class2())) {
+      if (anyNA(class2())) {
         # Class 2 was not specified
         pltrans.list <- lapply(pltrans.class1, function(i) {
           x <- dplyr::filter(pltrans, .data$class1 == i)
@@ -555,7 +555,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
               "Please select at least one class 2 type to plot")
         )
 
-        pltrans.class2 <- planned_transects_class2()[pltrans.which2]
+        pltrans.class2 <- class2()[pltrans.which2]
         pltrans <- dplyr::filter(pltrans, .data$class2 %in% pltrans.class2)
 
         if (length(pltrans.lty) == 1) {
@@ -597,7 +597,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
     # Do the planned transect have class2 info? 
     pltransect_class2 <- reactive({
-      anyNA(planned_transects_class2())
+      anyNA(class2())
     })
 
     ###############################################################################
@@ -605,12 +605,12 @@ mod_ndas_planned_server  <- function(id, load_state) {
     ### Save values
     to_save <- reactive({
       list(
-        save_widget("planned_transects_plot", "check"),
-        save_widget("planned_transects_toplot", "select"), 
-        save_widget("planned_transects_toplot2", "select"), 
-        save_widget("planned_transects_color", "select"), 
-        save_widget("planned_transects_lty", "select"), 
-        save_widget("planned_transects_lwd", "numeric"), 
+        save_widget("plot", "check"),
+        save_widget("toplot", "select"), 
+        save_widget("toplot2", "select"), 
+        save_widget("color", "select"), 
+        save_widget("lty", "select"), 
+        save_widget("lwd", "numeric"), 
         save_widget("planned.transects", "reactive", cruz.list$planned.transects)
       )
     })
@@ -619,7 +619,6 @@ mod_ndas_planned_server  <- function(id, load_state) {
     list(
       to_save = to_save, 
       pltransect = pltransect, 
-      # planned_transects_class2 = planned_transects_class2
       pltransect_class2 = pltransect_class2
     )
   })
