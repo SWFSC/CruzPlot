@@ -67,13 +67,13 @@ mod_map_elements_ui <- function(id) {
         ),
         # Ticks & Labels
         cruz_box(
-          title = "Ticks & Labels", width = 12, 
+          title = "Ticks", width = 12, 
           checkboxInput(ns("tick"), label = "Plot tick marks and/or their labels", value = TRUE),
           conditionalPanel(
             condition = "input.tick", ns = ns,
             fluidRow(
               box(
-                title = "Tick Marks", solidHeader = FALSE, width = 6, collapsible = TRUE,
+                title = "Tick marks", solidHeader = FALSE, width = 6, collapsible = TRUE,
                 fluidRow(
                   column(
                     width = 6,

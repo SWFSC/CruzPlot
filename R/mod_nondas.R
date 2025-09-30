@@ -7,9 +7,9 @@
 #' @inheritParams mod_map_range
 #' 
 #' @details
-#' This module handles...
+#' This module handles the loading, processing, and plotting of non-DAS data
 #'
-#' @returns The UI function returns a [shinydashboard::tabBox()] object
+#' @returns The UI function returns a [shiny::tabPanel()] object
 #' 
 #' The server function returns a list with the following named elements:
 #' - `to_save`: a list of values to be saved in an 'app state' file. 
@@ -20,167 +20,113 @@
 mod_nondas_ui <- function(id) {
   ns <- NS(id)
 
-  tabBox(
-    title = "", id = "tabset2", width = 6,
-    tabPanel(
-      title = "Non-DAS data",
-      fluidRow(
-        cruz_box(
-          title = "Loaded data", width = 12,
-          DT::dataTableOutput(ns("cruzNonDasLoaded")),
-          helpText(HTML("<br/>")), 
-          column(4, uiOutput(ns("ndas_remove_execute"))),
-          column(3, textOutput(ns("cruzNonDasRemove_text")))
+  tabPanel(
+    title = "Points and Lines",
+    fluidRow(
+      cruz_box(
+        title = "Loaded data", width = 12,
+        DT::dataTableOutput(ns("cruzNonDasLoaded")),
+        helpText(HTML("<br/>")), 
+        column(4, uiOutput(ns("ndas_remove_execute"))),
+        column(3, textOutput(ns("cruzNonDasRemove_text")))
+      ),
+      cruz_box(
+        title = "Plot data",  width = 12,
+        checkboxInput(ns("ndas_plot"), tags$h5("Plot loaded non-DAS data"), value = FALSE),
+        conditionalPanel(
+          condition = "input.ndas_plot", ns = ns, 
+          ui_select_instructions(),
+          uiOutput(ns("ndas_toplot_uiOut_select"))
+        )
+      ), 
+    # ),
+    # fluidRow(
+      cruz_box(
+        title = "Load data", width = 12,
+        helpText(
+          "Longitudes must be in -180 to 180 range.",
+          "See the manual for longitude and latitude column naming requirements"
         ),
-        cruz_box(
-          title = "Plot data",  width = 12,
-          checkboxInput(ns("ndas_plot"), tags$h5("Plot loaded non-DAS data"), value = FALSE),
-          conditionalPanel(
-            condition = "input.ndas_plot", ns = ns, 
-            ui_select_instructions(),
-            uiOutput(ns("ndas_toplot_uiOut_select"))
-          )
-        ), 
-      # ),
-      # fluidRow(
-        cruz_box(
-          title = "Load data", width = 12,
-          helpText(
-            "Longitudes must be in -180 to 180 range.",
-            "See the manual for longitude and latitude column naming requirements"
-          ),
 
-          fluidRow(
-            column(
-              width = 6, 
-              fileInput(ns("ndas_file"), label = tags$h5("Load non-DAS CSV file"))
-            ), 
-            column(
-              width = 6, 
-              conditionalPanel(
-                condition = "output.cruzNonDasFile_Conditional", ns = ns, 
-                radioButtons(
-                  ns("ndas_plot_type"), label = tags$h5("Type of data"), 
-                  choices = list("Line" = 1, "Point" = 2), selected = 1
+        fluidRow(
+          column(6, fileInput(ns("ndas_file"), tags$h5("Load non-DAS CSV file"))), 
+          column(
+            width = 6, 
+            conditionalPanel(
+              condition = "output.cruzNonDasFile_Conditional", ns = ns, 
+              radioButtons(
+                ns("ndas_plot_type"), tags$h5("Type of data"), 
+                choices = list("Line" = 1, "Point" = 2), selected = 1
+              )
+            )
+          )
+        ),
+        textOutput(ns("cruzNonDasFile_LonLat_text")),
+        conditionalPanel(
+          condition = "output.cruzNonDasFile_Conditional", ns = ns, 
+          # radioButtons(
+          #   ns("ndas_plot_type"), tags$h5("Type of data"), 
+          #   choices = list("Line" = 1, "Point" = 2), selected = 1
+          # ),
+          conditionalPanel(
+            condition = "input.ndas_plot_type==1", ns = ns, 
+            fluidRow(
+              column(
+                width = 3,
+                selectInput(
+                  ns("ndas_line_lty"), tags$h5("Line type"), 
+                  choices = cruz.line.type, selected = 1
                 )
+              ),
+              column(
+                width = 3, 
+                selectInput(
+                  ns("ndas_line_col"), tags$h5("Line color"), 
+                  choices = cruz.palette.color,  selected = "black")
+                ),
+              column(
+                width = 3,
+                numericInput(
+                  ns("ndas_line_lwd"), tags$h5("Line width"), 
+                  value = 1, min = 1, max = 6, step = 1
+                ), 
               )
             )
           ),
-          textOutput(ns("cruzNonDasFile_LonLat_text")),
           conditionalPanel(
-            condition = "output.cruzNonDasFile_Conditional", ns = ns, 
-            # radioButtons(
-            #   ns("ndas_plot_type"), label = tags$h5("Type of data"), 
-            #   choices = list("Line" = 1, "Point" = 2), selected = 1
-            # ),
-            conditionalPanel(
-              condition = "input.ndas_plot_type==1", ns = ns, 
-              fluidRow(
-                column(
-                  width = 3,
-                  selectInput(
-                    ns("ndas_line_lty"), label = tags$h5("Line type"), 
-                    choices = cruz.line.type, selected = 1
-                  )
-                ),
-                column(
-                  width = 3, 
-                  selectInput(
-                    ns("ndas_line_col"), label = tags$h5("Line color"), 
-                    choices = cruz.palette.color,  selected = "black")
-                  ),
-                column(
-                  width = 3,
-                  numericInput(
-                    ns("ndas_line_lwd"), label = tags$h5("Line width"), 
-                    value = 1, min = 1, max = 6, step = 1
-                  ), 
+            condition = "input.ndas_plot_type==2", ns = ns, 
+            fluidRow(
+              column(
+                width = 3,
+                selectInput(
+                  ns("ndas_pt_pch"), tags$h5("Point type"), 
+                  choices = cruz.symbol.type, selected = 1
                 )
-              )
-            ),
-            conditionalPanel(
-              condition = "input.ndas_plot_type==2", ns = ns, 
-              fluidRow(
-                column(
-                  width = 3,
-                  selectInput(
-                    ns("ndas_pt_pch"), label = tags$h5("Point type"), 
-                    choices = cruz.symbol.type, selected = 1
-                  )
-                ),
-                column(
-                  width = 3,
-                  selectInput(
-                    ns("ndas_pt_col"), label = tags$h5("Point color"), 
-                    choices = cruz.palette.color, selected = "black"
-                  )
-                ),                
-                column(
-                  width = 3,
-                  numericInput(
-                    ns("ndas_pt_cex"), label = tags$h5("Point size"), 
-                    value = 1, min = 0.1, max = 5, step = 0.1
-                  )
-                ),
-                column(
-                  width = 3,
-                  numericInput(
-                    ns("ndas_pt_lwd"), label = tags$h5("Point line width"), 
-                    value = 1, min = 1, max = 6, step = 1)
+              ),
+              column(
+                width = 3,
+                selectInput(
+                  ns("ndas_pt_col"), tags$h5("Point color"), 
+                  choices = cruz.palette.color, selected = "black"
                 )
+              ),                
+              column(
+                width = 3,
+                numericInput(
+                  ns("ndas_pt_cex"), tags$h5("Point size"), 
+                  value = 1, min = 0.1, max = 5, step = 0.1
+                )
+              ),
+              column(
+                width = 3,
+                numericInput(
+                  ns("ndas_pt_lwd"), tags$h5("Point line width"), 
+                  value = 1, min = 1, max = 6, step = 1)
               )
-            ),
-            # conditionalPanel(
-            #   condition = "input.ndas_plot_type==1", ns = ns, 
-            #   fluidRow(
-            #     column(
-            #       width = 6,
-            #       selectInput(
-            #         ns("ndas_line_lty"), label = tags$h5("Line type"), 
-            #         choices = cruz.line.type, selected = 1
-            #       ),
-            #       numericInput(
-            #         ns("ndas_line_lwd"), label = tags$h5("Line width"), 
-            #         value = 1, min = 1, max = 6, step = 1
-            #       )
-            #     ),
-            #     column(
-            #       width = 6, 
-            #       selectInput(
-            #         ns("ndas_line_col"), label = tags$h5("Line color"), 
-            #         choices = cruz.palette.color,  selected = "black")
-            #       )
-            #   )
-            # ),
-            # conditionalPanel(
-            #   condition = "input.ndas_plot_type==2", ns = ns, 
-            #   fluidRow(
-            #     column(
-            #       width = 6,
-            #       selectInput(
-            #         ns("ndas_pt_pch"), label = tags$h5("Point type"), 
-            #         choices = cruz.symbol.type, selected = 1
-            #       ),
-            #       numericInput(
-            #         ns("ndas_pt_cex"), label = tags$h5("Point size"), 
-            #         value = 1, min = 0.1, max = 5, step = 0.1
-            #       )
-            #     ),
-            #     column(
-            #       width = 6,
-            #       selectInput(
-            #         ns("ndas_pt_col"), label = tags$h5("Point color"), 
-            #         choices = cruz.palette.color, selected = "black"
-            #       ),
-            #       numericInput(
-            #         ns("ndas_pt_lwd"), label = tags$h5("Point line width"), 
-            #         value = 1, min = 1, max = 6, step = 1)
-            #     )
-            #   )
-            # ),
-            actionButton(ns("ndas_load_execute"), "Add non-DAS data to CruzPlot"),
-            textOutput(ns("cruzNonDasAdd_text"))
-          )
+            )
+          ),
+          actionButton(ns("ndas_load_execute"), "Add non-DAS data to CruzPlot"),
+          textOutput(ns("cruzNonDasAdd_text"))
         )
       )
     )

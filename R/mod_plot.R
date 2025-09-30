@@ -100,7 +100,8 @@ mod_plot_server  <- function(
     map_range,
     map_elements, 
     map_color, 
-    nondas
+    nondas, 
+    planned
 ) {
   moduleServer(id, function(input, output, session) {
     lon_range_req <- reactive(req(map_range$config()$lon.range))
@@ -332,7 +333,32 @@ mod_plot_server  <- function(
                 cex.lab = axes.info$cex, line = 4)
         }
 
-        ### TODO: planned transects
+        #----------------------------------------------------------------------
+        ### Planned transects
+        if (!is.null(planned$pltransect())) {
+          pltransect <- planned$pltransect()
+          if (anyNA(planned$planned_transects_class2())) {
+            # No class2
+            for (i in pltransect) {
+              for (k in i) {
+                lines(
+                  x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]]
+                )
+              }
+            }
+          } else {
+            # Yes class 2
+            for (i in pltransect) {
+              for (j in i) {
+                for (k in j) {
+                  lines(
+                    x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]] 
+                  )
+                }
+              }
+            }
+          }
+        }
 
 
         #----------------------------------------------------------------------

@@ -44,8 +44,7 @@ cruzplot_gui <- function(...) {
       sidebarMenu(
         id = "tabs",
         menuItem("Create Map", tabName = "createmap", icon = icon("th", lib = "font-awesome")),
-        # menuItem("App State", tabName = "appstate", icon = icon("th", lib = "font-awesome")),
-        # menuItem("Plot DAS Data", tabName = "DASplot", icon = icon("th")),
+        # menuItem("Plot DAS Data", tabName = "das", icon = icon("th")),
         menuItem("Plot Non-DAS Data", tabName = "nondas", icon = icon("th")),
         menuItem(
           HTML(paste0("Color and Formatting", "<br/>", "Options")), 
@@ -124,7 +123,11 @@ cruzplot_gui <- function(...) {
           tabName = "nondas",
           fluidRow(
             mod_plot_ui("plot_ndas"), 
-            mod_nondas_ui("nondas")            
+            tabBox(
+              title = "Non-DAS", id = "tabset2", width = 6,
+              mod_planned_ui("planned"), 
+              mod_nondas_ui("nondas")
+            )
           )
         ), 
         mod_display_format_ui("display_format", tab_name = "display_format"), 
@@ -171,7 +174,7 @@ cruzplot_gui <- function(...) {
       if (input$color_style == 1) {
         palette("default")
         c.pal <- cruz.palette.color
-        # updateSelectInput(session, "planned_transects_color", choices = c.pal, selected = "grey")
+        updateSelectInput(session, NS("planned")("planned_transects_color"), choices = c.pal, selected = "grey")
         updateSelectInput(session, NS("map_color")("color_land"), choices = c.pal, selected = "bisque1")
         updateSelectInput(session, NS("map_color")("color_water"), choices = c.pal, selected = "white")
         updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = "black")
@@ -188,7 +191,7 @@ cruzplot_gui <- function(...) {
       } else if (input$color_style == 2) {
         palette(gray(0:5/5))
         c.pal <- cruz.palette.gray
-        # updateSelectInput(session, "planned_transects_color", choices = c.pal, selected = "grey")
+        updateSelectInput(session, NS("planned")("planned_transects_color"), choices = c.pal, selected = "grey")
         updateSelectInput(session, NS("map_color")("color_land"), choices = c.pal, selected = 4)
         updateSelectInput(session, NS("map_color")("color_water"), choices = c.pal, selected = 0)
         updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = 1)
@@ -212,6 +215,7 @@ cruzplot_gui <- function(...) {
     load_state_map_elements <- reactiveVal()
     load_state_map_color <- reactiveVal()
     load_state_nondas <- reactiveVal()
+    # TODO
 
     # Run the modules
     map_range <- mod_map_range_server("map_range", load_state_map_range, plot1.list$brush)
@@ -221,6 +225,7 @@ cruzplot_gui <- function(...) {
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range_config)
     
     nondas <- mod_nondas_server("nondas", load_state_nondas)
+    planned <- mod_planned_server("planned", load_state_nondas)
 
     #----------------------------------------------------------------------------
     ### Dashboard-level display tabs
@@ -230,9 +235,9 @@ cruzplot_gui <- function(...) {
     ### Plots
     # TODO: do like the following for consistency?
     # try(do.call(odbc::dbConnect, purrr::compact(db.list)), silent = silent)
-    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas)
-    mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas)
-    mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas)
+    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas, planned)
+    mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas, planned)
+    mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas, planned)
 
 
     #----------------------------------------------------------------------------

@@ -19,7 +19,7 @@ saves the state, using the 'to_save' output list, and then loads
 those values into the \code{load_state} object when a saved app state is loaded}
 }
 \value{
-The UI function returns a \code{\link[shinydashboard:tabBox]{shinydashboard::tabBox()}} object
+The UI function returns a \code{\link[shiny:tabPanel]{shiny::tabPanel()}} object
 
 The server function returns a list with the following named elements:
 \itemize{
@@ -32,5 +32,5 @@ See \code{\link[=cruzplot_gui]{cruzplot_gui()}} for more info.
 Shiny module for non-DAS data
 }
 \details{
-This module handles...
+This module handles the loading, processing, and plotting of non-DAS data
 }

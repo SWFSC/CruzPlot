@@ -88,7 +88,7 @@ mod_map_range_ui <- function(
           column(
             width = 3,
             selectInput(
-              ns("resolution"), label = tags$h5("Resolution"),
+              ns("resolution"), tags$h5("Resolution"),
               choices = list("Low" = 1, "High" = 2), selected = start_vals[["res"]]
             )
           ),
@@ -105,13 +105,13 @@ mod_map_range_ui <- function(
       ), 
       cruz_box(
         title = "Coastline", width = 12, 
-        checkboxInput(ns("coast"), label = "Use coastline file", value = FALSE),
+        checkboxInput(ns("coast"), "Use coastline file", value = FALSE),
         conditionalPanel(
           condition = "input.coast", ns = ns, 
           helpText("Map limits will automatically be updated to the extent of the",
                     "coastline file. Note: the app can only process coastline files",
                     "with points between -180 and 0. "),
-          fileInput("coast_file", label = tags$h5("Coastline file"), width = "50%"), 
+          fileInput("coast_file", tags$h5("Coastline file"), width = "50%", accept = ".csv"), 
           textOutput(ns("coast_load_text")),
         )
       )
