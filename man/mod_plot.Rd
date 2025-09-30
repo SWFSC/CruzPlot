@@ -18,8 +18,7 @@ mod_plot_server(id, height, map_range, map_elements, map_color, nondas)
 
 \item{height}{a reactive indicating the map height, in pixels}
 
-\item{map_range}{a reactive; the element named 'map_range'
-from the output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
+\item{map_range}{a list; the output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 
 \item{map_elements}{a list; the output of \code{\link[=mod_map_elements_server]{mod_map_elements_server()}}}
 

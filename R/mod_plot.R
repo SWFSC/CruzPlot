@@ -8,8 +8,7 @@
 #' @param enable_brush boolean indicating if the plotOutput should include
 #'   `brush = ns("map_brush")`
 #' @param height a reactive indicating the map height, in pixels
-#' @param map_range a reactive; the element named 'map_range' 
-#'   from the output of [mod_map_range_server()]
+#' @param map_range a list; the output of [mod_map_range_server()]
 #' @param map_elements a list; the output of [mod_map_elements_server()]
 #' @param map_color a list; the output of [mod_map_color_server()]
 #' @param nondas a list; the output of [mod_nondas_server()]
@@ -95,8 +94,13 @@ mod_plot_server  <- function(
     nondas
 ) {
   moduleServer(id, function(input, output, session) {
-    lon_range_req <- reactive(req(map_range()$lon.range))
-    lat_range_req <- reactive(req(map_range()$lat.range))
+    lon_range_req <- reactive(req(map_range$config()$lon.range))
+    lat_range_req <- reactive(req(map_range$config()$lat.range))
+    world2_req <- reactive({
+      world2 <- map_range$config()$world2
+      req(is.logical(world2))
+      world2
+    })
     plot.res <- 72
 
     ###########################################################################
@@ -113,31 +117,14 @@ mod_plot_server  <- function(
         ### Map range and labels
         lon.range <- lon_range_req()
         lat.range <- lat_range_req()
-        req(is.logical(map_range()$world2))
-        world2 <- map_range()$world2
+        world2 <- world2_req()
 
-        map.name <- map_range()$map.name
+        map.name <- map_range$config()$map.name
         map.water.col <- map_color$cruzMapColorWater()
         map.land.col <- map_color$cruzMapColorLand()
         
         title.info <- map_elements$label_list$cruzMapLabelTitle()
         axes.info <- map_elements$label_list$cruzMapLabelAxes()
-
-
-        # map(map.name[[1]], regions = map.name[[2]],
-        #     xlim = lon.range[1:2], ylim = lat.range[1:2],
-        #     fill = TRUE, col = "yellow",
-        #     # add = TRUE
-        # )
-
-        # cruzMapParam <- reactive({
-        #   map_range()$lon.range
-        #   map_range()$lat.range
-        #   param.unit <- par("usr")
-        #   param.inch <- par("pin")
-        
-        #   list(param.unit = param.unit, param.inch = param.inch)
-        # })
 
         #------------------------------------------------------------------------
         ### Window
@@ -155,7 +142,7 @@ mod_plot_server  <- function(
 
         param.unit <- par("usr")
         param.inch <- par("pin")
-        param <- param.unit #cruzMapParam()$param.unit
+        param <- param.unit
 
         #------------------------------------------------------------------------
         # Water and Land
@@ -165,7 +152,7 @@ mod_plot_server  <- function(
 
         # Depth
         map.depth <- map.water.col[[2]]
-        if (isTruthy(map.depth))
+        if (isTruthy(map.depth)) {
           plot(
             map.depth, image = TRUE, land = TRUE, add = TRUE,
             axes = FALSE, xlab = NA, ylab = NA, lwd = 0.0,
@@ -174,29 +161,20 @@ mod_plot_server  <- function(
               c(min(map.depth), 0, bathy.col)
             )
           )
+        }
 
         ### Land
-        map(
-          map.name[[1]], regions = map.name[[2]],
-          xlim = lon.range[1:2], ylim = lat.range[1:2],
-          fill = TRUE, col = map.land.col, add = TRUE 
-        )
-        # if (input$coast) {
-        #   # Coastline
-        #   validate(
-        #     need(isTruthy(map.coastline),
-        #         message = "Please input a valid coastline file")
-        #   )
-
-        #   polygon(x = map.coastline$lon, y = map.coastline$lat, col = map.land.col)
-        #   lines(x = map.coastline$lon, y = map.coastline$lat)
-
-        # } else {
-        #   # Default from maps package
-        #   map(map.name[[1]], regions = map.name[[2]],
-        #       xlim = lon.range[1:2], ylim = lat.range[1:2],
-        #       fill = TRUE, col = map.land.col, add = TRUE)
-        # }
+        coastline <- map_range$coastline()
+        if (!is.null(coastline)) {
+          # Coastline
+          polygon(x = coastline$lon, y = coastline$lat, col = map.land.col)
+          lines(x = coastline$lon, y = coastline$lat)
+        } else {
+          # Default from maps package
+          map(map.name[[1]], regions = map.name[[2]],
+              xlim = lon.range[1:2], ylim = lat.range[1:2],
+              fill = TRUE, col = map.land.col, add = TRUE)
+        }
 
         ### Rivers and Lakes
         map.rivers <- map_color$cruzMapRivers()
@@ -344,6 +322,8 @@ mod_plot_server  <- function(
           title(ylab = axes.info$lab.lat, family = axes.info$fam,
                 cex.lab = axes.info$cex, line = 4)
         }
+
+        ### TODO: planned transects
 
 
         #----------------------------------------------------------------------

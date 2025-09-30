@@ -5,8 +5,8 @@
 #' @name mod_map_color
 #'
 #' @inheritParams mod_map_range
-#' @inheritParams mod_plot
-#'
+#' @param map_range_config the `config` output of [mod_map_range_server()]
+#' 
 #' @details
 #' This module handles the map colors, including land color to water color. 
 #' It also allows the user to download and/or load a bathymetry file using 
@@ -69,23 +69,33 @@ mod_map_color_ui <- function(id) {
     ),
     fluidRow(
       cruz_box(
-        title = "Download bathymetric data", width = 12,
-        helpText("Download bathymetric data from NOAA website (see the documentation for",
-                  tags$a(href = "https://CRAN.R-project.org/package=marmap",
-                        "marmap function 'getNOAA.bathy'"),
-                  "for more details).",
-                  "The coordinates of the downloaded data will be the same as the current map range.",
-                  "After downloading, you must load the CSV file into CruzPlot in the 'Water: Ocean color style' section"),
-        numericInput(
-          ns("depth_res"), 
-          tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"),
-          value = 10, 
-          min = 0, 
-          max = 60, 
-          step = 5
-        ),
-        uiOutput(ns("depth_download_button")),
-        uiOutput(ns("depth_download_message"))
+        title = "Download bathymetric data", width = 12,        
+        fluidRow(
+          column(
+            width = 6, 
+            helpText(
+              "Download bathymetric data from NOAA website (see the documentation for",
+              tags$a(href = "https://CRAN.R-project.org/package=marmap",
+                    "marmap function 'getNOAA.bathy'"),
+              "for more details).",
+              "The extent of the downloaded data will be the same as the current map range."
+            ),
+            helpText(
+              "After downloading, you must load the CSV file into the app", 
+              "in the 'Water: Ocean color style' section"
+            )
+          ), 
+          column(
+            width = 6, 
+            numericInput(
+              ns("depth_res"), 
+              tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"),
+              value = 10, min = 0, max = 60, step = 5
+            ),
+            uiOutput(ns("depth_download_button")), 
+            uiOutput(ns("depth_download_message"))
+          )
+        )
       )
     )
   )
@@ -94,11 +104,11 @@ mod_map_color_ui <- function(id) {
 
 #' @name mod_map_color
 #' @export
-mod_map_color_server  <- function(id, load_state, map_range) {
+mod_map_color_server  <- function(id, load_state, map_range_config) {
   moduleServer(id, function(input, output, session) {
     stopifnot(
       is.reactive(load_state),
-      is.reactive(map_range)
+      is.reactive(map_range_config)
     )
 
     #--------------------------------------------------------------------------~
@@ -133,8 +143,8 @@ mod_map_color_server  <- function(id, load_state, map_range) {
         )
         rivs <- map("mapdata::rivers", plot = FALSE)
         
-        req(is.logical(map_range()$world2))
-        if (map_range()$world2) rivs$x <- ifelse(rivs$x < 0, rivs$x+360, rivs$x)
+        req(is.logical(map_range_config()$world2))
+        if (map_range_config()$world2) rivs$x <- ifelse(rivs$x < 0, rivs$x+360, rivs$x)
 
         rivs
         
@@ -187,8 +197,8 @@ mod_map_color_server  <- function(id, load_state, map_range) {
         validate(need(bathy.xyz, "Please load a CSV file with bathymetric data"))
 
         # Make sure lat/lon range matches world2 flag
-        req(is.logical(map_range()$world2))
-        world2 <- map_range()$world2
+        req(is.logical(map_range_config()$world2))
+        world2 <- map_range_config()$world2
         bathy.xyz[[1]] <- if (world2) {
           ifelse(bathy.xyz[[1]] < 0, bathy.xyz[[1]] + 360, bathy.xyz[[1]])
         } else {
@@ -196,8 +206,8 @@ mod_map_color_server  <- function(id, load_state, map_range) {
         }
 
         # Trim, and check that depth file lat/lon spans any map range
-        lon.range <- req(map_range()$lon.range)
-        lat.range <- req(map_range()$lat.range)
+        lon.range <- req(map_range_config()$lon.range)
+        lat.range <- req(map_range_config()$lat.range)
         bathy.xyz.keep <- between(bathy.xyz[[1]], lon.range[1], lon.range[2]) &
           between(bathy.xyz[[2]], lat.range[1], lat.range[2])
 
@@ -266,8 +276,8 @@ mod_map_color_server  <- function(id, load_state, map_range) {
     ### Download bathymetric file
     output$depth_download <- downloadHandler(
       filename = function() {
-        lon.range <- req(map_range()$lon.range)
-        lat.range <- req(map_range()$lat.range)
+        lon.range <- req(map_range_config()$lon.range)
+        lat.range <- req(map_range_config()$lat.range)
         res <- input$depth_res
 
         # Defaults maramp file name: "marmap_coord_-135;29;-117;52_res_10.csv"
@@ -282,8 +292,8 @@ mod_map_color_server  <- function(id, load_state, map_range) {
 
       content = function(file) {
         cruz.list$bathy.download <- FALSE
-        ll <- req(map_range()$latlon_input)
-        world2 <- map_range()$world2
+        ll <- req(map_range_config()$latlon_input)
+        world2 <- map_range_config()$world2
 
         # getNOAA.bathy() operates on -180 to 180 scale; use user inputs not lon.range
         bathy <- try(marmap::getNOAA.bathy(

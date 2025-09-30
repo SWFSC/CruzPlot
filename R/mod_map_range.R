@@ -102,6 +102,18 @@ mod_map_range_ui <- function(
         actionButton(ns("map_replot_hawaii"), "Hawaii"),
         actionButton(ns("map_replot_hawaiimain"), "Main Hawaiian Islands"),
         actionButton(ns("map_replot_marianas"), "Marianas")
+      ), 
+      cruz_box(
+        title = "Coastline", width = 12, 
+        checkboxInput(ns("coast"), label = "Use coastline file", value = FALSE),
+        conditionalPanel(
+          condition = "input.coast", ns = ns, 
+          helpText("Map limits will automatically be updated to the extent of the",
+                    "coastline file. Note: the app can only process coastline files",
+                    "with points between -180 and 0"),
+          fileInput("coast_file", label = tags$h5("Coastline file"), width = "50%"), 
+          textOutput(ns("coast_load_text")),
+        )
       )
     )
   )
@@ -134,47 +146,9 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
           ll_vals[[item$id]] <- item$value
         } else {
           update_widget(item, session)
-          # switch(
-          #   item$type,
-          #   "text" = updateTextInput(session, item$id, value = item$value),
-          #   "numeric" = updateNumericInput(session, item$id, value = item$value),
-          #   "select" = updateSelectInput(session, item$id, selected = item$value)
-          # )
         }
       }
-    }, priority = 1) #, ignoreInit = TRUE)
-
-    # ### Update inputs if app_state changes
-    # observeEvent(app_state$lon_left, {
-    #   if (input$lon_left != app_state$lon_left) {
-    #     ll_vals$lon_left <- app_state$lon_left
-    #     updateNumericInput(session, "lon_left", value = app_state$lon_left)
-    #   }
-    # })
-    # observeEvent(app_state$lon_right, {
-    #   if (input$lon_right != app_state$lon_right) {
-    #     ll_vals$lon_right <- app_state$lon_right
-    #     updateNumericInput(session, "lon_right", value = app_state$lon_right)
-    #   }
-    # })
-    # observeEvent(app_state$lat_bot, {
-    #   if (input$lat_bot != app_state$lat_bot) {
-    #     ll_vals$lat_bot <- app_state$lat_bot
-    #     updateNumericInput(session, "lat_bot", value = app_state$lat_bot)
-    #   }
-    # })
-    # observeEvent(app_state$lat_top, {
-    #   if (input$lat_top != app_state$lat_top) {
-    #     ll_vals$lat_top <- app_state$lat_top
-    #     updateNumericInput(session, "lat_top", value = app_state$lat_top)
-    #   }
-    # })
-    # observeEvent(app_state$resolution, {
-    #   if (input$resolution != app_state$resolution) {
-    #     ll_vals$resolution <- app_state$resolution
-    #     updateSelectInput(session, "resolution", selected = app_state$resolution)
-    #   }
-    # })
+    }, priority = 10) #, ignoreInit = TRUE)
 
 
     ###############################################################################
@@ -308,18 +282,6 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
     }, priority = 11)
 
 
-    # ###############################################################################
-    # # Update params as necessary
-    # cruzMapParam <- reactive({
-    #   app_state$lon.range
-    #   app_state$lat.range
-    #   param.unit <- par("usr")
-    #   param.inch <- par("pin")
-    #
-    #   list(param.unit = param.unit, param.inch = param.inch)
-    # })
-
-
     ###############################################################################
     # Series of steps/actions triggered by input$map_replot
 
@@ -335,32 +297,7 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
       ll_vals$lat_bot <- lat.bot
       ll_vals$lat_top <- lat.top
       ll_vals$resolution <- res
-
-      # app_state$lon_left <- lon.left
-      # app_state$lon_right <- lon.right
-      # app_state$lat_bot <- lat.bot
-      # app_state$lat_top <- lat.top
-      # app_state$resolution <- res
-      # }
-
-      # # Checks that inputs are numbers
-      # map.range.message <- reactiveVal(NULL)
-      # vals.bad <- c("", "-", "+", NA)
-      # m1 <- if ((lon.min %in% vals.bad) | !between(lon.min, -180, 180))
-      #   "The left longtiude must be a number between -180 and 180" else NULL
-      # m2 <- if ((lon.max %in% vals.bad) | !between(lon.max, -180, 180))
-      #   "The right longtiude must be a number between -180 and 180" else NULL
-      # m3 <- if ((lat.min %in% vals.bad) | !between(lat.min, -90, 90))
-      #   "The bottom latitude must be a number between -90 and 90" else NULL
-      # m4 <- if ((lat.max %in% vals.bad) | !between(lat.max, -90, 90))
-      #   "The top latitude must be a number between -90 and 90" else NULL
-      #
-      # m.all <- c(m1, m2, m3, m4)
-      #
-      # map.range.message(if (is.null(m.all)) m.all else paste(m.all, collapse = "<br/>"))
-      # req(is.null(m.all))
     }, ignoreNULL = FALSE)
-
 
     # When ll_vals reactiveValues changes, then update the reactive output
     cruzMapRange <- reactive({
@@ -436,9 +373,68 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
       })
     })
 
-    latlon_input <- reactive(
-      c(input$lon_left, input$lon_right, input$lat_bot, input$lat_top)
-    )
+    # latlon_input <- reactive(
+    #   c(input$lon_left, input$lon_right, input$lat_bot, input$lat_top)
+    # )
+
+
+    ###########################################################################
+    ### Coastline    
+    coast_load <- eventReactive(input$coast_file, {
+      req(input$coast_file)
+      ll_vals$coastline <- NULL
+      coastline <- read.csv(input$coast_file$datapath)
+
+      validate(need(coastline, "Please load a valid CSV file"))
+      validate(
+        need(identical(names(coastline), c("lon", "lat")),
+            paste("The coastline CSV file must have exactly", 
+                  "two columns named 'lon' and 'lat', respectively"))
+      )
+      coastline <- rbind(c(NA, NA, NA), coastline, c(NA, NA, NA))
+
+      ll_vals$coastline <- coastline
+
+      NULL
+    }, ignoreInit = TRUE)
+    
+    output$coast_load_text <- renderText(coast_load())
+    
+    observeEvent(ll_vals$coastline, {
+      if (isTruthy(ll_vals$coastline)) {
+        map.coastline <- ll_vals$coastline
+        x <- map.coastline$lon[!is.na(map.coastline$lon)]
+        y <- map.coastline$lat[!is.na(map.coastline$lat)]
+        validate(
+          need(length(x) == length(y),
+              "Coastline lon and lat columns have difference number of non-NA values"),
+          need(all(x >= -180) & all(x < 0),
+              paste("CruzPlot can currently only handle coastline data with a", 
+                    "longitude range of -180 to 0 degrees"))
+        )
+
+        # Update inputs
+        updateNumericInput(session, "lon_left", value = min(x))
+        updateNumericInput(session, "lon_right", value = max(x))
+        updateNumericInput(session, "lat_bot", value = min(y))
+        updateNumericInput(session, "lat_top", value = max(y))
+
+        # Update reactiveValues
+        ll_vals$lon_left <- min(x)
+        ll_vals$lon_right <- max(x)
+        ll_vals$lat_bot <- min(y)
+        ll_vals$lat_top <- max(y)
+      }
+    })
+
+    cruzMapCoastline <- reactive({
+      if (input$coast) {
+        validate(need(ll_vals$coastline, "Please load a valid coastline file"))
+        ll_vals$coastline
+      } else {
+        NULL
+      }
+    })
 
 
     # output$map_range_message <- renderUI({
@@ -457,15 +453,17 @@ mod_map_range_server <- function(id, load_state, brush = NULL) {
         save_widget("lon_left", "reactive", ll_vals$lon_left),
         save_widget("lon_right", "reactive", ll_vals$lon_right),
         save_widget("lat_bot", "reactive", ll_vals$lat_bot),
-        save_widget("lat_top", "reactive", ll_vals$lat_top)
+        save_widget("lat_top", "reactive", ll_vals$lat_top), 
+        save_widget("coast", "check"),
+        save_widget("coastline", "reactive", ll_vals$coastline)
       )
     })
 
     ### Return values
     list(
       to_save = to_save,
-      map_range = cruzMapRange, 
-      latlon_input = latlon_input
+      config = cruzMapRange, 
+      coastline = cruzMapCoastline
     )
   })
 }

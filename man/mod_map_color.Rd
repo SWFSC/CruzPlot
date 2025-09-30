@@ -8,7 +8,7 @@
 \usage{
 mod_map_color_ui(id)
 
-mod_map_color_server(id, load_state, map_range)
+mod_map_color_server(id, load_state, map_range_config)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
@@ -18,8 +18,7 @@ saved 'app state' to be loaded for this module. The main function
 saves the state, using the 'to_save' output list, and then loads
 those values into the \code{load_state} object when a saved app state is loaded}
 
-\item{map_range}{a reactive; the element named 'map_range'
-from the output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
+\item{map_range_config}{the \code{config} output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 }
 \value{
 The UI function returns a \code{\link[shiny:tabPanel]{shiny::tabPanel()}} object

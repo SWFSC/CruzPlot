@@ -12,7 +12,7 @@
 #' @import shiny
 #' @importFrom dplyr between case_when if_else
 #' @importFrom geosphere destPoint
-#' @importFrom graphics abline axis par points lines rect text title
+#' @importFrom graphics abline axis par points polygon lines rect text title
 #' @importFrom grDevices gray palette dev.off jpeg pdf png
 #' @importFrom maps map
 #' @importFrom shinydashboard box dashboardBody tabItems tabItem dashboardHeader
@@ -22,6 +22,8 @@
 #' @importFrom utils globalVariables packageVersion read.csv write.csv
 #'
 "_PACKAGE"
+
+# Note: all DT functions are explicitly called via `DT::` in the code
 
 # https://r-pkgs.org/package-within.html#echo-a-working-package
 utils::globalVariables("app_state_save")

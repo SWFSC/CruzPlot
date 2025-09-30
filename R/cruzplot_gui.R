@@ -104,6 +104,14 @@ cruzplot_gui <- function(...) {
         tabItem(
           tabName = "createmap",
           fluidRow(
+          #   tabBox(
+          #     width = 6, 
+          #     box(
+          #       status = "primary", width = 6,
+          #       conditionalPanel("input.tabset1 == 'Range'", mod_plot_ui("plot1", TRUE)),
+          #       conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2"))
+          #     )
+          # ),
             box(
               status = "primary", width = 6,
               conditionalPanel("input.tabset1 == 'Range'", mod_plot_ui("plot1", TRUE)),
@@ -112,9 +120,9 @@ cruzplot_gui <- function(...) {
             tabBox(
               title = "Map", width = 6, id = "tabset1",
               mod_map_range_ui("map_range"),
+              mod_map_color_ui("map_color"), 
               mod_map_elements_ui("map_elements")[[1]], 
-              mod_map_elements_ui("map_elements")[[2]], 
-              mod_map_color_ui("map_color")
+              mod_map_elements_ui("map_elements")[[2]]
             )
           )
         ), 
@@ -212,11 +220,11 @@ cruzplot_gui <- function(...) {
     load_state_nondas <- reactiveVal()
 
     # Run the modules
-    map.range.list <- mod_map_range_server("map_range", load_state_map_range, plot1.list$brush)
-    map_range <- map.range.list[["map_range"]]
+    map_range <- mod_map_range_server("map_range", load_state_map_range, plot1.list$brush)
+    map_range_config <- map_range$config
 
-    map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range)
-    map_color <- mod_map_color_server("map_color", load_state_map_color, map_range)
+    map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range_config)
+    map_color <- mod_map_color_server("map_color", load_state_map_color, map_range_config)
     
     nondas <- mod_nondas_server("nondas", load_state_nondas)
 
@@ -226,7 +234,8 @@ cruzplot_gui <- function(...) {
     
     #----------------------------------------------------------------------------
     ### Plots
-    # plot_height <- reactive(input$plot_height)
+    # TODO: do like the following for consistency?
+    # try(do.call(odbc::dbConnect, purrr::compact(db.list)), silent = silent)
     plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas)
     mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas)
     mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas)
@@ -242,7 +251,7 @@ cruzplot_gui <- function(...) {
       content = function(file) {
         withProgress(message = "Saving app data", value = 0.3, {
           app_state_save <- list(
-            map_range = map.range.list$to_save(),
+            map_range = map_range$to_save(),
             map_elements = map_elements$to_save(), 
             map_color = map_color$to_save(), 
             nondas = nondas$to_save(),             

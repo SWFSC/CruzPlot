@@ -5,8 +5,7 @@
 #'
 #' @name mod_map_elements
 #'
-#' @inheritParams mod_map_range
-#' @inheritParams mod_plot
+#' @inheritParams mod_map_color
 #'
 #' @details
 #' This modukle handles the map elements of scale bar, ticks and their labels, 
@@ -174,11 +173,11 @@ mod_map_elements_ui <- function(id) {
 
 #' @name mod_map_elements
 #' @export
-mod_map_elements_server  <- function(id, load_state, map_range) {
+mod_map_elements_server  <- function(id, load_state, map_range_config) {
   moduleServer(id, function(input, output, session) {
     stopifnot(
       is.reactive(load_state),
-      is.reactive(map_range)
+      is.reactive(map_range_config)
     )
 
     # Load map_elements state
@@ -220,12 +219,12 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     ###############################################################################
     #  Return list of longitude values of major tick marks/grid lines and minor tick marks
     cruzMapIntervalLon <- reactive({
-      lon.range <- req(map_range()$lon.range)
+      lon.range <- req(map_range_config()$lon.range)
       lon.start <- cruz.tick$label.lon.start
       tick.maj <- cruz.tick$tick.interval.major
       tick.min <- input$tick_interval_minor
 
-      world2 <- map_range()$world2
+      world2 <- map_range_config()$world2
 
       validate(
         need(cruz.tick$tick.interval.major, "Please enter a valid major tick interval value"),
@@ -281,7 +280,7 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
 
     # Return list of latitude values of major tick marks/grid lines and minor tick marks
     cruzMapIntervalLat <- reactive({
-      lat.range <- req(map_range()$lat.range)
+      lat.range <- req(map_range_config()$lat.range)
       tick.maj <- req(cruz.tick$tick.interval.major)
       tick.min <- input$tick_interval_minor
       lat.start <- cruz.tick$label.lat.start
@@ -337,8 +336,8 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
 
     # Tick major interval
     observe({
-      lon.range <- req(map_range()$lon.range)
-      lat.range <- req(map_range()$lat.range)
+      lon.range <- req(map_range_config()$lon.range)
+      lat.range <- req(map_range_config()$lat.range)
       tick.val <- cruzTickUpdate(lon.range, lat.range)
 
       updateNumericInput(session, "tick_interval_major", value = tick.val)
@@ -349,7 +348,7 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     observe({
       b <- req(cruz.tick$tick.interval.major)
       if (b != 0 && !is.na(b)) {
-        lon.range <- req(map_range()$lon.range)
+        lon.range <- req(map_range_config()$lon.range)
         lon.start <- cruzTickStart(lon.range, b)
 
         updateNumericInput(session, "label_lon_start", value = lon.start)
@@ -361,7 +360,7 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     observe({
       b <- req(cruz.tick$tick.interval.major)
       if (b != 0 && !is.na(b)) {
-        lat.range <- req(map_range()$lat.range)
+        lat.range <- req(map_range_config()$lat.range)
         lat.start <- cruzTickStart(lat.range, b)
 
         updateNumericInput(session, "label_lat_start", value = lat.start)
@@ -539,8 +538,8 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
 
     ### Calculate scale bar default start position if map range changes
     observe({
-      lon.range <- req(map_range()$lon.range)
-      lat.range <- req(map_range()$lat.range)
+      lon.range <- req(map_range_config()$lon.range)
+      lat.range <- req(map_range_config()$lat.range)
 
       isolate({
         x <- cruz.scale$scale.lon
@@ -549,7 +548,7 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
         if (!isTruthy(x) | !isTruthy(y)) {
           bar.in.range <- TRUE
         } else {
-          x <- ifelse(map_range()$world2, x + 360, x)
+          x <- ifelse(map_range_config()$world2, x + 360, x)
           bar.in.range <- between(x, lon.range[1], lon.range[2]) &
             between(y, lat.range[1], lat.range[2])
         }
@@ -578,8 +577,8 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     ###   Only update length if scale bar is not alrady on
     observe({
       if (!input$bar) {
-        lon.range <- req(map_range()$lon.range)
-        req(map_range()$lat.range)
+        lon.range <- req(map_range_config()$lon.range)
+        req(map_range_config()$lat.range)
         isolate({
           lon.pos <- cruz.scale$scale.lon
           lat.pos <- cruz.scale$scale.lat
@@ -613,8 +612,8 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
     ### Put all scale bar values in list for plotting
     cruzMapScaleBar <- reactive({
       isolate({
-        req(is.logical(map_range()$world2))
-        world2 <- map_range()$world2
+        req(is.logical(map_range_config()$world2))
+        world2 <- map_range_config()$world2
       })
 
       validate(
@@ -655,8 +654,8 @@ mod_map_elements_server  <- function(id, load_state, map_range) {
       )
 
       # Validate
-      lon.range <- map_range()$lon.range
-      lat.range <- map_range()$lat.range
+      lon.range <- map_range_config()$lon.range
+      lat.range <- map_range_config()$lat.range
 
       validate(
         need(lon.range[1] <= scale.bar$x1,
