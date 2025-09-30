@@ -25,12 +25,16 @@ The server function returns a list with the following named elements:
 \itemize{
 \item \code{to_save}: a list of values to be saved in an 'app state' file.
 See \code{\link[=cruzplot_gui]{cruzplot_gui()}} for more info.
-\item \code{ctodoolor_lakes_rivers}: ...
+\item \code{ndas_plot}: a reactive of a boolean indicating if non-DAS point/line
+data should be plotted
+\item \code{cruzNonDas}: a list of the non-DAS data to plot
 }
 }
 \description{
 Shiny module for non-DAS point and line data
 }
 \details{
-This module handles the loading, processing, and plotting of non-DAS data
+This module handles the loading, processing, and plotting of
+non-DAS point and line data.
+See the CruzPlot manual for CSV format requirements.
 }

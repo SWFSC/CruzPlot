@@ -25,12 +25,16 @@ The server function returns a list with the following named elements:
 \itemize{
 \item \code{to_save}: a list of values to be saved in an 'app state' file.
 See \code{\link[=cruzplot_gui]{cruzplot_gui()}} for more info.
-\item \code{todo}: ...
+\item \code{pltransect}: a reactive of a list with the planned transect data to plot.
+\code{NULL} if there are no planned transects to plot
+\item \code{pltransect_class2} a reactive of a boolean indicating if
+the loaded planned transects have any 'class2' info.
 }
 }
 \description{
 Shiny module for planned transects
 }
 \details{
-This module handles...
+This module allows users to load non-DAS planned transect files.
+See the CruzPlot manual for planned transect CSV format requirements.
 }

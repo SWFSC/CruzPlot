@@ -7,14 +7,18 @@
 #' @inheritParams mod_map_range
 #' 
 #' @details
-#' This module handles the loading, processing, and plotting of non-DAS data
+#' This module handles the loading, processing, and plotting of 
+#' non-DAS point and line data.
+#' See the CruzPlot manual for CSV format requirements. 
 #'
 #' @returns The UI function returns a [shiny::tabPanel()] object
 #' 
 #' The server function returns a list with the following named elements:
 #' - `to_save`: a list of values to be saved in an 'app state' file. 
 #'   See [cruzplot_gui()] for more info. 
-#' - `ctodoolor_lakes_rivers`: ...
+#' - `ndas_plot`: a reactive of a boolean indicating if non-DAS point/line 
+#'   data should be plotted
+#' - `cruzNonDas`: a list of the non-DAS data to plot
 #' 
 #' @export
 mod_ndas_ptln_ui <- function(id) {

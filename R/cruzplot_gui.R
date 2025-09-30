@@ -185,8 +185,8 @@ cruzplot_gui <- function(...) {
         # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
         # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
         # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
-        updateSelectInput(session, NS("nondas")("ndas_line_col"), choices = c.pal, selected = "black")
-        updateSelectInput(session, NS("nondas")("ndas_pt_col"), choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("ptln")("ndas_line_col"), choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("ptln")("ndas_pt_col"), choices = c.pal, selected = "black")
 
       } else if (input$color_style == 2) {
         palette(gray(0:5/5))

@@ -7,14 +7,18 @@
 #' @inheritParams mod_map_range
 #' 
 #' @details
-#' This module handles...
+#' This module allows users to load non-DAS planned transect files. 
+#' See the CruzPlot manual for planned transect CSV format requirements. 
 #'
 #' @returns The UI function returns a [shiny::tabPanel()] object
 #' 
 #' The server function returns a list with the following named elements:
 #' - `to_save`: a list of values to be saved in an 'app state' file. 
 #'   See [cruzplot_gui()] for more info. 
-#' - `todo`: ...
+#' - `pltransect`: a reactive of a list with the planned transect data to plot. 
+#'   `NULL` if there are no planned transects to plot
+#' - `pltransect_class2` a reactive of a boolean indicating if 
+#'   the loaded planned transects have any 'class2' info.  
 #' 
 #' @export
 mod_ndas_planned_ui <- function(id) {
@@ -109,49 +113,12 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
     # Stored reactiveValues for the module
     cruz.list <- reactiveValues(
+      toplot = NULL, 
+      toplot2 = NULL, 
+      color = NULL, 
+      lty = NULL, 
       planned.transects = NULL
-      # toplot = NULL, 
-      # toplot2 = NULL, 
-      # color = NULL, 
-      # lty = NULL
     )
-
-    cruz.pt.load.toplot <- reactiveVal(NULL)
-    cruz.pt.load.toplot2 <- reactiveVal(NULL)
-    cruz.pt.load.color <- reactiveVal(NULL)
-    cruz.pt.load.lty <- reactiveVal(NULL)
-    # cruz.pt.load.tabs <- reactiveVal(FALSE)
-    # cruz.pt.load.tabset1 <- reactiveVal(FALSE)
-
-    # if (input.save$planned_transects_plot) {
-    #   cruz.pt.load.toplot(input.save$planned_transects_toplot)
-    #   cruz.pt.load.toplot2(input.save$planned_transects_toplot2)
-    #   cruz.pt.load.color(input.save$planned_transects_color)
-    #   cruz.pt.load.lty(input.save$planned_transects_lty)
-    #   if (!(input$tabs == "createmap" & input$tabset1 == "planned_transects")) {
-    #     cruz.pt.load.tabs(input$tabs)
-    #     cruz.pt.load.tabset1(input$tabset1)
-    #     updateTabItems(session, "tabs", selected = "createmap")
-    #     updateTabsetPanel(session, "tabset1", selected = "planned_transects")
-    #   }
-    # }
-
-    # # Reset selected tab panel after switching to planned transet if needed
-    # observe({
-    #   input$tabs
-    #   input$tabset1
-
-    #   isolate({
-    #     if (isTruthy(cruz.pt.load.tabset1()) & isTruthy(cruz.pt.load.tabs())) {
-    #       updateTabsetPanel(session, "tabset1", selected = cruz.pt.load.tabset1())
-    #       updateTabItems(session, "tabs", selected = cruz.pt.load.tabs())
-    #     }
-    #     cruz.pt.load.tabset1(NULL)
-    #     cruz.pt.load.tabs(NULL)
-    #   })
-    # })
-
-
 
     # Load state
     observeEvent(load_state(), {
@@ -160,14 +127,6 @@ mod_ndas_planned_server  <- function(id, load_state) {
           cruz.list[[item$id]] <- item$value
         } else {
           update_widget(item, session)
-          # if (item$id == "planned_transects_toplot") {
-          #   browser()
-          #   cruz.pt.load.toplot(input.save$planned_transects_toplot)
-          # }
-          # if (item$id == "planned_transects_toplot2") {
-          #   cruz.pt.load.toplot2(input.save$planned_transects_toplot2)
-          # }
-
         }
       }
     }, priority = 10)
@@ -361,12 +320,12 @@ mod_ndas_planned_server  <- function(id, load_state) {
       names(choices.list) <- choices.list.names
 
       isolate({
-        choices.sel <- if (isTruthy(cruz.pt.load.toplot())) {
-          cruz.pt.load.toplot()
+        choices.sel <- if (isTruthy(cruz.list$toplot)) {
+          cruz.list$toplot
         } else {
           choices.list
         }
-        cruz.pt.load.toplot(NULL)
+        cruz.list$toplot <- NULL
       })
 
       selectInput(
@@ -377,18 +336,19 @@ mod_ndas_planned_server  <- function(id, load_state) {
         multiple = TRUE
       )
     })
+    outputOptions(output, "planned_transects_toplot_uiOut_select", suspendWhenHidden = FALSE)
 
 
     output$planned_transects_color_uiOut_select <- renderUI({
       req(cruz.list$planned.transects)
 
       isolate({
-        choices.sel <- if (isTruthy(cruz.pt.load.color())) {
-          cruz.pt.load.color()
+        choices.sel <- if (isTruthy(cruz.list$color)) {
+          cruz.list$color
         } else {
           "gray"
         }
-        cruz.pt.load.color(NULL)
+        cruz.list$color <- NULL
       })
 
       selectInput(
@@ -399,6 +359,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
         multiple = TRUE
       )
     })
+    outputOptions(output, "planned_transects_color_uiOut_select", suspendWhenHidden = FALSE)
 
 
     #----------------------------------------------------------
@@ -418,19 +379,24 @@ mod_ndas_planned_server  <- function(id, load_state) {
         names(choices.list) <- choices.list.names
 
         isolate({
-          choices.sel <- if (isTruthy(cruz.pt.load.toplot2())) {
-            cruz.pt.load.toplot2()
+          choices.sel <- if (isTruthy(cruz.list$toplot2)) {
+            cruz.list$toplot2
           } else {
             choices.list
           }
-          cruz.pt.load.toplot2(NULL)
+          cruz.list$toplot2 <- NULL
         })
 
-        selectInput(session$ns("planned_transects_toplot2"), tags$h5("Class 2(s) to plot"),
-                    choices = choices.list, selected = choices.sel,
-                    multiple = TRUE)
+        selectInput(
+          session$ns("planned_transects_toplot2"), 
+          tags$h5("Class 2(s) to plot"),
+          choices = choices.list, 
+          selected = choices.sel,
+          multiple = TRUE
+        )
       }
     })
+    outputOptions(output, "planned_transects_toplot2_uiOut_select", suspendWhenHidden = FALSE)
 
     # output$planned_transects_lty_uiOut_message <- renderUI({
     #   req(cruz.list$planned.transects, input$planned_transects_plot)
@@ -452,19 +418,23 @@ mod_ndas_planned_server  <- function(id, load_state) {
       )
 
       isolate({
-        choices.sel <- if (isTruthy(cruz.pt.load.lty())) {
-          cruz.pt.load.lty()
+        choices.sel <- if (isTruthy(cruz.list$lty)) {
+          cruz.list$lty
         } else {
           1
         }
-        cruz.pt.load.lty(NULL)
+        cruz.list$lty <- NULL
       })
 
-      selectInput(session$ns("planned_transects_lty"), tags$h5(input.lab),
-                  choices = cruz.line.type, selected = choices.sel,
-                  multiple = !anyNA(planned_transects_class2()))
-
+      selectInput(
+        session$ns("planned_transects_lty"), 
+        tags$h5(input.lab),
+        choices = cruz.line.type, 
+        selected = choices.sel,
+        multiple = !anyNA(planned_transects_class2())
+      )
     })
+    outputOptions(output, "planned_transects_lty_uiOut_select", suspendWhenHidden = FALSE)
 
     ###############################################################################
     # Removing loaded transects
@@ -528,6 +498,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
         need(input$planned_transects_toplot,
             "Please select at least one class of planned transects to plot")
       )
+
       #So that renderUI()'s can catch up
       req(input$planned_transects_color, input$planned_transects_lty)
 
@@ -553,14 +524,14 @@ mod_ndas_planned_server  <- function(id, load_state) {
       pltrans.class1 <- planned_transects_class1()[pltrans.which]
       names(pltrans.colors) <- pltrans.class1
 
-      pltrans <- dplyr::filter(pltrans, class1 %in% pltrans.class1)
+      pltrans <- dplyr::filter(pltrans, .data$class1 %in% pltrans.class1)
 
       if (anyNA(planned_transects_class2())) {
         # Class 2 was not specified
         pltrans.list <- lapply(pltrans.class1, function(i) {
-          x <- dplyr::filter(pltrans, class1 == i)
+          x <- dplyr::filter(pltrans, .data$class1 == i)
           lapply(unique(x$num), function(k) {
-            x <- dplyr::filter(x, num == k)
+            x <- dplyr::filter(x, .data$num == k)
             if (nrow(x) == 0) {
               NULL
             } else if (nrow(x) == 1){
@@ -585,7 +556,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
         )
 
         pltrans.class2 <- planned_transects_class2()[pltrans.which2]
-        pltrans <- dplyr::filter(pltrans, class2 %in% pltrans.class2)
+        pltrans <- dplyr::filter(pltrans, .data$class2 %in% pltrans.class2)
 
         if (length(pltrans.lty) == 1) {
           pltrans.lty <- rep(pltrans.lty, length(pltrans.class2))
@@ -598,11 +569,11 @@ mod_ndas_planned_server  <- function(id, load_state) {
         names(pltrans.lty) <- pltrans.class2
 
         pltrans.list <- lapply(pltrans.class1, function(i) {
-          x <- dplyr::filter(pltrans, class1 == i)
+          x <- dplyr::filter(pltrans, .data$class1 == i)
           lapply(pltrans.class2, function(j) {
-            x <- dplyr::filter(x, class2 == j)
+            x <- dplyr::filter(x, .data$class2 == j)
             lapply(unique(x$num), function(k) {
-              x <- dplyr::filter(x, num == k)
+              x <- dplyr::filter(x, .data$num == k)
               if (nrow(x) == 0) {
                 NULL
               } else if (nrow(x) == 1){
@@ -624,6 +595,11 @@ mod_ndas_planned_server  <- function(id, load_state) {
       pltrans.list
     })
 
+    # Do the planned transect have class2 info? 
+    pltransect_class2 <- reactive({
+      anyNA(planned_transects_class2())
+    })
+
     ###############################################################################
     ###############################################################################
     ### Save values
@@ -634,7 +610,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
         save_widget("planned_transects_toplot2", "select"), 
         save_widget("planned_transects_color", "select"), 
         save_widget("planned_transects_lty", "select"), 
-        save_widget("planned_transects_lw", "numeric"), 
+        save_widget("planned_transects_lwd", "numeric"), 
         save_widget("planned.transects", "reactive", cruz.list$planned.transects)
       )
     })
@@ -643,7 +619,8 @@ mod_ndas_planned_server  <- function(id, load_state) {
     list(
       to_save = to_save, 
       pltransect = pltransect, 
-      planned_transects_class2 = planned_transects_class2
+      # planned_transects_class2 = planned_transects_class2
+      pltransect_class2 = pltransect_class2
     )
   })
 }

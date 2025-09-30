@@ -341,9 +341,9 @@ mod_plot_server  <- function(
 
         #----------------------------------------------------------------------
         ### Planned transects
-        if (!is.null(planned$pltransect())) {
-          pltransect <- planned$pltransect()
-          if (anyNA(planned$planned_transects_class2())) {
+        pltransect <- planned$pltransect()
+        if (!is.null(pltransect)) {
+          if (planned$pltransect_class2()) {
             # No class2
             for (i in pltransect) {
               for (k in i) {
@@ -357,8 +357,7 @@ mod_plot_server  <- function(
             for (i in pltransect) {
               for (j in i) {
                 for (k in j) {
-                  lines(
-                    x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]] 
+                  lines(x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]] 
                   )
                 }
               }
