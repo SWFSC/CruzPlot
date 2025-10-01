@@ -24,7 +24,8 @@ Imports:
     shiny, 
     shinydashboard,
     shinyjs,
-    stringr
+    stringr, 
+    swfscDAS (== 0.7.0.9000)
 Suggests:
     httr, 
     testthat

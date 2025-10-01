@@ -8,7 +8,7 @@
 \usage{
 mod_plot_ui(id, enable_brush = FALSE)
 
-mod_plot_server(id, height, map_range, map_elements, map_color, nondas)
+mod_plot_server(id, height, map_range, map_elements, map_color, nondas, das)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
@@ -25,11 +25,13 @@ mod_plot_server(id, height, map_range, map_elements, map_color, nondas)
 \item{map_color}{a list; the output of \code{\link[=mod_map_color_server]{mod_map_color_server()}}}
 
 \item{nondas}{a list of the nondas module output(s). See Details}
+
+\item{das}{a list; the output of \code{\link[=mod_das_server]{mod_das_server()}}}
 }
 \value{
 \code{mod_plot_ui} returns a \code{\link[shiny:reexports]{shiny::tagList()}} with a
-\code{\link[shinydashboard:tabBox]{shinydashboard::tabBox()}} of the \code{\link[shiny:plotOutput]{shiny::plotOutput()}} object,
-and the UI to save the plot.
+\code{\link[shinydashboard:tabBox]{shinydashboard::tabBox()}}, of width 6, with the \code{\link[shiny:plotOutput]{shiny::plotOutput()}}
+object, and the UI to save the plot.
 
 \code{mod_plot_server} returns a named list with the following elements:
 \itemize{

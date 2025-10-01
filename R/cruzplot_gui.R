@@ -44,13 +44,13 @@ cruzplot_gui <- function(...) {
       sidebarMenu(
         id = "tabs",
         menuItem("Create Map", tabName = "createmap", icon = icon("th", lib = "font-awesome")),
-        # menuItem("Plot DAS Data", tabName = "das", icon = icon("th")),
+        menuItem("Plot DAS Data", tabName = "das", icon = icon("th")),
         menuItem("Plot Non-DAS Data", tabName = "nondas", icon = icon("th")),
         menuItem(
           HTML(paste0("Color and Formatting", "<br/>", "Options")), 
           tabName = "display_format", icon = icon("th")
         ),
-        menuItem("Species Information", tabName = "dispSp", icon = icon("th")),
+        menuItem("Species Information", tabName = "display_spcodes", icon = icon("th")),
         menuItem("CruzPlot Manual", tabName = "display_manual", icon = icon("th")),
         tags$br(),
         fileInput("load_app_envir_file", "Load workspace"),
@@ -111,12 +111,29 @@ cruzplot_gui <- function(...) {
             #   conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2"))
             # ),
             tabBox(
-              title = "Map", width = 6, id = "tabset1",
+              title = "Map", id = "tabset1", width = 6, 
               mod_map_range_ui("map_range"),
               mod_map_color_ui("map_color"), 
               mod_map_elements_ui("map_elements")[[1]], 
               mod_map_elements_ui("map_elements")[[2]]
             )
+          )
+        ), 
+        tabItem(
+          tabName = "das", 
+          fluidRow(
+            mod_plot_ui("plot_das"), 
+            do.call(
+              tabBox,
+              c(
+                list(title = "DAS Data", id = "tabset2", width = 6),
+                mod_das_ui("das")
+              )
+            )
+            # tabBox(
+            #   title = "DAS Data", id = "tabset2", width = 6, 
+            #   mod_das_ui("das")
+            # )
           )
         ), 
         tabItem(
@@ -131,6 +148,7 @@ cruzplot_gui <- function(...) {
           )
         ), 
         mod_display_format_ui("display_format", tab_name = "display_format"), 
+        mod_display_spcodes_ui("display_spcodes", tab_name = "display_spcodes"), 
         tabItem(
           tabName = "display_manual",
           tags$h5(
@@ -214,6 +232,7 @@ cruzplot_gui <- function(...) {
     load_state_map_range <- reactiveVal()
     load_state_map_elements <- reactiveVal()
     load_state_map_color <- reactiveVal()
+    load_state_das <- reactiveVal()
     load_state_ndas_shape <- reactiveVal()
     load_state_ndas_planned <- reactiveVal()
 
@@ -224,6 +243,7 @@ cruzplot_gui <- function(...) {
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range_config)
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range_config)
     
+    das <- mod_das_server("das", load_state_das)
     nondas <- list(
       shape = mod_ndas_shape_server("ndas_shape", load_state_ndas_shape), 
       planned = mod_ndas_planned_server("ndas_planned", load_state_ndas_planned)
@@ -232,6 +252,7 @@ cruzplot_gui <- function(...) {
     #----------------------------------------------------------------------------
     ### Dashboard-level display tabs
     mod_display_format_server("display_format")
+    mod_display_spcodes_server("display_spcodes", das$sp_codes)
     
     #----------------------------------------------------------------------------
     ### Plots
@@ -240,6 +261,18 @@ cruzplot_gui <- function(...) {
     plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas)
     mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas)
     mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas)
+    mod_plot_server("plot_das", h, map_range, map_elements, map_color, nondas)
+
+    # plot_input_list <- list(
+    #   h, map_range, map_elements, map_color, nondas
+    # )
+    # do.call(
+    #   tabBox,
+    #   c(
+    #     list(title = "Working Box", width = 6), # Other args for tabBox
+    #     mod_das_ui("das_working")               # The list of tabPanels
+    #   )
+    # )
 
 
     #----------------------------------------------------------------------------
@@ -255,11 +288,13 @@ cruzplot_gui <- function(...) {
             map_range = map_range$to_save(),
             map_elements = map_elements$to_save(), 
             map_color = map_color$to_save(), 
+            das = das$to_save(), 
             ndas_shape = nondas$shape$to_save(),             
             ndas_planned = nondas$planned$to_save(),             
             color_style = input$color_style, 
             plot_height = input$plot_height
           )
+          
           incProgress(0.6)
           save(app_state_save, file = file)
           incProgress(0.1)
@@ -298,12 +333,14 @@ cruzplot_gui <- function(...) {
         load_state_map_range(NULL)
         load_state_map_elements(NULL)
         load_state_map_color(NULL)
+        load_state_das(NULL)
         load_state_ndas_shape(NULL)
         load_state_ndas_planned(NULL)
 
         load_state_map_range(app_state_save[["map_range"]])
         load_state_map_elements(app_state_save[["map_elements"]])
         load_state_map_color(app_state_save[["map_color"]])
+        load_state_das(app_state_save[["das"]])
         load_state_ndas_shape(app_state_save[["ndas_shape"]])
         load_state_ndas_planned(app_state_save[["ndas_planned"]])
         incProgress(0.35)

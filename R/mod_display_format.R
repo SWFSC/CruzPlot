@@ -23,7 +23,7 @@ mod_display_format_ui <- function(id, tab_name) {
     tabName = tab_name,
     fluidRow(
       box(
-        title = "Color/Format Options", status = "primary", solidHeader = TRUE,  width = 12,
+        title = "Color/Format Options", width = 12, status = "primary", solidHeader = TRUE, 
         plotOutput(ns("plot_display_format"))
       ),
       column(12, actionButton(ns("display_redraw"), "Redraw display"))

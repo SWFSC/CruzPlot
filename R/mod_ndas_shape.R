@@ -18,7 +18,7 @@
 #'   See [cruzplot_gui()] for more info. 
 #' - `ndas_plot`: a reactive of a boolean indicating if non-DAS point/line 
 #'   data should be plotted
-#' - `cruzNonDas`: a list of the non-DAS data to plot
+#' - `cruzNonDas`: a reactive of a list of the non-DAS data to plot
 #' 
 #' @export
 mod_ndas_shape_ui <- function(id) {

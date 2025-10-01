@@ -12,6 +12,7 @@
 #' @param map_elements a list; the output of [mod_map_elements_server()]
 #' @param map_color a list; the output of [mod_map_color_server()]
 #' @param nondas a list of the nondas module output(s). See Details
+#' @param das a list; the output of [mod_das_server()]
 #'
 #' @details
 #' This module takes in map ranges/elements/etc, 
@@ -27,8 +28,8 @@
 #' - `planned`: the output of [mod_ndas_planned_server()] (planned transects)
 #'
 #' @returns `mod_plot_ui` returns a [shiny::tagList()] with a 
-#' [shinydashboard::tabBox()] of the [shiny::plotOutput()] object, 
-#' and the UI to save the plot. 
+#' [shinydashboard::tabBox()], of width 6, with the [shiny::plotOutput()] 
+#' object, and the UI to save the plot. 
 #'
 #' `mod_plot_server` returns a named list with the following elements:
 #' * 'brush': a reactive of `input$map_brush`.
@@ -104,7 +105,8 @@ mod_plot_server  <- function(
     map_range,
     map_elements, 
     map_color, 
-    nondas
+    nondas, 
+    das
 ) {
   moduleServer(id, function(input, output, session) {
     lon_range_req <- reactive(req(map_range$config()$lon.range))
