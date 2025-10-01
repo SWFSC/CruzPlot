@@ -26,6 +26,8 @@ Imports:
     shinyjs,
     stringr, 
     swfscDAS (== 0.7.0.9000)
+Remotes:
+    SWFSC/swfscDAS@dev
 Suggests:
     httr, 
     testthat
