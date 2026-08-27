@@ -1,6 +1,6 @@
 #' Map elements
 #'
-#' Shiny module for map elements: scale bar, ticks, 
+#' Shiny module for map elements: scale bar, ticks,
 #' grid lines, title, and axis labels
 #'
 #' @name mod_map_elements
@@ -8,18 +8,18 @@
 #' @inheritParams mod_map_color
 #'
 #' @details
-#' This modukle handles the map elements of scale bar, ticks and their labels, 
+#' This modukle handles the map elements of scale bar, ticks and their labels,
 #' grid lines, map title, and axis labels. It uses the map range values
 #' to generate default values, and validate tick and scale bar parameters
 #'
-#' @returns 
-#' The UI function returns a [shiny::tagList()] object, 
-#' which contains two [shiny::tabPanel()] objects. 
+#' @returns
+#' The UI function returns a [shiny::tagList()] object,
+#' which contains two [shiny::tabPanel()] objects.
 #' These objects are for map elements and labels, respectively
-#' 
+#'
 #' The server function returns a list with the following named elements:
-#' - `to_save`: a list of values to be saved in an 'app state' file. 
-#'   See [cruzplot_gui()] for more info. 
+#' - `to_save`: a list of values to be saved in an 'app state' file.
+#'   See [cruzplot_gui()] for more info.
 #' - `tick_list`: a list of the various reactives needed for plotting tick marks and labels
 #' - `scale_bar_list`: a list of the various reactives needed for plotting the scale bar
 #' - `grid_list`: a list of the various reactives needed for plotting grid lines
@@ -37,7 +37,7 @@ mod_map_elements_ui <- function(id) {
       fluidRow(
         # Scale bar
         cruz_box(
-          title = "Scale bar", width = 12, 
+          title = "Scale bar", width = 12,
           checkboxInput(ns("bar"), "Plot scale bar", value = FALSE),
           conditionalPanel(
             condition = "input.bar", ns = ns,
@@ -67,7 +67,7 @@ mod_map_elements_ui <- function(id) {
         ),
         # Ticks & Labels
         cruz_box(
-          title = "Ticks", width = 12, 
+          title = "Ticks", width = 12,
           checkboxInput(ns("tick"), label = "Plot tick marks and/or their labels", value = TRUE),
           conditionalPanel(
             condition = "input.tick", ns = ns,
@@ -128,28 +128,28 @@ mod_map_elements_ui <- function(id) {
         ),
         # Gridlines
         cruz_box(
-          title = "Grid", width = 12, 
-          checkboxInput(ns("grid"), label = "Include grid lines at major tick marks", value = TRUE),
+          title = "Grid", width = 12,
+          checkboxInput(ns("grid"), label = "Include grid lines at major tick marks", value = FALSE),
           conditionalPanel(
             condition = "input.grid", ns = ns,
             fluidRow(
               column(3, selectInput(ns("grid_lty"), label = tags$h5("Line type"),
-                                    choices = cruz.line.type, selected = 1)), 
+                                    choices = cruz.line.type, selected = 1)),
               column(3, selectInput(ns("grid_col"), label = tags$h5("Line color"),
                                     choices = cruz.palette.color, selected = "black")),
               column(3, numericInput(ns("grid_lwd"), label = tags$h5("Line width"),
-                                    value = 1, min = 1, max = 6, step = 1))              
+                                    value = 1, min = 1, max = 6, step = 1))
             )
           )
         )
       )
-    ), 
+    ),
     # Map Labels
     tabPanel(
       title = "Labels",
       fluidRow(
         cruz_box(
-          title = "Title", width = 6, 
+          title = "Title", width = 6,
           textInput(ns("label_title"), tags$h5("Map title"), value = ""),
           fluidRow(
             column(6, selectInput(ns("label_title_font"), label = tags$h5("Title font"), choices = font.family, selected = 1)),
@@ -157,7 +157,7 @@ mod_map_elements_ui <- function(id) {
           )
         ),
         cruz_box(
-          title = "Axis labels", width = 6, 
+          title = "Axis labels", width = 6,
           textInput(ns("label_axis_lon"), tags$h5("Longitude axis label"), value = ""),
           textInput(ns("label_axis_lat"), tags$h5("Latitude axis label"), value = ""),
           fluidRow(
@@ -682,9 +682,9 @@ mod_map_elements_server  <- function(id, load_state, map_range_config) {
       lab <- input$label_title
       fam <- font.family.vals[as.numeric(input$label_title_font)]
       cex <- input$label_title_size
-      
+
       validate(
-        need(!is.na(input$label_title_size), "Please enter a valid title size value"), 
+        need(!is.na(input$label_title_size), "Please enter a valid title size value"),
         need(input$label_title_size > 0, "Please enter a title size greater than zero")
       )
 
@@ -699,7 +699,7 @@ mod_map_elements_server  <- function(id, load_state, map_range_config) {
       cex <- input$label_axis_size
 
       validate(
-        need(!is.na(input$label_axis_size), "Please enter a valid axis label size value"), 
+        need(!is.na(input$label_axis_size), "Please enter a valid axis label size value"),
         need(input$label_axis_size > 0, "Please enter an axis label size greater than zero")
       )
 
@@ -714,7 +714,7 @@ mod_map_elements_server  <- function(id, load_state, map_range_config) {
     to_save <- reactive({
       # Only save bar reactive values if bar is on
       bar.tosave <- if (input$bar) {
-        list(          
+        list(
           save_widget("scale_lon", "numeric"),
           save_widget("scale_lat", "numeric"),
           save_widget("scale_len", "numeric"),
@@ -732,7 +732,7 @@ mod_map_elements_server  <- function(id, load_state, map_range_config) {
         save_widget("label_tick_font", "select"),
         save_widget("label_tick_size", "numeric"),
         save_widget("bar", "check"),
-        save_widget("scale_width", "numeric"), 
+        save_widget("scale_width", "numeric"),
         save_widget("scale_units", "radio"),
         save_widget("tick", "check"),
         save_widget("tick_bot", "check"),
@@ -746,14 +746,14 @@ mod_map_elements_server  <- function(id, load_state, map_range_config) {
         save_widget("tick_interval_major", "numeric"),
         save_widget("tick_interval_minor", "numeric"),
         save_widget("tick_length", "numeric"),
-        save_widget("tick_style", "select"), 
-        save_widget("label_title", "text"), 
-        save_widget("label_title_font", "select"), 
-        save_widget("label_title_size", "numeric"), 
-        save_widget("label_axis_lon", "text"), 
-        save_widget("label_axis_lat", "text"), 
-        save_widget("label_axis_font", "select"), 
-        save_widget("label_axis_size", "numeric"), 
+        save_widget("tick_style", "select"),
+        save_widget("label_title", "text"),
+        save_widget("label_title_font", "select"),
+        save_widget("label_title_size", "numeric"),
+        save_widget("label_axis_lon", "text"),
+        save_widget("label_axis_lat", "text"),
+        save_widget("label_axis_font", "select"),
+        save_widget("label_axis_size", "numeric"),
         save_widget("grid", "check"),
         save_widget("grid_col", "select"),
         save_widget("grid_lty", "select"),
@@ -779,9 +779,9 @@ mod_map_elements_server  <- function(id, load_state, map_range_config) {
       grid_list = list(
         grid = reactive(input$grid),
         cruzMapGrid = cruzMapGrid
-      ), 
+      ),
       label_list = list(
-        cruzMapLabelTitle = cruzMapLabelTitle, 
+        cruzMapLabelTitle = cruzMapLabelTitle,
         cruzMapLabelAxes = cruzMapLabelAxes
       )
     )

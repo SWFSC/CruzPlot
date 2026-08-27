@@ -4,6 +4,8 @@
 
 * Modularized the CruzPlot shiny app (in progress) (#7)
 
+* CruzPlot now depends on R >= 4.1, and uses the native pipe operator `|>`
+
 
 # CruzPlot 1.4.9
 

@@ -13,7 +13,7 @@ Description: A utility program oriented to create maps, plot data,
     produced by the Southwest Fisheries Science Center (SWFSC) program 'WinCruz'.
 URL: https://github.com/SWFSC/CruzPlot/, https://swfsc.github.io/CruzPlot/
 BugReports: https://github.com/SWFSC/CruzPlot/issues/
-Depends: R (>= 4.0.0)
+Depends: R (>= 4.1.0)
 Imports: 
     dplyr,
     DT, 
@@ -35,4 +35,4 @@ License: Apache License (== 2)
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.3
+Config/roxygen2/version: 8.1.0

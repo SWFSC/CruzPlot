@@ -21,7 +21,7 @@ those values into the \code{load_state} object when a saved app state is loaded}
 \item{map_range_config}{the \code{config} output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 }
 \value{
-The UI function returns a \code{\link[shiny:reexports]{shiny::tagList()}} object,
+The UI function returns a \code{\link[shiny:tagList]{shiny::tagList()}} object,
 which contains two \code{\link[shiny:tabPanel]{shiny::tabPanel()}} objects.
 These objects are for map elements and labels, respectively
 

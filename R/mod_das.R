@@ -5,18 +5,18 @@
 #' @name mod_das
 #'
 #' @inheritParams mod_map_range
-#' 
+#'
 #' @details
 #' This module handles the loading, processing, and plotting of DAS data.
 #'
 #' @returns The UI function returns a [shiny::tabPanel()] object
-#' 
+#'
 #' The server function returns a list with the following named elements:
-#' - `to_save`: a list of values to be saved in an 'app state' file. 
-#'   See [cruzplot_gui()] for more info. 
+#' - `to_save`: a list of values to be saved in an 'app state' file.
+#'   See [cruzplot_gui()] for more info.
 #' - `sp_codes`: reactive of a dataframe of loaded species codes
 #' - `todo`: ...
-#' 
+#'
 #' @export
 mod_das_ui <- function(id) {
   ns <- NS(id)
@@ -26,25 +26,25 @@ mod_das_ui <- function(id) {
       title = "Data",
       fluidRow(
         cruz_box(
-          title = "DAS Data", width = 12, 
+          title = "DAS Data", width = 12,
           helpText("For details about these parameters,",
                     actionLink(ns("das_file_help"), "click here"), "or see the official",
                     tags$a(
                       href = "https://swfsc.github.io/swfscDAS/reference/index.html",
-                      "swfscDAS documentation", 
+                      "swfscDAS documentation",
                       target = "_blank"
                     )),
           fluidRow(
-            column(3, numericInput(ns("das_file_skip"), 
+            column(3, numericInput(ns("das_file_skip"),
                                     tags$h5("Number of lines to skip before reading each file"),
                                     value = 0, min = 0)),
-            column(3, numericInput(ns("das_file_days_gap"), 
+            column(3, numericInput(ns("das_file_days_gap"),
                                     tags$h5("days.gap argument of das_process()"),
                                     value = 20, min = 0, step = 1)),
-            column(3, selectInput(ns("das_file_reset_event"), 
+            column(3, selectInput(ns("das_file_reset_event"),
                                   tags$h5("reset.event argument of das_process()"),
                                   choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
-            column(3, selectInput(ns("das_file_reset_effort"), 
+            column(3, selectInput(ns("das_file_reset_effort"),
                                   tags$h5("reset.effort argument of das_process()"),
                                   choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
           ),
@@ -57,7 +57,7 @@ mod_das_ui <- function(id) {
           tags$span(textOutput(ns("das_loaded_text")), style = "color: blue;")
         ),
         cruz_box(
-          title = "Species codes", width = 12, 
+          title = "Species codes", width = 12,
           helpText("Processing DAS sightings requires a species codes file, typically named SpCodes.dat,",
                     "to translate the species codes to scientific or common species names.",
                     "CruzPlot contains a default SpCodes.dat file (last modified 26 May 2020),",
@@ -66,8 +66,8 @@ mod_das_ui <- function(id) {
           fluidRow(
             column(5, fileInput(ns("das_spcodes_file"), tags$h5("Load species codes file"), accept = ".dat")),
             column(
-              width = 6, offset = 1, 
-              tags$br(), tags$br(), 
+              width = 6, offset = 1,
+              tags$br(), tags$br(),
               actionButton(ns("das_spcodes_default"), "Load default species codes")
             )
           ),
@@ -609,7 +609,7 @@ mod_das_server  <- function(id, load_state) {
       das.data = NULL       # DAS dataframe
     )
 
-    
+
     # cruz.eff.leg          <- reactiveVal(FALSE)
     # cruz.eff.leg.title    <- reactiveVal("")
 
@@ -684,7 +684,7 @@ mod_das_server  <- function(id, load_state) {
         easyClose = FALSE
       ))
     })
-    
+
     ###############################################################################
     # Sp Codes
 
@@ -696,7 +696,7 @@ mod_das_server  <- function(id, load_state) {
       spcodes_path <- system.file("extdata", "SpCodes.dat", package = "swfscDAS")
       x <- try(das_spcodes_read(spcodes_path), silent = TRUE)
       validate(
-        need(x, paste("Error reading the default SpCodes.dat file.", 
+        need(x, paste("Error reading the default SpCodes.dat file.",
                       "Please try reinstalling CruzPlot and swfscDAS"))
       )
 
@@ -722,7 +722,7 @@ mod_das_server  <- function(id, load_state) {
     })
 
     output$spcodes_user_read_text <- renderText(spcodes_user_read())
-    output$spcodes_default_read_text <- renderText(spcodes_default_read())    
+    output$spcodes_default_read_text <- renderText(spcodes_default_read())
     output$spcodes_message <- renderText({
       if (req(cruz.list$sp.codes.name) == "default") {
         "The default species code file, 'SpCodes.dat' from swfscDAS, is loaded"
@@ -814,9 +814,9 @@ mod_das_server  <- function(id, load_state) {
         stringsAsFactors = FALSE
       )
 
-      das.proc <- das.proc %>%
-        left_join(filename.key, by = c("file_das" = "tmp")) %>%
-        mutate(file_das = .data$actual) %>%
+      das.proc <- das.proc  |>
+        left_join(filename.key, by = c("file_das" = "tmp")) |>
+        mutate(file_das = .data$actual) |>
         select(-.data$actual)
 
       # Save reactive values
@@ -836,7 +836,7 @@ mod_das_server  <- function(id, load_state) {
 
     ###############################################################################
     # Sightings
-    
+
     ### Text in sightings tab about no SpCodes.data file
     output$das_sight_spcodes_message <- renderText({
       validate(
@@ -856,8 +856,8 @@ mod_das_server  <- function(id, load_state) {
     ### Save values
     to_save <- reactive({
       list(
-        save_widget("sp.codes", "reactive", cruz.list$sp.codes), 
-        save_widget("sp.codes.name", "reactive", cruz.list$sp.codes.name), 
+        save_widget("sp.codes", "reactive", cruz.list$sp.codes),
+        save_widget("sp.codes.name", "reactive", cruz.list$sp.codes.name),
         save_widget("das.data", "reactive", cruz.list$das.data)
         # save_widget("ndas_plot", "check")
       )
@@ -865,7 +865,7 @@ mod_das_server  <- function(id, load_state) {
 
     ### Return values
     list(
-      to_save = to_save, 
+      to_save = to_save,
       sp_codes = reactive(cruz.list$sp.codes)
     )
   })

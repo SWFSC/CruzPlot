@@ -29,7 +29,7 @@ mod_plot_server(id, height, map_range, map_elements, map_color, nondas, das)
 \item{das}{a list; the output of \code{\link[=mod_das_server]{mod_das_server()}}}
 }
 \value{
-\code{mod_plot_ui} returns a \code{\link[shiny:reexports]{shiny::tagList()}} with a
+\code{mod_plot_ui} returns a \code{\link[shiny:tagList]{shiny::tagList()}} with a
 \code{\link[shinydashboard:tabBox]{shinydashboard::tabBox()}}, of width 6, with the \code{\link[shiny:plotOutput]{shiny::plotOutput()}}
 object, and the UI to save the plot.
 

@@ -15,21 +15,21 @@
 #' @param das a list; the output of [mod_das_server()]
 #'
 #' @details
-#' This module takes in map ranges/elements/etc, 
-#' as well as other data to plot. 
-#' It does not perform any validation; 
-#' validation is expected to happen in individual modules, 
-#' where the values are generated. 
-#' 
+#' This module takes in map ranges/elements/etc,
+#' as well as other data to plot.
+#' It does not perform any validation;
+#' validation is expected to happen in individual modules,
+#' where the values are generated.
+#'
 #' It also provides functionality for downloading the plot.
-#' 
+#'
 #' The `nondas` list is a named list:
 #' - `shape`: the output of [mod_ndas_shape_server()] (non-DAS point/line data)
 #' - `planned`: the output of [mod_ndas_planned_server()] (planned transects)
 #'
-#' @returns `mod_plot_ui` returns a [shiny::tagList()] with a 
-#' [shinydashboard::tabBox()], of width 6, with the [shiny::plotOutput()] 
-#' object, and the UI to save the plot. 
+#' @returns `mod_plot_ui` returns a [shiny::tagList()] with a
+#' [shinydashboard::tabBox()], of width 6, with the [shiny::plotOutput()]
+#' object, and the UI to save the plot.
 #'
 #' `mod_plot_server` returns a named list with the following elements:
 #' * 'brush': a reactive of `input$map_brush`.
@@ -41,7 +41,7 @@ mod_plot_ui <- function(id, enable_brush = FALSE) {
 
   tagList(
     tabBox(
-      width = 6, 
+      width = 6,
       tabPanel(
         title = "Display",
         if (enable_brush) {
@@ -49,42 +49,42 @@ mod_plot_ui <- function(id, enable_brush = FALSE) {
         } else {
           plotOutput(ns("plotmap"), height = "auto")
         }
-      ), 
+      ),
       tabPanel(
         title = "Save",
         fluidRow(
           cruz_box(
-            title = "Save map", width = 12, 
+            title = "Save map", width = 12,
             fluidRow(
               column(3, radioButtons(ns("download_format"), label = tags$h5("File format"),
-                                      choices = list("JPEG" = 1, "PDF" = 2, "PNG" = 3),
-                                      selected = 3)),
+                                     choices = list("JPEG" = 1, "PDF" = 2, "PNG" = 3),
+                                     selected = 3)),
               column(
                 width = 8,
                 fluidRow(
                   column(6, radioButtons(ns("download_dim"), tags$h5("File dimensions"),
-                                          choices = list("Use dimensions of plot window" = 1, "Specify dimensions" = 2),
-                                          selected = 1)),
+                                         choices = list("Use dimensions of plot window" = 1, "Specify dimensions" = 2),
+                                         selected = 1)),
                   column(6, numericInput(ns("download_res"), tags$h5("Resolution (ppi)"),
-                                          value = 300, step = 50, min = 0))
+                                         value = 300, step = 50, min = 0))
                 ),
                 conditionalPanel(
-                  condition = "input.download_dim == 1", ns = ns, 
+                  condition = "input.download_dim == 1", ns = ns,
                   helpText("Downloaded map will have the same dimensions as the displayed map")
                 ),
                 conditionalPanel(
-                  condition = "input.download_dim == 2", ns = ns, 
+                  condition = "input.download_dim == 2", ns = ns,
                   fluidRow(
                     column(6, numericInput(ns("download_width"), tags$h5("File width (inches)"),
-                                            value = 10, step = 1, min = 0)),
+                                           value = 10, step = 1, min = 0)),
                     column(6, numericInput(ns("download_height"), tags$h5("File height (inches)"),
-                                            value = 10, step = 1, min = 0))
+                                           value = 10, step = 1, min = 0))
                   )
                 )
               )
             ),
             conditionalPanel(
-              condition = "input.download_format != 1", ns = ns, 
+              condition = "input.download_format != 1", ns = ns,
               checkboxInput(ns("background_transparent"), "Make plot background transparent",
                             value = FALSE)
             ),
@@ -103,9 +103,9 @@ mod_plot_server  <- function(
     id,
     height,
     map_range,
-    map_elements, 
-    map_color, 
-    nondas, 
+    map_elements,
+    map_color,
+    nondas,
     das
 ) {
   moduleServer(id, function(input, output, session) {
@@ -140,7 +140,7 @@ mod_plot_server  <- function(
         map.name <- map_range$config()$map.name
         map.water.col <- map_color$cruzMapColorWater()
         map.land.col <- map_color$cruzMapColorLand()
-        
+
         title.info <- map_elements$label_list$cruzMapLabelTitle()
         axes.info <- map_elements$label_list$cruzMapLabelAxes()
 
@@ -151,12 +151,12 @@ mod_plot_server  <- function(
         mar3 <- ifelse(nchar(title.info$lab)    > 0, 7, 2)
 
         x.try <- try(map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
-                        mar = c(mar1, mar2, mar3, 4)),
-                    silent = TRUE)
+                         mar = c(mar1, mar2, mar3, 4)),
+                     silent = TRUE)
         validate(need(x.try, "Error - there must be some land in the map area"))
 
         x.1 <- map(map.name[[1]], xlim = lon.range[1:2], ylim = lat.range[1:2],
-                  mar = c(mar1, mar2, mar3, 4))
+                   mar = c(mar1, mar2, mar3, 4))
 
         param.unit <- par("usr")
         param.inch <- par("pin")
@@ -175,7 +175,7 @@ mod_plot_server  <- function(
             map.depth, image = TRUE, land = TRUE, add = TRUE,
             axes = FALSE, xlab = NA, ylab = NA, lwd = 0.0,
             bpal = list(
-              c(0, max(map.depth), "grey"), 
+              c(0, max(map.depth), "grey"),
               c(min(map.depth), 0, bathy.col)
             )
           )
@@ -346,22 +346,22 @@ mod_plot_server  <- function(
         pltransect <- planned$pltransect()
         if (!is.null(pltransect)) {
           if (planned$pltransect_class2()) {
+            # Yes class 2
+            for (i in pltransect) {
+              for (j in i) {
+                for (k in j) {
+                  lines(x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]]
+                  )
+                }
+              }
+            }
+          } else {
             # No class2
             for (i in pltransect) {
               for (k in i) {
                 lines(
                   x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]]
                 )
-              }
-            }
-          } else {
-            # Yes class 2
-            for (i in pltransect) {
-              for (j in i) {
-                for (k in j) {
-                  lines(x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]] 
-                  )
-                }
               }
             }
           }
@@ -390,8 +390,8 @@ mod_plot_server  <- function(
             for(j in seq_along(data.ndas.p)) {
               data.ndas.p.curr <- data.ndas.p[[j]]
               points(x = data.ndas.p.curr$x, y = data.ndas.p.curr$y,
-                    pch = data.ndas.p.curr$type, col = data.ndas.p.curr$col,
-                    cex = data.ndas.p.curr$cex, lwd = data.ndas.p.curr$lwd)
+                     pch = data.ndas.p.curr$type, col = data.ndas.p.curr$col,
+                     cex = data.ndas.p.curr$cex, lwd = data.ndas.p.curr$lwd)
             }
           }
         }
@@ -444,10 +444,10 @@ mod_plot_server  <- function(
         )
 
         str_glue(
-          "CruzPlot_{lon1}_{lon2}_{lat1}_{lat2}.{ext}", 
-          lon1 = lon_range_req()[1], 
-          lon2 = lon_range_req()[2], 
-          lat1 = lat_range_req()[1], 
+          "CruzPlot_{lon1}_{lon2}_{lat1}_{lat2}.{ext}",
+          lon1 = lon_range_req()[1],
+          lon2 = lon_range_req()[2],
+          lat1 = lat_range_req()[1],
           lat2 = lat_range_req()[2]
         )
       },
@@ -460,7 +460,7 @@ mod_plot_server  <- function(
           nsid <- session$ns("plotmap")
           file.width <- session$clientData[[str_glue("output_{nsid}_width")]] / plot.res
           file.height <- session$clientData[[str_glue("output_{nsid}_height")]] / plot.res
-          
+
 
         } else if (input$download_dim == 2) {
           file.width <- input$download_width
@@ -472,7 +472,7 @@ mod_plot_server  <- function(
         # Save map
         if (input$download_format == 1) {
           jpeg(file, width = file.width, height = file.height, units = "in",
-              res = file.res)
+               res = file.res)
           plotMap()()
           dev.off()
         } else if (input$download_format == 2) {

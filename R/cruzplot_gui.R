@@ -47,7 +47,7 @@ cruzplot_gui <- function(...) {
         menuItem("Plot DAS Data", tabName = "das", icon = icon("th")),
         menuItem("Plot Non-DAS Data", tabName = "nondas", icon = icon("th")),
         menuItem(
-          HTML(paste0("Color and Formatting", "<br/>", "Options")), 
+          HTML(paste0("Color and Formatting", "<br/>", "Options")),
           tabName = "display_format", icon = icon("th")
         ),
         menuItem("Species Information", tabName = "display_spcodes", icon = icon("th")),
@@ -62,11 +62,11 @@ cruzplot_gui <- function(...) {
         tags$br(), tags$br(), #tags$br(),
         numericInput("plot_height", "Map height (pixels)", value = 600, min = 0, step = 100),
         selectInput(
-          "color_style", 
-          "App-wide color style", 
+          "color_style",
+          "App-wide color style",
           choices = list("Color" = 1, "Gray scale" = 2),
           selected = 1
-        ), 
+        ),
         tags$br(),
         actionButton("stop", "Close CruzPlot"),
         column(12, tags$h5(paste0("CruzPlot v", packageVersion("CruzPlot"))))
@@ -104,25 +104,25 @@ cruzplot_gui <- function(...) {
           tabName = "createmap",
           fluidRow(
             conditionalPanel("input.tabset1 == 'Range'", mod_plot_ui("plot1", TRUE)),
-            conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2")), 
+            conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2")),
             # box(
             #   status = "primary", width = 6,
             #   conditionalPanel("input.tabset1 == 'Range'", mod_plot_ui("plot1", TRUE)),
             #   conditionalPanel("input.tabset1 != 'Range'", mod_plot_ui("plot2"))
             # ),
             tabBox(
-              title = "Map", id = "tabset1", width = 6, 
+              title = "Map", id = "tabset1", width = 6,
               mod_map_range_ui("map_range"),
-              mod_map_color_ui("map_color"), 
-              mod_map_elements_ui("map_elements")[[1]], 
+              mod_map_color_ui("map_color"),
+              mod_map_elements_ui("map_elements")[[1]],
               mod_map_elements_ui("map_elements")[[2]]
             )
           )
-        ), 
+        ),
         tabItem(
-          tabName = "das", 
+          tabName = "das",
           fluidRow(
-            mod_plot_ui("plot_das"), 
+            mod_plot_ui("plot_das"),
             do.call(
               tabBox,
               c(
@@ -131,35 +131,35 @@ cruzplot_gui <- function(...) {
               )
             )
             # tabBox(
-            #   title = "DAS Data", id = "tabset2", width = 6, 
+            #   title = "DAS Data", id = "tabset2", width = 6,
             #   mod_das_ui("das")
             # )
           )
-        ), 
+        ),
         tabItem(
           tabName = "nondas",
           fluidRow(
-            mod_plot_ui("plot_ndas"), 
+            mod_plot_ui("plot_ndas"),
             tabBox(
               title = "Non-DAS", id = "tabset2", width = 6,
-              mod_ndas_planned_ui("ndas_planned"), 
+              mod_ndas_planned_ui("ndas_planned"),
               mod_ndas_shape_ui("ndas_shape")
             )
           )
-        ), 
-        mod_display_format_ui("display_format", tab_name = "display_format"), 
-        mod_display_spcodes_ui("display_spcodes", tab_name = "display_spcodes"), 
+        ),
+        mod_display_format_ui("display_format", tab_name = "display_format"),
+        mod_display_spcodes_ui("display_spcodes", tab_name = "display_spcodes"),
         tabItem(
           tabName = "display_manual",
           tags$h5(
-            "The manual can be downloaded through the below window, or from the GitHub repo", 
+            "The manual can be downloaded through the below window, or from the GitHub repo",
             tags$a(
               "at this link",
               # TODO: change link to production, and update manual to 2.0
               href = "https://github.com/SWFSC/CruzPlot/blob/modules/inst/app/www/CruzPlot_Manual_app.pdf",
               target = "_blank"
             )
-          ), 
+          ),
           tags$iframe(
             style = "height:600px; width:100%",
             src = "www/CruzPlot_Manual_app.pdf"
@@ -242,18 +242,18 @@ cruzplot_gui <- function(...) {
 
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range_config)
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range_config)
-    
+
     das <- mod_das_server("das", load_state_das)
     nondas <- list(
-      shape = mod_ndas_shape_server("ndas_shape", load_state_ndas_shape), 
-      planned = mod_ndas_planned_server("ndas_planned", load_state_ndas_planned)
+      shape = mod_ndas_shape_server("ndas_shape", load_state_ndas_shape, map_range_config),
+      planned = mod_ndas_planned_server("ndas_planned", load_state_ndas_planned, map_range_config)
     )
 
     #----------------------------------------------------------------------------
     ### Dashboard-level display tabs
     mod_display_format_server("display_format")
     mod_display_spcodes_server("display_spcodes", das$sp_codes)
-    
+
     #----------------------------------------------------------------------------
     ### Plots
     # TODO: do like the following for consistency?
@@ -286,15 +286,15 @@ cruzplot_gui <- function(...) {
         withProgress(message = "Saving app data", value = 0.3, {
           app_state_save <- list(
             map_range = map_range$to_save(),
-            map_elements = map_elements$to_save(), 
-            map_color = map_color$to_save(), 
-            das = das$to_save(), 
-            ndas_shape = nondas$shape$to_save(),             
-            ndas_planned = nondas$planned$to_save(),             
-            color_style = input$color_style, 
+            map_elements = map_elements$to_save(),
+            map_color = map_color$to_save(),
+            das = das$to_save(),
+            ndas_shape = nondas$shape$to_save(),
+            ndas_planned = nondas$planned$to_save(),
+            color_style = input$color_style,
             plot_height = input$plot_height
           )
-          
+
           incProgress(0.6)
           save(app_state_save, file = file)
           incProgress(0.1)
@@ -345,7 +345,7 @@ cruzplot_gui <- function(...) {
         load_state_ndas_planned(app_state_save[["ndas_planned"]])
         incProgress(0.35)
 
-        # Update widgets on the main page, not in a module
+        # Update widgets on the main page, that are not in a module
         updateNumericInput(session, "plot_height", value = app_state_save[["plot_height"]])
         updateSelectInput(session, "color_style", selected = app_state_save[["color_style"]])
         incProgress(0.05)

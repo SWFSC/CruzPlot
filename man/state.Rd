@@ -46,7 +46,7 @@ These values are saved in the CruzPlot RDATA file.
 The value can be passed in explicitly via the \code{value} argument;
 if \code{value} is \code{NULL}, then the value will either be
 extracted from the \code{input} argument  if \code{input} is not \code{NULL},
-or extracted from the output of \code{\link[shiny:domains]{shiny::getDefaultReactiveDomain()}}
+or extracted from the output of \code{\link[shiny:getDefaultReactiveDomain]{shiny::getDefaultReactiveDomain()}}
 if \code{input} is `NULL``.
 
 When the saved state is loaded back into a new CruzPlot session

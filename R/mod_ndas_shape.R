@@ -4,22 +4,22 @@
 #'
 #' @name mod_ndas_shape
 #'
-#' @inheritParams mod_map_range
-#' 
+#' @inheritParams mod_map_color
+#'
 #' @details
-#' This module handles the loading, processing, and plotting of 
+#' This module handles the loading, processing, and plotting of
 #' non-DAS point and line data.
-#' See the CruzPlot manual for CSV format requirements. 
+#' See the CruzPlot manual for CSV format requirements.
 #'
 #' @returns The UI function returns a [shiny::tabPanel()] object
-#' 
+#'
 #' The server function returns a list with the following named elements:
-#' - `to_save`: a list of values to be saved in an 'app state' file. 
-#'   See [cruzplot_gui()] for more info. 
-#' - `ndas_plot`: a reactive of a boolean indicating if non-DAS point/line 
+#' - `to_save`: a list of values to be saved in an 'app state' file.
+#'   See [cruzplot_gui()] for more info.
+#' - `ndas_plot`: a reactive of a boolean indicating if non-DAS point/line
 #'   data should be plotted
 #' - `cruzNonDas`: a reactive of a list of the non-DAS data to plot
-#' 
+#'
 #' @export
 mod_ndas_shape_ui <- function(id) {
   ns <- NS(id)
@@ -30,7 +30,7 @@ mod_ndas_shape_ui <- function(id) {
       cruz_box(
         title = "Loaded data", width = 12,
         DT::dataTableOutput(ns("cruzNonDasLoaded")),
-        helpText(HTML("<br/>")), 
+        helpText(HTML("<br/>")),
         column(4, uiOutput(ns("ndas_remove_execute"))),
         column(3, textOutput(ns("cruzNonDasRemove_text")))
       ),
@@ -38,13 +38,13 @@ mod_ndas_shape_ui <- function(id) {
         title = "Plot data",  width = 12,
         checkboxInput(ns("ndas_plot"), tags$h5("Plot loaded non-DAS data"), value = FALSE),
         conditionalPanel(
-          condition = "input.ndas_plot", ns = ns, 
+          condition = "input.ndas_plot", ns = ns,
           ui_select_instructions(),
           uiOutput(ns("ndas_toplot_uiOut_select"))
         )
-      ), 
-    # ),
-    # fluidRow(
+      ),
+      # ),
+      # fluidRow(
       cruz_box(
         title = "Load data", width = 12,
         helpText(
@@ -53,13 +53,13 @@ mod_ndas_shape_ui <- function(id) {
         ),
 
         fluidRow(
-          column(6, fileInput(ns("ndas_file"), tags$h5("Load non-DAS CSV file"))), 
+          column(6, fileInput(ns("ndas_file"), tags$h5("Load non-DAS CSV file"))),
           column(
-            width = 6, 
+            width = 6,
             conditionalPanel(
-              condition = "output.cruzNonDasFile_Conditional", ns = ns, 
+              condition = "output.cruzNonDasFile_Conditional", ns = ns,
               radioButtons(
-                ns("ndas_plot_type"), tags$h5("Type of data"), 
+                ns("ndas_plot_type"), tags$h5("Type of data"),
                 choices = list("Line" = 1, "Point" = 2), selected = 1
               )
             )
@@ -67,64 +67,64 @@ mod_ndas_shape_ui <- function(id) {
         ),
         textOutput(ns("cruzNonDasFile_LonLat_text")),
         conditionalPanel(
-          condition = "output.cruzNonDasFile_Conditional", ns = ns, 
+          condition = "output.cruzNonDasFile_Conditional", ns = ns,
           # radioButtons(
-          #   ns("ndas_plot_type"), tags$h5("Type of data"), 
+          #   ns("ndas_plot_type"), tags$h5("Type of data"),
           #   choices = list("Line" = 1, "Point" = 2), selected = 1
           # ),
           conditionalPanel(
-            condition = "input.ndas_plot_type==1", ns = ns, 
+            condition = "input.ndas_plot_type==1", ns = ns,
             fluidRow(
               column(
                 width = 3,
                 selectInput(
-                  ns("ndas_line_lty"), tags$h5("Line type"), 
+                  ns("ndas_line_lty"), tags$h5("Line type"),
                   choices = cruz.line.type, selected = 1
                 )
               ),
               column(
-                width = 3, 
+                width = 3,
                 selectInput(
-                  ns("ndas_line_col"), tags$h5("Line color"), 
+                  ns("ndas_line_col"), tags$h5("Line color"),
                   choices = cruz.palette.color,  selected = "black")
-                ),
+              ),
               column(
                 width = 3,
                 numericInput(
-                  ns("ndas_line_lwd"), tags$h5("Line width"), 
+                  ns("ndas_line_lwd"), tags$h5("Line width"),
                   value = 1, min = 1, max = 6, step = 1
-                ), 
+                ),
               )
             )
           ),
           conditionalPanel(
-            condition = "input.ndas_plot_type==2", ns = ns, 
+            condition = "input.ndas_plot_type==2", ns = ns,
             fluidRow(
               column(
                 width = 3,
                 selectInput(
-                  ns("ndas_pt_pch"), tags$h5("Point type"), 
+                  ns("ndas_pt_pch"), tags$h5("Point type"),
                   choices = cruz.symbol.type, selected = 1
                 )
               ),
               column(
                 width = 3,
                 selectInput(
-                  ns("ndas_pt_col"), tags$h5("Point color"), 
+                  ns("ndas_pt_col"), tags$h5("Point color"),
                   choices = cruz.palette.color, selected = "black"
                 )
-              ),                
+              ),
               column(
                 width = 3,
                 numericInput(
-                  ns("ndas_pt_cex"), tags$h5("Point size"), 
+                  ns("ndas_pt_cex"), tags$h5("Point size"),
                   value = 1, min = 0.1, max = 5, step = 0.1
                 )
               ),
               column(
                 width = 3,
                 numericInput(
-                  ns("ndas_pt_lwd"), tags$h5("Point line width"), 
+                  ns("ndas_pt_lwd"), tags$h5("Point line width"),
                   value = 1, min = 1, max = 6, step = 1)
               )
             )
@@ -140,7 +140,7 @@ mod_ndas_shape_ui <- function(id) {
 
 #' @name mod_ndas_shape
 #' @export
-mod_ndas_shape_server  <- function(id, load_state) {
+mod_ndas_shape_server  <- function(id, load_state, map_range_config) {
   moduleServer(id, function(input, output, session) {
     stopifnot(
       is.reactive(load_state)
@@ -194,17 +194,17 @@ mod_ndas_shape_server  <- function(id, load_state) {
 
       validate(
         need(length(ndx.lon) < 2,
-            paste("Multiple columns of loaded non-DAS data have one of the",
-                  "following headings:", paste(lon.names, collapse = ", "))),
+             paste("Multiple columns of loaded non-DAS data have one of the",
+                   "following headings:", paste(lon.names, collapse = ", "))),
         need(length(ndx.lon) > 0,
-            paste("None columns of loaded non-DAS data have one of the",
-                  "following headings:", paste(lon.names, collapse = ", "))),
+             paste("None columns of loaded non-DAS data have one of the",
+                   "following headings:", paste(lon.names, collapse = ", "))),
         need(length(ndx.lat) < 2,
-            paste("Multiple columns of loaded non-DAS data have one of the",
-                  "following headings:", paste(lat.names, collapse = ", "))),
+             paste("Multiple columns of loaded non-DAS data have one of the",
+                   "following headings:", paste(lat.names, collapse = ", "))),
         need(length(ndx.lon) > 0,
-            paste("None of loaded non-DAS data have one of the",
-                  "following headings:", paste(lat.names, collapse = ", ")))
+             paste("None of loaded non-DAS data have one of the",
+                   "following headings:", paste(lat.names, collapse = ", ")))
       )
 
       ndas.x <- ndas.file[, ndx.lon]
@@ -306,7 +306,7 @@ mod_ndas_shape_server  <- function(id, load_state) {
       )
 
       cruz.list$ndas.df <- rbind(cruz.list$ndas.df, ndas.df.curr)
-      shinyjs::reset("ndas_file")
+      # shinyjs::reset("ndas_file")
 
       ""
     })
@@ -336,7 +336,7 @@ mod_ndas_shape_server  <- function(id, load_state) {
       which.toremove <- input$cruzNonDasLoaded_rows_selected
       validate(
         need(length(which.toremove) > 0,
-            "Please select at least one row to remove")
+             "Please select at least one row to remove")
       )
 
       cruz.list$ndas.data <- cruz.list$ndas.data[-which.toremove]
@@ -408,14 +408,14 @@ mod_ndas_shape_server  <- function(id, load_state) {
 
       validate(
         need(length(all.data) > 0,
-            "Please load at least one non-DAS object before plotting non-DAS data")
+             "Please load at least one non-DAS object before plotting non-DAS data")
       )
 
       all.data.sel <- all.data[as.numeric(cruz.list$ndas.toplot)]
 
       validate(
         need(length(all.data.sel) > 0,
-            "Please select at least one non-DAS object to plot")
+             "Please select at least one non-DAS object to plot")
       )
 
       all.data.sel.ind <- sapply(all.data.sel, function(i) i$ind)
@@ -423,6 +423,18 @@ mod_ndas_shape_server  <- function(id, load_state) {
       # Get line and point data to plot
       x <- all.data.sel[all.data.sel.ind == 1]
       y <- all.data.sel[all.data.sel.ind == 2]
+
+      # Adjust to-plot longitudes to world2, if necessary
+      if (map_range_config()$world2) {
+        x <- lapply(x, function(i) {
+          i[["x"]] <- ifelse(i[["x"]] < 0, i[["x"]] + 360, i[["x"]])
+          i
+        })
+        y <- lapply(y, function(i) {
+          i[["x"]] <- ifelse(i[["x"]] < 0, i[["x"]] + 360, i[["x"]])
+          i
+        })
+      }
 
       list(data.line = x, data.point = y)
     })
@@ -433,8 +445,8 @@ mod_ndas_shape_server  <- function(id, load_state) {
     to_save <- reactive({
       list(
         save_widget("ndas_plot", "check"),
-        save_widget("ndas.data", "reactive", cruz.list$ndas.data), 
-        save_widget("ndas.df", "reactive", cruz.list$ndas.df), 
+        save_widget("ndas.data", "reactive", cruz.list$ndas.data),
+        save_widget("ndas.df", "reactive", cruz.list$ndas.df),
         save_widget("ndas.toplot", "reactive", cruz.list$ndas.toplot)
       )
     })
@@ -442,7 +454,7 @@ mod_ndas_shape_server  <- function(id, load_state) {
     ### Return values
     list(
       to_save = to_save,
-      ndas_plot = reactive(input$ndas_plot), 
+      ndas_plot = reactive(input$ndas_plot),
       cruzNonDas = cruzNonDas
     )
   })

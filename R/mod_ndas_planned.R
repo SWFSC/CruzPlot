@@ -4,98 +4,98 @@
 #'
 #' @name mod_ndas_planned
 #'
-#' @inheritParams mod_map_range
-#' 
+#' @inheritParams mod_map_color
+#'
 #' @details
-#' This module allows users to load non-DAS planned transect files. 
-#' See the CruzPlot manual for planned transect CSV format requirements. 
+#' This module allows users to load non-DAS planned transect files.
+#' See the CruzPlot manual for planned transect CSV format requirements.
 #'
 #' @returns The UI function returns a [shiny::tabPanel()] object
-#' 
+#'
 #' The server function returns a list with the following named elements:
-#' - `to_save`: a list of values to be saved in an 'app state' file. 
-#'   See [cruzplot_gui()] for more info. 
-#' - `pltransect`: a reactive of a list with the planned transect data to plot. 
+#' - `to_save`: a list of values to be saved in an 'app state' file.
+#'   See [cruzplot_gui()] for more info.
+#' - `pltransect`: a reactive of a list with the planned transect data to plot.
 #'   `NULL` if there are no planned transects to plot
-#' - `pltransect_class2` a reactive of a boolean indicating if 
-#'   the loaded planned transects have any 'class2' info.  
-#' 
+#' - `pltransect_class2` a reactive of a boolean indicating if
+#'   the loaded planned transects have any 'class2' info.
+#'
 #' @export
 mod_ndas_planned_ui <- function(id) {
   ns <- NS(id)
 
   tabPanel(
-    title = "Planned Transects", 
+    title = "Planned Transects",
     fluidRow(
       cruz_box(
-        title = "Load planned transects", width = 12, 
-            fluidRow(
-              column(
-                width = 6, 
-                helpText(
-                  "Longitudes must be in -180 to 180 range.", 
-                  "See the manual for the required CSV file format"
-                )
-              ),
-              column(
-                width = 6, 
-                fileInput(ns("file"), tags$h5("Load CSV file"), accept = ".csv")
-              )
-            ), 
-            fluidRow(
-              column(3, uiOutput(ns("lon_uiOut_select"))),
-              column(3, uiOutput(ns("lat_uiOut_select"))),
-              column(3, uiOutput(ns("num_uiOut_select"))),
-              column(3, uiOutput(ns("class1_uiOut_select")))
-            ),
-            fluidRow(
-              column(3, uiOutput(ns("class2_uiOut_select"))),
-              column(3, offset = 1, tags$br(), tags$br(), uiOutput(ns("execute_uiOut_button"))),
-              column(5, tags$br(), tags$br(), textOutput(ns("text")))
-            ),
-            tags$span(textOutput(ns("message")), style = "color: blue;"), 
+        title = "Load planned transects", width = 12,
+        fluidRow(
+          column(
+            width = 6,
+            helpText(
+              "Longitudes must be in -180 to 180 range.",
+              "See the manual for the required CSV file format"
+            )
           ),
+          column(
+            width = 6,
+            fileInput(ns("file"), tags$h5("Load CSV file"), accept = ".csv")
+          )
+        ),
+        fluidRow(
+          column(3, uiOutput(ns("lon_uiOut_select"))),
+          column(3, uiOutput(ns("lat_uiOut_select"))),
+          column(3, uiOutput(ns("num_uiOut_select"))),
+          column(3, uiOutput(ns("class1_uiOut_select")))
+        ),
+        fluidRow(
+          column(3, uiOutput(ns("class2_uiOut_select"))),
+          column(3, offset = 1, tags$br(), tags$br(), uiOutput(ns("execute_uiOut_button"))),
+          column(5, tags$br(), tags$br(), textOutput(ns("text")))
+        ),
+        tags$span(textOutput(ns("message")), style = "color: blue;"),
+      ),
+      conditionalPanel(
+        condition = "output.cruzMapPlannedTransects_Conditional", ns = ns,
+        cruz_box(
+          title = "Plot loaded planned transects", width = 12,
+          checkboxInput(ns("plot"), "Plot planned transect lines", value = FALSE),
           conditionalPanel(
-            condition = "output.cruzMapPlannedTransects_Conditional", ns = ns, 
-            cruz_box(
-              title = "Plot loaded planned transects", width = 12, 
-              checkboxInput(ns("plot"), "Plot planned transect lines", value = FALSE),
-              conditionalPanel(
-                condition = "input.plot", ns = ns, 
-                column(
-                  width = 12, 
-                  helpText(
-                    "For the color(s) and (if a class 2 column is specified) the line type(s),",
-                    "select either one or the same number as transect classes or class 2s, respectively.",
-                    "When multiple colors or line types are selected,",
-                    "the order in which transect classes and class 2s are selected to be plotted",
-                    "corresponds to order of specified colors and line types, respectively."
-                  )
-                ),
-                box(
-                  width = 12,
-                  ui_select_instructions(),
-                  fluidRow(
-                    column(6, uiOutput(ns("toplot_uiOut_select"))),
-                    column(6, uiOutput(ns("color_uiOut_select")))
-                  ),
-                  fluidRow(
-                    column(4, uiOutput(ns("toplot2_uiOut_select"))),
-                    column(4, uiOutput(ns("lty_uiOut_select"))),
-                    column(4, numericInput(ns("lwd"), tags$h5("Line width"),
-                                            value = 1, min = 0, step = 1))
-                  )
-                )
+            condition = "input.plot", ns = ns,
+            column(
+              width = 12,
+              helpText(
+                "For the color(s) and (if a class 2 column is specified) the line type(s),",
+                "select either one or the same number as transect classes or class 2s, respectively.",
+                "When multiple colors or line types are selected,",
+                "the order in which transect classes and class 2s are selected to be plotted",
+                "corresponds to order of specified colors and line types, respectively."
+              )
+            ),
+            box(
+              width = 12,
+              ui_select_instructions(),
+              fluidRow(
+                column(6, uiOutput(ns("toplot_uiOut_select"))),
+                column(6, uiOutput(ns("color_uiOut_select")))
+              ),
+              fluidRow(
+                column(4, uiOutput(ns("toplot2_uiOut_select"))),
+                column(4, uiOutput(ns("lty_uiOut_select"))),
+                column(4, numericInput(ns("lwd"), tags$h5("Line width"),
+                                       value = 1, min = 0, step = 1))
               )
             )
-            # box(
-            #   width = 12,
-            #   tags$strong("Remove loaded planned transects"),
-            #   uiOutput("toremove_uiOut_select"),
-            #   uiOutput("toremove_execute_uiOut_button"),
-            #   textOutput("remove_text")
-            # )
-          # )
+          )
+        )
+        # box(
+        #   width = 12,
+        #   tags$strong("Remove loaded planned transects"),
+        #   uiOutput("toremove_uiOut_select"),
+        #   uiOutput("toremove_execute_uiOut_button"),
+        #   textOutput("remove_text")
+        # )
+        # )
         # )
       )
     )
@@ -105,18 +105,19 @@ mod_ndas_planned_ui <- function(id) {
 
 #' @name mod_ndas_planned
 #' @export
-mod_ndas_planned_server  <- function(id, load_state) {
+mod_ndas_planned_server  <- function(id, load_state, map_range_config) {
   moduleServer(id, function(input, output, session) {
     stopifnot(
-      is.reactive(load_state)
+      is.reactive(load_state),
+      is.reactive(map_range_config)
     )
 
     # Stored reactiveValues for the module
     cruz.list <- reactiveValues(
-      toplot = NULL, 
-      toplot2 = NULL, 
-      color = NULL, 
-      lty = NULL, 
+      toplot = NULL,
+      toplot2 = NULL,
+      color = NULL,
+      lty = NULL,
       planned.transects = NULL
     )
 
@@ -244,7 +245,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
       file.all <- input$file
       file.name <- file.all$name
       file.data <- try(read.csv(file.all$datapath, stringsAsFactors = FALSE),
-                      silent = TRUE)
+                       silent = TRUE)
 
       validate(
         need(file.data, "Error loading planned transects CSV")
@@ -258,10 +259,10 @@ mod_ndas_planned_server  <- function(id, load_state) {
     planned_transects <- eventReactive(input$execute, {
       validate(
         need(input$lon != input$lat,
-            "Error: The longitude column cannot be the same as the latitude column")
+             "Error: The longitude column cannot be the same as the latitude column")
       )
 
-      x <- read_csv()[[2]] %>%
+      x <- read_csv()[[2]] |>
         dplyr::select(lon = as.numeric(input$lon),
                       lat = as.numeric(input$lat),
                       num = as.numeric(input$num),
@@ -269,23 +270,23 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
       validate(
         need(all(dplyr::between(x$lon, -180, 180)),
-            "Error: Planned transect longitude data must be in range [-180, 180]"),
+             "Error: Planned transect longitude data must be in range [-180, 180]"),
         need(all(dplyr::between(x$lat, -90, 90)),
-            "Error: Planned transect latitude data must be in range [-90, 90]"),
+             "Error: Planned transect latitude data must be in range [-90, 90]"),
         need(!anyNA(x$num),
-            "Error: Planned transect 'number' column cannot have any NA values"),
+             "Error: Planned transect 'number' column cannot have any NA values"),
         need(!anyNA(x$class1),
-            "Error: Planned transect 'class' column cannot have any NA values")
+             "Error: Planned transect 'class' column cannot have any NA values")
       )
 
       if (as.numeric(input$class2) != 0) {
         x <- cbind(
           x, dplyr::select(read_csv()[[2]],
-                          class2 = as.numeric(input$class2))
+                           class2 = as.numeric(input$class2))
         )
         validate(
           need(!anyNA(x$class2),
-              "Error: Planned transect 'class 2' column cannot have any NA values")
+               "Error: Planned transect 'class 2' column cannot have any NA values")
         )
       } else {
         x <- cbind(x, class2 = NA)
@@ -331,7 +332,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
       selectInput(
         session$ns("toplot"),
         tags$h5("Class(es) to plot"),
-        choices = choices.list, 
+        choices = choices.list,
         selected = choices.sel,
         multiple = TRUE
       )
@@ -352,9 +353,9 @@ mod_ndas_planned_server  <- function(id, load_state) {
       })
 
       selectInput(
-        session$ns("color"), 
+        session$ns("color"),
         tags$h5("Color(s)"),
-        choices = cruz.palette.color, 
+        choices = cruz.palette.color,
         selected = choices.sel,
         multiple = TRUE
       )
@@ -371,7 +372,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
       if (anyNA(y)) {
         helpText("No class 2 column was selected, and thus you can only specify",
-                "a single line type for all planned transects")
+                 "a single line type for all planned transects")
 
       } else {
         choices.list.names <- y
@@ -388,9 +389,9 @@ mod_ndas_planned_server  <- function(id, load_state) {
         })
 
         selectInput(
-          session$ns("toplot2"), 
+          session$ns("toplot2"),
           tags$h5("Class 2(s) to plot"),
-          choices = choices.list, 
+          choices = choices.list,
           selected = choices.sel,
           multiple = TRUE
         )
@@ -427,9 +428,9 @@ mod_ndas_planned_server  <- function(id, load_state) {
       })
 
       selectInput(
-        session$ns("lty"), 
+        session$ns("lty"),
         tags$h5(input.lab),
-        choices = cruz.line.type, 
+        choices = cruz.line.type,
         selected = choices.sel,
         multiple = !anyNA(class2())
       )
@@ -470,7 +471,7 @@ mod_ndas_planned_server  <- function(id, load_state) {
     #          "Please select at least one set of transects to remove")
     #   )
     #
-    #   x <- cruz.list$planned.transects %>%
+    #   x <- cruz.list$planned.transects |>
     #     filter(!(class1 %in% class1()[y]))
     #
     #   if (nrow(x) == 0) {
@@ -488,19 +489,21 @@ mod_ndas_planned_server  <- function(id, load_state) {
     pltransect <- reactive({
       if (input$plot) {
         pltransect_list()
-        } else {
-          NULL
-        }
-    }) 
-    
-    pltransect_list <- reactive({     
+      } else {
+        NULL
+      }
+    })
+
+    pltransect_list <- reactive({
       validate(
         need(input$toplot,
-            "Please select at least one class of planned transects to plot")
+             "Please select at least one class of planned transects to plot")
       )
 
       #So that renderUI()'s can catch up
       req(input$color, input$lty)
+
+      # browser()
 
       # Get user inputs
       pltrans <- cruz.list$planned.transects
@@ -517,42 +520,24 @@ mod_ndas_planned_server  <- function(id, load_state) {
 
       validate(
         need(length(pltrans.colors) == length(pltrans.which),
-            paste("The number of selected planned transect colors must either be",
-                  "1 or equal to than the number of selected planned transects"))
+             paste("The number of selected planned transect colors must either be",
+                   "1 or equal to than the number of selected planned transects"))
       )
 
       pltrans.class1 <- class1()[pltrans.which]
       names(pltrans.colors) <- pltrans.class1
 
-      pltrans <- dplyr::filter(pltrans, .data$class1 %in% pltrans.class1)
+      # Filter for class 1 selections, and do world2 conversion
+      world2 <- map_range_config()$world2
+      pltrans <- pltrans |>
+        dplyr::filter(.data$class1 %in% pltrans.class1) |>
+        mutate(lon = ifelse(world2 & .data$lon < 0, .data$lon + 360, .data$lon))
 
-      if (anyNA(class2())) {
-        # Class 2 was not specified
-        pltrans.list <- lapply(pltrans.class1, function(i) {
-          x <- dplyr::filter(pltrans, .data$class1 == i)
-          lapply(unique(x$num), function(k) {
-            x <- dplyr::filter(x, .data$num == k)
-            if (nrow(x) == 0) {
-              NULL
-            } else if (nrow(x) == 1){
-              validate(need(FALSE, "Error in planned transect processing"))
-            } else {
-              list(
-                x$lon, 
-                x$lat, 
-                unname(pltrans.colors[as.character(i)]), 
-                pltrans.lty, 
-                pltrans.lwd
-              )
-            }
-          })
-        })
-
-      } else {
+      if (pltransect_class2()) {
         # Class 2 was specified
         validate(
           need(pltrans.which2,
-              "Please select at least one class 2 type to plot")
+               "Please select at least one class 2 type to plot")
         )
 
         pltrans.class2 <- class2()[pltrans.which2]
@@ -563,8 +548,8 @@ mod_ndas_planned_server  <- function(id, load_state) {
         }
         validate(
           need(length(pltrans.lty) == length(pltrans.class2),
-              paste("The number of selecetd planned transect line types must either be",
-                    "1 or equal to than the number unique class 2 values"))
+               paste("The number of selecetd planned transect line types must either be",
+                     "1 or equal to than the number unique class 2 values"))
         )
         names(pltrans.lty) <- pltrans.class2
 
@@ -580,24 +565,46 @@ mod_ndas_planned_server  <- function(id, load_state) {
                 validate(need(FALSE, "Error in planned transect processing"))
               } else {
                 list(
-                  x$lon, 
+                  x$lon,
                   x$lat,
                   unname(pltrans.colors[as.character(i)]),
-                  unname(pltrans.lty[as.character(j)]), 
+                  unname(pltrans.lty[as.character(j)]),
                   pltrans.lwd
                 )
               }
             })
           })
         })
-      } 
+
+      } else {
+        # Class 2 was not specified
+        pltrans.list <- lapply(pltrans.class1, function(i) {
+          x <- dplyr::filter(pltrans, .data$class1 == i)
+          lapply(unique(x$num), function(k) {
+            x <- dplyr::filter(x, .data$num == k)
+            if (nrow(x) == 0) {
+              NULL
+            } else if (nrow(x) == 1){
+              validate(need(FALSE, "Error in planned transect processing"))
+            } else {
+              list(
+                x$lon,
+                x$lat,
+                unname(pltrans.colors[as.character(i)]),
+                pltrans.lty,
+                pltrans.lwd
+              )
+            }
+          })
+        })
+      }
 
       pltrans.list
     })
 
-    # Do the planned transect have class2 info? 
+    # Do the planned transect have class2 info?
     pltransect_class2 <- reactive({
-      anyNA(class2())
+      !anyNA(class2())
     })
 
     ###############################################################################
@@ -606,19 +613,19 @@ mod_ndas_planned_server  <- function(id, load_state) {
     to_save <- reactive({
       list(
         save_widget("plot", "check"),
-        save_widget("toplot", "select"), 
-        save_widget("toplot2", "select"), 
-        save_widget("color", "select"), 
-        save_widget("lty", "select"), 
-        save_widget("lwd", "numeric"), 
+        save_widget("toplot", "select"),
+        save_widget("toplot2", "select"),
+        save_widget("color", "select"),
+        save_widget("lty", "select"),
+        save_widget("lwd", "numeric"),
         save_widget("planned.transects", "reactive", cruz.list$planned.transects)
       )
     })
 
     ### Return values
     list(
-      to_save = to_save, 
-      pltransect = pltransect, 
+      to_save = to_save,
+      pltransect = pltransect,
       pltransect_class2 = pltransect_class2
     )
   })

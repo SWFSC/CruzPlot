@@ -28,51 +28,64 @@ export(save_widget)
 export(ui_select_instructions)
 export(update_widget)
 import(shiny)
-importFrom(dplyr,"%>%")
-importFrom(dplyr,.data)
-importFrom(dplyr,between)
-importFrom(dplyr,case_when)
-importFrom(dplyr,if_else)
-importFrom(dplyr,left_join)
-importFrom(dplyr,mutate)
-importFrom(dplyr,select)
+importFrom(dplyr,
+  .data,
+  between,
+  case_when,
+  if_else,
+  left_join,
+  mutate,
+  select
+)
 importFrom(geosphere,destPoint)
-importFrom(grDevices,dev.off)
-importFrom(grDevices,gray)
-importFrom(grDevices,jpeg)
-importFrom(grDevices,palette)
-importFrom(grDevices,pdf)
-importFrom(grDevices,png)
-importFrom(graphics,abline)
-importFrom(graphics,axis)
-importFrom(graphics,lines)
-importFrom(graphics,par)
-importFrom(graphics,points)
-importFrom(graphics,polygon)
-importFrom(graphics,rect)
-importFrom(graphics,text)
-importFrom(graphics,title)
+importFrom(grDevices,
+  dev.off,
+  gray,
+  jpeg,
+  palette,
+  pdf,
+  png
+)
+importFrom(graphics,
+  abline,
+  axis,
+  lines,
+  par,
+  points,
+  polygon,
+  rect,
+  text,
+  title
+)
 importFrom(maps,map)
-importFrom(shinydashboard,box)
-importFrom(shinydashboard,dashboardBody)
-importFrom(shinydashboard,dashboardHeader)
-importFrom(shinydashboard,dashboardPage)
-importFrom(shinydashboard,dashboardSidebar)
-importFrom(shinydashboard,menuItem)
-importFrom(shinydashboard,sidebarMenu)
-importFrom(shinydashboard,tabBox)
-importFrom(shinydashboard,tabItem)
-importFrom(shinydashboard,tabItems)
-importFrom(shinyjs,extendShinyjs)
-importFrom(shinyjs,js)
-importFrom(shinyjs,useShinyjs)
-importFrom(stringr,str_detect)
-importFrom(stringr,str_glue)
-importFrom(stringr,str_sub)
-importFrom(stringr,str_to_lower)
-importFrom(stringr,str_to_upper)
+importFrom(shinydashboard,
+  box,
+  dashboardBody,
+  dashboardHeader,
+  dashboardPage,
+  dashboardSidebar,
+  menuItem,
+  sidebarMenu,
+  tabBox,
+  tabItem,
+  tabItems
+)
+importFrom(shinyjs,
+  extendShinyjs,
+  js,
+  useShinyjs
+)
+importFrom(stringr,
+  str_detect,
+  str_glue,
+  str_sub,
+  str_to_lower,
+  str_to_upper
+)
 importFrom(swfscDAS,das_spcodes_read)
-importFrom(utils,globalVariables)
-importFrom(utils,packageVersion)
-importFrom(utils,read.csv)
-importFrom(utils,write.csv)
+importFrom(utils,
+  globalVariables,
+  packageVersion,
+  read.csv,
+  write.csv
+)
