@@ -41,7 +41,7 @@ mod_plot_ui <- function(id, enable_brush = FALSE) {
 
   tagList(
     tabBox(
-      width = 6,
+      title = "Map Display", width = 6,
       tabPanel(
         title = "Display",
         if (enable_brush) {
