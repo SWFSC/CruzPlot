@@ -14,7 +14,7 @@
 #' The server function returns a list with the following named elements:
 #' - `to_save`: a list of values to be saved in an 'app state' file.
 #'   See [cruzplot_gui()] for more info.
-#' - `sp_codes`: reactive of a dataframe of loaded species codes
+#' - `sp_codes`: reactive of a data frame of loaded species codes
 #' - `todo`: ...
 #'
 #' @export
@@ -27,31 +27,35 @@ mod_das_ui <- function(id) {
       fluidRow(
         cruz_box(
           title = "DAS Data", width = 12,
-          helpText("For details about these parameters,",
-                    actionLink(ns("das_file_help"), "click here"), "or see the official",
-                    tags$a(
-                      href = "https://swfsc.github.io/swfscDAS/reference/index.html",
-                      "swfscDAS documentation",
-                      target = "_blank"
-                    )),
+          helpText("For details about these parameters, see the ",
+                   # actionLink(ns("das_file_help"), "click here"), "or see the official",
+                   tags$a(
+                     href = "https://swfsc.github.io/swfscDAS/reference/das_process.html",
+                     "swfscDAS documentation",
+                     target = "_blank"
+                   ),
+                   " (external link)"),
           fluidRow(
-            column(3, numericInput(ns("das_file_skip"),
-                                    tags$h5("Number of lines to skip before reading each file"),
-                                    value = 0, min = 0)),
-            column(3, numericInput(ns("das_file_days_gap"),
-                                    tags$h5("days.gap argument of das_process()"),
-                                    value = 20, min = 0, step = 1)),
-            column(3, selectInput(ns("das_file_reset_event"),
-                                  tags$h5("reset.event argument of das_process()"),
+            column(3, tags$h5("Number of lines to skip before reading each file")),
+            column(3, tags$h5("days.gap argument of das_process()")),
+            column(3, tags$h5("reset.event argument of das_process()")),
+            column(3, tags$h5("reset.effort argument of das_process()"))
+          ),
+          fluidRow(
+            column(3, numericInput(ns("das_file_skip"), NULL, 
+                                   value = 0, min = 0)),
+            column(3, numericInput(ns("das_file_days_gap"), NULL, 
+                                   value = 20, min = 0, step = 1)),
+            column(3, selectInput(ns("das_file_reset_event"), NULL, 
                                   choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE)),
-            column(3, selectInput(ns("das_file_reset_effort"),
-                                  tags$h5("reset.effort argument of das_process()"),
+            column(3, selectInput(ns("das_file_reset_effort"), NULL, 
                                   choices = list("TRUE" = 1, "FALSE" = 2), selected = TRUE))
           ),
           helpText("To load DAS data file(s), first set the desired parameters, and then click the \"Browse...\" button and",
-                    "select the file(s) you want to load. Hold the Shift key to select multiple files.",
-                    "If you change the parameters, you will have to Browse and select the file(s) again.",
-                    "To 'remove' a file, browse again and select only the desired DAS file(s)"),
+                   "select the file(s) you want to load. Hold the Shift key to select multiple files.",
+                   "If you change the parameters, you will have to Browse and select the file(s) again.",
+                   "To 'remove' a file, browse again and select only the desired DAS file(s). ",
+                   "Or simply uncheck the 'plot' checkbox for sightings or effort. "),
           fileInput(ns("das_file"), tags$h5("DAS file input"), multiple = TRUE),
           textOutput(ns("das_file_load_text")),
           tags$span(textOutput(ns("das_loaded_text")), style = "color: blue;")
@@ -59,10 +63,17 @@ mod_das_ui <- function(id) {
         cruz_box(
           title = "Species codes", width = 12,
           helpText("Processing DAS sightings requires a species codes file, typically named SpCodes.dat,",
-                    "to translate the species codes to scientific or common species names.",
-                    "CruzPlot contains a default SpCodes.dat file (last modified 26 May 2020),",
-                    "but you can also load your own species codes file.",
-                    "This file must follow the same format as the default SpCodes.dat; see the manual for details"),
+                   "to translate the species codes to scientific or common species names.",
+                   "CruzPlot can load the default ",
+                   tags$a(
+                     href = "https://github.com/SWFSC/swfscDAS/blob/main/inst/extdata/SpCodes.dat",
+                     "SpCodes.dat file",
+                     target = "_blank"
+                   ),
+                   "  from swfscDAS (external link), ",
+                   "or you can also load your own species codes file.",
+                   "If you load your own file, it must follow the same format ",
+                   "as the default SpCodes.dat; see the manual for details. "),
           fluidRow(
             column(5, fileInput(ns("das_spcodes_file"), tags$h5("Load species codes file"), accept = ".dat")),
             column(
@@ -76,171 +87,192 @@ mod_das_ui <- function(id) {
           tags$span(textOutput(ns("spcodes_message")), style = "color: blue;")
         )
       )
-    )
+    ),
 
-    # ##############################################################################################################
-    # tabPanel(
-    #   title = "Sightings",
-    #   fluidRow(
-    #     box(
-    #       title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-    #       conditionalPanel(
-    #         condition = "output.das_loaded_flag == false | output.das_spcodes_loaded_flag == false",
-    #         tags$span(tags$h5("Please load at least one DAS file and a species codes file to use this section"),
-    #                   style = "color: red;")
-    #       ),
-    #       conditionalPanel(
-    #         condition = "output.das_loaded_flag & output.das_spcodes_loaded_flag",
-    #         fluidRow(
-    #           column(6, checkboxInput("das_sightings", label = tags$h5("Plot sightings"), value = FALSE)),
-    #           column(
-    #             width = 6,
-    #             conditionalPanel(
-    #               condition = "input.das_sightings",
-    #               radioButtons("das_sightings_position", tags$h5("Position to plot"),
-    #                             choices = list("Plot ship position" = 1, "Plot sighting position" = 2),
-    #                             selected = 1)
-    #             )
-    #           )
-    #         )
-    #       ),
-    #       conditionalPanel(
-    #         condition = "input.das_sightings",
-    #         textOutput("das_sight_spcodes_message"),
-    #         helpText("Sighting position is calculated using the ship position, ship course, sighting bearing (angle),",
-    #                   "and radial distance to the sighting.",
-    #                   "If any of these values are NA, then the sighting position will be NA")
-    #       )
-    #     ),
-    #     conditionalPanel(
-    #       condition = "input.das_sightings",
-    #       column(
-    #         width = 12,
-    #         fluidRow(
-    #           box(
-    #             title = "Sighting type & species", status = "warning", solidHeader = FALSE, collapsible = TRUE, width = 6,
-    #             selectInput("das_sighting_type", label = tags$h5("Sighting type"),
-    #                         choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3), #, "CPODs" = 4),
-    #                         selected = 1),
-    #             conditionalPanel(
-    #               condition = "input.das_sighting_type==1",
-    #               radioButtons("das_sighting_code_1_all", label = NULL,
-    #                             choices = list("Plot all mammal sightings" = 1, "Plot selected mammal sightings" = 2),
-    #                             selected = 2),
-    #               conditionalPanel(
-    #                 condition = "input.das_sighting_code_1_all==2",
-    #                 ui.select.instructions(),
-    #                 uiOutput("das_sighting_code_1_uiOut_select")
-    #               ),
-    #               checkboxInput("das_sighting_probable", label = "Use probable species code", value = FALSE),
-    #               checkboxGroupInput("das_sighting_events",
-    #                                   label = tags$h5("Plot sightings from",
-    #                                                   actionLink("das_sighting_events_help", "(click here for details)")),
-    #                                   choices = list("S events" = "S", "G events" = "G",
-    #                                                 "K events" = "K", "M events" = "M", "p events" = "p",
-    #                                                 "s events" = "s", "g events" = "g", "k events" = "k"),
-    #                                   selected = c("S"), inline = TRUE),
-    #               tags$span(uiOutput("cruzDasSightEventResight_uiOut_message"), style = "color: blue;")
-    #             ),
-    #             conditionalPanel(
-    #               condition = "input.das_sighting_type==2",
-    #               radioButtons("das_sighting_code_2_all", label = NULL,
-    #                             choices = list("Plot all turtle sightings" = 1, "Plot selected turtle sightings" = 2),
-    #                             selected = 2),
-    #               conditionalPanel(
-    #                 condition = "input.das_sighting_code_2_all==2",
-    #                 ui.select.instructions(),
-    #                 uiOutput("das_sighting_code_2_uiOut_select")
-    #               )
-    #             )
-    #           ),
-    #           box(
-    #             title = "Symbol properties", status = "warning", solidHeader = FALSE, width = 6, collapsible = TRUE,
-    #             helpText("Not available when 'Plot all...sightings' is selected"),
+    ##############################################################################################################
+    tabPanel(
+      title = "Sightings",
+      fluidRow(
+        cruz_box(
+          title = "Sightings", width = 12,
+          conditionalPanel(
+            condition = "!output.das_loaded_flag || !output.das_spcodes_loaded_flag",
+            ns = ns, 
+            tags$span(tags$h5("Please load at least one DAS file and a species ",
+                              "codes file to use this section"),
+                      style = "color: red;")
+          ),
+          conditionalPanel(
+            condition = "output.das_loaded_flag && output.das_spcodes_loaded_flag",
+            ns = ns, 
+            fluidRow(
+              column(6, checkboxInput(ns("das_sightings"), tags$h5("Plot sightings"), value = FALSE)),
+              column(
+                width = 6,
+                conditionalPanel(
+                  condition = "input.das_sightings", ns = ns, 
+                  radioButtons(ns("das_sightings_position"), tags$h5("Position to plot"),
+                               choices = list("Plot ship position" = 1, "Plot sighting position" = 2),
+                               selected = 1)
+                )
+              )
+            )
+          ),
+          conditionalPanel(
+            condition = "input.das_sightings", ns = ns, 
+            textOutput("das_sight_spcodes_message"),
+            helpText("Sighting position is calculated using the ship position, ", 
+                     "ship course, sighting bearing (angle),",
+                     "and radial distance to the sighting.",
+                     "If any of these values are NA, then the sighting position will be NA")
+          )
+        ),
+        conditionalPanel(
+          condition = "input.das_sightings", ns = ns, 
+          column(
+            width = 12,
+            fluidRow(
+              cruz_box(
+                title = "Sighting type & species", width = 6,
+                selectInput(ns("das_sighting_type"), tags$h5("Sighting type"),
+                            choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3), #, "CPODs" = 4),
+                            selected = 1),
+                conditionalPanel(
+                  condition = "input.das_sighting_type==1", ns = ns, 
+                  radioButtons(ns("das_sighting_code_1_all"), NULL,
+                               choices = list("Plot all mammal sightings" = 1, 
+                                              "Plot selected mammal sightings" = 2),
+                               selected = 2),
+                  conditionalPanel(
+                    condition = "input.das_sighting_code_1_all==2", ns = ns, 
+                    ui_select_instructions(),
+                    uiOutput(ns("das_sighting_code_1_uiOut_select"))
+                  ),
+                  checkboxInput(ns("das_sighting_probable"), "Use probable species code", value = FALSE),
+                  checkboxGroupInput(ns("das_sighting_events"),
+                                     tags$h5("Plot sightings from",
+                                                     actionLink("das_sighting_events_help", "(click here for details)")),
+                                     choices = list("S events" = "S", "G events" = "G",
+                                                    "K events" = "K", "M events" = "M", "p events" = "p",
+                                                    "s events" = "s", "g events" = "g", "k events" = "k"),
+                                     selected = c("S"), inline = TRUE),
+                  tags$span(uiOutput(ns("cruzDasSightEventResight_uiOut_message")), style = "color: blue;")
+                ),
+                conditionalPanel(
+                  condition = "input.das_sighting_type==2", ns = ns, 
+                  radioButtons(ns("das_sighting_code_2_all"), NULL,
+                               choices = list("Plot all turtle sightings" = 1, "Plot selected turtle sightings" = 2),
+                               selected = 2),
+                  conditionalPanel(
+                    condition = "input.das_sighting_code_2_all==2", ns = ns, 
+                    ui_select_instructions(),
+                    uiOutput(ns("das_sighting_code_2_uiOut_select"))
+                  )
+                )
+              ),
+              cruz_box(
+                title = "Symbol properties", width = 6,
+                helpText("Not available when 'Plot all...sightings' is selected"),
 
-    #             # Mammal or turtle symbol properties for selected species
-    #             conditionalPanel(
-    #               condition = "(input.das_sighting_type == 1  & input.das_sighting_code_1_all == 2) | (input.das_sighting_type==2 & input.das_sighting_code_2_all == 2)",
-    #               helpText("To remove selected species, click the input(s) to remove and then click backspace or delete"),
-    #               helpText("The order in which species are selected to be plotted",
-    #                         "corresponds to the order of specified symbol properties"),
-    #               conditionalPanel(
-    #                 condition = "input.das_symbol_mult==false",
-    #                 # checkboxInput("das_symbol_event", "Make symbol colors correspond to event code", value = FALSE),
-    #                 selectInput("das_symbol_type", label = tags$h5("Symbol type(s)"),
-    #                             choices = cruz.symbol.type, selected = 1, multiple = TRUE),
-    #                 selectInput("das_symbol_color", label = tags$h5("Symbol color(s)"),
-    #                             choices = cruz.palette.color, selected = "black", multiple = TRUE)
-    #               ),
-    #               conditionalPanel(
-    #                 condition = "input.das_symbol_mult",
-    #                 textInput("das_symbol_type_mult", tags$h5("Symbol type(s) - text input"), value = "1"),
-    #                 textInput("das_symbol_color_mult", tags$h5("Symbol color(s) - text input (case sensitive)"), value = "Black")
-    #               ),
-    #               fluidRow(
-    #                 column(6, textInput("das_symbol_size", tags$h5("Symbol size(s)"), "1")),
-    #                 column(6, textInput("das_symbol_linewidth", tags$h5("Symbol line width(s)"), "1"))
-    #               ),
-    #               checkboxInput("das_symbol_mult", label = "Input symbol properties as text", value = FALSE)
-    #             ),
+                # Mammal or turtle symbol properties for selected species
+                conditionalPanel(
+                  condition = "(input.das_sighting_type == 1 && input.das_sighting_code_1_all == 2) || (input.das_sighting_type==2 && input.das_sighting_code_2_all == 2)",
+                  ns = ns, 
+                  helpText("The order in which species are selected to be plotted",
+                           "corresponds to the order of specified symbol properties"),
+                  conditionalPanel(
+                    condition = "input.das_symbol_mult == false", ns = ns, 
+                  helpText("To remove selected species, click the input(s) ", 
+                           "to remove and then click backspace or delete"),
+                    # checkboxInput("das_symbol_event", "Make symbol colors correspond to event code", value = FALSE),
+                    selectInput(ns("das_symbol_type"), tags$h5("Symbol type(s)"),
+                                choices = cruz.symbol.type, selected = 1, multiple = TRUE),
+                    selectInput(ns("das_symbol_color"), tags$h5("Symbol color(s)"),
+                                choices = cruz.palette.color, selected = "black", multiple = TRUE)
+                  ),
+                  conditionalPanel(
+                    condition = "input.das_symbol_mult", ns = ns, 
+                    textInput(
+                      ns("das_symbol_type_mult"), 
+                      tags$h5("Symbol type(s) - text input"), 
+                      value = "1"),
+                    textInput(
+                      ns("das_symbol_color_mult"), 
+                      tags$h5("Symbol color(s) - text input (case sensitive)"), 
+                      value = "Black")
+                  ),
+                  fluidRow(
+                    column(6, tags$h5("Symbol size(s)")),
+                    column(6, tags$h5("Symbol line width(s)"))
+                  ),
+                  fluidRow(
+                    column(6, textInput(ns("das_symbol_size"), NULL, "1")),
+                    column(6, textInput(ns("das_symbol_linewidth"), NULL, "1"))
+                  ),
+                  checkboxInput(ns("das_symbol_mult"), "Input symbol properties as text", value = FALSE)
+                ),
 
-    #             # Boat (or CPOD) symbol properties
-    #             conditionalPanel(
-    #               condition = "input.das_sighting_type==3 | input.das_sighting_type==4",
-    #               helpText("To remove selected species, click the input(s) to remove and then click backspace or delete"),
-    #               helpText("The order in which species are selected to be plotted",
-    #                         "corresponds to the order of specified symbol properties"),
-    #               fluidRow(
-    #                 column(
-    #                   width = 7,
-    #                   selectInput("das_symbol_type_boat", label = tags$h5("Symbol type"),
-    #                               choices = cruz.symbol.type, selected = 1),
-    #                   numericInput("das_symbol_size_boat", label = tags$h5("Symbol size"),
-    #                                 value = 1, min = 0.1, max = 6, step = 0.1)
-    #                 ),
-    #                 column(
-    #                   width = 5,
-    #                   selectInput("das_symbol_color_boat", label = tags$h5("Symbol color"),
-    #                               choices = cruz.palette.color, selected = "black"),
-    #                   numericInput("das_symbol_linewidth_boat", label = tags$h5("Symbol line width"),
-    #                                 value = 1, min = 1, max = 6, step = 1)
-    #                 )
-    #               )
-    #             )
-    #             # # CPOD symbol properties
-    #             #             conditionalPanel(condition = "input.das_sighting_type==4",
-    #             #                  selectInput("das_symbol_type_cpod", label = tags$h5("Symbol type"),
-    #             #                              choices = cruz.symbol.type,
-    #             #                              selected = 1),
-    #             #                  selectInput("das_symbol_color_cpod", label = tags$h5("Symbol color"),
-    #             #                              choices = cruz.palette.color,
-    #             #                              selected = "black"),
-    #             #                  textInput("das_symbol_size_cpod", label = tags$h5("Symbol size"),
-    #             #                            value = "1"),
-    #             #                  textInput("das_symbol_linewidth_cpod", label = tags$h5("Symbol line width"),
-    #             #                            value = "1")
-    #             #             )
-    #             # )
-    #           )
-    #         )
-    #       ),
-    #       box(
-    #         title = "Interactive sighting labels", status = "warning", solidheader = FALSE, width = 12, collapsible = TRUE,
-    #         fluidRow(
-    #           column(4, radioButtons("das_sight_interactive", label = NULL,
-    #                                   choices = list("Non-interactive plot" = 1,
-    #                                                 "View and label sightings interactively" = 2),
-    #                                   selected = 1)),
-    #           column(
-    #             width = 8,
-    #             actionButton("das_sight_interactive_reset_last", "Remove last sighting label"),
-    #             actionButton("das_sight_interactive_reset_all", "Remove all sighting labels")
-    #           )
-    #         )
-    #       )
-    #     )
-    #   )
-    # ),
+                # Boat (or CPOD) symbol properties
+                conditionalPanel(
+                  condition = "input.das_sighting_type==3 | input.das_sighting_type==4", ns = ns, 
+                  helpText("To remove selected species, click the input(s) to remove ", 
+                           "and then click backspace or delete"),
+                  helpText("The order in which species are selected to be plotted",
+                           "corresponds to the order of specified symbol properties"),
+                  fluidRow(
+                    column(
+                      width = 7,
+                      selectInput(ns("das_symbol_type_boat"), tags$h5("Symbol type"),
+                                  choices = cruz.symbol.type, selected = 1),
+                      numericInput(ns("das_symbol_size_boat"), tags$h5("Symbol size"),
+                                   value = 1, min = 0.1, max = 6, step = 0.1)
+                    ),
+                    column(
+                      width = 5,
+                      selectInput(ns("das_symbol_color_boat"), tags$h5("Symbol color"),
+                                  choices = cruz.palette.color, selected = "black"),
+                      numericInput(ns("das_symbol_linewidth_boat"), tags$h5("Symbol line width"),
+                                   value = 1, min = 1, max = 6, step = 1)
+                    )
+                  )
+                )
+                # # CPOD symbol properties
+                #             conditionalPanel(condition = "input.das_sighting_type==4",
+                #                  selectInput("das_symbol_type_cpod", tags$h5("Symbol type"),
+                #                              choices = cruz.symbol.type,
+                #                              selected = 1),
+                #                  selectInput("das_symbol_color_cpod", tags$h5("Symbol color"),
+                #                              choices = cruz.palette.color,
+                #                              selected = "black"),
+                #                  textInput("das_symbol_size_cpod", tags$h5("Symbol size"),
+                #                            value = "1"),
+                #                  textInput("das_symbol_linewidth_cpod", tags$h5("Symbol line width"),
+                #                            value = "1")
+                #             )
+                # )
+              )
+            )
+          ),
+          cruz_box(
+            title = "Interactive sighting labels", width = 12,
+            fluidRow(
+              column(
+                width = 4,
+                radioButtons(ns("das_sight_interactive"), NULL,
+                             choices = list("Non-interactive plot" = 1,
+                                            "View and label sightings interactively" = 2),
+                             selected = 1)
+              ),
+              column(
+                width = 8,
+                actionButton(ns("das_sight_interactive_reset_last"), "Remove last sighting label"),
+                actionButton(ns("das_sight_interactive_reset_all"), "Remove all sighting labels")
+              )
+            )
+          )
+        )
+      )
+    ),
 
     # ##############################################################################################################
     # tabPanel(
@@ -255,7 +287,7 @@ mod_das_ui <- function(id) {
     #       box(
     #         title = "Sightings to plot", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
     #         fluidRow(
-    #           column(6, radioButtons("das_sight_effort", label = NULL,
+    #           column(6, radioButtons("das_sight_effort", NULL,
     #                                   choices = list("On and off effort" = 1, "On effort only" = 2, "Off effort only" = 3),
     #                                   selected = 2)
     #           ),
@@ -265,10 +297,10 @@ mod_das_ui <- function(id) {
     #           ),
     #           conditionalPanel(
     #             condition = "input.das_sight_effort == 2",
-    #             column(3, checkboxGroupInput("das_sight_cp", label = tags$h5("Mode"), #inline = TRUE,
+    #             column(3, checkboxGroupInput("das_sight_cp", tags$h5("Mode"), #inline = TRUE,
     #                                           choices = list("Closing" = "C", "Passing" = "P"),
     #                                           selected = c("C", "P"))),
-    #             column(3, checkboxGroupInput("das_sight_snf", label = tags$h5("Effort type"), #inline = TRUE,
+    #             column(3, checkboxGroupInput("das_sight_snf", tags$h5("Effort type"), #inline = TRUE,
     #                                           choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
     #                                           selected = c("S", "N", "F")))
     #           )
@@ -277,9 +309,9 @@ mod_das_ui <- function(id) {
     #       box(
     #         title = "Sighting filters", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
     #         fluidRow(
-    #           column(3, selectInput("das_sight_minBft", label = tags$h5("Minimum Beaufort"),
+    #           column(3, selectInput("das_sight_minBft", tags$h5("Minimum Beaufort"),
     #                                 choices = cruz.beaufort, selected = 0)),
-    #           column(3, selectInput("das_sight_maxBft", label = tags$h5("Maximum Beaufort"),
+    #           column(3, selectInput("das_sight_maxBft", tags$h5("Maximum Beaufort"),
     #                                 choices = cruz.beaufort, selected = 9)),
     #           column(6, uiOutput("das_sight_dateRange_uiOut_date")),
     #           column(12, helpText("Note that if the min and max Beaufort values are 0 and 9, respectively,",
@@ -317,15 +349,15 @@ mod_das_ui <- function(id) {
     #       conditionalPanel(
     #         condition = "output.das_loaded_flag",
     #         fluidRow(
-    #           column(6, radioButtons("das_effort", label = NULL,
+    #           column(6, radioButtons("das_effort", NULL,
     #                                   choices = list("No effort lines" = 1, "Simplified effort" = 2, "Detailed effort" = 3),
     #                                   selected = 1)),
     #           conditionalPanel(
     #             condition = "input.das_effort != 1",
-    #             column(3, checkboxGroupInput("das_effort_cp", label = tags$h5("Mode"), #inline = TRUE,
+    #             column(3, checkboxGroupInput("das_effort_cp", tags$h5("Mode"), #inline = TRUE,
     #                                           choices = list("Closing" = "C", "Passing" = "P"),
     #                                           selected = c("C", "P"))),
-    #             column(3, checkboxGroupInput("das_effort_snf", label = tags$h5("Effort type"), #inline = TRUE,
+    #             column(3, checkboxGroupInput("das_effort_snf", tags$h5("Effort type"), #inline = TRUE,
     #                                           choices = list("Standard" = "S", "Non-standard" = "N", "Fine" = "F"),
     #                                           selected = c("S", "N", "F")))
     #           )
@@ -431,7 +463,7 @@ mod_das_ui <- function(id) {
     #                     "must be near the start or end points of the effort,",
     #                     "rather than just the effort line displayed in the map"),
     #           fluidRow(
-    #             column(4, radioButtons("das_effort_interactive", label = NULL,
+    #             column(4, radioButtons("das_effort_interactive", NULL,
     #                                     choices = list("Non-interactive plot" = 1,
     #                                                   "View and label effort interactively" = 2),
     #                                     selected = 1)),
@@ -459,22 +491,22 @@ mod_das_ui <- function(id) {
     #       ),
     #       conditionalPanel(
     #         condition = "input.das_sightings",
-    #         checkboxInput("das_legend", label = "Include legend for sightings", value = TRUE),
+    #         checkboxInput("das_legend", "Include legend for sightings", value = TRUE),
     #         conditionalPanel(
     #           condition = "input.das_legend",
     #           fluidRow(
     #             column(
     #               width = 4,
-    #               selectInput("das_legend_pos", label = tags$h5("Position"),
+    #               selectInput("das_legend_pos", tags$h5("Position"),
     #                           choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
     #                                           "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
     #                           selected = "topright"),
     #               conditionalPanel(
     #                 condition = "input.das_legend_pos == 1",
-    #                 numericInput("das_legend_lon", label = tags$h5("Longitude"), value = 0),
-    #                 numericInput("das_legend_lat", label = tags$h5("Latitude"), value = 0)
+    #                 numericInput("das_legend_lon", tags$h5("Longitude"), value = 0),
+    #                 numericInput("das_legend_lat", tags$h5("Latitude"), value = 0)
     #               ),
-    #               selectInput("das_legend_boxCol", label = tags$h5("Box style"),
+    #               selectInput("das_legend_boxCol", tags$h5("Box style"),
     #                           choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
     #                           selected = 3)
     #             ),
@@ -485,7 +517,7 @@ mod_das_ui <- function(id) {
     #             ),
     #             column(
     #               width = 5,
-    #               textInput("das_legend_title", label = tags$h5("Title (optional)"), value = ""),
+    #               textInput("das_legend_title", tags$h5("Title (optional)"), value = ""),
     #               conditionalPanel(
     #                 condition = "input.das_sighting_type == 1 | input.das_sighting_type == 2",
     #                 checkboxGroupInput("das_legend_names", tags$h5("Legend information"),
@@ -509,26 +541,26 @@ mod_das_ui <- function(id) {
     #       ),
     #       conditionalPanel(
     #         condition = "input.das_effort != 1",
-    #         checkboxInput("eff_legend", label = "Include legend for effort", value = TRUE),
+    #         checkboxInput("eff_legend", "Include legend for effort", value = TRUE),
     #         conditionalPanel(
     #           condition = "input.eff_legend",
     #           fluidRow(
-    #             column(4,  selectInput("eff_legend_pos", label = tags$h5("Position"),
+    #             column(4,  selectInput("eff_legend_pos", tags$h5("Position"),
     #                                     choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
     #                                                   "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
     #                                     selected = "bottomleft")),
-    #             column(4, textInput("eff_legend_title", label = tags$h5("Title (optional)"), value = "")),
-    #             column(2, selectInput("eff_legend_font", label = tags$h5("Font"), choices = font.family, selected = 1)),
-    #             column(2, numericInput("eff_legend_textSize", label = tags$h5("Legend size"),
+    #             column(4, textInput("eff_legend_title", tags$h5("Title (optional)"), value = "")),
+    #             column(2, selectInput("eff_legend_font", tags$h5("Font"), choices = font.family, selected = 1)),
+    #             column(2, numericInput("eff_legend_textSize", tags$h5("Legend size"),
     #                                     value = 1.0, min = 0.1, max = 3, step = 0.1))
     #           ),
     #           fluidRow(
     #             conditionalPanel(
     #               condition = "input.eff_legend_pos == 1",
-    #               column(4, numericInput("eff_legend_lon", label = tags$h5("Longitude"), value = 0)),
-    #               column(4, numericInput("eff_legend_lat", label = tags$h5("Latitude"), value = 0))
+    #               column(4, numericInput("eff_legend_lon", tags$h5("Longitude"), value = 0)),
+    #               column(4, numericInput("eff_legend_lat", tags$h5("Latitude"), value = 0))
     #             ),
-    #             column(4, selectInput("eff_legend_boxCol", label = tags$h5("Box color"),
+    #             column(4, selectInput("eff_legend_boxCol", tags$h5("Box color"),
     #                                   choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
     #                                   selected = 3))
     #           )
@@ -552,7 +584,7 @@ mod_das_ui <- function(id) {
     #                   "i.e. it has been filtered using the same filters",
     #                   "(mode, effort type, date, Beaufort, and cruise number)",
     #                   "specified in the 'Effort' tab"),
-    #         radioButtons("das_out_effort_units", label = "", #NULL puts the widget too close to the helpText
+    #         radioButtons("das_out_effort_units", "", #NULL puts the widget too close to the helpText
     #                       choices = list("Distance unit: kilometers" = 1, "Distance unit: nautical miles" = 2),
     #                       selected = 2),
     #         tableOutput("das_out_effort_table"),
@@ -628,40 +660,40 @@ mod_das_server  <- function(id, load_state) {
     ###############################################################################
     # Help pages
 
-    ### Help page for das file load
-    observeEvent(input$das_file_help, {
-      showModal(modalDialog(
-        tags$h5(tags$strong("Lines to skip:"),
-                "The number of lines that are ignored before starting to read data in the provided file."),
-        tags$h5(tags$strong("days.gap argument:"),
-                "This argument helps the user keep information from spilling from",
-                "one cruise into the next in concatenated DAS files.",
-                "For instance, if days.gap is 20, then all of the DAS state/condition information",
-                "(Cruise, Mode, Beaufort, Visibility, etc.)",
-                "are reset when there are 20 or more days between records in the file."),
-        tags$h5(tags$strong("reset.event argument:"),
-                "This argument specifies what happens if a state/condition is not entered in the DAS data.",
-                "For example, say the Beaufort value is left blank in a V event.",
-                "If reset.event is TRUE, then the Beaufort value is set to NA",
-                "in the processed data until the next V event.",
-                "If reset.event is FALSE, then the previous Beaufort value will be carried through,",
-                "meaning the NA value will be ignored.",
-                "This argument should be FALSE only if state/condition information (e.g. Beaufort value)",
-                "was purposefully not entered if it did not change."),
-        tags$h5(tags$strong("reset.effort argument:"),
-                "When using WinCruz, an R event or BR event series signifying the start of a new continuous effort section",
-                "is generally immediately followed by a PVNW event sequence in which all state/condition values are updated.",
-                "If reset.effort is TRUE, then the state/condition arguments are all reset to NA at the R event,",
-                "or at the B event is it immediately precedes said R event.",
-                "This argument should be FALSE only if 1) R events are not always followed by a PVNW event sequence or",
-                "2) state/condition information was purposefully not entered if it did not change (similar to reset.event)."),
-        tags$h5(tags$strong("reset.day argument:"),
-                "This argument is always set to TRUE - the user cannot specify it when using CruzPlot.",
-                "When TRUE, all of the state and condition information is reset at the beginning of each new day,",
-                "rather than being carried over from the previous day."),
-        easyClose = FALSE
-      ))
-    })
+    # ### Help page for das file load
+    # observeEvent(input$das_file_help, {
+    #   showModal(modalDialog(
+    #     tags$h5(tags$strong("Lines to skip:"),
+    #             "The number of lines that are ignored before starting to read data in the provided file."),
+    #     tags$h5(tags$strong("days.gap argument:"),
+    #             "This argument helps the user keep information from spilling from",
+    #             "one cruise into the next in concatenated DAS files.",
+    #             "For instance, if days.gap is 20, then all of the DAS state/condition information",
+    #             "(Cruise, Mode, Beaufort, Visibility, etc.)",
+    #             "are reset when there are 20 or more days between records in the file."),
+    #     tags$h5(tags$strong("reset.event argument:"),
+    #             "This argument specifies what happens if a state/condition is not entered in the DAS data.",
+    #             "For example, say the Beaufort value is left blank in a V event.",
+    #             "If reset.event is TRUE, then the Beaufort value is set to NA",
+    #             "in the processed data until the next V event.",
+    #             "If reset.event is FALSE, then the previous Beaufort value will be carried through,",
+    #             "meaning the NA value will be ignored.",
+    #             "This argument should be FALSE only if state/condition information (e.g. Beaufort value)",
+    #             "was purposefully not entered if it did not change."),
+    #     tags$h5(tags$strong("reset.effort argument:"),
+    #             "When using WinCruz, an R event or BR event series signifying the start of a new continuous effort section",
+    #             "is generally immediately followed by a PVNW event sequence in which all state/condition values are updated.",
+    #             "If reset.effort is TRUE, then the state/condition arguments are all reset to NA at the R event,",
+    #             "or at the B event is it immediately precedes said R event.",
+    #             "This argument should be FALSE only if 1) R events are not always followed by a PVNW event sequence or",
+    #             "2) state/condition information was purposefully not entered if it did not change (similar to reset.event)."),
+    #     tags$h5(tags$strong("reset.day argument:"),
+    #             "This argument is always set to TRUE - the user cannot specify it when using CruzPlot.",
+    #             "When TRUE, all of the state and condition information is reset at the beginning of each new day,",
+    #             "rather than being carried over from the previous day."),
+    #     easyClose = FALSE
+    #   ))
+    # })
 
 
     ### Help page for sighting events
@@ -676,11 +708,13 @@ mod_das_server  <- function(id, load_state) {
         tags$h5(tags$strong("g event:"), "Cetacean subgroup resight. Corresponds to a previous G event"),
         tags$h5(tags$strong("k event:"), "Tracker cetacean resight. Corresponds to a previous K event"),
         tags$br(), tags$br(),
-        tags$h5("When plotting resights (s, k, or g events): 1) you can only plot a single sighting type (e.g. S and s event)",
-                "and a single species at one time,",
-                "and 2) The 'Symbol color...' entry corresponds the the order of the selected events.",
-                "In addition, for resight plotting please ensure that the loaded DAS file is not a concatenated file,
-                i.e. each sighting number in the file corresponds to a single sighting/resighting group."),
+        tags$h5(
+          "When plotting resights (s, k, or g events): 1) you can only plot a single sighting type (e.g. S and s event)",
+          "and a single species at one time,",
+          "and 2) The 'Symbol color...' entry corresponds the the order of the selected events.",
+          "In addition, for resight plotting please ensure that the loaded DAS file is not a concatenated file, ",
+          "i.e. each sighting number in the file corresponds to a single sighting/resighting group."
+        ),
         easyClose = FALSE
       ))
     })
@@ -747,13 +781,15 @@ mod_das_server  <- function(id, load_state) {
       if (length(data.name) == 1) {
         paste("The following DAS file is loaded:", data.name)
       } else {
-        paste("The following DAS files are loaded:", paste(data.name, collapse = ", "))
+        paste("The following DAS files are loaded:",
+              paste(data.name, collapse = ", "))
       }
     })
 
     ### Output flag indicating if DAS data has been loaded
     output$das_loaded_flag <- reactive(isTruthy(cruz.list$das.data))
     outputOptions(output, "das_loaded_flag", suspendWhenHidden = FALSE)
+    # print(isTruthy(cruz.list$das.data))
 
     ### Output flag indicating if SpCodes has been loaded
     output$das_spcodes_loaded_flag <- reactive(isTruthy(cruz.list$sp.codes))
@@ -799,7 +835,7 @@ mod_das_server  <- function(id, load_state) {
 
       validate(
         need(isTruthy(das.proc),
-            paste0("Error: unable to read and process the provided DAS file(s).",
+             paste0("Error: unable to read and process the provided DAS file(s).",
                     "\n\nThe call to das_read and das_process from the ",
                     "swfscDAS package returned the following error. ",
                     "Please use `swfscDAS::das_check` ",
@@ -827,11 +863,11 @@ mod_das_server  <- function(id, load_state) {
     }, ignoreInit = TRUE)
 
 
-    ### Conditional flag for UI code for truthy cruz.list$das.data
-    output$cruzDasFile_Conditional <- reactive({
-      isTruthy(cruz.list$das.data)
-    })
-    outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
+    # ### Conditional flag for UI code for truthy cruz.list$das.data
+    # output$cruzDasFile_Conditional <- reactive({
+    #   isTruthy(cruz.list$das.data)
+    # })
+    # outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
 
 
     ###############################################################################
@@ -841,7 +877,7 @@ mod_das_server  <- function(id, load_state) {
     output$das_sight_spcodes_message <- renderText({
       validate(
         need(cruz.list$sp.codes,
-            "You must load a species code file in the 'Data' window to plot sightings")
+             "You must load a species code file in the 'Data' window to plot sightings")
       )
 
       ""
@@ -858,14 +894,34 @@ mod_das_server  <- function(id, load_state) {
       list(
         save_widget("sp.codes", "reactive", cruz.list$sp.codes),
         save_widget("sp.codes.name", "reactive", cruz.list$sp.codes.name),
-        save_widget("das.data", "reactive", cruz.list$das.data)
+        save_widget("das.data", "reactive", cruz.list$das.data), 
+        save_widget("das_sightings", "check"), 
+        save_widget("das_sightings_position", "radio"), 
+        save_widget("das_sighting_type", "select"), 
+        save_widget("das_sighting_code_1_all", "radio"), 
+        save_widget("das_sighting_probable", "check"), 
+        save_widget("das_sighting_events", "checkGroup"), 
+        save_widget("das_sighting_code_2_all", "radio"), 
+        save_widget("das_symbol_type", "select"), 
+        save_widget("das_symbol_color", "select"), 
+        save_widget("das_symbol_type_mult", "text"), 
+        save_widget("das_symbol_color_mult", "text"), 
+        save_widget("das_symbol_size", "text"), 
+        save_widget("das_symbol_linewidth", "text"), 
+        save_widget("das_symbol_mult", "check"), 
+        save_widget("das_symbol_type_boat", "select"), 
+        save_widget("das_symbol_size_boat", "numeric"), 
+        save_widget("das_symbol_color_boat", "select"), 
+        save_widget("das_symbol_linewidth_boat", "numeric"), 
+        save_widget("das_sight_interactive", "radio")
+        
         # save_widget("ndas_plot", "check")
       )
     })
 
     ### Return values
     list(
-      to_save = to_save,
+      to_save = to_save, 
       sp_codes = reactive(cruz.list$sp.codes)
     )
   })

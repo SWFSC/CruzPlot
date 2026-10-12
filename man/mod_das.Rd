@@ -25,7 +25,7 @@ The server function returns a list with the following named elements:
 \itemize{
 \item \code{to_save}: a list of values to be saved in an 'app state' file.
 See \code{\link[=cruzplot_gui]{cruzplot_gui()}} for more info.
-\item \code{sp_codes}: reactive of a dataframe of loaded species codes
+\item \code{sp_codes}: reactive of a data frame of loaded species codes
 \item \code{todo}: ...
 }
 }
