@@ -129,130 +129,183 @@ mod_das_ui <- function(id) {
         ),
         conditionalPanel(
           condition = "input.das_sightings", ns = ns, 
-          column(
-            width = 12,
+          # column(
+          #   width = 12,
+            # fluidRow(
+          cruz_box(
+            title = "Sighting type & species", width = 12,
             fluidRow(
-              cruz_box(
-                title = "Sighting type & species", width = 6,
-                selectInput(ns("das_sighting_type"), tags$h5("Sighting type"),
-                            choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3), #, "CPODs" = 4),
-                            selected = 1),
+              column(
+                width = 8, 
+                selectInput(
+                  ns("das_sighting_type"), tags$h5("Sighting type"),
+                  choices = list("Mammals" = 1, "Turtles" = 2, "Boats" = 3), #, "CPODs" = 4),
+                  selected = 1
+                ),
                 conditionalPanel(
                   condition = "input.das_sighting_type==1", ns = ns, 
                   radioButtons(ns("das_sighting_code_1_all"), NULL,
-                               choices = list("Plot all mammal sightings" = 1, 
+                                choices = list("Plot all mammal sightings" = 1, 
                                               "Plot selected mammal sightings" = 2),
-                               selected = 2),
+                                selected = 2),
                   conditionalPanel(
                     condition = "input.das_sighting_code_1_all==2", ns = ns, 
                     ui_select_instructions(),
                     uiOutput(ns("das_sighting_code_1_uiOut_select"))
                   ),
                   checkboxInput(ns("das_sighting_probable"), "Use probable species code", value = FALSE),
-                  checkboxGroupInput(ns("das_sighting_events"),
-                                     tags$h5("Plot sightings from",
-                                                     actionLink("das_sighting_events_help", "(click here for details)")),
-                                     choices = list("S events" = "S", "G events" = "G",
-                                                    "K events" = "K", "M events" = "M", "p events" = "p",
-                                                    "s events" = "s", "g events" = "g", "k events" = "k"),
-                                     selected = c("S"), inline = TRUE),
-                  tags$span(uiOutput(ns("cruzDasSightEventResight_uiOut_message")), style = "color: blue;")
-                ),
-                conditionalPanel(
-                  condition = "input.das_sighting_type==2", ns = ns, 
-                  radioButtons(ns("das_sighting_code_2_all"), NULL,
-                               choices = list("Plot all turtle sightings" = 1, "Plot selected turtle sightings" = 2),
-                               selected = 2),
-                  conditionalPanel(
-                    condition = "input.das_sighting_code_2_all==2", ns = ns, 
-                    ui_select_instructions(),
-                    uiOutput(ns("das_sighting_code_2_uiOut_select"))
-                  )
                 )
-              ),
-              cruz_box(
-                title = "Symbol properties", width = 6,
-                helpText("Not available when 'Plot all...sightings' is selected"),
-
-                # Mammal or turtle symbol properties for selected species
-                conditionalPanel(
-                  condition = "(input.das_sighting_type == 1 && input.das_sighting_code_1_all == 2) || (input.das_sighting_type==2 && input.das_sighting_code_2_all == 2)",
-                  ns = ns, 
-                  helpText("The order in which species are selected to be plotted",
-                           "corresponds to the order of specified symbol properties"),
-                  conditionalPanel(
-                    condition = "input.das_symbol_mult == false", ns = ns, 
-                  helpText("To remove selected species, click the input(s) ", 
-                           "to remove and then click backspace or delete"),
-                    # checkboxInput("das_symbol_event", "Make symbol colors correspond to event code", value = FALSE),
-                    selectInput(ns("das_symbol_type"), tags$h5("Symbol type(s)"),
-                                choices = cruz.symbol.type, selected = 1, multiple = TRUE),
-                    selectInput(ns("das_symbol_color"), tags$h5("Symbol color(s)"),
-                                choices = cruz.palette.color, selected = "black", multiple = TRUE)
+              ), 
+              column(
+                width = 4, 
+                checkboxGroupInput(
+                  ns("das_sighting_events"),
+                  tags$h5(
+                    "Plot sightings from selected events:",
+                    actionLink("das_sighting_events_help", "(details)")
                   ),
-                  conditionalPanel(
-                    condition = "input.das_symbol_mult", ns = ns, 
-                    textInput(
-                      ns("das_symbol_type_mult"), 
-                      tags$h5("Symbol type(s) - text input"), 
-                      value = "1"),
-                    textInput(
-                      ns("das_symbol_color_mult"), 
-                      tags$h5("Symbol color(s) - text input (case sensitive)"), 
-                      value = "Black")
+                  choices = list(
+                    "S events" = "S", "G events" = "G",
+                    "K events" = "K", "M events" = "M", "p events" = "p",
+                    "s events" = "s", "g events" = "g", "k events" = "k"
                   ),
-                  fluidRow(
-                    column(6, tags$h5("Symbol size(s)")),
-                    column(6, tags$h5("Symbol line width(s)"))
-                  ),
-                  fluidRow(
-                    column(6, textInput(ns("das_symbol_size"), NULL, "1")),
-                    column(6, textInput(ns("das_symbol_linewidth"), NULL, "1"))
-                  ),
-                  checkboxInput(ns("das_symbol_mult"), "Input symbol properties as text", value = FALSE)
+                  selected = c("S")
+                  # inline = TRUE
                 ),
-
-                # Boat (or CPOD) symbol properties
-                conditionalPanel(
-                  condition = "input.das_sighting_type==3 | input.das_sighting_type==4", ns = ns, 
-                  helpText("To remove selected species, click the input(s) to remove ", 
-                           "and then click backspace or delete"),
-                  helpText("The order in which species are selected to be plotted",
-                           "corresponds to the order of specified symbol properties"),
-                  fluidRow(
-                    column(
-                      width = 7,
-                      selectInput(ns("das_symbol_type_boat"), tags$h5("Symbol type"),
-                                  choices = cruz.symbol.type, selected = 1),
-                      numericInput(ns("das_symbol_size_boat"), tags$h5("Symbol size"),
-                                   value = 1, min = 0.1, max = 6, step = 0.1)
-                    ),
-                    column(
-                      width = 5,
-                      selectInput(ns("das_symbol_color_boat"), tags$h5("Symbol color"),
-                                  choices = cruz.palette.color, selected = "black"),
-                      numericInput(ns("das_symbol_linewidth_boat"), tags$h5("Symbol line width"),
-                                   value = 1, min = 1, max = 6, step = 1)
-                    )
-                  )
-                )
-                # # CPOD symbol properties
-                #             conditionalPanel(condition = "input.das_sighting_type==4",
-                #                  selectInput("das_symbol_type_cpod", tags$h5("Symbol type"),
-                #                              choices = cruz.symbol.type,
-                #                              selected = 1),
-                #                  selectInput("das_symbol_color_cpod", tags$h5("Symbol color"),
-                #                              choices = cruz.palette.color,
-                #                              selected = "black"),
-                #                  textInput("das_symbol_size_cpod", tags$h5("Symbol size"),
-                #                            value = "1"),
-                #                  textInput("das_symbol_linewidth_cpod", tags$h5("Symbol line width"),
-                #                            value = "1")
-                #             )
-                # )
+              ), 
+              tags$span(uiOutput(ns("cruzDasSightEventResight_uiOut_message")), style = "color: blue;")
+            ),
+            conditionalPanel(
+              condition = "input.das_sighting_type==2", ns = ns, 
+              radioButtons(ns("das_sighting_code_2_all"), NULL,
+                            choices = list("Plot all turtle sightings" = 1, "Plot selected turtle sightings" = 2),
+                            selected = 2),
+              conditionalPanel(
+                condition = "input.das_sighting_code_2_all==2", ns = ns, 
+                ui_select_instructions(),
+                uiOutput(ns("das_sighting_code_2_uiOut_select"))
               )
             )
           ),
+          cruz_box(
+            title = "Symbol properties", width = 12,
+            conditionalPanel(
+              condition = "!((input.das_sighting_type == 1 && input.das_sighting_code_1_all == 2) || (input.das_sighting_type==2 && input.das_sighting_code_2_all == 2))",
+              ns = ns, 
+              helpText("Symbol properties are not available when 'Plot all...sightings' is selected")
+            ),
+
+            # Mammal or turtle symbol properties for selected species
+            conditionalPanel(
+              condition = "(input.das_sighting_type == 1 && input.das_sighting_code_1_all == 2) || (input.das_sighting_type==2 && input.das_sighting_code_2_all == 2)",
+              ns = ns, 
+              helpText(
+                "The order in which species are selected to be plotted",
+                "corresponds to the order of specified symbol properties. ", 
+                "For text inputs, separate values with a singel comma (',')"
+              ),
+              conditionalPanel(
+                condition = "input.das_symbol_mult == false", ns = ns, 
+                helpText(
+                  "To remove selected symbol type or color, click the value(s) ", 
+                  "to remove and then click backspace or delete"
+                ),
+                fluidRow(
+                  column(
+                    width = 6, 
+                    selectInput(
+                      ns("das_symbol_type"), tags$h5("Symbol type(s)"),
+                      choices = cruz.symbol.type, selected = 1, 
+                      multiple = TRUE
+                    )
+                  ), 
+                  column(
+                    width = 6, 
+                    selectInput(
+                      ns("das_symbol_color"), tags$h5("Symbol color(s)"),
+                      choices = cruz.palette.color, selected = "black", 
+                      multiple = TRUE
+                    )
+                  )                    
+                )
+              ),
+              conditionalPanel(
+                condition = "input.das_symbol_mult", ns = ns, 
+                fluidRow(
+                  column(
+                    width = 6, 
+                    textInput(
+                      ns("das_symbol_type_mult"), 
+                      tags$h5("Symbol type(s) - text input"), 
+                      value = "1"
+                    )
+                  ),
+                  column(
+                    width = 6, 
+                    textInput(
+                      ns("das_symbol_color_mult"), 
+                      tags$h5("Symbol color(s) - text input (case sensitive)"), 
+                      value = "Black"
+                    )
+                  )
+                )
+              ), 
+              checkboxInput(
+                ns("das_symbol_mult"), 
+                "Input symbol type and color as text", 
+                value = FALSE
+              ), 
+              fluidRow(
+                column(6, tags$h5("Symbol size(s)")),
+                column(6, tags$h5("Symbol line width(s)"))
+              ),
+              fluidRow(
+                column(6, textInput(ns("das_symbol_size"), NULL, "1")),
+                column(6, textInput(ns("das_symbol_linewidth"), NULL, "1"))
+              ),
+            ),
+
+            # Boat (or CPOD) symbol properties
+            conditionalPanel(
+              condition = "input.das_sighting_type==3 | input.das_sighting_type==4", ns = ns, 
+              helpText("To remove selected species, click the input(s) to remove ", 
+                        "and then click backspace or delete"),
+              helpText("The order in which species are selected to be plotted",
+                        "corresponds to the order of specified symbol properties"),
+              fluidRow(
+                column(
+                  width = 7,
+                  selectInput(ns("das_symbol_type_boat"), tags$h5("Symbol type"),
+                              choices = cruz.symbol.type, selected = 1),
+                  numericInput(ns("das_symbol_size_boat"), tags$h5("Symbol size"),
+                                value = 1, min = 0.1, max = 6, step = 0.1)
+                ),
+                column(
+                  width = 5,
+                  selectInput(ns("das_symbol_color_boat"), tags$h5("Symbol color"),
+                              choices = cruz.palette.color, selected = "black"),
+                  numericInput(ns("das_symbol_linewidth_boat"), tags$h5("Symbol line width"),
+                                value = 1, min = 1, max = 6, step = 1)
+                )
+              )
+            )
+            # # CPOD symbol properties
+            #             conditionalPanel(condition = "input.das_sighting_type==4",
+            #                  selectInput("das_symbol_type_cpod", tags$h5("Symbol type"),
+            #                              choices = cruz.symbol.type,
+            #                              selected = 1),
+            #                  selectInput("das_symbol_color_cpod", tags$h5("Symbol color"),
+            #                              choices = cruz.palette.color,
+            #                              selected = "black"),
+            #                  textInput("das_symbol_size_cpod", tags$h5("Symbol size"),
+            #                            value = "1"),
+            #                  textInput("das_symbol_linewidth_cpod", tags$h5("Symbol line width"),
+            #                            value = "1")
+            #             )
+            # )
+          ), 
+            # )
+          # ),
           cruz_box(
             title = "Interactive sighting labels", width = 12,
             fluidRow(
