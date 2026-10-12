@@ -16,7 +16,7 @@ Open the CruzPlot utility program, an R Shiny application
 \dontshow{if (interactive()) withAutoprint(\{ # examplesIf}
 cruzplot_gui()
 
-# To have Shiny listen on a specifc port
-cruzplot_gui(options = list(browser = TRUE, port = 6305))
+# To have Shiny listen on a specific port
+cruzplot_gui(options = list(launch.browser = TRUE, port = 6305))
 \dontshow{\}) # examplesIf}
 }

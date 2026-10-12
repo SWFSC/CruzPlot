@@ -7,8 +7,8 @@
 #' @examplesIf interactive()
 #' cruzplot_gui()
 #'
-#' # To have Shiny listen on a specifc port
-#' cruzplot_gui(options = list(browser = TRUE, port = 6305))
+#' # To have Shiny listen on a specific port
+#' cruzplot_gui(options = list(launch.browser = TRUE, port = 6305))
 #'
 #' @export
 cruzplot_gui <- function(...) {
@@ -43,23 +43,16 @@ cruzplot_gui <- function(...) {
     dashboardSidebar(
       sidebarMenu(
         id = "tabs",
-        menuItem("Create Map", tabName = "createmap", icon = icon("th", lib = "font-awesome")),
-        menuItem("Plot DAS Data", tabName = "das", icon = icon("th")),
-        menuItem("Plot Non-DAS Data", tabName = "nondas", icon = icon("th")),
+        menuItem("Create Map", tabName = "createmap", icon = icon("map")),
+        menuItem("Plot DAS Data", tabName = "das", icon = icon("ship")),
+        menuItem("Plot Non-DAS Data", tabName = "nondas", icon = icon("layer-group")),
         menuItem(
           HTML(paste0("Color and Formatting", "<br/>", "Options")),
-          tabName = "display_format", icon = icon("th")
+          tabName = "display_format", icon = icon("palette")
         ),
-        menuItem("Species Information", tabName = "display_spcodes", icon = icon("th")),
-        menuItem("CruzPlot Manual", tabName = "display_manual", icon = icon("th")),
-        tags$br(),
-        fileInput("load_app_envir_file", "Load workspace"),
-        column(
-          width = 12,
-          textOutput("load_app_text"),
-          downloadButton("save_app_envir", "Save workspace", style = "color: black")
-        ),
-        tags$br(), tags$br(), #tags$br(),
+        menuItem("Species Information", tabName = "display_spcodes", icon = icon("fish")),
+        menuItem("CruzPlot Manual", tabName = "display_manual", icon = icon("book")),
+        # tags$br(),
         numericInput("plot_height", "Map height (pixels)", value = 600, min = 0, step = 100),
         selectInput(
           "color_style",
@@ -67,7 +60,15 @@ cruzplot_gui <- function(...) {
           choices = list("Color" = 1, "Gray scale" = 2),
           selected = 1
         ),
-        tags$br(),
+        # tags$br(),
+        column(
+          width = 12,
+          tags$strong("Workspace (Save / Load)"), 
+          textOutput("load_app_text"),
+          downloadButton("save_app_envir", "Save workspace", style = "color: black")
+        ),
+        fileInput("load_app_envir_file", NULL), #, tags$h5("Load workspace")),
+        # tags$br(), tags$br(), #tags$br(),
         actionButton("stop", "Close CruzPlot"),
         column(12, tags$h5(paste0("CruzPlot v", packageVersion("CruzPlot"))))
       ), width = "200"

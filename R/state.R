@@ -37,6 +37,7 @@
 #' - numeric: [shiny::updateNumericInput()]
 #' - select: [shiny::updateSelectInput()]
 #' - check: [shiny::updateCheckboxInput()]
+#' - checkGroup: [shiny::updateCheckboxGroupInput()]
 #' - radio: [shiny::updateRadioButtons()]
 #' - reactive: handled individually by module
 #'
@@ -61,7 +62,7 @@ save_widget <- function(id, type, value = NULL, input = NULL) {
     r.type <- case_when(
       type %in% c("text", "select", "radio") ~ "character", 
       type %in% c("numeric") ~ "numeric", 
-      type %in% c("check") ~ "logical", 
+      type %in% c("check", "checkGroup") ~ "logical", 
       .default = "error - unknown"
     )
 
@@ -72,7 +73,7 @@ save_widget <- function(id, type, value = NULL, input = NULL) {
     if (!is.character(value)) error_message(type)
   } else if (type %in% c("numeric")) {
     if (!is.numeric(value)) error_message(type)
-  } else if (type %in% c("check")) {
+  } else if (type %in% c("check", "checkGroup")) {
     if (!is.logical(value)) error_message(type)
   } else if (type %in% c("reactive")) {
     # Nothing to check
@@ -98,7 +99,8 @@ update_widget <- function(item, session) {
     "numeric" = updateNumericInput(session, item$id, value = item$value),
     "select" = updateSelectInput(session, item$id, selected = item$value),
     "radio" = updateRadioButtons(session, item$id, selected = item$value),
-    "check" = updateCheckboxInput(session, item$id, value = item$value)
+    "check" = updateCheckboxInput(session, item$id, value = item$value), 
+    "checkGroup" = updateCheckboxGroupInput(session, item$id, selected = item$value)
   )
 }
   
