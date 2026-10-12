@@ -6,18 +6,18 @@
 #'
 #' @inheritParams mod_map_range
 #' @param map_range_config the `config` output of [mod_map_range_server()]
-#' 
+#'
 #' @details
-#' This module handles the map colors, including land color to water color. 
-#' It also allows the user to download and/or load a bathymetry file using 
+#' This module handles the map colors, including land color to water color.
+#' It also allows the user to download and/or load a bathymetry file using
 #' [marmap::getNOAA.bathy()]
 #'
 #' @returns The UI function returns a [shiny::tabPanel()] object
-#' 
+#'
 #' The server function returns a list with the following named elements:
-#' - `to_save`: a list of values to be saved in an 'app state' file. 
-#'   See [cruzplot_gui()] for more info. 
-#' - `color_lakes_rivers`: a reactive indicating if lakes and rivers 
+#' - `to_save`: a list of values to be saved in an 'app state' file.
+#'   See [cruzplot_gui()] for more info.
+#' - `color_lakes_rivers`: a reactive indicating if lakes and rivers
 #'   should be plotted
 #' - `cruzMapColorLand`: a reactive function for the land color
 #' - `cruzMapRivers`: a reactive function for plotting rivers and lakes
@@ -32,10 +32,10 @@ mod_map_color_ui <- function(id) {
     fluidRow(
       cruz_box(
         title = "Land", width = 5,
-        checkboxInput(ns("color_land_all"), label = "Color all land", value = TRUE), 
+        checkboxInput(ns("color_land_all"), label = "Color all land", value = TRUE),
         conditionalPanel(
-          condition = "input.color_land_all", ns = ns, 
-          selectInput(ns("color_land"), label = tags$h5("Land color"), 
+          condition = "input.color_land_all", ns = ns,
+          selectInput(ns("color_land"), label = tags$h5("Land color"),
                       choices = cruz.palette.color, selected = "bisque1")
         )
         # fluidRow(
@@ -43,13 +43,13 @@ mod_map_color_ui <- function(id) {
         #   column(
         #     width = 6,
         #     conditionalPanel(
-        #       condition = "input.color_land_all", ns = ns, 
-        #       selectInput(ns("color_land"), label = tags$h5("Land color"), 
+        #       condition = "input.color_land_all", ns = ns,
+        #       selectInput(ns("color_land"), label = tags$h5("Land color"),
         #                   choices = cruz.palette.color, selected = "bisque1")
         #     )
         #   )
         # )
-      ), 
+      ),
       cruz_box(
         title = "Water", width = 7,
         checkboxInput(ns("map_rivers"), label = "Color major lakes and rivers", value = FALSE),
@@ -59,7 +59,7 @@ mod_map_color_ui <- function(id) {
                       choices = list("Single color" = 1, "Depth (bathymetric) shading" = 2),
                       selected = 1),
         conditionalPanel(
-          condition = "input.color_water_style==2", ns = ns, 
+          condition = "input.color_water_style==2", ns = ns,
           helpText("Load a CSV file with exactly 3 columns: latitude, longitude, and depth"),
           fileInput(ns("depth_file"), tags$h5("Bathymetric CSV file"), accept = ".csv"),
           textOutput(ns("bathy_load_text")),
@@ -69,10 +69,10 @@ mod_map_color_ui <- function(id) {
     ),
     fluidRow(
       cruz_box(
-        title = "Download bathymetric data", width = 12,        
+        title = "Download bathymetric data", width = 12,
         fluidRow(
           column(
-            width = 6, 
+            width = 6,
             helpText(
               "Download bathymetric data from NOAA website (see the documentation for",
               tags$a(href = "https://CRAN.R-project.org/package=marmap",
@@ -81,18 +81,18 @@ mod_map_color_ui <- function(id) {
               "The extent of the downloaded data will be the same as the current map range."
             ),
             helpText(
-              "After downloading, you must load the CSV file into the app", 
+              "After downloading, you must load the CSV file into the app",
               "in the 'Water: Ocean color style' section"
             )
-          ), 
+          ),
           column(
-            width = 6, 
+            width = 6,
             numericInput(
-              ns("depth_res"), 
+              ns("depth_res"),
               tags$h5("Bathymetric data resolution, in minutes (range: 0-60)"),
               value = 10, min = 0, max = 60, step = 5
             ),
-            uiOutput(ns("depth_download_button")), 
+            uiOutput(ns("depth_download_button")),
             uiOutput(ns("depth_download_message"))
           )
         )
@@ -115,7 +115,7 @@ mod_map_color_server  <- function(id, load_state, map_range_config) {
     # Stored reactiveValues for the module
     cruz.list <- reactiveValues(
       # Bathymetric data, converted to CSV file xyz coordinates
-      bathy.xyz = NULL,      
+      bathy.xyz = NULL,
       # Logical flag indicating if a bathy download failed
       bathy.download = FALSE
     )
@@ -142,12 +142,12 @@ mod_map_color_server  <- function(id, load_state, map_range_config) {
           need(rivs.try, "Error - please install the mapdata package to use rivers maps")
         )
         rivs <- map("mapdata::rivers", plot = FALSE)
-        
+
         req(is.logical(map_range_config()$world2))
         if (map_range_config()$world2) rivs$x <- ifelse(rivs$x < 0, rivs$x+360, rivs$x)
 
         rivs
-        
+
       } else {
         NULL
       }
@@ -255,8 +255,8 @@ mod_map_color_server  <- function(id, load_state, map_range_config) {
         validate(
           paste(
             "CruzPlot was not able to download data using marmap::getNOAA.bathy.",
-            "Please check your internet connection, and try again.", 
-            "If this problem persists and you are able to use the function", 
+            "Please check your internet connection, and try again.",
+            "If this problem persists and you are able to use the function",
             "yourself, please report this as an issue."
           )
         )
@@ -282,10 +282,10 @@ mod_map_color_server  <- function(id, load_state, map_range_config) {
 
         # Defaults maramp file name: "marmap_coord_-135;29;-117;52_res_10.csv"
         str_glue(
-          "marmap_coord_{lon1};{lon2};{lat1};{lat2}_res_{res}.csv", 
-          lon1 = lon.range[1], 
-          lon2 = lon.range[2], 
-          lat1 = lat.range[1], 
+          "marmap_coord_{lon1};{lon2};{lat1};{lat2}_res_{res}.csv",
+          lon1 = lon.range[1],
+          lon2 = lon.range[2],
+          lat1 = lat.range[1],
           lat2 = lat.range[2]
         )
       },
@@ -298,7 +298,8 @@ mod_map_color_server  <- function(id, load_state, map_range_config) {
         # getNOAA.bathy() operates on -180 to 180 scale; use user inputs not lon.range
         bathy <- try(marmap::getNOAA.bathy(
           lon1 = ll[1], lon2 = ll[2], lat1 = ll[3], lat2 = ll[4],
-          resolution = input$depth_res, antimeridian = world2,
+          resolution = input$depth_res,
+          antimeridian = world2,
           keep = FALSE
         ), silent = TRUE)
 
@@ -319,8 +320,8 @@ mod_map_color_server  <- function(id, load_state, map_range_config) {
         save_widget("color_land", "select"),
         save_widget("map_rivers", "check"),
         save_widget("color_water", "select"),
-        save_widget("color_water_style", "radio"), 
-        save_widget("depth_res", "numeric"), 
+        save_widget("color_water_style", "radio"),
+        save_widget("depth_res", "numeric"),
         save_widget("bathy.xyz", "reactive", cruz.list$bathy.xyz)
       )
     })
@@ -328,8 +329,8 @@ mod_map_color_server  <- function(id, load_state, map_range_config) {
     ### Return values
     list(
       to_save = to_save,
-      cruzMapColorLand = cruzMapColorLand, 
-      cruzMapRivers = cruzMapRivers, 
+      cruzMapColorLand = cruzMapColorLand,
+      cruzMapRivers = cruzMapRivers,
       cruzMapColorWater = cruzMapColorWater
     )
   })

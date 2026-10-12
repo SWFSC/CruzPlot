@@ -228,7 +228,7 @@ cruzplot_gui <- function(...) {
 
     #----------------------------------------------------------------------------
     ### Map tab
-    # 'Initialize' reactives
+    # 'Initialize' reactiveVal objects
     load_state_map_range <- reactiveVal()
     load_state_map_elements <- reactiveVal()
     load_state_map_color <- reactiveVal()
@@ -256,8 +256,6 @@ cruzplot_gui <- function(...) {
 
     #----------------------------------------------------------------------------
     ### Plots
-    # TODO: do like the following for consistency?
-    # try(do.call(odbc::dbConnect, purrr::compact(db.list)), silent = silent)
     plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas)
     mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas)
     mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas)

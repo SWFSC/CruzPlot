@@ -345,22 +345,23 @@ mod_plot_server  <- function(
         ### Planned transects
         pltransect <- planned$pltransect()
         if (!is.null(pltransect)) {
-          if (planned$pltransect_class2()) {
-            # Yes class 2
+          if (planned$pltransect_class2()) { #Yes class 2
             for (i in pltransect) {
               for (j in i) {
                 for (k in j) {
-                  lines(x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]]
+                  lines(
+                    x = k[[1]], y = k[[2]],
+                    col = k[[3]], lty = k[[4]], lwd = k[[5]]
                   )
                 }
               }
             }
-          } else {
-            # No class2
+          } else { #No class2
             for (i in pltransect) {
               for (k in i) {
                 lines(
-                  x = k[[1]], y = k[[2]], col = k[[3]], lty = k[[4]], lwd = k[[5]]
+                  x = k[[1]], y = k[[2]],
+                  col = k[[3]], lty = k[[4]], lwd = k[[5]]
                 )
               }
             }
