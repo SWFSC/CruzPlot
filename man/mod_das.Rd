@@ -8,7 +8,7 @@
 \usage{
 mod_das_ui(id)
 
-mod_das_server(id, load_state)
+mod_das_server(id, load_state, color_style)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
@@ -17,6 +17,9 @@ mod_das_server(id, load_state)
 saved 'app state' to be loaded for this module. The main function
 saves the state, using the 'to_save' output list, and then loads
 those values into the \code{load_state} object when a saved app state is loaded}
+
+\item{color_style}{reactive of the app color style. Specifically
+"1" for Color or "2" for Gray scale}
 }
 \value{
 The UI function returns a \code{\link[shiny:tabPanel]{shiny::tabPanel()}} object

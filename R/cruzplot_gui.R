@@ -64,9 +64,10 @@ cruzplot_gui <- function(...) {
         column(
           width = 12,
           tags$strong("Workspace (Save / Load)"), 
-          textOutput("load_app_text"),
-          downloadButton("save_app_envir", "Save workspace", style = "color: black")
-        ),
+          tags$br(), 
+          downloadButton("save_app_envir", "Save workspace", style = "color: black"), 
+          textOutput("load_app_text")
+        ), 
         fileInput("load_app_envir_file", NULL), #, tags$h5("Load workspace")),
         # tags$br(), tags$br(), #tags$br(),
         actionButton("stop", "Close CruzPlot"),
@@ -187,6 +188,7 @@ cruzplot_gui <- function(...) {
 
     # Plot height
     h <- reactive(input$plot_height)
+    color_style <- reactive(input$color_style)
 
     # Color style
     observeEvent(input$color_style, {
@@ -196,8 +198,8 @@ cruzplot_gui <- function(...) {
         updateSelectInput(session, NS("map_color")("color_land"), choices = c.pal, selected = "bisque1")
         updateSelectInput(session, NS("map_color")("color_water"), choices = c.pal, selected = "white")
         updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = "black")
-        # updateSelectInput(session, "das_symbol_color", choices = c.pal, selected = "black")
-        # updateTextInput(session, "das_symbol_color_mult", value = "Black")
+        updateSelectInput(session, NS("das")("das_symbol_color"), choices = c.pal, selected = "black")
+        updateTextInput(session, NS("das")("das_symbol_color_mult"), value = "Black")
         # updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = "black")
         # updateSelectInput(session, "das_effort_det_bft_col", choices = c.pal, selected = eff.bft.default)
         # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
@@ -213,8 +215,8 @@ cruzplot_gui <- function(...) {
         updateSelectInput(session, NS("map_color")("color_land"), choices = c.pal, selected = 4)
         updateSelectInput(session, NS("map_color")("color_water"), choices = c.pal, selected = 0)
         updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = 1)
-        # updateSelectInput(session, "das_symbol_color", choices = c.pal, selected = 1)
-        # updateTextInput(session, "das_symbol_color_mult", value = "Black")
+        updateSelectInput(session, NS("das")("das_symbol_color"), choices = c.pal, selected = 1)
+        updateTextInput(session, NS("das")("das_symbol_color_mult"), value = "Black")
         # updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = 1)
         # updateSelectInput(session, "das_effort_det_bft_col", choices = c.pal, selected = 1)
         # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
@@ -244,7 +246,7 @@ cruzplot_gui <- function(...) {
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range_config)
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range_config)
 
-    das <- mod_das_server("das", load_state_das)
+    das <- mod_das_server("das", load_state_das, color_style)
     nondas <- list(
       shape = mod_ndas_shape_server("ndas_shape", load_state_ndas_shape, map_range_config),
       planned = mod_ndas_planned_server("ndas_planned", load_state_ndas_planned, map_range_config)

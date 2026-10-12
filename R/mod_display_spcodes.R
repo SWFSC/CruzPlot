@@ -61,36 +61,19 @@ mod_display_spcodes_server  <- function(id, sp_codes) {
         )
       )
     })
-    
-    
-    cruzSpeciesMammals <- reactive({
-      sp.codes <- req(sp_codes())
-      turtle.codes <- cruzSpeciesTurtles()$SpCode
-      ind.mammals <- which(!(sp.codes$SpCode %in% turtle.codes))
-
-      sp.codes[ind.mammals, ]
-    })
-
-    cruzSpeciesTurtles <- reactive({
-      sp.codes <- req(sp_codes())
-      # ind.turtles <- which(sp.codes$Code %in% turtle.codes)
-      turtle.nona <- !is.na(sp.codes$CommonName)
-      turtle.flag <- str_detect(str_to_lower(sp.codes$CommonName), "turtle")
-      ind.turtles <- turtle.flag & turtle.nona
-
-      sp.codes[ind.turtles, ]
-    })
 
 
     sp.codes.names <- c("Species Code", "Abbreviation", "Scientific Name", "Common Name")
 
     output$sp1 <- DT::renderDataTable({ #Mammals
-      sp.mammals <- cruzSpeciesMammals()
+      sp.mammals <- spcodes_mammals(req(sp_codes()))
+      # sp.mammals <- cruzSpeciesMammals()
       names(sp.mammals) <- sp.codes.names
       sp.mammals
     })
     output$sp2 <- DT::renderDataTable({ #Turtles
-      sp.turtles <- cruzSpeciesTurtles()
+      sp.turtles <- spcodes_turtles(req(sp_codes()))
+      # sp.turtles <- cruzSpeciesTurtles()
       names(sp.turtles) <- sp.codes.names
       sp.turtles
     })

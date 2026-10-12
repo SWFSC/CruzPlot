@@ -60,6 +60,7 @@ The accepted \code{type} values, and their corresponding update calls:
 \item numeric: \code{\link[shiny:updateNumericInput]{shiny::updateNumericInput()}}
 \item select: \code{\link[shiny:updateSelectInput]{shiny::updateSelectInput()}}
 \item check: \code{\link[shiny:updateCheckboxInput]{shiny::updateCheckboxInput()}}
+\item checkGroup: \code{\link[shiny:updateCheckboxGroupInput]{shiny::updateCheckboxGroupInput()}}
 \item radio: \code{\link[shiny:updateRadioButtons]{shiny::updateRadioButtons()}}
 \item reactive: handled individually by module
 }

@@ -5,6 +5,8 @@
 #' @name mod_das
 #'
 #' @inheritParams mod_map_range
+#' @param color_style reactive of the app color style. Specifically
+#'   "1" for Color or "2" for Gray scale
 #'
 #' @details
 #' This module handles the loading, processing, and plotting of DAS data.
@@ -154,38 +156,41 @@ mod_das_ui <- function(id) {
                     uiOutput(ns("das_sighting_code_1_uiOut_select"))
                   ),
                   checkboxInput(ns("das_sighting_probable"), "Use probable species code", value = FALSE),
+                ),
+                conditionalPanel(
+                  condition = "input.das_sighting_type==2", ns = ns, 
+                  radioButtons(ns("das_sighting_code_2_all"), NULL,
+                                choices = list("Plot all turtle sightings" = 1, "Plot selected turtle sightings" = 2),
+                                selected = 2),
+                  conditionalPanel(
+                    condition = "input.das_sighting_code_2_all==2", ns = ns, 
+                    ui_select_instructions(),
+                    uiOutput(ns("das_sighting_code_2_uiOut_select"))
+                  )
                 )
               ), 
               column(
-                width = 4, 
-                checkboxGroupInput(
-                  ns("das_sighting_events"),
-                  tags$h5(
-                    "Plot sightings from selected events:",
-                    actionLink("das_sighting_events_help", "(details)")
-                  ),
-                  choices = list(
-                    "S events" = "S", "G events" = "G",
-                    "K events" = "K", "M events" = "M", "p events" = "p",
-                    "s events" = "s", "g events" = "g", "k events" = "k"
-                  ),
-                  selected = c("S")
-                  # inline = TRUE
-                ),
-              ), 
-              tags$span(uiOutput(ns("cruzDasSightEventResight_uiOut_message")), style = "color: blue;")
-            ),
-            conditionalPanel(
-              condition = "input.das_sighting_type==2", ns = ns, 
-              radioButtons(ns("das_sighting_code_2_all"), NULL,
-                            choices = list("Plot all turtle sightings" = 1, "Plot selected turtle sightings" = 2),
-                            selected = 2),
-              conditionalPanel(
-                condition = "input.das_sighting_code_2_all==2", ns = ns, 
-                ui_select_instructions(),
-                uiOutput(ns("das_sighting_code_2_uiOut_select"))
+                width = 4,                 
+                conditionalPanel(
+                  condition = "input.das_sighting_type==1", ns = ns, 
+                  checkboxGroupInput(
+                    ns("das_sighting_events"),
+                    tags$h5(
+                      "Plot sightings from selected events:",
+                      actionLink("das_sighting_events_help", "(details)")
+                    ),
+                    choices = list(
+                      "S events" = "S", "G events" = "G",
+                      "K events" = "K", "M events" = "M", "p events" = "p",
+                      "s events" = "s", "g events" = "g", "k events" = "k"
+                    ),
+                    selected = c("S")
+                    # inline = TRUE
+                  )
+                )
               )
-            )
+            ), 
+            tags$span(uiOutput(ns("cruzDasSightEventResight_uiOut_message")), style = "color: blue;")
           ),
           cruz_box(
             title = "Symbol properties", width = 12,
@@ -195,26 +200,26 @@ mod_das_ui <- function(id) {
               helpText("Symbol properties are not available when 'Plot all...sightings' is selected")
             ),
 
-            # Mammal or turtle symbol properties for selected species
+            # Multiple selections: Mammal or turtle symbol properties for selected species
             conditionalPanel(
               condition = "(input.das_sighting_type == 1 && input.das_sighting_code_1_all == 2) || (input.das_sighting_type==2 && input.das_sighting_code_2_all == 2)",
               ns = ns, 
               helpText(
                 "The order in which species are selected to be plotted",
                 "corresponds to the order of specified symbol properties. ", 
-                "For text inputs, separate values with a singel comma (',')"
+                "For text inputs, separate values with a single comma (,)"
               ),
               conditionalPanel(
                 condition = "input.das_symbol_mult == false", ns = ns, 
                 helpText(
                   "To remove selected symbol type or color, click the value(s) ", 
-                  "to remove and then click backspace or delete"
+                  "to remove, and then click backspace or delete"
                 ),
                 fluidRow(
                   column(
                     width = 6, 
                     selectInput(
-                      ns("das_symbol_type"), tags$h5("Symbol type(s)"),
+                      ns("das_symbol_type"), tags$h5("Type(s)"),
                       choices = cruz.symbol.type, selected = 1, 
                       multiple = TRUE
                     )
@@ -222,7 +227,7 @@ mod_das_ui <- function(id) {
                   column(
                     width = 6, 
                     selectInput(
-                      ns("das_symbol_color"), tags$h5("Symbol color(s)"),
+                      ns("das_symbol_color"), tags$h5("Color(s)"),
                       choices = cruz.palette.color, selected = "black", 
                       multiple = TRUE
                     )
@@ -236,7 +241,7 @@ mod_das_ui <- function(id) {
                     width = 6, 
                     textInput(
                       ns("das_symbol_type_mult"), 
-                      tags$h5("Symbol type(s) - text input"), 
+                      tags$h5("Type(s) - text input"), 
                       value = "1"
                     )
                   ),
@@ -244,7 +249,7 @@ mod_das_ui <- function(id) {
                     width = 6, 
                     textInput(
                       ns("das_symbol_color_mult"), 
-                      tags$h5("Symbol color(s) - text input (case sensitive)"), 
+                      tags$h5("Color(s) - text input (case sensitive)"), 
                       value = "Black"
                     )
                   )
@@ -256,65 +261,51 @@ mod_das_ui <- function(id) {
                 value = FALSE
               ), 
               fluidRow(
-                column(6, tags$h5("Symbol size(s)")),
-                column(6, tags$h5("Symbol line width(s)"))
-              ),
-              fluidRow(
-                column(6, textInput(ns("das_symbol_size"), NULL, "1")),
-                column(6, textInput(ns("das_symbol_linewidth"), NULL, "1"))
-              ),
+                column(6, textInput(ns("das_symbol_size"), tags$h5("Size(s)", "1"))),
+                column(6, textInput(ns("das_symbol_linewidth"), tags$h5("Line width(s)", "1")))
+              )
             ),
 
-            # Boat (or CPOD) symbol properties
+            # Single selections: Boat (or CPOD) symbol properties
             conditionalPanel(
               condition = "input.das_sighting_type==3 | input.das_sighting_type==4", ns = ns, 
-              helpText("To remove selected species, click the input(s) to remove ", 
-                        "and then click backspace or delete"),
-              helpText("The order in which species are selected to be plotted",
-                        "corresponds to the order of specified symbol properties"),
               fluidRow(
                 column(
-                  width = 7,
-                  selectInput(ns("das_symbol_type_boat"), tags$h5("Symbol type"),
-                              choices = cruz.symbol.type, selected = 1),
-                  numericInput(ns("das_symbol_size_boat"), tags$h5("Symbol size"),
-                                value = 1, min = 0.1, max = 6, step = 0.1)
+                  width = 6,
+                  selectInput(
+                    ns("das_symbol_type_boat"), tags$h5("Symbol type"),
+                    choices = cruz.symbol.type, selected = 1
+                  ),
+                  numericInput(
+                    ns("das_symbol_size_boat"), tags$h5("Symbol size"),
+                    value = 1, min = 0.1, max = 6, step = 0.1
+                  )
                 ),
                 column(
-                  width = 5,
-                  selectInput(ns("das_symbol_color_boat"), tags$h5("Symbol color"),
-                              choices = cruz.palette.color, selected = "black"),
-                  numericInput(ns("das_symbol_linewidth_boat"), tags$h5("Symbol line width"),
-                                value = 1, min = 1, max = 6, step = 1)
+                  width = 6,
+                  selectInput(
+                    ns("das_symbol_color_boat"), tags$h5("Symbol color"),
+                    choices = cruz.palette.color, selected = "black"
+                  ),
+                  numericInput(
+                    ns("das_symbol_linewidth_boat"), tags$h5("Symbol line width"),
+                    value = 1, min = 1, max = 6, step = 1
+                  )
                 )
               )
             )
-            # # CPOD symbol properties
-            #             conditionalPanel(condition = "input.das_sighting_type==4",
-            #                  selectInput("das_symbol_type_cpod", tags$h5("Symbol type"),
-            #                              choices = cruz.symbol.type,
-            #                              selected = 1),
-            #                  selectInput("das_symbol_color_cpod", tags$h5("Symbol color"),
-            #                              choices = cruz.palette.color,
-            #                              selected = "black"),
-            #                  textInput("das_symbol_size_cpod", tags$h5("Symbol size"),
-            #                            value = "1"),
-            #                  textInput("das_symbol_linewidth_cpod", tags$h5("Symbol line width"),
-            #                            value = "1")
-            #             )
-            # )
           ), 
-            # )
-          # ),
           cruz_box(
             title = "Interactive sighting labels", width = 12,
             fluidRow(
               column(
                 width = 4,
-                radioButtons(ns("das_sight_interactive"), NULL,
-                             choices = list("Non-interactive plot" = 1,
-                                            "View and label sightings interactively" = 2),
-                             selected = 1)
+                radioButtons(
+                  ns("das_sight_interactive"), NULL,
+                  choices = list("Non-interactive plot" = 1,
+                                "View and label sightings interactively" = 2),
+                  selected = 1
+                )
               ),
               column(
                 width = 8,
@@ -681,10 +672,11 @@ mod_das_ui <- function(id) {
 
 #' @name mod_das
 #' @export
-mod_das_server  <- function(id, load_state) {
+mod_das_server  <- function(id, load_state, color_style) {
   moduleServer(id, function(input, output, session) {
     stopifnot(
-      is.reactive(load_state)
+      is.reactive(load_state), 
+      is.reactive(color_style)
     )
 
     # Stored reactiveValues for the module
@@ -926,7 +918,8 @@ mod_das_server  <- function(id, load_state) {
     ###############################################################################
     # Sightings
 
-    ### Text in sightings tab about no SpCodes.data file
+    ### Species codes
+    # Text in sightings tab about no SpCodes.data file
     output$das_sight_spcodes_message <- renderText({
       validate(
         need(cruz.list$sp.codes,
@@ -935,6 +928,118 @@ mod_das_server  <- function(id, load_state) {
 
       ""
     })
+
+    # renderUIs for mammal and turtle species
+    output$das_sighting_code_1_uiOut_select <- renderUI({
+      sp.mammals <- spcodes_mammals(req(cruz.list$sp.codes))
+      sp.codes.list <- as.list(sp.mammals$SpCode)
+      names(sp.codes.list) <- paste(sp.mammals$SpCode, sp.mammals$Abbr, sep = " - ")
+
+      selectInput(
+        session$ns("das_sighting_code_1"), tags$h5("Select mammal species"),
+        choices = sp.codes.list, multiple = TRUE,
+        selected = NULL
+      )
+    })
+    outputOptions(output, "das_sighting_code_1_uiOut_select", suspendWhenHidden = FALSE)
+
+    output$das_sighting_code_2_uiOut_select <- renderUI({
+      sp.turtles <- spcodes_turtles(req(cruz.list$sp.codes))
+      # sp.turtles <- cruzSpeciesTurtles()
+      sp.codes.list <- as.list(sp.turtles$SpCode)
+      names(sp.codes.list) <- paste(sp.turtles$SpCode, sp.turtles$SciName, sep = " - ")
+
+      selectInput(
+        session$ns("das_sighting_code_2"), tags$h5("Select turtle species"),
+        choices = sp.codes.list, multiple = TRUE, selected = NULL
+      )
+    })
+    outputOptions(output, "das_sighting_code_2_uiOut_select", suspendWhenHidden = FALSE)
+
+
+
+    ### Code for keeping current inputs the same when switching
+    #    from or to text symbol properties input
+    observeEvent(input$das_symbol_mult, {
+      if (input$das_symbol_mult) {
+        ### Convert codes to text
+        # Covert numerics to symbols
+        curr.pch <- as.numeric(input$das_symbol_type)
+        if (length(curr.pch) == 0) curr.pch <- "1"
+
+        # Covert color codes to color names
+        curr.col <- input$das_symbol_color
+        if (is.null(curr.col)) {
+          curr.col <- "Black"
+
+        } else {
+          # This keeps numbers in order
+          if (color_style() == 1) {
+            curr.col.idx <- vapply(
+              curr.col, function(i) which(symbol.col.code %in% i), 1
+            )
+            curr.col <- symbol.col[curr.col.idx]
+
+          } else if (color_style() == 2) {
+            curr.col.idx <- vapply(
+              curr.col, function(i) which(symbol.col.code.gray %in% i), 1
+            )
+            curr.col <- symbol.col.gray[curr.col.idx]
+          }
+        }
+
+        updateTextInput(
+          session, "das_symbol_type_mult", 
+          value = paste(curr.pch, collapse = ", ")
+        )
+        updateTextInput(
+          session, "das_symbol_color_mult", 
+          value = paste(curr.col, collapse = ", ")
+        )
+
+
+      } else {
+        ### Convert from text to codes
+        # Convert symbol codes to symbols
+        curr.pch <- suppressWarnings(
+          as.numeric(unlist(strsplit(input$das_symbol_type_mult, ", ")))
+        )
+        if (length(curr.pch) == 0) {
+          curr.pch <- 1
+        } else {
+          if (!all(curr.pch %in% unname(cruz.symbol.type))) curr.pch <- 1
+        }
+        updateSelectInput(session, "das_symbol_type", selected = curr.pch)
+
+
+        # Covert color names to color codes
+        curr.col <- unlist(strsplit(input$das_symbol_color_mult, ", "))
+
+        if (is.null(curr.col)) {
+          curr.col <- "black"
+
+        } else {
+          if (!all(curr.col %in% symbol.col)) {
+            curr.col <- "black"
+          } else {
+            # This keeps numbers in order
+            if (color_style() == 1) {
+              curr.col.idx <- vapply(
+                curr.col, function(i) which(symbol.col %in% i), 1
+              )
+              curr.col <- symbol.col.code[curr.col.idx]
+
+            } else if (color_style() == 2) {
+              curr.col.idx <- vapply(
+                curr.col, function(i) which(symbol.col.gray %in% i), 1
+              )
+              curr.col <- symbol.col.code.gray[curr.col.idx]
+            }
+          }
+        }
+        updateSelectInput(session, "das_symbol_color", selected = curr.col)
+      }
+    }, ignoreInit = TRUE)
 
 
     ###############################################################################
@@ -976,6 +1081,7 @@ mod_das_server  <- function(id, load_state) {
     list(
       to_save = to_save, 
       sp_codes = reactive(cruz.list$sp.codes)
+      # sp_codes = reactive(cruz.list$sp.codes)
     )
   })
 }
