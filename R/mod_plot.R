@@ -396,6 +396,23 @@ mod_plot_server  <- function(
             }
           }
         }
+
+        #----------------------------------------------------------------------
+        ### DAS data
+        # Effort
+        if (das$plot_effort()) {
+          das.eff.lines <- das$effort[["lines"]]()
+          eff.col <- das$effort[["params"]]()$eff.col
+          eff.lwd <- das$effort[["params"]]()$eff.lwd
+          segments(
+            x0 = das.eff.lines$st_lon, x1 = das.eff.lines$end_lon,
+            y0 = das.eff.lines$st_lat, y1 = das.eff.lines$end_lat,
+            col = eff.col, lwd = eff.lwd
+          )
+        }
+
+        # TODO: Sightings
+
       }
     })
 

@@ -394,9 +394,11 @@ mod_ndas_shape_server  <- function(id, load_state, map_range_config) {
 
       names(choices.list) <- choices.list.names
 
-      selectInput(session$ns("ndas_toplot"), tags$h5("Select non-DAS data to be plotted"),
-                  choices = choices.list, multiple = TRUE,
-                  selected = curr.sel)
+      selectInput(
+        session$ns("ndas_toplot"), tags$h5("Select non-DAS data to be plotted"),
+        choices = choices.list, multiple = TRUE,
+        selected = curr.sel
+      )
     })
     outputOptions(output, "ndas_toplot_uiOut_select", suspendWhenHidden = FALSE)
 

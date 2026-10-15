@@ -200,11 +200,11 @@ cruzplot_gui <- function(...) {
         updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = "black")
         updateSelectInput(session, NS("das")("das_symbol_color"), choices = c.pal, selected = "black")
         updateTextInput(session, NS("das")("das_symbol_color_mult"), value = "Black")
-        # updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = "black")
-        # updateSelectInput(session, "das_effort_det_bft_col", choices = c.pal, selected = eff.bft.default)
-        # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = "black")
-        # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = "black")
-        # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("das")("das_effort_simp_col"), choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("das")("das_effort_det_bft_col"), choices = c.pal, selected = eff.bft.default)
+        updateSelectInput(session, NS("das")("das_effort_det_col_s"), choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("das")("das_effort_det_col_n"), choices = c.pal, selected = "black")
+        updateSelectInput(session, NS("das")("das_effort_det_col_f"), choices = c.pal, selected = "black")
         updateSelectInput(session, NS("ndas_planned")("color"), choices = c.pal, selected = "grey")
         updateSelectInput(session, NS("ndas_shape")("ndas_line_col"), choices = c.pal, selected = "black")
         updateSelectInput(session, NS("ndas_shape")("ndas_pt_col"), choices = c.pal, selected = "black")
@@ -217,11 +217,11 @@ cruzplot_gui <- function(...) {
         updateSelectInput(session, NS("map_elements")("grid_col"), choices = c.pal, selected = 1)
         updateSelectInput(session, NS("das")("das_symbol_color"), choices = c.pal, selected = 1)
         updateTextInput(session, NS("das")("das_symbol_color_mult"), value = "Black")
-        # updateSelectInput(session, "das_effort_simp_col", choices = c.pal, selected = 1)
-        # updateSelectInput(session, "das_effort_det_bft_col", choices = c.pal, selected = 1)
-        # updateSelectInput(session, "das_effort_det_col_s", choices = c.pal, selected = 1)
-        # updateSelectInput(session, "das_effort_det_col_n", choices = c.pal, selected = 1)
-        # updateSelectInput(session, "das_effort_det_col_f", choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("das")("das_effort_simp_col"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("das")("das_effort_det_bft_col"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("das")("das_effort_det_col_s"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("das")("das_effort_det_col_n"), choices = c.pal, selected = 1)
+        updateSelectInput(session, NS("das")("das_effort_det_col_f"), choices = c.pal, selected = 1)
         updateSelectInput(session, NS("ndas_planned")("color"), choices = c.pal, selected = "grey")
         updateSelectInput(session, NS("ndas_shape")("ndas_line_col"), choices = c.pal, selected = 1)
         updateSelectInput(session, NS("ndas_shape")("ndas_pt_col"), choices = c.pal, selected = 1)
@@ -246,7 +246,7 @@ cruzplot_gui <- function(...) {
     map_elements <- mod_map_elements_server("map_elements", load_state_map_elements, map_range_config)
     map_color <- mod_map_color_server("map_color", load_state_map_color, map_range_config)
 
-    das <- mod_das_server("das", load_state_das, color_style)
+    das <- mod_das_server("das", load_state_das, color_style, map_range_config)
     nondas <- list(
       shape = mod_ndas_shape_server("ndas_shape", load_state_ndas_shape, map_range_config),
       planned = mod_ndas_planned_server("ndas_planned", load_state_ndas_planned, map_range_config)
@@ -259,10 +259,10 @@ cruzplot_gui <- function(...) {
 
     #----------------------------------------------------------------------------
     ### Plots
-    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas)
-    mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas)
-    mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas)
-    mod_plot_server("plot_das", h, map_range, map_elements, map_color, nondas)
+    plot1.list <- mod_plot_server("plot1", h, map_range, map_elements, map_color, nondas, das)
+    mod_plot_server("plot2", h, map_range, map_elements, map_color, nondas, das)
+    mod_plot_server("plot_ndas", h, map_range, map_elements, map_color, nondas, das)
+    mod_plot_server("plot_das", h, map_range, map_elements, map_color, nondas, das)
 
     # plot_input_list <- list(
     #   h, map_range, map_elements, map_color, nondas

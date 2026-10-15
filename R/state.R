@@ -5,40 +5,41 @@
 #' @name state
 #'
 #' @param item a list; the output of a `save_widget` call
-#' @param session R Shiny session object. 
+#' @param session R Shiny session object.
 #'   The session object passed to the relevant server function
-#' @param id The id (character) of the input object, or the name within 
+#' @param id The id (character) of the input object, or the name within
 #'   the module's [shiny::reactiveValues()]
 #' @param type the type of the given value. See details for options
-#' @param value value of the object specified by `id`. 
+#' @param value value of the object specified by `id`.
 #'   If `NULL`, then `input` must be specified
-#' @param input R Shiny input object. 
-#'   The input object passed to the relevant server function. 
+#' @param input R Shiny input object.
+#'   The input object passed to the relevant server function.
 #'   Ignored if `value` is not `NULL`. See Details for how object is used
 #'
 #' @details
-#' These are helper functions for loading and saving app state. 
+#' These are helper functions for loading and saving app state.
 #' CruzPlot modules call `save_widget` on each value that needs to be saved
-#' to create lists that include the id, type, and value. 
-#' These values are saved in the CruzPlot RDATA file. 
-#' The value can be passed in explicitly via the `value` argument; 
-#' if `value` is `NULL`, then the value will either be 
-#' extracted from the `input` argument  if `input` is not `NULL`, 
-#' or extracted from the output of [shiny::getDefaultReactiveDomain()] 
-#' if `input` is `NULL``. 
-#' 
-#' When the saved state is loaded back into a new CruzPlot session 
-#' and passed to the module, the module either 
-#' a) updates the appropriate reactive value (custom code within the module) 
-#' or b) updates the relevant input using `update_widget`. 
-#' 
-#' The accepted `type` values, and their corresponding update calls: 
+#' to create lists that include the id, type, and value.
+#' These values are saved in the CruzPlot RDATA file.
+#' The value can be passed in explicitly via the `value` argument;
+#' if `value` is `NULL`, then the value will either be
+#' extracted from the `input` argument  if `input` is not `NULL`,
+#' or extracted from the output of [shiny::getDefaultReactiveDomain()]
+#' if `input` is `NULL``.
+#'
+#' When the saved state is loaded back into a new CruzPlot session
+#' and passed to the module, the module either
+#' a) updates the appropriate reactive value (custom code within the module)
+#' or b) updates the relevant input using `update_widget`.
+#'
+#' The accepted `type` values, and their corresponding update calls:
 #' - text: [shiny::updateTextInput()]
 #' - numeric: [shiny::updateNumericInput()]
 #' - select: [shiny::updateSelectInput()]
 #' - check: [shiny::updateCheckboxInput()]
 #' - checkGroup: [shiny::updateCheckboxGroupInput()]
 #' - radio: [shiny::updateRadioButtons()]
+#' - dateRange: [shiny::updateDateRangeInput()]
 #' - reactive: handled individually by module
 #'
 #' @returns See details
@@ -49,7 +50,7 @@
 save_widget <- function(id, type, value = NULL, input = NULL) {
   # Checks
   if (!is.character(id)) stop("id must be a character")
-  
+
   if (is.null(value)) {
     if (is.null(input)) {
       value <- shiny::getDefaultReactiveDomain()$input[[id]]
@@ -60,21 +61,23 @@ save_widget <- function(id, type, value = NULL, input = NULL) {
 
   error_message <- function(type) {
     r.type <- case_when(
-      type %in% c("text", "select", "radio") ~ "character", 
-      type %in% c("numeric") ~ "numeric", 
-      type %in% c("check", "checkGroup") ~ "logical", 
+      type %in% c("text", "select", "radio") ~ "character",
+      type %in% c("numeric") ~ "numeric",
+      type %in% c("check", "checkGroup") ~ "logical",
       .default = "error - unknown"
     )
 
     paste0("Given the type (", type, "), 'value' must be a", r.type)
   }
-  
+
   if (type %in% c("text", "select", "radio")) {
     if (!is.character(value)) error_message(type)
   } else if (type %in% c("numeric")) {
     if (!is.numeric(value)) error_message(type)
   } else if (type %in% c("check", "checkGroup")) {
     if (!is.logical(value)) error_message(type)
+  } else if (type %in% c("dateRange")) {
+    if (!(is.character(value[1]) && is.character(value[2]))) error_message(type)
   } else if (type %in% c("reactive")) {
     # Nothing to check
   } else{
@@ -99,8 +102,10 @@ update_widget <- function(item, session) {
     "numeric" = updateNumericInput(session, item$id, value = item$value),
     "select" = updateSelectInput(session, item$id, selected = item$value),
     "radio" = updateRadioButtons(session, item$id, selected = item$value),
-    "check" = updateCheckboxInput(session, item$id, value = item$value), 
-    "checkGroup" = updateCheckboxGroupInput(session, item$id, selected = item$value)
+    "check" = updateCheckboxInput(session, item$id, value = item$value),
+    "checkGroup" = updateCheckboxGroupInput(session, item$id, selected = item$value),
+    "dateRange" = updateDateRangeInput(
+      session, item$id, start = item$value[1], end = item$value[2]
+    )
   )
 }
-  

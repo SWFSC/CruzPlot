@@ -8,7 +8,7 @@
 \usage{
 mod_das_ui(id)
 
-mod_das_server(id, load_state, color_style)
+mod_das_server(id, load_state, color_style, map_range_config)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
@@ -20,6 +20,8 @@ those values into the \code{load_state} object when a saved app state is loaded}
 
 \item{color_style}{reactive of the app color style. Specifically
 "1" for Color or "2" for Gray scale}
+
+\item{map_range_config}{the \code{config} output of \code{\link[=mod_map_range_server]{mod_map_range_server()}}}
 }
 \value{
 The UI function returns a \code{\link[shiny:tabPanel]{shiny::tabPanel()}} object
