@@ -577,57 +577,66 @@ mod_das_ui <- function(id) {
     ##############################################################################################################
     tabPanel(
       title = "Legends",
-      helpText("sightings todo"),
-      #   fluidRow(
-      #     box(
-      #       title = "Sightings legend", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-      #       conditionalPanel(
-      #         condition = "input.das_sightings==false",
-      #         helpText("*** No legend for sightings unless 'Plot sightings' is selected in the 'Sightings' tab")
-      #       ),
-      #       conditionalPanel(
-      #         condition = "input.das_sightings",
-      #         checkboxInput("das_legend", "Include legend for sightings", value = TRUE),
-      #         conditionalPanel(
-      #           condition = "input.das_legend",
-      #           fluidRow(
-      #             column(
-      #               width = 4,
-      #               selectInput("das_legend_pos", tags$h5("Position"),
-      #                           choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
-      #                                           "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
-      #                           selected = "topright"),
-      #               conditionalPanel(
-      #                 condition = "input.das_legend_pos == 1",
-      #                 numericInput("das_legend_lon", tags$h5("Longitude"), value = 0),
-      #                 numericInput("das_legend_lat", tags$h5("Latitude"), value = 0)
-      #               ),
-      #               selectInput("das_legend_boxCol", tags$h5("Box style"),
-      #                           choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
-      #                           selected = 3)
-      #             ),
-      #             column(
-      #               width = 3,
-      #               selectInput("das_legend_font", tags$h5("Font"), choices = font.family, selected = 1),
-      #               numericInput("das_legend_textSize", tags$h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
-      #             ),
-      #             column(
-      #               width = 5,
-      #               textInput("das_legend_title", tags$h5("Title (optional)"), value = ""),
-      #               conditionalPanel(
-      #                 condition = "input.das_sighting_type == 1 | input.das_sighting_type == 2",
-      #                 checkboxGroupInput("das_legend_names", tags$h5("Legend information"),
-      #                                     choices = list("Species code" = 1, "Species abbreviation" = 2,
-      #                                                   "Scientific name" = 3, "Common name" = 4,
-      #                                                   "Include number of sightings" = 5),
-      #                                     selected = c(1, 2, 5))
-      #               )
-      #             )
-      #           )
-      #         )
-      #       )
-      #     )
-      #   ),
+      fluidRow(
+        cruz_box(
+          title = "Sightings legend", width = 12,
+          conditionalPanel(
+            condition = "input.das_sightings==false", ns = ns,
+            helpText("*** No legend for sightings unless 'Plot sightings' is selected in the 'Sightings' tab")
+          ),
+          conditionalPanel(
+            condition = "input.das_sightings", ns = ns,
+            checkboxInput(ns("das_legend"), "Include legend for sightings", value = TRUE),
+            conditionalPanel(
+              condition = "input.das_legend", ns = ns,
+              fluidRow(
+                column(
+                  width = 4,
+                  selectInput(
+                    ns("das_legend_pos"), tags$h5("Position"),
+                    choices = list("Specify" = 1,
+                                   "Top Left" = "topleft",
+                                   "Top Right"= "topright",
+                                   "Bottom Left" = "bottomleft",
+                                   "Bottom Right" = "bottomright"),
+                    selected = "topright"
+                  ),
+                  conditionalPanel(
+                    condition = "input.das_legend_pos == 1", ns = ns,
+                    numericInput(ns("das_legend_lon"), tags$h5("Longitude"), value = 0),
+                    numericInput(ns("das_legend_lat"), tags$h5("Latitude"), value = 0)
+                  ),
+                  selectInput(
+                    ns("das_legend_boxCol"), tags$h5("Box style"),
+                    choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
+                    selected = 3
+                  )
+                ),
+                column(
+                  width = 3,
+                  selectInput(ns("das_legend_font"), tags$h5("Font"), choices = font.family, selected = 1),
+                  numericInput(ns("das_legend_textSize"), tags$h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
+                ),
+                column(
+                  width = 5,
+                  textInput(ns("das_legend_title"), tags$h5("Title (optional)"), value = ""),
+                  conditionalPanel(
+                    condition = "input.das_sighting_type == 1 | input.das_sighting_type == 2",
+                    ns = ns,
+                    checkboxGroupInput(
+                      ns("das_legend_names"), tags$h5("Legend information"),
+                      choices = list("Species code" = 1, "Species abbreviation" = 2,
+                                     "Scientific name" = 3, "Common name" = 4,
+                                     "Include number of sightings" = 5),
+                      selected = c(1, 2, 5)
+                    )
+                  )
+                )
+              )
+            )
+          )
+        )
+      ),
       fluidRow(
         cruz_box(
           title = "Effort legend", width = 12,
@@ -1084,18 +1093,12 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
     }, ignoreInit = TRUE)
 
 
-    # ### Conditional flag for UI code for truthy cruz.list$das.data
-    # output$cruzDasFile_Conditional <- reactive({
-    #   isTruthy(cruz.list$das.data)
-    # })
-    # outputOptions(output, "cruzDasFile_Conditional", suspendWhenHidden = FALSE)
-
-
     ###############################################################################
     ###############################################################################
     ###############################################################################
     # Sightings
 
+    #---------------------------------------------------------------------------
     ### Species codes
     # Text in sightings tab about no SpCodes.data file
     output$das_sight_spcodes_message <- renderText({
@@ -1123,7 +1126,6 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
     output$das_sighting_code_2_uiOut_select <- renderUI({
       sp.turtles <- spcodes_turtles(req(cruz.list$sp.codes))
-      # sp.turtles <- cruzSpeciesTurtles()
       sp.codes.list <- as.list(sp.turtles$SpCode)
       names(sp.codes.list) <- paste(sp.turtles$SpCode, sp.turtles$SciName, sep = " - ")
 
@@ -1135,9 +1137,44 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
     outputOptions(output, "das_sighting_code_2_uiOut_select", suspendWhenHidden = FALSE)
 
 
+    # Extract and process species codes
+    cruzDasSightSpeciesMammals <- reactive({
+      sp.codes <- if (input$das_sighting_code_1_all == 1) {
+        spcodes_mammals(req(cruz.list$sp.codes))$SpCode
+      } else if (input$das_sighting_code_1_all == 2) {
+        gsub(" ", "", substring(input$das_sighting_code_1, 1, 3))
+      } else {
+        stop("Invalid CruzPlot input$das_sighting_code_1_all value. ",
+             "Please report this as an issue")
+      }
+
+      validate(
+        need(length(sp.codes) > 0, "Please choose at least one valid mammal species code")
+      )
+
+      sp.codes
+    })
+
+    cruzDasSightSpeciesTurtles <- reactive({
+      sp.codes <- if (input$das_sighting_code_2_all == 1) {
+        spcodes_turtles(req(cruz.list$sp.codes))$SpCode
+      } else if (input$das_sighting_code_2_all == 2) {
+        substring(input$das_sighting_code_2, 1, 2)
+      } else {
+        stop("Invalid CruzPlot input$das_sighting_code_2_all value. ",
+             "Please report this as an issue")
+      }
+
+      validate(
+        need(length(sp.codes) > 0, "Please choose at least one valid turtle species code")
+      )
+
+      sp.codes
+    })
+
 
     ### Code for keeping current inputs the same when switching
-    #    from or to text symbol properties input
+    #  from or to text symbol properties input
     observeEvent(input$das_symbol_mult, {
       if (input$das_symbol_mult) {
         ### Convert codes to text
@@ -1220,6 +1257,1001 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
     }, ignoreInit = TRUE)
 
 
+    #---------------------------------------------------------------------------
+    ### 1. Run das_sight
+    cruzDasSightSpeciesProcess <- reactive({
+      swfscDAS::das_sight(req(cruz.list$das.data), return.format = "default")
+    })
+
+
+    #---------------------------------------------------------------------------
+    ### 2. Perform NA position filter, species/event filter
+
+    ### Checks on NA positions to print modal, and 'select' selected position
+    cruzDasSightPosition <- reactive({
+      das.sight <- cruzDasSightSpeciesProcess()
+
+      #------------------------------------------
+      # Verbosely remove sightings with NA positions
+      ll.na <- if (input$das_sightings_position == 1) {
+        which(is.na(das.sight$Lat) | is.na(das.sight$Lon))
+      } else (
+        which(
+          is.na(das.sight$Lat) | is.na(das.sight$Lon) | is.na(das.sight$Course) |
+            is.na(das.sight$Bearing) | is.na(das.sight$DistNm)
+        )
+      )
+
+      if (length(ll.na) > 0) {
+        table.out <- das.sight %>%
+          slice(ll.na) %>%
+          mutate(DateTime = as.character(DateTime),
+                 Cruise = as.character(Cruise),
+                 Resight = Event %in% c("s", "k", "g")) %>%
+          select(Event, DateTime, Lat, Lon, OnEffort, Cruise,
+                 SightNo, SpCode, Resight,
+                 # File = file_das,
+                 `Line number` = line_num) %>%
+          distinct()
+        txt.out1 <- ifelse(nrow(table.out) == 1, "sighting has", "sightings have")
+        txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
+
+        showModal(modalDialog(
+          title = "CruzPlot notice",
+          tags$h5("The following", txt.out1, "an NA value that causes the",
+                  "specified plotted position to be NA.",
+                  txt.out2, "will be automatically removed (filtered) and thus",
+                  "not plotted or included in tabular output:"),
+          tags$br(), tags$br(),
+          renderTable(table.out),
+          tags$br(),
+          tags$h5("This notice will not be shown again unless a new DAS file is loaded or",
+                  "'Position to plot' is changed.",
+                  "See the manual for more details"),
+          easyClose = FALSE,
+          size = "l"
+        ))
+      }
+
+      das.sight <- if (input$das_sightings_position == 1) {
+        das.sight %>% filter(!is.na(.data$Lat), !is.na(.data$Lon))
+      } else {
+        das.sight %>%
+          filter(!is.na(.data$Lat), !is.na(.data$Lon),
+                 !is.na(.data$Course), !is.na(.data$Bearing), !is.na(.data$DistNm))
+      }
+
+      #------------------------------------------
+      # Calculate sighting location,, select selected position, and return
+      bearing2 <- (das.sight$Course + das.sight$Bearing) %% 360
+      ll.sight <- geosphere::destPoint(
+        matrix(c(das.sight$Lon, das.sight$Lat), ncol = 2),
+        bearing2, das.sight$DistNm * 1852
+      )
+
+      # # Calculate sighting location using swfscMisc
+      # ll.sight.dest <- apply(das.sight, 1, function(i) {
+      # i <- as.numeric(i[c("Lat", "Lon", "bearing2", "DistNm")])
+      #   swfscMisc::destination(i["Lat"], i["Lon"], i["bearing2"], i["DistNm"],
+      #                          units = "nm", type = "ellipsoid")
+      # })
+
+      das.sight <- das.sight %>%
+        mutate(Lat_ship = .data$Lat, Lon_ship = .data$Lon,
+               Lat_sight = ll.sight[, "lat"],
+               Lon_sight = ll.sight[, "lon"])
+
+
+      # 'Select' ship or sighting position.
+      #   Might as well do this here since position input is already being used
+      if (input$das_sightings_position == 1) {
+        das.sight$Lat <- das.sight$Lat_ship
+        das.sight$Lon <- das.sight$Lon_ship
+
+      } else if (input$das_sightings_position == 2) {
+        das.sight$Lat <- das.sight$Lat_sight
+        das.sight$Lon <- das.sight$Lon_sight
+      }
+
+      # Adjust longitudes if world2 map is being used
+      # #this is done in cruzDasSightRange()
+      # if (map_range_config()$world2)
+      #   das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
+
+      das.sight
+    })
+
+
+    #---------------------------------------------------------------------------
+    ### 3. Filter for events specified either directly or by sighting type
+    #   And associated things that depend on the selected event
+    cruzDasSightEventResight <- reactive({
+      (input$das_sighting_type == 1) &
+        any(c("s", "k", "g") %in% input$das_sighting_events)
+    })
+
+    output$cruzDasSightEventResight_uiOut_message <- renderUI({
+      req(cruzDasSightEventResight())
+      tags$h5("When plotting resights, symbol color entries correspond to selected events")
+    })
+
+    cruzDasSightEvent <- reactive({
+      das.sight <- cruzDasSightPosition()
+      sight.type <- input$das_sighting_type
+
+      if (sight.type == 2) {
+        ### Turtle sightings
+        das.sight <- das.sight %>% filter(.data$Event == "t")
+        validate(
+          need(nrow(das.sight) > 0,
+               "There are no turtle sightings (t events) in the loaded DAS file(s)")
+        )
+
+      } else if (sight.type == 3) {
+        ### Boat sightings
+        das.sight <- das.sight %>% filter(.data$Event == "F")
+        validate(
+          need(nrow(das.sight) > 0,
+               "There are no boat sightings (F events) in the loaded DAS file(s)")
+        )
+
+      } else if (sight.type == 1) {
+        ### Marine mammal sightings
+        sp.events <- input$das_sighting_events
+        validate(need(sp.events, "Please select at least one event code to plot"))
+
+        das.sight <- das.sight %>%
+          filter(.data$Event %in% sp.events) %>%
+          mutate(idx = seq_along(.data$Event))
+
+        # Resights
+        if (cruzDasSightEventResight()) {
+          # Checks - other
+          validate(
+            need(length(unique(na.omit(cruz.list$das.data$file_das))) == 1,
+                 "You can only process resights when plotting data from a single DAS file")
+            # ^b/c different files could have same SightNo, etc.
+            # Doesn't solve concatenated files..
+          )
+          validate(
+            need(sum(c("s", "k", "g") %in% sp.events) == 1,
+                 "You can only plot one type of resight at a time")
+          )
+          validate(
+            if ("s" %in% sp.events) need("S" %in% sp.events, "To plot s events, S events must also be plotted"),
+            if ("k" %in% sp.events) need("K" %in% sp.events, "To plot k events, K events must also be plotted"),
+            if ("g" %in% sp.events) need("G" %in% sp.events, "To plot g events, G events must also be plotted"),
+            need(length(sp.events) == 2,
+                 "When plotting resights, you can only plot the resight and the corresponding primary sighting event")
+          )
+
+          # Get species, etc., for s and k events
+          if (any(c("s", "k") %in% sp.events)) {
+            das.sight.main <- das.sight %>% filter(!(.data$Event %in% c("s", "k")))
+            das.sight.res <- das.sight %>% filter(.data$Event %in% c("s", "k"))
+            validate(
+              need(all(das.sight.res$SightNo %in% das.sight.main$SightNo),
+                   paste("Not all of the selected s/k resight event(s) have primary sightings with",
+                         "the same sighting numbers -",
+                         "this is a DAS error that needs to be fixed to plot s/k events"))
+            )
+
+            col.names <- c("Prob", "SpCode", "SpCodeProb")
+            d.toadd <- das.sight.main %>%
+              select(SightNo, !!col.names) %>%
+              filter(SightNo %in% das.sight.res$SightNo) %>%
+              full_join(select(das.sight.res, -!!col.names), by = "SightNo") %>%
+              select(!!names(das.sight.main))
+
+            das.sight <- bind_rows(das.sight.main, d.toadd) %>% arrange(idx)
+            rm(das.sight.main, das.sight.res, col.names, d.toadd)
+          }
+
+          # Get species, etc., for g events
+          if (any("g" %in% sp.events)) {
+            das.sight.main <- das.sight %>%
+              filter(!(.data$Event %in% c("g"))) %>%
+              mutate(ss_id = paste(SightNo, Subgroup, sep = "_"))
+            das.sight.res <- das.sight %>%
+              filter(.data$Event %in% c("g")) %>%
+              mutate(ss_id = paste(SightNo, Subgroup, sep = "_"))
+            validate(
+              need(all(das.sight.res$ss_id %in% das.sight.main$ss_id),
+                   paste("Not all of the selected g resight event(s) have primary sightings with",
+                         "the same sighting numbers/subgroup identified",
+                         "- this is a DAS error that needs to be fixed to plot g events"))
+            )
+
+            col.names <- c("Prob", "SpCode", "SpCodeProb")
+            d.toadd <- das.sight.main %>%
+              select(.data$ss_id, !!col.names) %>%
+              filter(.data$ss_id %in% das.sight.res$ss_id) %>%
+              full_join(select(das.sight.res, -!!col.names), by = c("ss_id")) %>%
+              select(!!names(das.sight.main))
+
+            das.sight <- bind_rows(das.sight.main, d.toadd) %>%
+              select(-ss_id) %>%
+              arrange(idx)
+            rm(das.sight.main, das.sight.res, col.names, d.toadd)
+          }
+        }
+
+        validate(
+          need(nrow(das.sight) > 0,
+               paste("There are no mammal sightings for the selected event(s)",
+                     "in the loaded DAS file(s)"))
+        )
+
+        das.sight <- das.sight %>% select(-idx)
+
+      } else  {
+        ### Error
+        validate("Invalid input$das_sighting_type value")
+      }
+
+      das.sight
+    })
+
+
+    #---------------------------------------------------------------------------
+    ### 4. Filter for specfied species and (if applicable) events
+    cruzDasSightSpecies <- reactive({
+      das.proc <- req(cruz.list$das.data)
+
+      ### Sightings to plot
+      sight.type <- input$das_sighting_type
+      stopifnot(sight.type %in% 1:4)
+      sp.selection <- isTRUE(
+        (sight.type == 1 && input$das_sighting_code_1_all == 2) ||
+          (sight.type == 2 && input$das_sighting_code_2_all == 2)
+      )
+
+      das.sight <- cruzDasSightEvent()
+
+      #------------------------------------------
+      if (sight.type == 1) {
+        # 1: Mammals
+        # Get species codes - also does validate() check for valid species
+        sp.codes <- cruzDasSightSpeciesMammals()
+        if (cruzDasSightEventResight()) {
+          validate(
+            need(length(sp.codes) == 1,
+                 "You currently can only plot resights for one species at a time")
+          )
+        }
+
+        # Update probable sightings species if necessary
+        if (input$das_sighting_probable) {
+          das.sight$Prob[das.sight$Event %in% c("p", "s", "k", "g")] <- FALSE
+          if (any(is.na(das.sight$Prob)))
+            warning("A marine mammal sighting has an unexpected NA 'Prob' value")
+
+          validate(
+            need(sum(das.sight$Prob) > 0,
+                 "There are no probable sightings in the loaded DAS file(s)")
+          )
+
+          # 977 used as probable vaquita sighting on some cruises
+          das.sight <- das.sight %>%
+            mutate(SpCode = ifelse(.data$SpCode == "977", "041", .data$SpCode),
+                   SpCode = ifelse(.data$Prob, .data$SpCodeProb, .data$SpCode))
+        }
+
+        # Filter for selected species, and check that all selected species are in data
+        das.sight <- das.sight %>% filter(.data$SpCode %in% sp.codes)
+
+        if (input$das_sighting_code_1_all == 2) {
+          sp.codes.none <- base::setdiff(sp.codes, das.sight$SpCode)
+          validate(
+            need(length(sp.codes.none) == 0,
+                 paste("The following species code(s) does (do) not",
+                       "have any sightings in the loaded DAS file(s):",
+                       paste(sp.codes.none, collapse = ", ")))
+          )
+        }
+
+
+        #----------------------------------------
+      } else if (sight.type == 2) {
+        # 2: Turtles
+        sp.codes <- cruzDasSightSpeciesTurtles()
+
+        das.sight <- das.sight %>%
+          filter(.data$SpCode %in% sp.codes)
+
+        if (input$das_sighting_code_2_all == 2) {
+          sp.codes.none <- base::setdiff(sp.codes, das.sight$SpCode)
+          validate(
+            need(length(sp.codes.none) == 0,
+                 paste("The following species code(s) does (do) not",
+                       "have any sightings in the loaded DAS file(s):",
+                       paste(sp.codes.none, collapse = ", ")))
+          )
+        }
+
+
+        #----------------------------------------
+      } else if (sight.type == 3) {
+        # 3: Boats
+        das.sight <- das.sight %>% mutate(SpCode = "Boat")
+        sp.codes <- NULL
+
+
+        #----------------------------------------
+      } else {
+        validate("Invalid sighting type (input$das_sighting_type) selection")
+      }
+
+
+      # #----------------------------------------
+      # # SMW: Added for vaquita-specifc cruise. Does not seem applicable anymore
+      # } else if (sight.type == 4) {
+      #   # 4: C-PODs
+      #   # C-POD sightings are entered as objects with sighting angle and distance
+      #   # the string "cpod" in the comment on the next line indicates object is a CPOD
+      #   sp.codes <- NULL
+      #
+      #   validate(
+      #     need(sum(das.proc$Event == "X") > 0,
+      #          "There are no C-POD sightings in the loaded DAS file(s)")
+      #   )
+      #
+      #
+      #   ndx.x <- which(das.proc$Event == "X")
+      #   comm.x1 <- apply(das.proc[ndx.X + 1, paste0("Data", 1:7)], 1, function(i) {
+      #     paste(na.omit(i), collapse = "")
+      #   })
+      #   comm.x1.cpod <- grepl("cpod", comm.x1, ignore.case = TRUE)
+      #   stopifnot(length(ndx.x) == length(comm.x1))
+      #
+      #   ndx.x <- ndx.x[comm.x1.cpod]
+      #
+      #   das.sight <- das.proc %>%
+      #     slice(ndx.x) %>%
+      #     mutate(Sp = "CPOD",
+      #            Bearing = as.numeric(.data$Data2),
+      #            DistNm = as.numeric(.data$Data4),
+      #            PerpDistKm = abs(sin(.data$Bearing*pi/180) * .data$DistNm) * 1.852)
+      #
+      #   validate(
+      #     need(nrow(das.sight) > 0,
+      #          "There are no C-POD sightings in the loaded DAS file(s)")
+      #   )
+      #   # comment.str.df <- data.all[,6:13]
+      #   # comment.str <- apply(comment.str.df,1,paste,collapse="")
+      #   # ndx.cpod <- grep("cpod",comment.str)
+      #   # ndx <- ndx.X[(ndx.X+1) %in% ndx.cpod]
+      #   # data.sight <- data.all[ndx,]
+      #   # angle <- as.numeric(data.sight$Data2)
+      #   # dist.nmi <- as.numeric(data.sight$Data4)
+      # }
+
+
+      #------------------------------------------
+      # Final check to ensure some sightings match provided selection
+      validate(
+        need(nrow(das.sight) > 0,
+             "No sightings exist for the selected type and code(s)")
+      )
+
+
+
+      # If "Plot all..." was selected, only return codes in sighting data
+      if ((sight.type == 1 && input$das_sighting_code_1_all == 1) |
+          (sight.type == 2 && input$das_sighting_code_2_all == 1)) {
+        sp.codes <- base::intersect(sp.codes, das.sight$SpCode)
+      }
+
+      # Return list
+      list(
+        das.sight = das.sight,
+        sight.type = sight.type,
+        sp.codes = sp.codes,
+        sp.selection = sp.selection
+      )
+    })
+
+
+    #---------------------------------------------------------------------------
+    ### 5. returns list, which includes sightings within map range,
+    # selected sighting type, species codes, and counts for each species
+    cruzDasSightRange <- reactive({
+      #------------------------------------------
+      req(cruz.list$das.data)
+
+      data.list <- cruzDasSightSpecies()
+
+      das.sight    <- data.list$das.sight
+      sight.type   <- data.list$sight.type
+      sp.codes     <- data.list$sp.codes
+      sp.selection <- data.list$sp.selection
+
+      lon.range <- map_range_config()$lon.range
+      lat.range <- map_range_config()$lat.range
+
+      # Adjust longitudes if world2 map is being used
+      if (map_range_config()$world2)
+        das.sight$Lon <- ifelse(das.sight$Lon < 0, das.sight$Lon + 360, das.sight$Lon)
+
+      # NA values removed back in cruzDasSightSpeciesProcess()
+      ll.na <- sum(is.na(das.sight$Lat) | is.na(das.sight$Lon))
+      validate(
+        need(ll.na == 0,
+             "Error processing sighting positions - please report this as an issue")
+      )
+
+
+      #------------------------------------------
+      # Filter to map range
+      das.sight.filt <- das.sight %>%
+        filter(between(.data$Lat, lat.range[1], lat.range[2]),
+               between(.data$Lon, lon.range[1], lon.range[2]))
+      validate(
+        need(
+          nrow(das.sight.filt) > 0,
+          paste("No sightings are within the map boundaries for the",
+                "selected sighting type/species")
+        )
+      )
+
+
+      #------------------------------------------
+      list(
+        das.sight = das.sight.filt,
+        sight.type = sight.type,
+        sp.codes = sp.codes,
+        sp.selection = sp.selection
+      )
+    })
+
+
+    #---------------------------------------------------------------------------
+    ### 6. Filter sightings
+
+    # Helper functions that filter sightings data by single property
+
+    .func_sight_filt_validate <- function(x, x.txt) {
+      validate(
+        need(any(x), paste("None of the specified sightings within the map range",
+                           "match the given", x.txt, "filter"))
+      )
+      x
+    }
+
+    #--------------------------------------------
+    # On/off effort
+    cruzDasSightFilterEffort <- reactive({
+      das.sight <- cruzDasSightRange()$das.sight
+      effort.val <- switch(as.numeric(input$das_sight_effort), c(0, 1), 1, 0)
+      keep <- as.numeric(das.sight$OnEffort) %in% effort.val
+      .func_sight_filt_validate(keep, "on/off effort")
+    })
+
+    # Mode: C/P
+    cruzDasSightFilterMode <- reactive({
+      das.sight <- cruzDasSightRange()$das.sight
+      keep <- das.sight$Mode %in% input$das_sight_cp
+      .func_sight_filt_validate(keep, "mode (closing/passing)")
+    })
+
+    # Effort type: S/N/F
+    cruzDasSightFilterEfftype <- reactive({
+      das.sight <- cruzDasSightRange()$das.sight
+      keep <- das.sight$EffType %in% input$das_sight_snf
+      .func_sight_filt_validate(keep, "effort type (standard/non-standard/fine)")
+    })
+
+    #--------------------------------------------
+    # Beaufort
+    cruzDasSightFilterBeaufort <- reactive({
+      das.sight <- cruzDasSightRange()$das.sight
+      bft.min <- as.numeric(input$das_sight_minBft)
+      bft.max <- as.numeric(input$das_sight_maxBft)
+
+      validate(
+        need(input$das_sight_minBft <= input$das_sight_maxBft,
+             "Sightings filter: minimum Beaufort must be less than or equal to maximum Beaufort")
+      )
+
+      keep <- if (identical(c(bft.min, bft.max), c(0, 9))) {
+        TRUE
+      } else {
+        between(das.sight$Bft, bft.min, bft.max)
+      }
+      .func_sight_filt_validate(keep, "Beaufort")
+    })
+
+    #--------------------------------------------
+    # Dates
+    cruzDasSightFilterDate <- reactive({
+      das.sight <- cruzDasSightRange()$das.sight
+      date.vals <- input$das_sight_dateRange
+
+      validate(
+        need(input$das_sight_dateRange[1] <= input$das_sight_dateRange[2],
+             "Sightings filter: minimum date must be less than or equal to maximum date")
+      )
+
+      keep <- between(
+        as.Date(das.sight$DateTime), date.vals[1], date.vals[2]
+      )
+      .func_sight_filt_validate(keep, "date")
+    })
+
+    #--------------------------------------------
+    # Cruise numbers
+    cruzDasSightFilterCruise <- reactive({
+      das.sight <- cruzDasSightRange()$das.sight
+
+      if (is.null(input$das_sight_cruise)) {
+        # Return here to keep records that have 'NA' value
+        TRUE
+
+      } else {
+        cruise.vals <- as.numeric(input$das_sight_cruise)
+        keep <- das.sight$Cruise %in% cruise.vals
+        .func_sight_filt_validate(keep, "cruise number")
+      }
+    })
+
+    #--------------------------------------------
+    # Perpendicular distance truncation
+    cruzDasSightFilterTrunc <- reactive({
+      das.sight <- cruzDasSightRange()$das.sight
+
+      pdist.val <- ifelse(
+        input$das_sight_trunc_units == 1,
+        input$das_sight_trunc, input$das_sight_trunc * 1.852
+      )
+
+      if (is.na(pdist.val)) {
+        TRUE
+
+      } else {
+        keep <- das.sight$PerpDistKm <= pdist.val
+        validate(
+          need(any(keep),
+               "There are no selected sightings within the given truncation distance")
+        )
+        .func_sight_filt_validate(keep, "truncation (perpendicular distance)")
+      }
+    })
+
+
+    #--------------------------------------------
+    # Main filter function
+    cruzDasSightFilter <- reactive({
+      data.list <- cruzDasSightRange()
+
+      das.sight    <- data.list$das.sight
+      sight.type   <- data.list$sight.type
+      sp.codes     <- data.list$sp.codes
+      sp.selection <- data.list$sp.selection
+
+      ### Collect logical vectors
+      keep1 <- cruzDasSightFilterEffort()
+      keep2 <- if (input$das_sight_effort == 2) cruzDasSightFilterMode() else TRUE
+      keep3 <- if (input$das_sight_effort == 2) cruzDasSightFilterEfftype() else TRUE
+      keep4 <- cruzDasSightFilterBeaufort()
+      keep5 <- cruzDasSightFilterDate()
+      keep6 <- cruzDasSightFilterCruise()
+      keep7 <- cruzDasSightFilterTrunc()
+
+      keep.all <- keep1 & keep2 & keep3 & keep4 & keep5 & keep6 & keep7
+      keep.all.na <- which(is.na(keep.all)) #works b/c (NA & F) output is (F)
+
+      ### Verbosely change NA filter values to FALSE
+      if (length(keep.all.na) > 0) {
+        table.out <- das.sight %>%
+          slice(keep.all.na) %>%
+          mutate(DateTime = as.character(DateTime),
+                 Cruise = as.character(Cruise)) %>%
+          select(Event, DateTime, OnEffort, Cruise, Mode, EffType, Bft,
+                 SightNo, SpCode, PerpDistKm,
+                 # File = file_das, #Can take up too much space
+                 `Line number` = line_num) %>%
+          distinct()
+        if (input$das_sight_effort == 2)
+          table.out <- table.out %>% select(-Mode, -EffType)
+
+        txt.out <- ifelse(nrow(table.out) == 1, "sighting", "sightings")
+        txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
+
+        showModal(modalDialog(
+          title = "CruzPlot notice",
+          tags$h5("The following", txt.out, "had at least one NA filter value.",
+                  txt.out2, "will be removed (filtered) and thus not plotted",
+                  "or included in tabular output:"),
+          tags$br(), tags$br(),
+          renderTable(table.out),
+          easyClose = TRUE,
+          footer = "Click anywhere or press any button to close this notice",
+          size = "l"
+        ))
+      }
+
+      keep.all[is.na(keep.all)] <- FALSE
+      das.sight.filt <- das.sight[keep.all, ]
+
+      ### Final checks, calculate sp.count, and return
+      validate(
+        need(sum(is.na(das.sight.filt$Event)) == 0,
+             "Error in CruzPlot sighting filtering - please report this as an issue")
+      )
+      validate(need(nrow(das.sight) > 0, "No sightings match the given filters"))
+
+      # Check that at least one sighting is still within map range, and get sp.count
+      if (sight.type %in% c(1, 2)) {
+        if (!sp.selection) {
+          sp.codes <- base::intersect(sp.codes, das.sight.filt$SpCode)
+        }
+
+        # Calculate count for each species
+        sp.count <- vapply(sp.codes, function(i, j) {
+          sum(j$SpCode == i)
+        }, 1, j = das.sight.filt, USE.NAMES = FALSE)
+
+      } else {
+        sp.count <- nrow(das.sight.filt)
+      }
+
+      list(
+        das.sight = das.sight.filt,
+        sight.type = sight.type,
+        sp.codes = sp.codes,
+        sp.selection = sp.selection,
+        sp.count = sp.count
+      )
+    })
+
+
+    #--------------------------------------------------------------------------
+    ### 7. cruzDasSightSymbol for CruzPlot - step 4 of processing species data
+    #   cruzDasSightSymbol() returns list of sighting type, species count, and
+    #     point type, color, size, and linewidth for legend and points, respectively
+    #   cruzDasSightSymbolAnimalSelected() returns list of point type, color, size, and linewidth for selected mammal or turtle sightings
+    #   cruzDasSightSymbolAnimalAll() returns list of point type, color, size, and linewidth for all mammal or turtle sightings
+    #   cruzDasSightSymbolBoat() returns list of point type, color, size, and linewidth for boat sightings
+    #   cruzDasSightSymbolCPOD() returns list of point type, color, size, and linewidth for CPOD sightings
+
+    # Two things need to be done - get/format pch, col, cex, and lwd for 1) legend and 2) sighting points.
+    #   Boats and C-PODs al have singl value for each paramter, so (1) and (2) will be the same (and of length one).
+    #   For mammals and turtles, 1) legend stuff requires one value per species code,
+    #   while 2) sighting points require one value per sighting
+    #   For (2) for mammals/turtles, we can use the legend values to build a species - plot params key,
+    #   which is then joined with das.sight
+    cruzDasSightSymbol <- reactive({
+      data.list <- cruzDasSightFilter()
+
+      sight.type   <- data.list$sight.type
+      das.sight    <- data.list$das.sight
+      sp.codes     <- data.list$sp.codes
+      sp.count     <- data.list$sp.count
+      sp.selection <- data.list$sp.selection
+
+      # Species code sanity check
+      if (sight.type %in% c(1, 2)) {
+        stopifnot(isTRUE(all.equal(length(sp.codes), length(sp.count))))
+      } else {
+        stopifnot(is.null(sp.codes))
+      }
+
+      if (sight.type %in% c(3, 4)) {
+        # Boats and C-Pods
+        symbol.prop <- cruzDasSightSymbolBoat()
+        leg.df <- data.frame(
+          SpCode = ifelse(sight.type == 3, "Boat", "CPOD"),
+          pch = symbol.prop$pt.pch,
+          col = symbol.prop$pt.col,
+          cex = symbol.prop$pt.cex,
+          lwd = symbol.prop$pt.lwd,
+          stringsAsFactors = FALSE
+        )
+
+      } else {
+        # Mammals and turtles
+        symbol.prop <- if (sp.selection) {
+          cruzDasSightSymbolAnimalSelected()
+        } else {
+          cruzDasSightSymbolAnimalAll()
+        }
+
+        # For validate statements
+        leg.pch <- symbol.prop$pt.pch
+        leg.col <- symbol.prop$pt.col
+        leg.cex <- symbol.prop$pt.cex
+        leg.lwd <- symbol.prop$pt.lwd
+
+        # Empty input check
+        validate(
+          need(leg.pch != "",
+               "Please enter at least one number for symbol type"),
+          need(leg.col != "",
+               "Please enter at least one number for symbol color"),
+          need(leg.cex != "",
+               "Please enter at least one number for symbol size"),
+          need(all(0 < leg.cex & leg.cex < 20),
+               paste("Please ensure all symbol size entries are numbers",
+                     "greater than zero and less than twenty")),
+          need(leg.lwd != "",
+               "Please enter at least one number for symbol line width"),
+          need(all(0 < leg.lwd & leg.lwd < 20),
+               paste("Please ensure all symbol line width entries are numbers",
+                     "greater than zero and less than twenty"))
+        )
+
+        # For each parameter, rep() until it's length == sp.codes.len,
+        #   and check that there aren't more selected than species
+        if (cruzDasSightEventResight()) {
+          # Requires that only one species is selected
+          validate(
+            need(length(leg.cex) == 1,
+                 "Please provide only one symbol size when plotting resights")
+          )
+          leg.df <- data.frame(
+            SpCode = sp.codes,
+            Event = sort(input$das_sighting_events, decreasing = TRUE),#Ensures S, s, or equivalent
+            pch = .func_sight_symbol_pt(leg.pch, "type", 1),
+            col = .func_sight_symbol_pt(leg.col, "color", 2),
+            cex = .func_sight_symbol_pt(c(leg.cex, 0.75 * leg.cex), "size", 2),
+            lwd = .func_sight_symbol_pt(leg.lwd, "line width", 1),
+            stringsAsFactors = FALSE
+          )
+
+        } else {
+          sp.codes.len <- length(sp.codes)
+          leg.df <- data.frame(
+            SpCode = sp.codes,
+            pch = .func_sight_symbol_pt(leg.pch, "type", sp.codes.len),
+            col = .func_sight_symbol_pt(leg.col, "color", sp.codes.len),
+            cex = .func_sight_symbol_pt(leg.cex, "size", sp.codes.len),
+            lwd = .func_sight_symbol_pt(leg.lwd, "line width", sp.codes.len),
+            stringsAsFactors = FALSE
+          )
+        }
+      }
+
+      if (cruzDasSightEventResight()) {
+        pt.df <- left_join(das.sight, leg.df, by = c("SpCode", "Event")) %>%
+          select(.data$SpCode, .data$Lon, .data$Lat,
+                 .data$pch, .data$col, .data$cex, .data$lwd)
+      } else {
+        pt.df <- left_join(das.sight, leg.df, by = "SpCode") %>%
+          select(.data$SpCode, .data$Lon, .data$Lat,
+                 .data$pch, .data$col, .data$cex, .data$lwd)
+      }
+
+      # # If specified, make the symbol color correspond to event code
+      # if (sight.type %in% c(1, 2) & input$das_symbol_event) {
+      #   pt.df
+      # }
+
+      list(
+        sight.type = sight.type, sp.count = sp.count, sp.codes = sp.codes,
+        leg.df = leg.df, pt.df = pt.df, das.sight = das.sight
+      )
+    })
+
+    .func_sight_symbol_pt <- function(pt.x, pt.txt, sp.codes.len, valid.check = TRUE) {
+      if (valid.check)
+        validate(
+          need(sp.codes.len >= length(pt.x),
+               paste("There are more symbol", pt.txt, "entries than species"))
+        )
+
+      if (sp.codes.len > length(pt.x)) {
+        pt.x <- rep(pt.x, ceiling(sp.codes.len / length(pt.x)))
+        pt.x <- pt.x[1:sp.codes.len]
+      }
+      # else {
+      #   pt.x <- pt.x[1:sp.codes.len]
+      # }
+
+      pt.x
+    }
+
+
+    # Mammal or turtle symbol properties
+    # Plot parameters for plotting selected mammal/turtle species
+    cruzDasSightSymbolAnimalSelected <- reactive({
+      if (!input$das_symbol_mult) {
+        pt.pch <- as.numeric(input$das_symbol_type)
+        pt.col <- input$das_symbol_color
+
+      } else {
+        pt.pch <- as.numeric(unlist(strsplit(input$das_symbol_type_mult, ",")))
+        pt.col <- str_trim(unlist(strsplit(input$das_symbol_color_mult, ",")))
+        # pt.pch <- as.numeric(unlist(strsplit(cruz.das.symbol.type(), ",")))
+        # pt.col <- str_trim(unlist(strsplit(cruz.das.symbol.color(), ",")))
+        validate(
+          need(length(pt.pch) > 0, # duplicate of check in main function
+               "Please enter at least one value for symbol type"),
+          need(all(pt.pch %in% 0:20),
+               paste("Not all symbol type entries are valid." ,
+                     "Please be sure all entries are a whole number from 0 to 20")),
+          need(length(pt.col) > 0,
+               "Please enter at least one value for symbol color")
+        )
+
+        # Covert color names to color codes-codes established in server file,
+        #   keeping them in order
+        valid.message <- paste(
+          "Not all symbol color entries are valid. Please be sure each entry",
+          "matches a color in the Color and Formatting Options page"
+        )
+        if (input$color_style == 1) {
+          validate(need(all(pt.col %in% symbol.col), valid.message))
+          pt.col <- vapply(pt.col, function(i) which(symbol.col %in% i), 1)
+          pt.col <- symbol.col.code[pt.col]
+
+        } else if (input$color_style == 2) {
+          validate(need(all(pt.col %in% symbol.col.gray), valid.message))
+          pt.col <- vapply(pt.col, function(i) which(symbol.col.gray %in% i), 1)
+          pt.col <- symbol.col.code.gray[pt.col]
+        }
+      }
+
+      # Same whether input$das_symbol_mult is checked or not
+      pt.cex <- as.numeric(unlist(strsplit(input$das_symbol_size, ",")))
+      pt.lwd <- as.numeric(unlist(strsplit(input$das_symbol_linewidth, ",")))
+
+      list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd)
+    })
+
+    # Plot parameters for plotting all mammal/turtle species
+    cruzDasSightSymbolAnimalAll <- reactive({
+      sp.codes.len <- length(cruzDasSightFilter()$sp.codes)
+      pch.all <- unname(unlist(cruz.symbol.type))
+      col.all <- c(
+        "black", "red", "forestgreen", "orange",
+        "blue", "tan4", "yellow", "aquamarine2", "bisque1", "hotpink",
+        "green", "wheat3", "lightblue", "indianred2", "gray"
+      )
+
+      pt.pch <- rep(pch.all, ceiling(sp.codes.len / length(pch.all)))
+      pt.pch <- pt.pch[1:sp.codes.len]
+
+      pt.col <- rep(col.all, each = length(pch.all))
+      if (length(pt.col) < sp.codes.len) stop("Sight symbol error - report as issue")
+      pt.col <- pt.col[1:sp.codes.len]
+
+      pt.cex <- 1
+      pt.lwd <- 1
+
+      # browser()
+      # TODO: validate/error if
+      stopifnot(
+        length(pt.pch) == length(unique(cruzDasSightFilter()$das.sight$SpCode)),
+        length(pt.col) == length(unique(cruzDasSightFilter()$das.sight$SpCode))
+      )
+
+      list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd)
+    })
+
+    # Plot parameters for plotting boats or CPODs
+    cruzDasSightSymbolBoat <- reactive({
+      pt.pch <- as.numeric(input$das_symbol_type_boat)
+      pt.col <- input$das_symbol_color_boat
+      pt.cex <- as.numeric(input$das_symbol_size_boat)
+      pt.lwd <- as.numeric(input$das_symbol_linewidth_boat)
+
+      list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd)
+    })
+
+    # CPOD symbol properties
+    # cruzDasSightSymbolCPOD <- reactive({
+    #   pt.pch <- as.numeric(input$das.symbol.type.cpod)
+    #   pt.col <- input$das.symbol.color.cpod
+    #   pt.cex <- as.numeric(input$das.symbol.size.cpod)
+    #   pt.lwd <- as.numeric(input$das.symbol.linewidth.cpod)
+    #
+    #   list(pt.pch = pt.pch, pt.col = pt.col, pt.cex = pt.cex, pt.lwd = pt.lwd)
+    # })
+
+
+    #---------------------------------------------------------------------------
+    ### 8. Sightings legend
+    cruzDasSightLegend <- reactive({
+      symbol.list <- cruzDasSightSymbol()
+
+      leg.df       <- symbol.list$leg.df
+      sight.type   <- symbol.list$sight.type
+      sp.codes     <- symbol.list$sp.codes
+      sp.codes.len <- length(sp.codes)
+      sp.count     <- symbol.list$sp.count
+      das.sight    <- symbol.list$das.sight
+
+      font.fam <- font.family.vals[as.numeric(input$das_legend_font)]
+
+      names.lab <- input$das_legend_names
+
+      if (sight.type %in% c(3, 4)) {
+        leg.lab <- leg.df$SpCode
+        if ("5" %in% names.lab) leg.lab <- paste0(leg.lab, ", n = ", sp.count)
+
+      } else {
+        sp.codes.all <- cruz.list$sp.codes
+        temp.use <- vapply(
+          sp.codes, function(i) which(sp.codes.all$SpCode == i), 1,
+          USE.NAMES = FALSE
+        )
+
+        sp.codes.all.use <- sp.codes.all[temp.use, ]
+
+        # # This piece cuts the common name at the first comma, which results in incorrect names for some codes
+        # sp.codes.all.use$Name_Common <- vapply(sp.codes.all.use$Name_Common, function(i) {
+        #   unlist(strsplit(i, ","))[1]
+        # }, as.character(1))
+
+        leg.lab <- NULL
+        if ("1" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$SpCode)
+        if ("2" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$Abbr)
+        if ("3" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$SciName)
+        if ("4" %in% names.lab) leg.lab <- paste(leg.lab, sp.codes.all.use$CommonName)
+        validate(
+          need(leg.lab, "Please select species information to display in the sighting legend")
+        )
+
+        if (cruzDasSightEventResight()) leg.lab <- paste0(leg.lab, ", Event: ", input$das_sighting_events)
+
+        if ("5" %in% names.lab) {
+          if (cruzDasSightEventResight()) {
+            validate(need(length(unique(das.sight$Event)) <= 2, "Error processing sighting legend"))
+            # Primary sighting will always come before resight
+            sp.count.res <- c(table(das.sight$Event)[input$das_sighting_events[1]],
+                              table(das.sight$Event)[input$das_sighting_events[2]])
+            sp.count.res[is.na(sp.count.res)] <- 0
+            leg.lab <- paste0(leg.lab, ", n = ", sp.count.res)
+            rm(sp.count.res)
+
+          } else {
+            leg.lab <- paste0(leg.lab, ", n = ", sp.count)
+            # leg.lab <- if (any(names.lab %in% 1:4)) {
+            #   paste0(leg.lab, ", n = ", sp.count)
+            # } else {
+            #   paste0("n = ", sp.count)
+            # }
+          }
+        }
+      }
+
+      leg.title <- if (input$das_legend_title == "") NULL else input$das_legend_title
+      leg.bty <-     ifelse(input$das_legend_boxCol == 1, "n", "o")
+      leg.box.col <- ifelse(input$das_legend_boxCol == 2, NA, "black")
+      leg.box.lwd <- ifelse(input$das_legend_boxCol == 2, 0, 1)
+      leg.box.cex <- input$das_legend_textSize
+
+      leg.pos <- input$das_legend_pos
+      if (leg.pos == 1) {
+        validate(
+          need(
+            !is.na(input$das_legend_lat),
+            "Please enter a valid legend latitude value"
+          ),
+          need(
+            !is.na(input$das_legend_lon),
+            "Please enter a valid legend longitude value"
+          )
+        )
+        leg.x <- input$das_legend_lon
+        leg.y <- input$das_legend_lat
+
+      } else {
+        leg.x <- leg.pos
+        leg.y <- NULL
+      }
+
+      list(
+        leg.x = leg.x, leg.y = leg.y, leg.lab = leg.lab, leg.title = leg.title,
+        leg.pch = leg.df$pch, leg.col = leg.df$col,
+        leg.cex = leg.df$cex, leg.lwd = leg.df$lwd,
+        leg.bty = leg.bty, leg.box.col = leg.box.col,
+        leg.box.lwd = leg.box.lwd, leg.box.cex = leg.box.cex,
+        font.fam = font.fam
+      )
+    })
+
+
     ###############################################################################
     ###############################################################################
     ###############################################################################
@@ -1230,6 +2262,43 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         updateCheckboxInput(session, "das_effort_filter_same", value = FALSE)
       }
     })
+
+    # Flags for inputs for plotting detailed effort not by Beaufort
+    output$das_effort_det_s_flag <- reactive({
+      flag <- FALSE
+      if (input$das_effort == 3) {
+        if (!input$das_effort_det_byBft) {
+          if ("S" %in% input$das_effort_snf) flag <- TRUE
+        }
+      }
+
+      flag
+    })
+    outputOptions(output, "das_effort_det_s_flag", suspendWhenHidden = FALSE)
+
+    output$das_effort_det_n_flag <- reactive({
+      flag <- FALSE
+      if (input$das_effort == 3) {
+        if (!input$das_effort_det_byBft) {
+          if ("N" %in% input$das_effort_snf) flag <- TRUE
+        }
+      }
+
+      flag
+    })
+    outputOptions(output, "das_effort_det_n_flag", suspendWhenHidden = FALSE)
+
+    output$das_effort_det_f_flag <- reactive({
+      flag <- FALSE
+      if (input$das_effort == 3) {
+        if (!input$das_effort_det_byBft) {
+          if ("F" %in% input$das_effort_snf) flag <- TRUE
+        }
+      }
+
+      flag
+    })
+    outputOptions(output, "das_effort_det_f_flag", suspendWhenHidden = FALSE)
 
 
 
@@ -1757,6 +2826,16 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         save_widget("das_effort_maxBft", "select"),
         save_widget("das_effort_interactive", "radio"),
 
+        save_widget("das_legend", "check"),
+        save_widget("das_legend_pos", "select"),
+        save_widget("das_legend_lon", "numeric"),
+        save_widget("das_legend_lat", "numeric"),
+        save_widget("das_legend_boxCol", "select"),
+        save_widget("das_legend_font", "select"),
+        save_widget("das_legend_textSize", "numeric"),
+        save_widget("das_legend_title", "text"),
+        save_widget("das_legend_names", "checkGroup"),
+
         save_widget("eff_legend", "check"),
         save_widget("eff_legend_pos", "select"),
         save_widget("eff_legend_title", "text"),
@@ -1778,9 +2857,18 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       sp_codes = reactive(cruz.list$sp.codes),
       effort = list(
         plot = reactive(isTruthy(cruz.list$das.data) && input$das_effort != "1"),
-        lines = cruzDasEffortFilter,
+        data = cruzDasEffortFilter,
         params = cruzDasEffortParams,
+        legend_plot = reactive(input$eff_legend),
         legend = cruzDasEffortLegend
+      ),
+      sight = list(
+        plot = reactive(input$das_sightings),
+        # data = cruzDasSightFilter,
+        data = cruzDasSightSymbol,
+        symbol = cruzDasSightSymbol,
+        legend_plot = reactive(input$das_legend),
+        legend = cruzDasSightLegend
       )
     )
   })
