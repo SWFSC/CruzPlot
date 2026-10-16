@@ -596,7 +596,7 @@ mod_das_ui <- function(id) {
                 column(
                   width = 4,
                   selectInput(
-                    ns("das_legend_pos"), tags$h5("Position"),
+                    ns("sight_legend_pos"), tags$h5("Position"),
                     choices = list("Specify" = 1,
                                    "Top Left" = "topleft",
                                    "Top Right"= "topright",
@@ -605,7 +605,7 @@ mod_das_ui <- function(id) {
                     selected = "topright"
                   ),
                   selectInput(
-                    ns("das_legend_boxCol"), tags$h5("Box style"),
+                    ns("sight_legend_boxCol"), tags$h5("Box style"),
                     choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
                     selected = 3
                   )
@@ -613,22 +613,22 @@ mod_das_ui <- function(id) {
                 column(
                   width = 3,
                   selectInput(
-                    ns("das_legend_font"), tags$h5("Font"),
+                    ns("sight_legend_font"), tags$h5("Font"),
                     choices = font.family, selected = 1
                   ),
                   numericInput(
-                    ns("das_legend_textSize"), tags$h5("Legend size"),
+                    ns("sight_legend_textSize"), tags$h5("Legend size"),
                     value = 1.0, min = 0.1, max = 3, step = 0.1
                   )
                 ),
                 column(
                   width = 5,
-                  textInput(ns("das_legend_title"), tags$h5("Title (optional)"), value = ""),
+                  textInput(ns("sight_legend_title"), tags$h5("Title (optional)"), value = ""),
                   conditionalPanel(
                     condition = "input.das_sighting_type == 1 | input.das_sighting_type == 2",
                     ns = ns,
                     checkboxGroupInput(
-                      ns("das_legend_names"), tags$h5("Legend information"),
+                      ns("sight_legend_names"), tags$h5("Legend information"),
                       choices = list("Species code" = 1, "Species abbreviation" = 2,
                                      "Scientific name" = 3, "Common name" = 4,
                                      "Include number of sightings" = 5),
@@ -637,18 +637,18 @@ mod_das_ui <- function(id) {
                   )
                 ),
                 conditionalPanel(
-                  condition = "input.das_legend_pos == 1", ns = ns,
+                  condition = "input.sight_legend_pos == 1", ns = ns,
                   box(
                     width = 12,
                     helpText("Coordinates for the top left corner of the legend"),
                     fluidRow(
                       column(
                         width = 4,
-                        numericInput(ns("das_legend_lon"), tags$h5("Longitude"), value = 0),
+                        numericInput(ns("sight_legend_lon"), tags$h5("Longitude"), value = 0),
                       ),
                       column(
                         width = 4,
-                        numericInput(ns("das_legend_lat"), tags$h5("Latitude"), value = 0)
+                        numericInput(ns("sight_legend_lat"), tags$h5("Latitude"), value = 0)
                       )
                     )
                   )
@@ -2195,9 +2195,9 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       sp.count     <- symbol.list$sp.count
       das.sight    <- symbol.list$das.sight
 
-      font.fam <- font.family.vals[as.numeric(input$das_legend_font)]
+      font.fam <- font.family.vals[as.numeric(input$sight_legend_font)]
 
-      names.lab <- input$das_legend_names
+      names.lab <- input$sight_legend_names
 
       if (sight.type %in% c(3, 4)) {
         leg.lab <- leg.df$SpCode
@@ -2249,26 +2249,26 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         }
       }
 
-      leg.title <- if (input$das_legend_title == "") NULL else input$das_legend_title
-      leg.bty <-     ifelse(input$das_legend_boxCol == 1, "n", "o")
-      leg.box.col <- ifelse(input$das_legend_boxCol == 2, NA, "black")
-      leg.box.lwd <- ifelse(input$das_legend_boxCol == 2, 0, 1)
-      leg.box.cex <- input$das_legend_textSize
+      leg.title <- if (input$sight_legend_title == "") NULL else input$sight_legend_title
+      leg.bty <-     ifelse(input$sight_legend_boxCol == 1, "n", "o")
+      leg.box.col <- ifelse(input$sight_legend_boxCol == 2, NA, "black")
+      leg.box.lwd <- ifelse(input$sight_legend_boxCol == 2, 0, 1)
+      leg.box.cex <- input$sight_legend_textSize
 
-      leg.pos <- input$das_legend_pos
+      leg.pos <- input$sight_legend_pos
       if (leg.pos == 1) {
         validate(
           need(
-            !is.na(input$das_legend_lat),
+            !is.na(input$sight_legend_lat),
             "Please enter a valid legend latitude value"
           ),
           need(
-            !is.na(input$das_legend_lon),
+            !is.na(input$sight_legend_lon),
             "Please enter a valid legend longitude value"
           )
         )
-        leg.x <- input$das_legend_lon
-        leg.y <- input$das_legend_lat
+        leg.x <- input$sight_legend_lon
+        leg.y <- input$sight_legend_lat
 
       } else {
         leg.x <- leg.pos
@@ -2861,14 +2861,14 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         save_widget("das_effort_interactive", "radio"),
 
         save_widget("das_legend", "check"),
-        save_widget("das_legend_pos", "select"),
-        save_widget("das_legend_lon", "numeric"),
-        save_widget("das_legend_lat", "numeric"),
-        save_widget("das_legend_boxCol", "select"),
-        save_widget("das_legend_font", "select"),
-        save_widget("das_legend_textSize", "numeric"),
-        save_widget("das_legend_title", "text"),
-        save_widget("das_legend_names", "checkGroup"),
+        save_widget("sight_legend_pos", "select"),
+        save_widget("sight_legend_lon", "numeric"),
+        save_widget("sight_legend_lat", "numeric"),
+        save_widget("sight_legend_boxCol", "select"),
+        save_widget("sight_legend_font", "select"),
+        save_widget("sight_legend_textSize", "numeric"),
+        save_widget("sight_legend_title", "text"),
+        save_widget("sight_legend_names", "checkGroup"),
 
         save_widget("eff_legend", "check"),
         save_widget("eff_legend_pos", "select"),
