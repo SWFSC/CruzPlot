@@ -178,7 +178,7 @@ mod_das_ui <- function(id) {
                     ns("das_sighting_events"),
                     tags$h5(
                       "Plot sightings from selected events:",
-                      actionLink("das_sighting_events_help", "(details)")
+                      actionLink(ns("das_sighting_events_help"), "(details)")
                     ),
                     choices = list(
                       "S events" = "S", "G events" = "G",
@@ -210,60 +210,63 @@ mod_das_ui <- function(id) {
                 "corresponds to the order of specified symbol properties. ",
                 "For text inputs, separate values with a single comma (,)"
               ),
-              conditionalPanel(
-                condition = "input.das_symbol_mult == false", ns = ns,
-                helpText(
-                  "To remove selected symbol type or color, click the value(s) ",
-                  "to remove, and then click backspace or delete"
+              box(
+                width = 12,
+                conditionalPanel(
+                  condition = "input.das_symbol_mult == false", ns = ns,
+                  helpText(
+                    "To remove selected symbol type or color, click the value(s) ",
+                    "to remove, and then click backspace or delete"
+                  ),
+                  fluidRow(
+                    column(
+                      width = 6,
+                      selectInput(
+                        ns("das_symbol_type"), tags$h5("Type(s)"),
+                        choices = cruz.symbol.type, selected = 1,
+                        multiple = TRUE
+                      )
+                    ),
+                    column(
+                      width = 6,
+                      selectInput(
+                        ns("das_symbol_color"), tags$h5("Color(s)"),
+                        choices = cruz.palette.color, selected = "black",
+                        multiple = TRUE
+                      )
+                    )
+                  )
                 ),
-                fluidRow(
-                  column(
-                    width = 6,
-                    selectInput(
-                      ns("das_symbol_type"), tags$h5("Type(s)"),
-                      choices = cruz.symbol.type, selected = 1,
-                      multiple = TRUE
-                    )
-                  ),
-                  column(
-                    width = 6,
-                    selectInput(
-                      ns("das_symbol_color"), tags$h5("Color(s)"),
-                      choices = cruz.palette.color, selected = "black",
-                      multiple = TRUE
-                    )
-                  )
-                )
-              ),
-              conditionalPanel(
-                condition = "input.das_symbol_mult", ns = ns,
-                fluidRow(
-                  column(
-                    width = 6,
-                    textInput(
-                      ns("das_symbol_type_mult"),
-                      tags$h5("Type(s) - text input"),
-                      value = "1"
-                    )
-                  ),
-                  column(
-                    width = 6,
-                    textInput(
-                      ns("das_symbol_color_mult"),
-                      tags$h5("Color(s) - text input (case sensitive)"),
-                      value = "Black"
+                conditionalPanel(
+                  condition = "input.das_symbol_mult", ns = ns,
+                  fluidRow(
+                    column(
+                      width = 6,
+                      textInput(
+                        ns("das_symbol_type_mult"),
+                        tags$h5("Type(s) - text input"),
+                        value = "1"
+                      )
+                    ),
+                    column(
+                      width = 6,
+                      textInput(
+                        ns("das_symbol_color_mult"),
+                        tags$h5("Color(s) - text input (case sensitive)"),
+                        value = "Black"
+                      )
                     )
                   )
+                ),
+                checkboxInput(
+                  ns("das_symbol_mult"),
+                  "Input symbol type and color as text",
+                  value = FALSE
                 )
-              ),
-              checkboxInput(
-                ns("das_symbol_mult"),
-                "Input symbol type and color as text",
-                value = FALSE
               ),
               fluidRow(
-                column(6, textInput(ns("das_symbol_size"), tags$h5("Size(s)", "1"))),
-                column(6, textInput(ns("das_symbol_linewidth"), tags$h5("Line width(s)", "1")))
+                column(6, textInput(ns("das_symbol_size"), tags$h5("Size(s)"), "1")),
+                column(6, textInput(ns("das_symbol_linewidth"), tags$h5("Line width(s)"), "1"))
               )
             ),
 
@@ -601,11 +604,6 @@ mod_das_ui <- function(id) {
                                    "Bottom Right" = "bottomright"),
                     selected = "topright"
                   ),
-                  conditionalPanel(
-                    condition = "input.das_legend_pos == 1", ns = ns,
-                    numericInput(ns("das_legend_lon"), tags$h5("Longitude"), value = 0),
-                    numericInput(ns("das_legend_lat"), tags$h5("Latitude"), value = 0)
-                  ),
                   selectInput(
                     ns("das_legend_boxCol"), tags$h5("Box style"),
                     choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
@@ -614,8 +612,14 @@ mod_das_ui <- function(id) {
                 ),
                 column(
                   width = 3,
-                  selectInput(ns("das_legend_font"), tags$h5("Font"), choices = font.family, selected = 1),
-                  numericInput(ns("das_legend_textSize"), tags$h5("Legend size"), value = 1.0, min = 0.1, max = 3, step = 0.1)
+                  selectInput(
+                    ns("das_legend_font"), tags$h5("Font"),
+                    choices = font.family, selected = 1
+                  ),
+                  numericInput(
+                    ns("das_legend_textSize"), tags$h5("Legend size"),
+                    value = 1.0, min = 0.1, max = 3, step = 0.1
+                  )
                 ),
                 column(
                   width = 5,
@@ -629,6 +633,23 @@ mod_das_ui <- function(id) {
                                      "Scientific name" = 3, "Common name" = 4,
                                      "Include number of sightings" = 5),
                       selected = c(1, 2, 5)
+                    )
+                  )
+                ),
+                conditionalPanel(
+                  condition = "input.das_legend_pos == 1", ns = ns,
+                  box(
+                    width = 12,
+                    helpText("Coordinates for the top left corner of the legend"),
+                    fluidRow(
+                      column(
+                        width = 4,
+                        numericInput(ns("das_legend_lon"), tags$h5("Longitude"), value = 0),
+                      ),
+                      column(
+                        width = 4,
+                        numericInput(ns("das_legend_lat"), tags$h5("Latitude"), value = 0)
+                      )
                     )
                   )
                 )
@@ -657,25 +678,38 @@ mod_das_ui <- function(id) {
                     choices = list("Specify" = 1, "Top Left" = "topleft", "Top Right"= "topright",
                                    "Bottom Left" = "bottomleft", "Bottom Right" = "bottomright"),
                     selected = "bottomleft"
-                  )
-                ),
-                column(4, textInput(ns("eff_legend_title"), tags$h5("Title (optional)"), value = "")),
-                column(2, selectInput(ns("eff_legend_font"), tags$h5("Font"), choices = font.family, selected = 1)),
-                column(2, numericInput(ns("eff_legend_textSize"), tags$h5("Legend size"),
-                                       value = 1.0, min = 0.1, max = 3, step = 0.1))
-              ),
-              fluidRow(
-                conditionalPanel(
-                  condition = "input.eff_legend_pos == 1", ns = ns,
-                  column(4, numericInput(ns("eff_legend_lon"), tags$h5("Longitude"), value = 0)),
-                  column(4, numericInput(("eff_legend_lat"), tags$h5("Latitude"), value = 0))
-                ),
-                column(
-                  width = 4,
+                  ),
                   selectInput(
                     ns("eff_legend_boxCol"), tags$h5("Box color"),
                     choices = list("Transparent" = 1, "White" = 2, "White with border" = 3),
                     selected = 3
+                  )
+                ),
+                column(
+                  width = 3,
+                  selectInput(ns("eff_legend_font"), tags$h5("Font"), choices = font.family, selected = 1),
+                  numericInput(ns("eff_legend_textSize"), tags$h5("Legend size"),
+                               value = 1.0, min = 0.1, max = 3, step = 0.1)
+                ),
+                column(
+                  width = 4,
+                  textInput(ns("eff_legend_title"), tags$h5("Title (optional)"), value = "")
+                ),
+                conditionalPanel(
+                  condition = "input.eff_legend_pos == 1", ns = ns,
+                  box(
+                    width = 12,
+                    helpText("Coordinates for the top left corner of the legend"),
+                    fluidRow(
+                      column(
+                        width = 4,
+                        numericInput(ns("eff_legend_lon"), tags$h5("Longitude"), value = 0),
+                      ),
+                      column(
+                        width = 4,
+                        numericInput(ns("eff_legend_lat"), tags$h5("Latitude"), value = 0)
+                      )
+                    )
                   )
                 )
               )

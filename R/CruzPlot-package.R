@@ -10,7 +10,7 @@
 #' @seealso \url{https://swfsc.github.io/CruzPlot/}
 #'
 #' @import shiny
-#' @importFrom dplyr .data between case_when filter if_else left_join mutate select slice
+#' @importFrom dplyr .data between case_when distinct filter if_else left_join mutate select slice
 #' @importFrom geosphere destPoint
 #' @importFrom graphics abline axis par points polygon lines rect segments text title
 #' @importFrom grDevices gray palette dev.off jpeg pdf png
