@@ -400,7 +400,7 @@ mod_plot_server  <- function(
         #----------------------------------------------------------------------
         ### DAS data
         # Effort
-        if (das$plot_effort()) {
+        if (das$effort[["plot"]]()) {
           das.eff.lines <- das$effort[["lines"]]()
           eff.col <- das$effort[["params"]]()$eff.col
           eff.lwd <- das$effort[["params"]]()$eff.lwd
@@ -409,6 +409,24 @@ mod_plot_server  <- function(
             y0 = das.eff.lines$st_lat, y1 = das.eff.lines$end_lat,
             col = eff.col, lwd = eff.lwd
           )
+
+          # Legend
+          das.eff.legend <- das$effort[["legend"]]()
+          if (isTruthy(das.eff.legend)) {
+            op <- par(family = das.eff.legend$font.fam)
+            legend(x = das.eff.legend$eff.leg.x,
+                   y = das.eff.legend$eff.leg.y,
+                   title = das.eff.legend$eff.leg.title,
+                   legend = das.eff.legend$eff.leg.lab,
+                   lwd = das.eff.legend$eff.leg.lwd,
+                   col = das.eff.legend$eff.leg.col,
+                   bty = das.eff.legend$eff.leg.bty,
+                   box.col = das.eff.legend$eff.leg.box.col,
+                   box.lwd = das.eff.legend$eff.leg.box.lwd,
+                   cex = das.eff.legend$eff.leg.box.cex,
+                   bg = "white")
+            par(op)
+          }
         }
 
         # TODO: Sightings
