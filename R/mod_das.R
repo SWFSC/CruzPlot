@@ -17,8 +17,21 @@
 #' The server function returns a list with the following named elements:
 #' - `to_save`: a list of values to be saved in an 'app state' file.
 #'   See [cruzplot_gui()] for more info.
+#' - `das_data`: reactive of the processed DAS data;
+#'   the output of [swfscDAS::das_process()]
 #' - `sp_codes`: reactive of a data frame of loaded species codes
-#' - `todo`: ...
+#' - `effort`: a named list of effort-related objects, primarily for plotting:
+#'    - `plot`: reactive of a logical indicating if effort lines will be drawn
+#'    - `data`: reactive of effort data for plotting. Specifically, a data frame with at least columns for the start/end latitude/longitude points for the effort lines to draw. Columnn names: `st_lat, `end_lat`, `st_lon`, `end_lon`
+#'    - `params`: reactive of effort plotting params. Specifically, a named list of the effort line color(s) (`eff.col`) and line widths (`eff.lwd`)
+#'    - `legend_plot`: reactive of a logical indicating if a legend for effort will be drawn
+#'    - `legend`: reactive of a named list of effort legend parameters
+#' - `sight`: a named list of sighting-related objects, primarily for plotting:
+#'    - `plot`: reactive of a logical indicating if sighting points will be drawn
+#'    - `data`: reactive of sighting data for plotting...
+#'    - `symbol`: reactive of sighting plotting symbol information...
+#'    - `legend_plot`: reactive of a logical indicating if a legend for sightings will be drawn
+#'    - `legend`: reactive of a named list of sighting legend parameters
 #'
 #' @export
 mod_das_ui <- function(id) {
@@ -452,7 +465,43 @@ mod_das_ui <- function(id) {
         condition = "input.das_effort != 1", ns = ns,
         fluidRow(
           cruz_box(
-            title = "Line properties", width = 6,
+            title = "Effort filters", width = 12,
+            checkboxInput(
+              ns("das_effort_filter_same"),
+              "Same as 'Sighting filters' for Beaufort, date range, and cruise numbers",
+              value = TRUE
+            ),
+            conditionalPanel(
+              condition = "input.das_effort_filter_same == false", ns = ns,
+              conditionalPanel(
+                condition = "input.das_effort == 3", ns = ns,
+                fluidRow(
+                  column(6, selectInput(ns("das_effort_minBft"), tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)),
+                  column(6, selectInput(ns("das_effort_maxBft"), tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)),
+                  column(
+                    width = 12,
+                    helpText(
+                      "Note that if the min and max Beaufort values ",
+                      "are 0 and 9, respectively, then ",
+                      "effort lines with NA Beaufort values will be plotted"
+                    )
+                  )
+                )
+              ),
+              conditionalPanel(
+                "input.das_effort == 2", ns = ns,
+                helpText("Only detailed effort lines can be plotted by Beaufort")
+              ),
+              fluidRow(
+                column(6, uiOutput(ns("das_effort_dateRange_uiOut_date"))),
+                column(6, uiOutput(ns("das_effort_cruise_uiOut_select")))
+              ),
+              helpText("Note that if no cruise numbers are selected,",
+                       "effort with NA cruise number values will be plotted")
+            )
+          ),
+          cruz_box(
+            title = "Line properties", width = 12,
             conditionalPanel(
               condition = "input.das_effort == 2", ns = ns,
               tags$h5("Simplified effort line color and width"),
@@ -515,36 +564,8 @@ mod_das_ui <- function(id) {
               )
             )
           ),
-          cruz_box(
-            title = "Effort filters", width = 6,
-            checkboxInput(
-              ns("das_effort_filter_same"),
-              "Same as 'Sighting filters' for Beaufort, date range, and cruise numbers",
-              value = TRUE
-            ),
-            conditionalPanel(
-              condition = "input.das_effort_filter_same == false", ns = ns,
-              conditionalPanel(
-                condition = "input.das_effort == 3", ns = ns,
-                fluidRow(
-                  column(6, selectInput(ns("das_effort_minBft"), tags$h5("Minimum Beaufort"), choices = cruz.beaufort, selected = 0)),
-                  column(6, selectInput(ns("das_effort_maxBft"), tags$h5("Maximum Beaufort"), choices = cruz.beaufort, selected = 9)),
-                  column(12, helpText("Note that if the min and max Beaufort values are 0 and 9, respectively,",
-                                      "then effort lines with NA Beaufort values will be plotted"))
-                )
-              ),
-              conditionalPanel(
-                "input.das_effort == 2", ns = ns,
-                helpText("Only detailed effort lines can be plotted by Beaufort")
-              ),
-              uiOutput(ns("das_effort_dateRange_uiOut_date")),
-              uiOutput(ns("das_effort_cruise_uiOut_select")),
-              helpText("Note that if no cruise numbers are selected,",
-                       "effort with NA cruise number values will be plotted")
-            )
-          )
-        ),
-        fluidRow(
+          # ),
+          # fluidRow(
           cruz_box(
             title = "Interactive effort labels", width = 12,
             conditionalPanel(
@@ -1320,21 +1341,24 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         which(is.na(das.sight$Lat) | is.na(das.sight$Lon))
       } else (
         which(
-          is.na(das.sight$Lat) | is.na(das.sight$Lon) | is.na(das.sight$Course) |
-            is.na(das.sight$Bearing) | is.na(das.sight$DistNm)
+          is.na(das.sight$Lat)
+          | is.na(das.sight$Lon)
+          | is.na(das.sight$Course)
+          | is.na(das.sight$Bearing)
+          | is.na(das.sight$DistNm)
         )
       )
 
       if (length(ll.na) > 0) {
         table.out <- das.sight |>
           slice(ll.na) |>
-          mutate(DateTime = as.character(DateTime),
-                 Cruise = as.character(Cruise),
-                 Resight = Event %in% c("s", "k", "g")) |>
-          select(Event, DateTime, Lat, Lon, OnEffort, Cruise,
-                 SightNo, SpCode, Resight,
+          mutate(DateTime = as.character(.data$DateTime),
+                 Cruise = as.character(.data$Cruise),
+                 Resight = .data$Event %in% c("s", "k", "g")) |>
+          select("Event", "DateTime", "Lat", "Lon", "OnEffort", "Cruise",
+                 "SightNo", "SpCode", "Resight",
                  # File = file_das,
-                 `Line number` = line_num) |>
+                 `Line number` = "line_num") |>
           distinct()
         txt.out1 <- ifelse(nrow(table.out) == 1, "sighting has", "sightings have")
         txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
@@ -1357,11 +1381,16 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       }
 
       das.sight <- if (input$das_sightings_position == 1) {
-        das.sight |> filter(!is.na(.data$Lat), !is.na(.data$Lon))
+        das.sight |>
+          filter(!is.na(.data$Lat),
+                 !is.na(.data$Lon))
       } else {
         das.sight |>
-          filter(!is.na(.data$Lat), !is.na(.data$Lon),
-                 !is.na(.data$Course), !is.na(.data$Bearing), !is.na(.data$DistNm))
+          filter(!is.na(.data$Lat),
+                 !is.na(.data$Lon),
+                 !is.na(.data$Course),
+                 !is.na(.data$Bearing),
+                 !is.na(.data$DistNm))
       }
 
       #------------------------------------------
@@ -1482,13 +1511,13 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
             col.names <- c("Prob", "SpCode", "SpCodeProb")
             d.toadd <- das.sight.main |>
-              select(SightNo, !!col.names) |>
-              filter(SightNo %in% das.sight.res$SightNo) |>
+              select("SightNo", !!col.names) |>
+              filter(.data$SightNo %in% das.sight.res$SightNo) |>
               full_join(select(das.sight.res, -!!col.names), by = "SightNo") |>
               select(!!names(das.sight.main))
 
             das.sight <- bind_rows(das.sight.main, d.toadd) |>
-              arrange(idx)
+              arrange(.data$idx)
             rm(das.sight.main, das.sight.res, col.names, d.toadd)
           }
 
@@ -1496,10 +1525,10 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
           if (any("g" %in% sp.events)) {
             das.sight.main <- das.sight |>
               filter(!(.data$Event %in% c("g"))) |>
-              mutate(ss_id = paste(SightNo, Subgroup, sep = "_"))
+              mutate(ss_id = paste(.data$SightNo, .data$Subgroup, sep = "_"))
             das.sight.res <- das.sight |>
               filter(.data$Event %in% c("g")) |>
-              mutate(ss_id = paste(SightNo, Subgroup, sep = "_"))
+              mutate(ss_id = paste(.data$SightNo, .data$Subgroup, sep = "_"))
             validate(
               need(all(das.sight.res$ss_id %in% das.sight.main$ss_id),
                    paste("Not all of the selected g resight event(s) have primary sightings with",
@@ -1515,8 +1544,8 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
               select(!!names(das.sight.main))
 
             das.sight <- bind_rows(das.sight.main, d.toadd) |>
-              select(-ss_id) |>
-              arrange(idx)
+              select(-"ss_id") |>
+              arrange(.data$idx)
             rm(das.sight.main, das.sight.res, col.names, d.toadd)
           }
         }
@@ -1527,7 +1556,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
                      "in the loaded DAS file(s)"))
         )
 
-        das.sight <- das.sight |> select(-idx)
+        das.sight <- das.sight |> select(-"idx")
 
       } else  {
         ### Error
@@ -1889,15 +1918,16 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       if (length(keep.all.na) > 0) {
         table.out <- das.sight |>
           slice(keep.all.na) |>
-          mutate(DateTime = as.character(DateTime),
-                 Cruise = as.character(Cruise)) |>
-          select(Event, DateTime, OnEffort, Cruise, Mode, EffType, Bft,
-                 SightNo, SpCode, PerpDistKm,
+          mutate(DateTime = as.character(.data$DateTime),
+                 Cruise = as.character(.data$Cruise)) |>
+          select("Event", "DateTime", "OnEffort",
+                 "Cruise", "Mode", "EffType", "Bft",
+                 "SightNo", "SpCode", "PerpDistKm",
                  # File = file_das, #Can take up too much space
-                 `Line number` = line_num) |>
+                 `Line number` = "line_num") |>
           distinct()
         if (input$das_sight_effort == 2)
-          table.out <- table.out |> select(-Mode, -EffType)
+          table.out <- table.out |> select(-c("Mode", "EffType"))
 
         txt.out <- ifelse(nrow(table.out) == 1, "sighting", "sightings")
         txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
@@ -2058,12 +2088,10 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
       if (cruzDasSightEventResight()) {
         pt.df <- left_join(das.sight, leg.df, by = c("SpCode", "Event")) |>
-          select(.data$SpCode, .data$Lon, .data$Lat,
-                 .data$pch, .data$col, .data$cex, .data$lwd)
+          select("SpCode", "Lon", "Lat", "pch", "col", "cex", "lwd")
       } else {
         pt.df <- left_join(das.sight, leg.df, by = "SpCode") |>
-          select(.data$SpCode, .data$Lon, .data$Lat,
-                 .data$pch, .data$col, .data$cex, .data$lwd)
+          select("SpCode", "Lon", "Lat", "pch", "col", "cex", "lwd")
       }
 
       # # If specified, make the symbol color correspond to event code
@@ -2072,8 +2100,12 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       # }
 
       list(
-        sight.type = sight.type, sp.count = sp.count, sp.codes = sp.codes,
-        leg.df = leg.df, pt.df = pt.df, das.sight = das.sight
+        sight.type = sight.type,
+        sp.count = sp.count,
+        sp.codes = sp.codes,
+        leg.df = leg.df,
+        pt.df = pt.df,
+        das.sight = das.sight
       )
     })
 
@@ -2237,7 +2269,9 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
           need(leg.lab, "Please select species information to display in the sighting legend")
         )
 
-        if (cruzDasSightEventResight()) leg.lab <- paste0(leg.lab, ", Event: ", input$das_sighting_events)
+        if (cruzDasSightEventResight()) {
+          leg.lab <- paste0(leg.lab, ", Event: ", input$das_sighting_events)
+        }
 
         if ("5" %in% names.lab) {
           if (cruzDasSightEventResight()) {
@@ -2381,15 +2415,19 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
                end_lon = c(.data$Lon[-1], NA)) |>
         filter(.data$Event != "E")
 
-      if (input$das_effort == 3)
-        das.eff.lines <- das.eff.lines |> filter(Event != "R")
+      if (input$das_effort == 3) {
+        das.eff.lines <- das.eff.lines |>
+          filter(.data$Event != "R")
+      }
 
 
       #------------------------------------------
       # Verbosely remove any effort lines with NA lat/lon and return
       ll.na <- which(
-        is.na(das.eff.lines$st_lat) | is.na(das.eff.lines$end_lat) |
-          is.na(das.eff.lines$st_lon) | is.na(das.eff.lines$end_lon)
+        is.na(das.eff.lines$st_lat)
+        | is.na(das.eff.lines$end_lat)
+        | is.na(das.eff.lines$st_lon)
+        | is.na(das.eff.lines$end_lon)
       )
       if (length(ll.na) > 0) {
         table.out <- das.eff.lines |>
@@ -2801,12 +2839,17 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
       ### Return list
       list(
-        eff.leg.x = eff.leg.x, eff.leg.y = eff.leg.y,
-        eff.leg.title = eff.leg.title, eff.leg.lab = eff.leg.lab,
-        eff.leg.col = eff.leg.col, eff.leg.lwd = eff.leg.lwd,
-        eff.leg.bty = eff.leg.bty, eff.leg.box.col = eff.leg.box.col,
+        eff.leg.x = eff.leg.x,
+        eff.leg.y = eff.leg.y,
+        eff.leg.title = eff.leg.title,
+        eff.leg.lab = eff.leg.lab,
+        eff.leg.col = eff.leg.col,
+        eff.leg.lwd = eff.leg.lwd,
+        eff.leg.bty = eff.leg.bty,
+        eff.leg.box.col = eff.leg.box.col,
         eff.leg.box.lwd = eff.leg.box.lwd,
-        eff.leg.box.cex = eff.leg.box.cex, font.fam = font.fam
+        eff.leg.box.cex = eff.leg.box.cex,
+        font.fam = font.fam
       )
     })
 
@@ -2831,12 +2874,12 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         df.join <- NULL
         df.out <- if (input$das_sighting_code_2_all == 1) {
           das.sight |>
-            group_by(Event) |>
+            group_by(.data$Event) |>
             summarise(Count = n(), .groups = "drop")
         } else {
           das.sight |>
-            filter(SpCode %in% input$das_sighting_code_2) |>
-            group_by(Event, SpCode) |>
+            filter(.data$SpCode %in% input$das_sighting_code_2) |>
+            group_by(.data$Event, .data$SpCode) |>
             summarise(Count = n(), .groups = "drop")
         }
 
@@ -2845,7 +2888,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         das.sight <- das.sight |> filter(.data$Event == "F")
         df.join <- NULL
         df.out <- das.sight |>
-          group_by(Event) |>
+          group_by(.data$Event) |>
           summarise(Count = n(), .groups = "drop")
 
       } else if (sight.type == 1) {
@@ -2856,12 +2899,12 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
         df.out <- if (input$das_sighting_code_1_all == 1) {
           das.sight |>
-            group_by(Event) |>
+            group_by(.data$Event) |>
             summarise(Count = n(), .groups = "drop")
         } else {
           das.sight |>
-            filter(SpCode %in% input$das_sighting_code_1) |>
-            group_by(Event, SpCode) |>
+            filter(.data$SpCode %in% input$das_sighting_code_1) |>
+            group_by(.data$Event, .data$SpCode) |>
             summarise(Count = n(), .groups = "drop")
         }
       }
@@ -2915,7 +2958,10 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       }
 
       das.sight.summ.all <- if (input$das_out_allcheck) {
-        c(list(`Species code` = "All"), lapply(select(das.sight.summ, -SpCode), sum))
+        c(
+          list(`Species code` = "All"),
+          lapply(select(das.sight.summ, -"SpCode"), sum)
+        )
       } else {
         NULL
       }
@@ -2946,7 +2992,6 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       cruzDasOutSight_TotTable()
     }, rownames = TRUE, colnames = FALSE)
     output$das_out_sight_table <- renderTable(cruzDasOutSight_Table())
-    output$cruzDasOutSight_Save_text <- renderText(cruzDasOutSight_Save())
 
 
     # Download sightings table
@@ -2987,21 +3032,20 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
           std = sum(das.eff.lines$dist[das.eff.lines$EffType == "S"]),
           nstd = sum(das.eff.lines$dist[das.eff.lines$EffType == "N"]),
           fine = sum(das.eff.lines$dist[das.eff.lines$EffType == "F"]),
-          total = sum(das.eff.lines$dist),
-          stringsAsFactors = FALSE
+          total = sum(das.eff.lines$dist)
         )
 
       } else if (input$das_effort == 3) {
         eff.summ <- das.eff.lines |>
-          group_by(Bft) |>
-          summarise(std = sum(dist[EffType == "S"]),
-                    nstd = sum(dist[EffType == "N"]),
-                    fine = sum(dist[EffType == "F"]),
-                    total = sum(dist),
+          group_by(.data$Bft) |>
+          summarise(std = sum(.data$dist[.data$EffType == "S"]),
+                    nstd = sum(.data$dist[.data$EffType == "N"]),
+                    fine = sum(.data$dist[.data$EffType == "F"]),
+                    total = sum(.data$dist),
                     .groups = "drop")
 
         eff.out <- rbind(eff.summ, vapply(eff.summ, sum, 1)) |>
-          mutate(Bft = c(head(Bft, -1), "All"))
+          mutate(Bft = c(head(.data$Bft, -1), "All"))
 
       } else {
         validate("Error: invalid 'Effort to plot' (das_effort) selection")
@@ -3013,8 +3057,11 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       if (!("F" %in% input$das_effort_snf)) eff.out$fine <- NA
 
       eff.out |>
-        rename(Beaufort = Bft, Standard = std, `Non-standard` = nstd,
-               Fine = fine, Total = total)
+        rename(Beaufort = "Bft",
+               Standard = "std",
+               `Non-standard` = "nstd",
+               Fine = "fine",
+               Total = "total")
 
 
       # name.total <- paste("Total", ifelse(input$das_out_effort_units == 1, "(km)", "(nmi)"))
@@ -3025,7 +3072,6 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
     # Table outputs
     output$das_out_effort_table <- renderTable(cruzDasOutEffort_Table())
-    output$cruzDasOutEffort_Save_text <- renderText(cruzDasOutEffort_Save())
 
 
     # Save effort table
@@ -3124,7 +3170,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
         save_widget("das_out_effort_units", "radio"),
         save_widget("das_out_sciname", "checkGroup"),
-        save_widget("das_out_allcheck", "check"),
+        save_widget("das_out_allcheck", "check")
       )
     })
 
@@ -3142,7 +3188,6 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       ),
       sight = list(
         plot = reactive(input$das_sightings),
-        # data = cruzDasSightFilter,
         data = cruzDasSightSymbol,
         symbol = cruzDasSightSymbol,
         legend_plot = reactive(input$das_legend),

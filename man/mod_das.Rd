@@ -30,8 +30,25 @@ The server function returns a list with the following named elements:
 \itemize{
 \item \code{to_save}: a list of values to be saved in an 'app state' file.
 See \code{\link[=cruzplot_gui]{cruzplot_gui()}} for more info.
+\item \code{das_data}: reactive of the processed DAS data;
+the output of \code{\link[swfscDAS:das_process]{swfscDAS::das_process()}}
 \item \code{sp_codes}: reactive of a data frame of loaded species codes
-\item \code{todo}: ...
+\item \code{effort}: a named list of effort-related objects, primarily for plotting:
+\itemize{
+\item \code{plot}: reactive of a logical indicating if effort lines will be drawn
+\item \code{data}: reactive of effort data for plotting. Specifically, a data frame with at least columns for the start/end latitude/longitude points for the effort lines to draw. Columnn names: \verb{st_lat, }end_lat\verb{, }st_lon\verb{, }end_lon`
+\item \code{params}: reactive of effort plotting params. Specifically, a named list of the effort line color(s) (\code{eff.col}) and line widths (\code{eff.lwd})
+\item \code{legend_plot}: reactive of a logical indicating if a legend for effort will be drawn
+\item \code{legend}: reactive of a named list of effort legend parameters
+}
+\item \code{sight}: a named list of sighting-related objects, primarily for plotting:
+\itemize{
+\item \code{plot}: reactive of a logical indicating if sighting points will be drawn
+\item \code{data}: reactive of sighting data for plotting...
+\item \code{symbol}: reactive of sighting plotting symbol information...
+\item \code{legend_plot}: reactive of a logical indicating if a legend for sightings will be drawn
+\item \code{legend}: reactive of a named list of sighting legend parameters
+}
 }
 }
 \description{

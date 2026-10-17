@@ -56,4 +56,6 @@ The \code{nondas} list is a named list:
 \item \code{shape}: the output of \code{\link[=mod_ndas_shape_server]{mod_ndas_shape_server()}} (non-DAS point/line data)
 \item \code{planned}: the output of \code{\link[=mod_ndas_planned_server]{mod_ndas_planned_server()}} (planned transects)
 }
+
+The \code{das} list is a named list...see \code{\link[=mod_das_server]{mod_das_server()}} for more info
 }

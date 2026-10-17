@@ -27,6 +27,8 @@
 #' - `shape`: the output of [mod_ndas_shape_server()] (non-DAS point/line data)
 #' - `planned`: the output of [mod_ndas_planned_server()] (planned transects)
 #'
+#' The `das` list is a named list...see [mod_das_server()] for more info
+#'
 #' @returns `mod_plot_ui` returns a [shiny::tagList()] with a
 #' [shinydashboard::tabBox()], of width 6, with the [shiny::plotOutput()]
 #' object, and the UI to save the plot.
@@ -402,15 +404,14 @@ mod_plot_server  <- function(
         # Effort
         if (das$effort[["plot"]]()) {
           das.eff.lines <- das$effort[["data"]]()
-          eff.col <- das$effort[["params"]]()$eff.col
-          eff.lwd <- das$effort[["params"]]()$eff.lwd
+          das.eff.params <- das$effort[["params"]]()
           segments(
             x0 = das.eff.lines$st_lon,
             x1 = das.eff.lines$end_lon,
             y0 = das.eff.lines$st_lat,
             y1 = das.eff.lines$end_lat,
-            col = eff.col,
-            lwd = eff.lwd
+            col = das.eff.params$eff.col,
+            lwd = das.eff.params$eff.lwd
           )
 
           # Legend
