@@ -32,17 +32,27 @@ export(update_widget)
 import(shiny)
 importFrom(dplyr,
   .data,
+  arrange,
   between,
+  bind_rows,
   case_when,
   distinct,
   filter,
+  full_join,
+  group_by,
   if_else,
   left_join,
   mutate,
+  n,
+  rename,
   select,
-  slice
+  slice,
+  summarise
 )
-importFrom(geosphere,destPoint)
+importFrom(geosphere,
+  destPoint,
+  distVincentyEllipsoid
+)
 importFrom(grDevices,
   dev.off,
   gray,
@@ -54,6 +64,7 @@ importFrom(grDevices,
 importFrom(graphics,
   abline,
   axis,
+  legend,
   lines,
   par,
   points,
@@ -87,11 +98,17 @@ importFrom(stringr,
   str_glue,
   str_sub,
   str_to_lower,
-  str_to_upper
+  str_to_upper,
+  str_trim
 )
-importFrom(swfscDAS,das_spcodes_read)
+importFrom(swfscDAS,
+  das_process,
+  das_sight,
+  das_spcodes_read
+)
 importFrom(utils,
   globalVariables,
+  head,
   packageVersion,
   read.csv,
   tail,

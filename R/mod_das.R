@@ -382,7 +382,8 @@ mod_das_ui <- function(id) {
                                   "then sightings with NA Beaufort values will be plotted"))
             ),
             tags$br(),
-            helpText("To stop applying the cruise number(s) and truncation (perpendicular distance) filters,",
+            helpText("To stop applying the cruise number(s) ",
+                     "and truncation (perpendicular distance) filters,",
                      "delete all text from their boxes"),
             fluidRow(
               column(4, uiOutput(ns("das_sight_cruise_uiOut_select"))),
@@ -722,55 +723,63 @@ mod_das_ui <- function(id) {
     ##############################################################################################################
     tabPanel(
       title = "Tabular Output",
-      helpText("todo")
-      #   fluidRow(
-      #     box(
-      #       title = "Effort", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-      #       conditionalPanel("input.das_effort == 1", helpText("Effort must be plotted to generate tabular output for effort")),
-      #       conditionalPanel(
-      #         condition = "input.das_effort != 1",
-      #         helpText("Reports the distance traveled while on effort, summarized by effort type.",
-      #                   "The effort that is summarized is the same as the effort that is plotted,",
-      #                   "i.e. it has been filtered using the same filters",
-      #                   "(mode, effort type, date, Beaufort, and cruise number)",
-      #                   "specified in the 'Effort' tab"),
-      #         radioButtons("das_out_effort_units", "", #NULL puts the widget too close to the helpText
-      #                       choices = list("Distance unit: kilometers" = 1, "Distance unit: nautical miles" = 2),
-      #                       selected = 2),
-      #         tableOutput("das_out_effort_table"),
-      #         downloadButton("das_out_effort_save", "Save effort table")
-      #       )
-      #     ),
-      #     box(
-      #       title = "Sightings", status = "warning", solidHeader = FALSE, width = 12, collapsible = TRUE,
-      #       conditionalPanel(
-      #         condition = "input.das_sightings != true",
-      #         helpText("Sightings must be selected to generate tabular output for sightings")
-      #       ),
-      #       conditionalPanel(
-      #         condition = "input.das_sightings",
-      #         helpText("Reports the number of sightings with the selected species, summarized by effort type.",
-      #                   "The sightings that are summarized are those that are plotted,",
-      #                   "i.e. they have been filtered using the same filters",
-      #                   "(species, on or off effort, mode, effort type, date, Beaufort, cruise number, and truncation distance)",
-      #                   "specified in the 'Filters' tab"),
-      #         tags$br(),
-      #         tags$h5("Total number of sightings in the DAS file for selected events and species,",
-      #                 "with only a filter for species code applied (if applicable).",
-      #                 "Note that for instance when plotting all marine mammal species,",
-      #                 "an S sighting with two species counts as two in this sum.",
-      #                 "These values are intended to be a reference for the total number of sightings in the DAS file(s)"),
-      #         tableOutput("das_out_sight_tot_table"),
-      #         checkboxGroupInput("das_out_sciname", tags$h5("Additional species information to include"),
-      #                             choices = list("Species abbreviation" = 2,
-      #                                           "Scientific name" = 3, "Common name" = 4),
-      #                             selected = NULL, inline = TRUE),
-      #         checkboxInput("das_out_allcheck", "Include an 'All' summary row", value = TRUE),
-      #         tableOutput("das_out_sight_table"),
-      #         downloadButton("das_out_sight_save", "Save sightings table")
-      #       )
-      #     )
-      #   )
+      fluidRow(
+        cruz_box(
+          title = "Effort", width = 12,
+          conditionalPanel(
+            "input.das_effort == 1", ns = ns,
+            helpText("Effort must be plotted to generate tabular output for effort")
+          ),
+          conditionalPanel(
+            condition = "input.das_effort != 1", ns = ns,
+            helpText("Reports the distance traveled while on effort, summarized by effort type.",
+                     "The effort that is summarized is the same as the effort that is plotted,",
+                     "i.e. it has been filtered using the same filters",
+                     "(mode, effort type, date, Beaufort, and cruise number)",
+                     "specified in the 'Effort' tab"),
+            radioButtons(
+              ns("das_out_effort_units"), "",
+              #label=NULL puts the widget too close to the helpText
+              choices = list("Distance unit: kilometers" = 1,
+                             "Distance unit: nautical miles" = 2),
+              selected = 2
+            ),
+            tableOutput(ns("das_out_effort_table")),
+            downloadButton(ns("das_out_effort_save"), "Save effort table")
+          )
+        ),
+        cruz_box(
+          title = "Sightings", width = 12,
+          conditionalPanel(
+            condition = "input.das_sightings != true", ns = ns,
+            helpText("Sightings must be selected to generate tabular output for sightings")
+          ),
+          conditionalPanel(
+            condition = "input.das_sightings", ns = ns,
+            helpText("Reports the number of sightings with the selected species, summarized by effort type.",
+                     "The sightings that are summarized are those that are plotted,",
+                     "i.e. they have been filtered using the same filters",
+                     "(species, on or off effort, mode, effort type, date, Beaufort, cruise number, and truncation distance)",
+                     "specified in the 'Filters' tab"),
+            tags$br(),
+            tags$h5("Total number of sightings in the DAS file for selected events and species,",
+                    "with only a filter for species code applied (if applicable).",
+                    "Note that for instance when plotting all marine mammal species,",
+                    "an S sighting with two species counts as two in this sum.",
+                    "These values are intended to be a reference for the total number of sightings in the DAS file(s)"),
+            tableOutput(ns("das_out_sight_tot_table")),
+            checkboxGroupInput(
+              ns("das_out_sciname"), tags$h5("Additional species information to include"),
+              choices = list("Species abbreviation" = 2,
+                             "Scientific name" = 3, "Common name" = 4),
+              selected = NULL, inline = TRUE
+            ),
+            checkboxInput(ns("das_out_allcheck"), "Include an 'All' summary row", value = TRUE),
+            tableOutput(ns("das_out_sight_table")),
+            downloadButton(ns("das_out_sight_save"), "Save sightings table")
+          )
+        )
+      )
     )
   )
 }
@@ -1089,7 +1098,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       # Process DAS file
       withProgress(message = "Processing DAS file", value = 0.6, {
         das.proc <- try(suppressWarnings(
-          swfscDAS::das_process(
+          das_process(
             input$das_file$datapath, skip = skip, days.gap = days.gap,
             reset.event = reset.event, reset.effort = reset.effort,
             reset.days = TRUE
@@ -1294,7 +1303,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
     #---------------------------------------------------------------------------
     ### 1. Run das_sight
     cruzDasSightSpeciesProcess <- reactive({
-      swfscDAS::das_sight(req(cruz.list$das.data), return.format = "default")
+      das_sight(req(cruz.list$das.data), return.format = "default")
     })
 
 
@@ -1317,15 +1326,15 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       )
 
       if (length(ll.na) > 0) {
-        table.out <- das.sight %>%
-          slice(ll.na) %>%
+        table.out <- das.sight |>
+          slice(ll.na) |>
           mutate(DateTime = as.character(DateTime),
                  Cruise = as.character(Cruise),
-                 Resight = Event %in% c("s", "k", "g")) %>%
+                 Resight = Event %in% c("s", "k", "g")) |>
           select(Event, DateTime, Lat, Lon, OnEffort, Cruise,
                  SightNo, SpCode, Resight,
                  # File = file_das,
-                 `Line number` = line_num) %>%
+                 `Line number` = line_num) |>
           distinct()
         txt.out1 <- ifelse(nrow(table.out) == 1, "sighting has", "sightings have")
         txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
@@ -1348,9 +1357,9 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       }
 
       das.sight <- if (input$das_sightings_position == 1) {
-        das.sight %>% filter(!is.na(.data$Lat), !is.na(.data$Lon))
+        das.sight |> filter(!is.na(.data$Lat), !is.na(.data$Lon))
       } else {
-        das.sight %>%
+        das.sight |>
           filter(!is.na(.data$Lat), !is.na(.data$Lon),
                  !is.na(.data$Course), !is.na(.data$Bearing), !is.na(.data$DistNm))
       }
@@ -1358,7 +1367,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       #------------------------------------------
       # Calculate sighting location,, select selected position, and return
       bearing2 <- (das.sight$Course + das.sight$Bearing) %% 360
-      ll.sight <- geosphere::destPoint(
+      ll.sight <- destPoint(
         matrix(c(das.sight$Lon, das.sight$Lat), ncol = 2),
         bearing2, das.sight$DistNm * 1852
       )
@@ -1370,8 +1379,9 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       #                          units = "nm", type = "ellipsoid")
       # })
 
-      das.sight <- das.sight %>%
-        mutate(Lat_ship = .data$Lat, Lon_ship = .data$Lon,
+      das.sight <- das.sight |>
+        mutate(Lat_ship = .data$Lat,
+               Lon_ship = .data$Lon,
                Lat_sight = ll.sight[, "lat"],
                Lon_sight = ll.sight[, "lon"])
 
@@ -1415,7 +1425,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
       if (sight.type == 2) {
         ### Turtle sightings
-        das.sight <- das.sight %>% filter(.data$Event == "t")
+        das.sight <- das.sight |> filter(.data$Event == "t")
         validate(
           need(nrow(das.sight) > 0,
                "There are no turtle sightings (t events) in the loaded DAS file(s)")
@@ -1423,7 +1433,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
       } else if (sight.type == 3) {
         ### Boat sightings
-        das.sight <- das.sight %>% filter(.data$Event == "F")
+        das.sight <- das.sight |> filter(.data$Event == "F")
         validate(
           need(nrow(das.sight) > 0,
                "There are no boat sightings (F events) in the loaded DAS file(s)")
@@ -1434,8 +1444,8 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         sp.events <- input$das_sighting_events
         validate(need(sp.events, "Please select at least one event code to plot"))
 
-        das.sight <- das.sight %>%
-          filter(.data$Event %in% sp.events) %>%
+        das.sight <- das.sight |>
+          filter(.data$Event %in% sp.events) |>
           mutate(idx = seq_along(.data$Event))
 
         # Resights
@@ -1461,8 +1471,8 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
           # Get species, etc., for s and k events
           if (any(c("s", "k") %in% sp.events)) {
-            das.sight.main <- das.sight %>% filter(!(.data$Event %in% c("s", "k")))
-            das.sight.res <- das.sight %>% filter(.data$Event %in% c("s", "k"))
+            das.sight.main <- das.sight |> filter(!(.data$Event %in% c("s", "k")))
+            das.sight.res <- das.sight |> filter(.data$Event %in% c("s", "k"))
             validate(
               need(all(das.sight.res$SightNo %in% das.sight.main$SightNo),
                    paste("Not all of the selected s/k resight event(s) have primary sightings with",
@@ -1471,23 +1481,24 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
             )
 
             col.names <- c("Prob", "SpCode", "SpCodeProb")
-            d.toadd <- das.sight.main %>%
-              select(SightNo, !!col.names) %>%
-              filter(SightNo %in% das.sight.res$SightNo) %>%
-              full_join(select(das.sight.res, -!!col.names), by = "SightNo") %>%
+            d.toadd <- das.sight.main |>
+              select(SightNo, !!col.names) |>
+              filter(SightNo %in% das.sight.res$SightNo) |>
+              full_join(select(das.sight.res, -!!col.names), by = "SightNo") |>
               select(!!names(das.sight.main))
 
-            das.sight <- bind_rows(das.sight.main, d.toadd) %>% arrange(idx)
+            das.sight <- bind_rows(das.sight.main, d.toadd) |>
+              arrange(idx)
             rm(das.sight.main, das.sight.res, col.names, d.toadd)
           }
 
           # Get species, etc., for g events
           if (any("g" %in% sp.events)) {
-            das.sight.main <- das.sight %>%
-              filter(!(.data$Event %in% c("g"))) %>%
+            das.sight.main <- das.sight |>
+              filter(!(.data$Event %in% c("g"))) |>
               mutate(ss_id = paste(SightNo, Subgroup, sep = "_"))
-            das.sight.res <- das.sight %>%
-              filter(.data$Event %in% c("g")) %>%
+            das.sight.res <- das.sight |>
+              filter(.data$Event %in% c("g")) |>
               mutate(ss_id = paste(SightNo, Subgroup, sep = "_"))
             validate(
               need(all(das.sight.res$ss_id %in% das.sight.main$ss_id),
@@ -1497,14 +1508,14 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
             )
 
             col.names <- c("Prob", "SpCode", "SpCodeProb")
-            d.toadd <- das.sight.main %>%
-              select(.data$ss_id, !!col.names) %>%
-              filter(.data$ss_id %in% das.sight.res$ss_id) %>%
-              full_join(select(das.sight.res, -!!col.names), by = c("ss_id")) %>%
+            d.toadd <- das.sight.main |>
+              select(.data$ss_id, !!col.names) |>
+              filter(.data$ss_id %in% das.sight.res$ss_id) |>
+              full_join(select(das.sight.res, -!!col.names), by = c("ss_id")) |>
               select(!!names(das.sight.main))
 
-            das.sight <- bind_rows(das.sight.main, d.toadd) %>%
-              select(-ss_id) %>%
+            das.sight <- bind_rows(das.sight.main, d.toadd) |>
+              select(-ss_id) |>
               arrange(idx)
             rm(das.sight.main, das.sight.res, col.names, d.toadd)
           }
@@ -1516,7 +1527,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
                      "in the loaded DAS file(s)"))
         )
 
-        das.sight <- das.sight %>% select(-idx)
+        das.sight <- das.sight |> select(-idx)
 
       } else  {
         ### Error
@@ -1566,13 +1577,13 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
           )
 
           # 977 used as probable vaquita sighting on some cruises
-          das.sight <- das.sight %>%
+          das.sight <- das.sight |>
             mutate(SpCode = ifelse(.data$SpCode == "977", "041", .data$SpCode),
                    SpCode = ifelse(.data$Prob, .data$SpCodeProb, .data$SpCode))
         }
 
         # Filter for selected species, and check that all selected species are in data
-        das.sight <- das.sight %>% filter(.data$SpCode %in% sp.codes)
+        das.sight <- das.sight |> filter(.data$SpCode %in% sp.codes)
 
         if (input$das_sighting_code_1_all == 2) {
           sp.codes.none <- base::setdiff(sp.codes, das.sight$SpCode)
@@ -1590,7 +1601,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         # 2: Turtles
         sp.codes <- cruzDasSightSpeciesTurtles()
 
-        das.sight <- das.sight %>%
+        das.sight <- das.sight |>
           filter(.data$SpCode %in% sp.codes)
 
         if (input$das_sighting_code_2_all == 2) {
@@ -1607,7 +1618,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         #----------------------------------------
       } else if (sight.type == 3) {
         # 3: Boats
-        das.sight <- das.sight %>% mutate(SpCode = "Boat")
+        das.sight <- das.sight |> mutate(SpCode = "Boat")
         sp.codes <- NULL
 
 
@@ -1640,8 +1651,8 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       #
       #   ndx.x <- ndx.x[comm.x1.cpod]
       #
-      #   das.sight <- das.proc %>%
-      #     slice(ndx.x) %>%
+      #   das.sight <- das.proc |>
+      #     slice(ndx.x) |>
       #     mutate(Sp = "CPOD",
       #            Bearing = as.numeric(.data$Data2),
       #            DistNm = as.numeric(.data$Data4),
@@ -1717,7 +1728,7 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
       #------------------------------------------
       # Filter to map range
-      das.sight.filt <- das.sight %>%
+      das.sight.filt <- das.sight |>
         filter(between(.data$Lat, lat.range[1], lat.range[2]),
                between(.data$Lon, lon.range[1], lon.range[2]))
       validate(
@@ -1876,17 +1887,17 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
       ### Verbosely change NA filter values to FALSE
       if (length(keep.all.na) > 0) {
-        table.out <- das.sight %>%
-          slice(keep.all.na) %>%
+        table.out <- das.sight |>
+          slice(keep.all.na) |>
           mutate(DateTime = as.character(DateTime),
-                 Cruise = as.character(Cruise)) %>%
+                 Cruise = as.character(Cruise)) |>
           select(Event, DateTime, OnEffort, Cruise, Mode, EffType, Bft,
                  SightNo, SpCode, PerpDistKm,
                  # File = file_das, #Can take up too much space
-                 `Line number` = line_num) %>%
+                 `Line number` = line_num) |>
           distinct()
         if (input$das_sight_effort == 2)
-          table.out <- table.out %>% select(-Mode, -EffType)
+          table.out <- table.out |> select(-Mode, -EffType)
 
         txt.out <- ifelse(nrow(table.out) == 1, "sighting", "sightings")
         txt.out2 <- ifelse(nrow(table.out) == 1, "This sighting", "These sightings")
@@ -2046,11 +2057,11 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
       }
 
       if (cruzDasSightEventResight()) {
-        pt.df <- left_join(das.sight, leg.df, by = c("SpCode", "Event")) %>%
+        pt.df <- left_join(das.sight, leg.df, by = c("SpCode", "Event")) |>
           select(.data$SpCode, .data$Lon, .data$Lat,
                  .data$pch, .data$col, .data$cex, .data$lwd)
       } else {
-        pt.df <- left_join(das.sight, leg.df, by = "SpCode") %>%
+        pt.df <- left_join(das.sight, leg.df, by = "SpCode") |>
           select(.data$SpCode, .data$Lon, .data$Lat,
                  .data$pch, .data$col, .data$cex, .data$lwd)
       }
@@ -2801,6 +2812,238 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
 
 
     ###############################################################################
+    ###############################################################################
+    ###############################################################################
+    # Tabular output
+
+    #---------------------------------------------------------------------------
+    # Sightings
+
+    # Table of all sightings in file
+    cruzDasOutSight_TotTable <- reactive({
+      req(cruzDasSightFilter())
+      das.sight <- cruzDasSightSpeciesProcess()
+      sight.type <- input$das_sighting_type
+
+      if (sight.type == 2) {
+        ### Turtles
+        das.sight <- das.sight |> filter(.data$Event == "t")
+        df.join <- NULL
+        df.out <- if (input$das_sighting_code_2_all == 1) {
+          das.sight |>
+            group_by(Event) |>
+            summarise(Count = n(), .groups = "drop")
+        } else {
+          das.sight |>
+            filter(SpCode %in% input$das_sighting_code_2) |>
+            group_by(Event, SpCode) |>
+            summarise(Count = n(), .groups = "drop")
+        }
+
+      } else if (sight.type == 3) {
+        ### Boats
+        das.sight <- das.sight |> filter(.data$Event == "F")
+        df.join <- NULL
+        df.out <- das.sight |>
+          group_by(Event) |>
+          summarise(Count = n(), .groups = "drop")
+
+      } else if (sight.type == 1) {
+        ### Marine mammals
+        das.sight <- das.sight <- das.sight |>
+          filter(.data$Event %in% input$das_sighting_events)
+        df.join <- data.frame(Event = input$das_sighting_events)
+
+        df.out <- if (input$das_sighting_code_1_all == 1) {
+          das.sight |>
+            group_by(Event) |>
+            summarise(Count = n(), .groups = "drop")
+        } else {
+          das.sight |>
+            filter(SpCode %in% input$das_sighting_code_1) |>
+            group_by(Event, SpCode) |>
+            summarise(Count = n(), .groups = "drop")
+        }
+      }
+
+      if (isTruthy(df.join)) {
+        df.out <- df.out |>
+          full_join(df.join, by = "Event") |>
+          mutate(Count = ifelse(is.na(.data$Count), 0, .data$Count)) |>
+          arrange(.data$Event)
+      }
+
+      t(df.out)
+    })
+
+    # Sightings table
+    cruzDasOutSight_Table <- reactive({
+      req(cruz.list$das.data)
+      validate(
+        need(input$das_sightings,
+             "'Plot sightings' must be selected to generate tabular sightings output")
+      )
+
+
+      # Get filtered data, which also handles error checks
+      data.list <- cruzDasSightFilter()
+      das.sight <- data.list$das.sight
+
+      das.sight.summ <- das.sight |>
+        group_by(.data$SpCode) |>
+        summarise(std = sum(.data$OnEffort & .data$EffType == "S", na.rm = TRUE),
+                  #na.rm=TRUE b/c off effort sightings might not have effort type
+                  nstd = sum(.data$OnEffort & .data$EffType == "N", na.rm = TRUE),
+                  fine = sum(.data$OnEffort & .data$EffType == "F", na.rm = TRUE),
+                  off_eff = sum(!.data$OnEffort),
+                  total = n(),
+                  .groups = "drop")
+
+      # 'Filter' summary for columns specified by sighting filters, and rename
+      #   Data has already been filtered, just need to make the table pretty
+      if (input$das_sight_effort == 3) {
+        das.sight.summ$std <- NA
+        das.sight.summ$nstd <- NA
+        das.sight.summ$fine <- NA
+
+      } else {
+        if (input$das_sight_effort == 2) das.sight.summ$off_eff <- NA
+
+        if (!("S" %in% input$das_sight_snf)) das.sight.summ$std <- NA
+        if (!("N" %in% input$das_sight_snf)) das.sight.summ$nstd <- NA
+        if (!("F" %in% input$das_sight_snf)) das.sight.summ$fine <- NA
+      }
+
+      das.sight.summ.all <- if (input$das_out_allcheck) {
+        c(list(`Species code` = "All"), lapply(select(das.sight.summ, -SpCode), sum))
+      } else {
+        NULL
+      }
+
+      # Add in selected species identifiers, join, and do name wrangling
+      das.sight.sp <- das.sight.summ |>
+        select(.data$SpCode) |>
+        left_join(req(cruz.list$sp.codes), by = "SpCode")
+
+      das.sight.sp |>
+        rename("Species code" = .data$SpCode,
+               "Abbreviation" = .data$Abbr,
+               "Scientific name" = .data$SciName,
+               "Common name" = .data$CommonName) |>
+        select(c(1, as.numeric(input$das_out_sciname))) |>
+        left_join(das.sight.summ, by = c("Species code" = "SpCode")) |>
+        bind_rows(das.sight.summ.all) |>
+        rename("Standard" = .data$std,
+               "Non-standard" = .data$nstd,
+               "Fine" = .data$fine,
+               "Off effort" = .data$off_eff,
+               "Total" = .data$total)
+    })
+
+
+    # Table outputs
+    output$das_out_sight_tot_table <- renderTable({
+      cruzDasOutSight_TotTable()
+    }, rownames = TRUE, colnames = FALSE)
+    output$das_out_sight_table <- renderTable(cruzDasOutSight_Table())
+    output$cruzDasOutSight_Save_text <- renderText(cruzDasOutSight_Save())
+
+
+    # Download sightings table
+    output$das_out_sight_save <- downloadHandler(
+      filename = function() {
+        gsub("-", "", paste0("CruzPlot_sightings_", Sys.Date(), ".csv"))
+      },
+
+      content = function(file) {
+        write.csv(cruzDasOutSight_Table(), file = file, row.names = FALSE)
+      }
+    )
+
+
+    #---------------------------------------------------------------------------
+    # Effort
+    cruzDasOutEffort_Table <- reactive({
+      das.eff.lines <- cruzDasEffortFilter() |>
+        mutate(st_lon = ifelse(.data$st_lon > 180, .data$st_lon - 360, .data$st_lon),
+               end_lon = ifelse(.data$end_lon > 180, .data$end_lon - 360, .data$end_lon))
+
+      # Calculate distance
+      dist.effort.km <- distVincentyEllipsoid(
+        cbind(das.eff.lines$st_lon, das.eff.lines$st_lat),
+        cbind(das.eff.lines$end_lon, das.eff.lines$end_lat)
+      ) / 1000
+
+      das.eff.lines$dist <-  if (input$das_out_effort_units == 2) {
+        dist.effort.km / 1.852
+      } else {
+        dist.effort.km
+      }
+
+      # Create summary tables
+      if (input$das_effort == 2) {
+        eff.out <- data.frame(
+          Bft = "All",
+          std = sum(das.eff.lines$dist[das.eff.lines$EffType == "S"]),
+          nstd = sum(das.eff.lines$dist[das.eff.lines$EffType == "N"]),
+          fine = sum(das.eff.lines$dist[das.eff.lines$EffType == "F"]),
+          total = sum(das.eff.lines$dist),
+          stringsAsFactors = FALSE
+        )
+
+      } else if (input$das_effort == 3) {
+        eff.summ <- das.eff.lines |>
+          group_by(Bft) |>
+          summarise(std = sum(dist[EffType == "S"]),
+                    nstd = sum(dist[EffType == "N"]),
+                    fine = sum(dist[EffType == "F"]),
+                    total = sum(dist),
+                    .groups = "drop")
+
+        eff.out <- rbind(eff.summ, vapply(eff.summ, sum, 1)) |>
+          mutate(Bft = c(head(Bft, -1), "All"))
+
+      } else {
+        validate("Error: invalid 'Effort to plot' (das_effort) selection")
+      }
+
+      # 'Filter' summary for columns specified by effort type filters, and rename
+      if (!("S" %in% input$das_effort_snf)) eff.out$std <- NA
+      if (!("N" %in% input$das_effort_snf)) eff.out$nstd <- NA
+      if (!("F" %in% input$das_effort_snf)) eff.out$fine <- NA
+
+      eff.out |>
+        rename(Beaufort = Bft, Standard = std, `Non-standard` = nstd,
+               Fine = fine, Total = total)
+
+
+      # name.total <- paste("Total", ifelse(input$das_out_effort_units == 1, "(km)", "(nmi)"))
+      # names(eff.out) <- c(head(names(eff.out), -1), name.total)
+      # eff.out
+    })
+
+
+    # Table outputs
+    output$das_out_effort_table <- renderTable(cruzDasOutEffort_Table())
+    output$cruzDasOutEffort_Save_text <- renderText(cruzDasOutEffort_Save())
+
+
+    # Save effort table
+    output$das_out_effort_save <- downloadHandler(
+      filename = function() {
+        u.txt <- switch(as.numeric(input$das_out_effort_units), "km", "nmi")
+        gsub("-", "", paste0("CruzPlot_effort_", u.txt, "_", Sys.Date(), ".csv"))
+      },
+
+      content = function(file) {
+        write.csv(cruzDasOutEffort_Table(), file = file, row.names = FALSE)
+      }
+    )
+
+
+    ###############################################################################
+    ###############################################################################
+    ###############################################################################
     ### Save values
     to_save <- reactive({
       list(
@@ -2877,10 +3120,11 @@ mod_das_server  <- function(id, load_state, color_style, map_range_config) {
         save_widget("eff_legend_textSize", "numeric"),
         save_widget("eff_legend_lon", "numeric"),
         save_widget("eff_legend_lat", "numeric"),
-        save_widget("eff_legend_boxCol", "select")
+        save_widget("eff_legend_boxCol", "select"),
 
-
-        # save_widget("ndas_plot", "check")
+        save_widget("das_out_effort_units", "radio"),
+        save_widget("das_out_sciname", "checkGroup"),
+        save_widget("das_out_allcheck", "check"),
       )
     })
 

@@ -10,18 +10,18 @@
 #' @seealso \url{https://swfsc.github.io/CruzPlot/}
 #'
 #' @import shiny
-#' @importFrom dplyr .data between case_when distinct filter if_else left_join mutate select slice
-#' @importFrom geosphere destPoint
-#' @importFrom graphics abline axis par points polygon lines rect segments text title
+#' @importFrom dplyr .data arrange between bind_rows case_when distinct filter full_join group_by if_else left_join mutate n rename select slice summarise
+#' @importFrom geosphere destPoint distVincentyEllipsoid
+#' @importFrom graphics abline axis legend lines par points polygon rect segments text title
 #' @importFrom grDevices gray palette dev.off jpeg pdf png
 #' @importFrom maps map
 #' @importFrom shinydashboard box dashboardBody tabItems tabItem dashboardHeader
 #'   dashboardPage dashboardSidebar sidebarMenu menuItem tabBox
 #' @importFrom shinyjs useShinyjs extendShinyjs js
 #' @importFrom stats na.omit
-#' @importFrom stringr str_detect str_glue str_sub str_to_lower str_to_upper
-#' @importFrom swfscDAS das_spcodes_read
-#' @importFrom utils globalVariables packageVersion read.csv tail write.csv
+#' @importFrom stringr str_detect str_glue str_sub str_to_lower str_to_upper str_trim
+#' @importFrom swfscDAS das_spcodes_read das_process das_sight
+#' @importFrom utils globalVariables head packageVersion read.csv tail write.csv
 #'
 "_PACKAGE"
 

@@ -44,8 +44,8 @@ cruzplot_gui <- function(...) {
       sidebarMenu(
         id = "tabs",
         menuItem("Create Map", tabName = "createmap", icon = icon("map")),
-        menuItem("Plot DAS Data", tabName = "das", icon = icon("ship")),
-        menuItem("Plot Non-DAS Data", tabName = "nondas", icon = icon("layer-group")),
+        menuItem("DAS Data", tabName = "das", icon = icon("ship")),
+        menuItem("Non-DAS Data", tabName = "nondas", icon = icon("layer-group")),
         menuItem(
           HTML(paste0("Color and Formatting", "<br/>", "Options")),
           tabName = "display_format", icon = icon("palette")
@@ -63,11 +63,11 @@ cruzplot_gui <- function(...) {
         # tags$br(),
         column(
           width = 12,
-          tags$strong("Workspace (Save / Load)"), 
-          tags$br(), 
-          downloadButton("save_app_envir", "Save workspace", style = "color: black"), 
+          tags$strong("Workspace (Save / Load)"),
+          tags$br(),
+          downloadButton("save_app_envir", "Save workspace", style = "color: black"),
           textOutput("load_app_text")
-        ), 
+        ),
         fileInput("load_app_envir_file", NULL), #, tags$h5("Load workspace")),
         # tags$br(), tags$br(), #tags$br(),
         actionButton("stop", "Close CruzPlot"),
