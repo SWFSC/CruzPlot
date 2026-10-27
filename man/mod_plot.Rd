@@ -8,7 +8,15 @@
 \usage{
 mod_plot_ui(id, enable_brush = FALSE)
 
-mod_plot_server(id, height, map_range, map_elements, map_color, nondas, das)
+mod_plot_server(
+  id,
+  height,
+  map_range,
+  map_elements,
+  map_color,
+  nondas,
+  das = NULL
+)
 }
 \arguments{
 \item{id}{character used to specify namespace, see \code{\link[shiny:NS]{shiny::NS()}}}
@@ -26,7 +34,7 @@ mod_plot_server(id, height, map_range, map_elements, map_color, nondas, das)
 
 \item{nondas}{a list of the nondas module output(s). See Details}
 
-\item{das}{a list; the output of \code{\link[=mod_das_server]{mod_das_server()}}}
+\item{das}{a list; the output of \code{\link[=mod_das_server]{mod_das_server()}}. Default is NULL}
 }
 \value{
 \code{mod_plot_ui} returns a \code{\link[shiny:tagList]{shiny::tagList()}} with a

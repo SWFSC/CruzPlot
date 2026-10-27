@@ -12,7 +12,7 @@
 #' @param map_elements a list; the output of [mod_map_elements_server()]
 #' @param map_color a list; the output of [mod_map_color_server()]
 #' @param nondas a list of the nondas module output(s). See Details
-#' @param das a list; the output of [mod_das_server()]
+#' @param das a list; the output of [mod_das_server()]. Default is NULL
 #'
 #' @details
 #' This module takes in map ranges/elements/etc,
@@ -108,7 +108,7 @@ mod_plot_server  <- function(
     map_elements,
     map_color,
     nondas,
-    das
+    das = NULL
 ) {
   moduleServer(id, function(input, output, session) {
     lon_range_req <- reactive(req(map_range$config()$lon.range))
@@ -401,76 +401,78 @@ mod_plot_server  <- function(
 
         #----------------------------------------------------------------------
         ### DAS data
-        # Effort
-        if (das$effort[["plot"]]()) {
-          das.eff.lines <- das$effort[["data"]]()
-          das.eff.params <- das$effort[["params"]]()
-          segments(
-            x0 = das.eff.lines$st_lon,
-            x1 = das.eff.lines$end_lon,
-            y0 = das.eff.lines$st_lat,
-            y1 = das.eff.lines$end_lat,
-            col = das.eff.params$eff.col,
-            lwd = das.eff.params$eff.lwd
-          )
-
-          # Legend
-          if (das$effort[["legend_plot"]]()) {
-            das.eff.legend <- das$effort[["legend"]]()
-            op <- par(family = das.eff.legend$font.fam)
-            legend(
-              x = das.eff.legend$eff.leg.x,
-              y = das.eff.legend$eff.leg.y,
-              title = das.eff.legend$eff.leg.title,
-              legend = das.eff.legend$eff.leg.lab,
-              lwd = das.eff.legend$eff.leg.lwd,
-              col = das.eff.legend$eff.leg.col,
-              bty = das.eff.legend$eff.leg.bty,
-              box.col = das.eff.legend$eff.leg.box.col,
-              box.lwd = das.eff.legend$eff.leg.box.lwd,
-              cex = das.eff.legend$eff.leg.box.cex,
-              bg = "white"
+        if (!is.null(das)) {
+          # Effort
+          if (das$effort[["plot"]]()) {
+            das.eff.lines <- das$effort[["data"]]()
+            das.eff.params <- das$effort[["params"]]()
+            segments(
+              x0 = das.eff.lines$st_lon,
+              x1 = das.eff.lines$end_lon,
+              y0 = das.eff.lines$st_lat,
+              y1 = das.eff.lines$end_lat,
+              col = das.eff.params$eff.col,
+              lwd = das.eff.params$eff.lwd
             )
-            par(op)
+
+            # Legend
+            if (das$effort[["legend_plot"]]()) {
+              das.eff.legend <- das$effort[["legend"]]()
+              op <- par(family = das.eff.legend$font.fam)
+              legend(
+                x = das.eff.legend$eff.leg.x,
+                y = das.eff.legend$eff.leg.y,
+                title = das.eff.legend$eff.leg.title,
+                legend = das.eff.legend$eff.leg.lab,
+                lwd = das.eff.legend$eff.leg.lwd,
+                col = das.eff.legend$eff.leg.col,
+                bty = das.eff.legend$eff.leg.bty,
+                box.col = das.eff.legend$eff.leg.box.col,
+                box.lwd = das.eff.legend$eff.leg.box.lwd,
+                cex = das.eff.legend$eff.leg.box.cex,
+                bg = "white"
+              )
+              par(op)
+            }
           }
-        }
 
-        # Sightings
-        if (das$sight[["plot"]]()) {
-          # das.sight <- das$sight[["data"]]()$das.sight
-          das.sight.pt <- das$sight[["data"]]()$pt.df
-          points(
-            das.sight.pt$Lon,
-            das.sight.pt$Lat,
-            pch = das.sight.pt$pch,
-            col = das.sight.pt$col,
-            cex = das.sight.pt$cex,
-            lwd = das.sight.pt$lwd
-          )
-
-          if (das$sight[["legend_plot"]]()) {
-            das.sight.legend <- das$sight[["legend"]]()
-            op <- par(family = das.sight.legend$font.fam)
-            legend(
-              x = das.sight.legend$leg.x,
-              y = das.sight.legend$leg.y,
-              legend = das.sight.legend$leg.lab,
-              title = das.sight.legend$leg.title,
-              pch = das.sight.legend$leg.pch,
-              col = das.sight.legend$leg.col,
-              pt.cex = das.sight.legend$leg.cex,
-              pt.lwd = das.sight.legend$leg.lwd,
-              bty = das.sight.legend$leg.bty,
-              box.col = das.sight.legend$leg.box.col,
-              box.lwd = das.sight.legend$leg.box.lwd,
-              cex = das.sight.legend$leg.box.cex,
-              bg = "white"
+          # Sightings
+          if (das$sight[["plot"]]()) {
+            # das.sight <- das$sight[["data"]]()$das.sight
+            das.sight.pt <- das$sight[["data"]]()$pt.df
+            points(
+              das.sight.pt$Lon,
+              das.sight.pt$Lat,
+              pch = das.sight.pt$pch,
+              col = das.sight.pt$col,
+              cex = das.sight.pt$cex,
+              lwd = das.sight.pt$lwd
             )
-            par(op)
-          }
-        }
 
-        graphics::box() # Added in case legend takes out some of the map border
+            if (das$sight[["legend_plot"]]()) {
+              das.sight.legend <- das$sight[["legend"]]()
+              op <- par(family = das.sight.legend$font.fam)
+              legend(
+                x = das.sight.legend$leg.x,
+                y = das.sight.legend$leg.y,
+                legend = das.sight.legend$leg.lab,
+                title = das.sight.legend$leg.title,
+                pch = das.sight.legend$leg.pch,
+                col = das.sight.legend$leg.col,
+                pt.cex = das.sight.legend$leg.cex,
+                pt.lwd = das.sight.legend$leg.lwd,
+                bty = das.sight.legend$leg.bty,
+                box.col = das.sight.legend$leg.box.col,
+                box.lwd = das.sight.legend$leg.box.lwd,
+                cex = das.sight.legend$leg.box.cex,
+                bg = "white"
+              )
+              par(op)
+            }
+          }
+
+          graphics::box() # Added in case legend takes out some of the map border
+        }
       }
     })
 
