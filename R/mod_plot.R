@@ -34,8 +34,8 @@
 #' object, and the UI to save the plot.
 #'
 #' `mod_plot_server` returns a named list with the following elements:
-#' * 'brush': a reactive of `input$map_brush`.
-#'   If `enable_brush` is `FALSE`, then this value will be `NULL`
+#' - 'brush': a reactive of `input$map_brush`. If `enable_brush` is `FALSE`, 
+#'     then this reactive value will be `NULL`
 #'
 #' @export
 mod_plot_ui <- function(id, enable_brush = FALSE) {
@@ -108,7 +108,8 @@ mod_plot_server  <- function(
     map_elements,
     map_color,
     nondas,
-    das = NULL
+    das = NULL, 
+    airdas = NULL
 ) {
   moduleServer(id, function(input, output, session) {
     lon_range_req <- reactive(req(map_range$config()$lon.range))
